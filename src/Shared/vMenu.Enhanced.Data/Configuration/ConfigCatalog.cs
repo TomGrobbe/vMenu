@@ -78,6 +78,8 @@ public static class ConfigCatalog
         [
             PersonalVehicle.ActionLimit,
             PersonalVehicle.ActionLimitSeconds,
+            PersonalVehicle.ControlRange,
+            PersonalVehicle.ControlTimeout,
         ]),
         new("Vehicle Spawner",
         [

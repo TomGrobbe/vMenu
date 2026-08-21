@@ -1,5 +1,6 @@
 using MenuAPI;
 
+using vMenu.Enhanced.Data.VehicleData;
 using vMenu.Enhanced.Events;
 using vMenu.Enhanced.MenuFramework;
 using vMenu.Enhanced.MenuFramework.Localization;
@@ -78,6 +79,63 @@ public sealed class PersonalVehicleMenu : MenuDefinition
             OnSelectedAsync = _ => PersonalVehicle.ForgetAsync(),
         });
 
+        menu.Entries.Add(new CheckboxEntry
+        {
+            Text = MenuText.Key(Loc.PersonalVehicle.Lock),
+            Description = MenuText.Key(Loc.PersonalVehicle.LockDescription),
+            Gate = PersonalVehiclePermissions.Lock,
+            ReadState = static () => PersonalVehicle.IsLocked,
+            ReadEnabled = static () => PersonalVehicle.IsMarked,
+            OnChangedAsync = changed => PersonalVehicle.SetLockedAsync(changed.Checked),
+        });
+
+        menu.Entries.Add(new CheckboxEntry
+        {
+            Text = MenuText.Key(Loc.PersonalVehicle.Engine),
+            Description = MenuText.Key(Loc.PersonalVehicle.EngineDescription),
+            Gate = PersonalVehiclePermissions.Engine,
+            ReadState = static () => PersonalVehicle.IsEngineRunning,
+            ReadEnabled = static () => PersonalVehicle.IsMarked,
+            OnChangedAsync = changed => PersonalVehicle.SetEngineAsync(changed.Checked),
+        });
+
+        menu.Entries.Add(new ListEntry
+        {
+            Text = MenuText.Key(Loc.PersonalVehicle.Lights),
+            Description = MenuText.Key(Loc.PersonalVehicle.LightsDescription),
+            Gate = PersonalVehiclePermissions.Lights,
+            ReadEnabled = static () => PersonalVehicle.IsMarked,
+            Options =
+            [
+                MenuText.Key(Loc.PersonalVehicle.LightsAutomatic),
+                MenuText.Key(Loc.PersonalVehicle.LightsOff),
+                MenuText.Key(Loc.PersonalVehicle.LightsOn),
+            ],
+            OnSelectedAsync = selected => PersonalVehicle.SetLightsAsync(LightState(selected.SelectedIndex)),
+        });
+
+        menu.Entries.Add(SubmenuEntry.For(new PersonalVehicleDoorsMenu()));
+        menu.Entries.Add(SubmenuEntry.For(new PersonalVehicleWindowsMenu()));
+
+        menu.Entries.Add(new ButtonEntry
+        {
+            Text = MenuText.Key(Loc.PersonalVehicle.Horn),
+            Description = MenuText.Key(Loc.PersonalVehicle.HornDescription),
+            Gate = PersonalVehiclePermissions.Horn,
+            ReadEnabled = static () => PersonalVehicle.IsMarked,
+            OnSelectedAsync = _ => PersonalVehicle.PlayHornTuneAsync(),
+        });
+
+        menu.Entries.Add(new ConfirmButtonEntry
+        {
+            Text = MenuText.Key(Loc.PersonalVehicle.Explode),
+            Description = MenuText.Key(Loc.PersonalVehicle.ExplodeDescription),
+            ConfirmationDescription = MenuText.Key(Loc.PersonalVehicle.ExplodeConfirm),
+            Gate = PersonalVehiclePermissions.Explode,
+            ReadEnabled = static () => PersonalVehicle.IsMarked,
+            OnConfirmedAsync = _ => PersonalVehicle.ExplodeAsync(),
+        });
+
         Follow(menu);
     }
 
@@ -116,6 +174,13 @@ public sealed class PersonalVehicleMenu : MenuDefinition
             LocalVehicleTicks.VehicleChanged -= OnVehicleChanged;
         };
     }
+
+    private static int LightState(int index) => index switch
+    {
+        1 => RemoteVehicleAction.LightsOff,
+        2 => RemoteVehicleAction.LightsOn,
+        _ => RemoteVehicleAction.LightsAutomatic,
+    };
 
     private static string StatusLabel() =>
         PersonalVehicle.IsMarked

@@ -85,5 +85,113 @@ public static partial class Loc
         public const string Denied = "personalvehicle.denied";
 
         public const string TooFast = "personalvehicle.toofast";
+
+        public const string NobodyNearby = "personalvehicle.nobodynearby";
+
+        public const string Lock = "personalvehicle.lock";
+
+        public const string LockDescription = "personalvehicle.lock.desc";
+
+        public const string Locked = "personalvehicle.lock.locked";
+
+        public const string Unlocked = "personalvehicle.lock.unlocked";
+
+        public const string LockFailed = "personalvehicle.lock.failed";
+
+        public const string Engine = "personalvehicle.engine";
+
+        public const string EngineDescription = "personalvehicle.engine.desc";
+
+        public const string EngineStarted = "personalvehicle.engine.started";
+
+        public const string EngineStopped = "personalvehicle.engine.stopped";
+
+        public const string EngineFailed = "personalvehicle.engine.failed";
+
+        public const string Lights = "personalvehicle.lights";
+
+        public const string LightsDescription = "personalvehicle.lights.desc";
+
+        public const string LightsAutomatic = "personalvehicle.lights.automatic";
+
+        public const string LightsOff = "personalvehicle.lights.off";
+
+        public const string LightsOn = "personalvehicle.lights.on";
+
+        public const string LightsSet = "personalvehicle.lights.set";
+
+        public const string LightsFailed = "personalvehicle.lights.failed";
+
+        public const string Doors = "personalvehicle.doors";
+
+        public const string DoorsDescription = "personalvehicle.doors.desc";
+
+        public const string DoorsSubtitle = "personalvehicle.doors.subtitle";
+
+        public const string DoorDescription = "personalvehicle.door.desc";
+
+        public const string DoorToggled = "personalvehicle.door.toggled";
+
+        public const string DoorFailed = "personalvehicle.door.failed";
+
+        public const string OpenAllDoors = "personalvehicle.doors.openall";
+
+        public const string OpenAllDoorsDescription = "personalvehicle.doors.openall.desc";
+
+        public const string ShutAllDoors = "personalvehicle.doors.shutall";
+
+        public const string ShutAllDoorsDescription = "personalvehicle.doors.shutall.desc";
+
+        public const string DoorsOpened = "personalvehicle.doors.opened";
+
+        public const string DoorsShut = "personalvehicle.doors.closed";
+
+        public const string Windows = "personalvehicle.windows";
+
+        public const string WindowsDescription = "personalvehicle.windows.desc";
+
+        public const string WindowsSubtitle = "personalvehicle.windows.subtitle";
+
+        public const string WindowDescription = "personalvehicle.window.desc";
+
+        public const string WindowRollUp = "personalvehicle.window.rollup";
+
+        public const string WindowRollDown = "personalvehicle.window.rolldown";
+
+        public const string WindowUp = "personalvehicle.window.up";
+
+        public const string WindowDown = "personalvehicle.window.down";
+
+        public const string WindowFailed = "personalvehicle.window.failed";
+
+        public const string RollUpAllWindows = "personalvehicle.windows.upall";
+
+        public const string RollUpAllWindowsDescription = "personalvehicle.windows.upall.desc";
+
+        public const string RollDownAllWindows = "personalvehicle.windows.downall";
+
+        public const string RollDownAllWindowsDescription = "personalvehicle.windows.downall.desc";
+
+        public const string WindowsUp = "personalvehicle.windows.up";
+
+        public const string WindowsDown = "personalvehicle.windows.down";
+
+        public const string Horn = "personalvehicle.horn";
+
+        public const string HornDescription = "personalvehicle.horn.desc";
+
+        public const string HornPlayed = "personalvehicle.horn.played";
+
+        public const string HornFailed = "personalvehicle.horn.failed";
+
+        public const string Explode = "personalvehicle.explode";
+
+        public const string ExplodeDescription = "personalvehicle.explode.desc";
+
+        public const string ExplodeConfirm = "personalvehicle.explode.confirm";
+
+        public const string Exploded = "personalvehicle.explode.done";
+
+        public const string ExplodeFailed = "personalvehicle.explode.failed";
     }
 }

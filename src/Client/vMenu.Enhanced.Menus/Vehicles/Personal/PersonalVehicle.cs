@@ -40,6 +40,12 @@ public static class PersonalVehicle
 
     public static bool HasPosition { get; private set; }
 
+    public static bool IsLocked { get; private set; }
+
+    public static bool IsEngineRunning { get; private set; }
+
+    public static int DoorMask { get; private set; }
+
     public static IReadOnlyList<string> Occupants => _occupants;
 
     public static bool BlipWanted =>
@@ -50,6 +56,9 @@ public static class PersonalVehicle
         API.OnNetEvent(PersonalVehicleEvents.Update, new Action<string>(OnUpdate), false);
         API.OnNetEvent(PersonalVehicleEvents.Lost, new Action(OnLost), false);
         API.OnNetEvent(PersonalVehicleEvents.Leave, new Action<int>(OnLeave), false);
+
+        RemoteVehicleExecutor.Initialize();
+        PersonalVehicleHorn.Initialize();
 
         ClientPermissions.PermissionsChanged += PersonalVehicleBlip.Reevaluate;
 
@@ -225,6 +234,93 @@ public static class PersonalVehicle
         }
     }
 
+    public static Task SetLockedAsync(bool locked) =>
+        RemoteAsync(
+            ActionIds.PersonalVehicle.SetLocked,
+            locked ? Loc.PersonalVehicle.Locked : Loc.PersonalVehicle.Unlocked,
+            Loc.PersonalVehicle.LockFailed,
+            locked ? RemoteVehicleAction.On : RemoteVehicleAction.Off);
+
+    public static Task SetEngineAsync(bool running) =>
+        RemoteAsync(
+            ActionIds.PersonalVehicle.SetEngine,
+            running ? Loc.PersonalVehicle.EngineStarted : Loc.PersonalVehicle.EngineStopped,
+            Loc.PersonalVehicle.EngineFailed,
+            running ? RemoteVehicleAction.On : RemoteVehicleAction.Off);
+
+    public static Task SetLightsAsync(int state) =>
+        RemoteAsync(
+            ActionIds.PersonalVehicle.SetLights,
+            Loc.PersonalVehicle.LightsSet,
+            Loc.PersonalVehicle.LightsFailed,
+            state.ToString(CultureInfo.InvariantCulture));
+
+    public static Task ToggleDoorAsync(int door) =>
+        RemoteAsync(
+            ActionIds.PersonalVehicle.SetDoor,
+            Loc.PersonalVehicle.DoorToggled,
+            Loc.PersonalVehicle.DoorFailed,
+            door.ToString(CultureInfo.InvariantCulture),
+            RemoteVehicleAction.Toggle);
+
+    public static Task SetAllDoorsAsync(bool open) =>
+        RemoteAsync(
+            ActionIds.PersonalVehicle.SetAllDoors,
+            open ? Loc.PersonalVehicle.DoorsOpened : Loc.PersonalVehicle.DoorsShut,
+            Loc.PersonalVehicle.DoorFailed,
+            open ? RemoteVehicleAction.Open : RemoteVehicleAction.Shut);
+
+    public static Task SetWindowAsync(int window, bool up) =>
+        RemoteAsync(
+            ActionIds.PersonalVehicle.SetWindow,
+            up ? Loc.PersonalVehicle.WindowUp : Loc.PersonalVehicle.WindowDown,
+            Loc.PersonalVehicle.WindowFailed,
+            window.ToString(CultureInfo.InvariantCulture),
+            up ? RemoteVehicleAction.Up : RemoteVehicleAction.Down);
+
+    public static Task SetAllWindowsAsync(bool up) =>
+        RemoteAsync(
+            ActionIds.PersonalVehicle.SetAllWindows,
+            up ? Loc.PersonalVehicle.WindowsUp : Loc.PersonalVehicle.WindowsDown,
+            Loc.PersonalVehicle.WindowFailed,
+            up ? RemoteVehicleAction.Up : RemoteVehicleAction.Down);
+
+    public static Task PlayHornTuneAsync() =>
+        RemoteAsync(
+            ActionIds.PersonalVehicle.PlayHornTune,
+            Loc.PersonalVehicle.HornPlayed,
+            Loc.PersonalVehicle.HornFailed);
+
+    public static async Task ExplodeAsync()
+    {
+        if (_busy || !Guarded())
+        {
+            return;
+        }
+
+        _busy = true;
+
+        try
+        {
+            var result = await ServerActions.InvokeAsync(ActionIds.PersonalVehicle.Explode);
+
+            if (!result.IsOk)
+            {
+                Notify(result.Status, Loc.PersonalVehicle.Gone, Loc.PersonalVehicle.ExplodeFailed);
+
+                return;
+            }
+
+            Release();
+
+            Notifications.Success(MenuText.Key(Loc.PersonalVehicle.Exploded));
+        }
+        finally
+        {
+            _busy = false;
+        }
+    }
+
     public static void SetWaypoint()
     {
         if (!Guarded())
@@ -242,6 +338,34 @@ public static class PersonalVehicle
         Native.SetNewWaypoint(Position.X, Position.Y);
 
         Notifications.Success(MenuText.Key(Loc.PersonalVehicle.WaypointSet));
+    }
+
+    private static async Task RemoteAsync(string actionId, string doneKey, string failedKey, params string[] args)
+    {
+        if (_busy || !Guarded())
+        {
+            return;
+        }
+
+        _busy = true;
+
+        try
+        {
+            var result = await ServerActions.InvokeAsync(actionId, args);
+
+            if (!result.IsOk)
+            {
+                Notify(result.Status, Loc.PersonalVehicle.Gone, failedKey);
+
+                return;
+            }
+
+            Notifications.Success(MenuText.Key(doneKey));
+        }
+        finally
+        {
+            _busy = false;
+        }
     }
 
     private static bool Guarded()
@@ -265,12 +389,28 @@ public static class PersonalVehicle
 
         var entity = Native.NetworkGetEntityFromNetworkId(networkId);
 
-        Model = entity != 0 && Native.DoesEntityExist(entity)
-            ? unchecked((uint)Native.GetEntityModel(entity))
-            : 0;
+        var live = entity != 0 && Native.DoesEntityExist(entity);
+
+        Model = live ? unchecked((uint)Native.GetEntityModel(entity)) : 0;
+        DoorMask = live ? DoorsOf(entity) : 0;
 
         PersonalVehicleBlip.Reevaluate();
         Changed?.Invoke();
+    }
+
+    private static int DoorsOf(int entity)
+    {
+        var mask = 0;
+
+        for (var door = 0; door < RemoteVehicleAction.DoorCount; door++)
+        {
+            if (Native.GetIsDoorValid(entity, door))
+            {
+                mask |= 1 << door;
+            }
+        }
+
+        return mask;
     }
 
     private static void Release()
@@ -278,6 +418,9 @@ public static class PersonalVehicle
         NetworkId = 0;
         HasPosition = false;
         Model = 0;
+        DoorMask = 0;
+        IsLocked = false;
+        IsEngineRunning = false;
         _occupants = NoOccupants;
 
         PersonalVehicleBlip.RemoveAll();
@@ -295,6 +438,8 @@ public static class PersonalVehicle
         Model = entry.Model;
         InRange = entry.InRange;
         HasPosition = true;
+        IsLocked = RemoteVehicleAction.IsLocked(entry.LockStatus);
+        IsEngineRunning = entry.EngineRunning;
         _occupants = PersonalVehicleRow.Occupants(entry.Occupants);
 
         PersonalVehicleBlip.Apply(entry.Heading);
@@ -341,6 +486,7 @@ public static class PersonalVehicle
             ActionStatus.NotFound => missingKey,
             ActionStatus.Refused => Loc.PersonalVehicle.NotSpawnedByYou,
             ActionStatus.RateLimited => Loc.PersonalVehicle.TooFast,
+            ActionStatus.NotReady => Loc.PersonalVehicle.NobodyNearby,
             _ => failedKey,
         }));
 }

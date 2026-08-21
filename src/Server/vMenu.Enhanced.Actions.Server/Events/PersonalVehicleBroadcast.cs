@@ -129,6 +129,8 @@ public static class PersonalVehicleBroadcast
             (int)Native.GetEntityHeading(entity),
             unchecked((uint)Native.GetEntityModel(entity)),
             inRange,
+            Native.GetVehicleDoorLockStatus(entity),
+            Native.GetIsVehicleEngineRunning(entity),
             names);
 
         API.EmitClient(owner, PersonalVehicleEvents.Update, row);

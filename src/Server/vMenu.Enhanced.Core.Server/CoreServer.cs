@@ -66,6 +66,7 @@ public class CoreServer : IScript
         WorldActions.Register();
         OnlinePlayerActions.Register();
         StaffAlertActions.Register();
+        RemoteVehicleControl.RegisterEventHandlers();
         ActionRegistry.RegisterEventHandlers();
 
         PedDeathBroadcast.Register();

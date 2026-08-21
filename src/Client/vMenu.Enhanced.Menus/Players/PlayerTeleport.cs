@@ -2,6 +2,8 @@ using System.Numerics;
 
 using CitizenFX.FiveM.Client;
 
+using vMenu.Enhanced.Menus.Vehicles;
+
 namespace vMenu.Enhanced.Menus.Players;
 
 internal static class PlayerTeleport
@@ -13,8 +15,6 @@ internal static class PlayerTeleport
     private const float LoadSceneRadius = 50f;
 
     private const int FadeMs = 500;
-
-    private const int VehicleStreamTimeoutMs = 3000;
 
     private const int DriverSeat = -1;
 
@@ -33,7 +33,7 @@ internal static class PlayerTeleport
             return false;
         }
 
-        var vehicle = await ResolveAsync(networkId);
+        var vehicle = await NetworkEntity.ResolveAsync(networkId);
 
         if (vehicle == 0)
         {
@@ -48,28 +48,6 @@ internal static class PlayerTeleport
         Native.SetPedIntoVehicle(ped.Handle, vehicle, seat);
 
         return true;
-    }
-
-    private static async Task<int> ResolveAsync(int networkId)
-    {
-        var started = Native.GetGameTimer();
-
-        while (Native.GetGameTimer() - started < VehicleStreamTimeoutMs)
-        {
-            if (Native.NetworkDoesNetworkIdExist(networkId))
-            {
-                var vehicle = Native.NetworkGetEntityFromNetworkId(networkId);
-
-                if (vehicle != 0 && Native.DoesEntityExist(vehicle))
-                {
-                    return vehicle;
-                }
-            }
-
-            await API.Delay(0);
-        }
-
-        return 0;
     }
 
     private static int? FreeSeat(int vehicle)

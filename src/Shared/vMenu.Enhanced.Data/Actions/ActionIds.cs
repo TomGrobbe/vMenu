@@ -27,6 +27,24 @@ public static class ActionIds
         public const string Delete = "PersonalVehicle.Delete";
 
         public const string KickOccupants = "PersonalVehicle.KickOccupants";
+
+        public const string SetLocked = "PersonalVehicle.SetLocked";
+
+        public const string SetEngine = "PersonalVehicle.SetEngine";
+
+        public const string SetLights = "PersonalVehicle.SetLights";
+
+        public const string SetDoor = "PersonalVehicle.SetDoor";
+
+        public const string SetAllDoors = "PersonalVehicle.SetAllDoors";
+
+        public const string SetWindow = "PersonalVehicle.SetWindow";
+
+        public const string SetAllWindows = "PersonalVehicle.SetAllWindows";
+
+        public const string PlayHornTune = "PersonalVehicle.PlayHornTune";
+
+        public const string Explode = "PersonalVehicle.Explode";
     }
 
     public static class WeatherOptions

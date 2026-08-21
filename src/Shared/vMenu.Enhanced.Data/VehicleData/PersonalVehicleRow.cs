@@ -3,7 +3,17 @@ using System.Text;
 
 namespace vMenu.Enhanced.Data.VehicleData;
 
-public sealed class PersonalVehicleEntry(int networkId, float x, float y, float z, int heading, uint model, bool inRange, string occupants)
+public sealed class PersonalVehicleEntry(
+    int networkId,
+    float x,
+    float y,
+    float z,
+    int heading,
+    uint model,
+    bool inRange,
+    int lockStatus,
+    bool engineRunning,
+    string occupants)
 {
     public int NetworkId { get; } = networkId;
 
@@ -19,6 +29,10 @@ public sealed class PersonalVehicleEntry(int networkId, float x, float y, float 
 
     public bool InRange { get; } = inRange;
 
+    public int LockStatus { get; } = lockStatus;
+
+    public bool EngineRunning { get; } = engineRunning;
+
     public string Occupants { get; } = occupants;
 }
 
@@ -28,7 +42,7 @@ public static class PersonalVehicleRow
 
     public const char OccupantSeparator = (char)30;
 
-    private const int FieldCount = 8;
+    private const int FieldCount = 10;
 
     public static string Format(
         int networkId,
@@ -38,6 +52,8 @@ public static class PersonalVehicleRow
         int heading,
         uint model,
         bool inRange,
+        int lockStatus,
+        bool engineRunning,
         IReadOnlyList<string> occupants)
     {
         var row = new StringBuilder();
@@ -48,7 +64,9 @@ public static class PersonalVehicleRow
             .Append(Round(z)).Append(FieldSeparator)
             .Append(heading.ToString(CultureInfo.InvariantCulture)).Append(FieldSeparator)
             .Append(model.ToString(CultureInfo.InvariantCulture)).Append(FieldSeparator)
-            .Append(inRange ? '1' : '0').Append(FieldSeparator);
+            .Append(inRange ? '1' : '0').Append(FieldSeparator)
+            .Append(lockStatus.ToString(CultureInfo.InvariantCulture)).Append(FieldSeparator)
+            .Append(engineRunning ? '1' : '0').Append(FieldSeparator);
 
         for (var index = 0; index < occupants.Count; index++)
         {
@@ -82,12 +100,23 @@ public static class PersonalVehicleRow
             || !int.TryParse(fields[2], NumberStyles.Integer, CultureInfo.InvariantCulture, out var y)
             || !int.TryParse(fields[3], NumberStyles.Integer, CultureInfo.InvariantCulture, out var z)
             || !int.TryParse(fields[4], NumberStyles.Integer, CultureInfo.InvariantCulture, out var heading)
-            || !uint.TryParse(fields[5], NumberStyles.Integer, CultureInfo.InvariantCulture, out var model))
+            || !uint.TryParse(fields[5], NumberStyles.Integer, CultureInfo.InvariantCulture, out var model)
+            || !int.TryParse(fields[7], NumberStyles.Integer, CultureInfo.InvariantCulture, out var lockStatus))
         {
             return null;
         }
 
-        return new PersonalVehicleEntry(networkId, x, y, z, heading, model, fields[6] == "1", fields[7]);
+        return new PersonalVehicleEntry(
+            networkId,
+            x,
+            y,
+            z,
+            heading,
+            model,
+            fields[6] == "1",
+            lockStatus,
+            fields[8] == "1",
+            fields[9]);
     }
 
     public static List<string> Occupants(string? packed)
