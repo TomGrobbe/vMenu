@@ -18,6 +18,15 @@ public readonly struct CycleResolution(WeatherType current, WeatherType next, do
     public double GameHoursUntilNext { get; } = gameHoursUntilNext;
 }
 
+public readonly struct ForecastEntry(WeatherType type, double gameHoursUntilStart, double gameHoursLong)
+{
+    public WeatherType Type { get; } = type;
+
+    public double GameHoursUntilStart { get; } = gameHoursUntilStart;
+
+    public double GameHoursLong { get; } = gameHoursLong;
+}
+
 /// <summary>
 /// GTA Online's weather schedule: 55 blocks over 384 in-game hours, anchored to the Unix epoch.
 /// </summary>
@@ -219,17 +228,7 @@ public static class WeatherCycle
     {
         var position = GameClock.Mod(cycleGameHours, GameClock.GameHoursPerCycle);
 
-        var index = Entries.Length - 1;
-
-        for (var i = 0; i < Entries.Length; i++)
-        {
-            if (Entries[i].GameHour > position)
-            {
-                index = i - 1;
-
-                break;
-            }
-        }
+        var index = IndexAt(position);
 
         var current = Entries[index].Type;
 
@@ -255,6 +254,63 @@ public static class WeatherCycle
         }
 
         return new CycleResolution(current, current, GameClock.GameHoursPerCycle);
+    }
+
+    public static IReadOnlyList<ForecastEntry> Forecast(double cycleGameHours, int count)
+    {
+        if (count <= 0)
+        {
+            return [];
+        }
+
+        var position = GameClock.Mod(cycleGameHours, GameClock.GameHoursPerCycle);
+        var index = IndexAt(position);
+        var previous = Entries[index].Type;
+        var boundaries = new List<ForecastEntry>(count + 1);
+
+        for (var step = 1; step <= Entries.Length * (count + 1) && boundaries.Count <= count; step++)
+        {
+            var entry = Entries[(index + step) % Entries.Length];
+
+            if (entry.Type == previous)
+            {
+                continue;
+            }
+
+            previous = entry.Type;
+
+            var wraps = (index + step) / Entries.Length;
+
+            boundaries.Add(new ForecastEntry(
+                entry.Type,
+                entry.GameHour + (wraps * GameClock.GameHoursPerCycle) - position,
+                0.0));
+        }
+
+        var forecast = new List<ForecastEntry>(count);
+
+        for (var i = 0; i + 1 < boundaries.Count && forecast.Count < count; i++)
+        {
+            forecast.Add(new ForecastEntry(
+                boundaries[i].Type,
+                boundaries[i].GameHoursUntilStart,
+                boundaries[i + 1].GameHoursUntilStart - boundaries[i].GameHoursUntilStart));
+        }
+
+        return forecast;
+    }
+
+    private static int IndexAt(double position)
+    {
+        for (var i = 0; i < Entries.Length; i++)
+        {
+            if (Entries[i].GameHour > position)
+            {
+                return i - 1;
+            }
+        }
+
+        return Entries.Length - 1;
     }
 
     /// <summary>Checks the table against every structural property the schedule is known to have.</summary>

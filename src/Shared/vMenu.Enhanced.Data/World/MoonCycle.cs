@@ -1,5 +1,17 @@
 namespace vMenu.Enhanced.Data.World;
 
+public enum MoonPhase
+{
+    New,
+    WaxingCrescent,
+    FirstQuarter,
+    WaxingGibbous,
+    Full,
+    WaningGibbous,
+    LastQuarter,
+    WaningCrescent,
+}
+
 /// <summary>Where the moon sits in its cycle, which follows from the in-game date and nothing else.</summary>
 // GTA offsets the moon's angle by PI * ((fmod(cycleTime, 55) - 27) / 27), where cycleTime is whole
 // days since 1 January 2000 plus the fraction of the current day. Everything here is that one
@@ -33,19 +45,31 @@ public static class MoonCycle
     /// <summary>How much of the disc is lit, 0 at new and 1 at full.</summary>
     public static double Illumination(double cycleDays) => (1.0 + Math.Cos(Radians(cycleDays))) / 2.0;
 
-    public static string NameOf(double cycleDays)
+    public static MoonPhase PhaseOf(double cycleDays)
     {
         var waxing = DayOfCycle(cycleDays) < FullMoonDay;
 
         return Illumination(cycleDays) switch
         {
-            < 0.03 => "new moon",
-            < 0.47 => waxing ? "waxing crescent" : "waning crescent",
-            <= 0.53 => waxing ? "first quarter" : "last quarter",
-            <= 0.97 => waxing ? "waxing gibbous" : "waning gibbous",
-            _ => "full moon",
+            < 0.03 => MoonPhase.New,
+            < 0.47 => waxing ? MoonPhase.WaxingCrescent : MoonPhase.WaningCrescent,
+            <= 0.53 => waxing ? MoonPhase.FirstQuarter : MoonPhase.LastQuarter,
+            <= 0.97 => waxing ? MoonPhase.WaxingGibbous : MoonPhase.WaningGibbous,
+            _ => MoonPhase.Full,
         };
     }
+
+    public static string NameOf(double cycleDays) => PhaseOf(cycleDays) switch
+    {
+        MoonPhase.New => "new moon",
+        MoonPhase.WaxingCrescent => "waxing crescent",
+        MoonPhase.FirstQuarter => "first quarter",
+        MoonPhase.WaxingGibbous => "waxing gibbous",
+        MoonPhase.Full => "full moon",
+        MoonPhase.WaningGibbous => "waning gibbous",
+        MoonPhase.LastQuarter => "last quarter",
+        _ => "waning crescent",
+    };
 
     /// <summary>1 January 1970 was a Thursday, which is where a week counted in Unix days starts.</summary>
     public static string WeekdayOf(long unixDay) => Weekdays[(int)GameClock.Mod(unixDay + 3, 7)];

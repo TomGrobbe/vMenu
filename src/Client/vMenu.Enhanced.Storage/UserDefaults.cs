@@ -138,6 +138,13 @@ public static class UserDefaults
 
     #endregion
 
+    #region World
+
+    public static BoolDefault WorldWeatherForecast { get; } =
+        new("worldWeatherForecast") { Default = false };
+
+    #endregion
+
     #region Teleport
 
     /// <summary>What the teleport key does: 0 nothing, 1 to the waypoint, 2 to typed coordinates.</summary>
@@ -262,6 +269,8 @@ public static class UserDefaults
 
         VehicleSpawnerSpawnInside,
         VehicleSpawnerReplacePrevious,
+
+        WorldWeatherForecast,
 
         WeaponsUnlimitedAmmo,
         WeaponsNoReload,

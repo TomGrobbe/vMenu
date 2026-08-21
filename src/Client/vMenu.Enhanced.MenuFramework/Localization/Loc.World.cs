@@ -63,6 +63,50 @@ public static partial class Loc
 
         public const string Failed = "world.failed";
 
+        public const string Forecast = "world.forecast";
+
+        public const string ForecastDescription = "world.forecast.desc";
+
+        public const string ForecastTitle = "world.forecast.title";
+
+        public const string ForecastNow = "world.forecast.now";
+
+        public const string ForecastNext = "world.forecast.next";
+
+        public const string ForecastForced = "world.forecast.forced";
+
+        public const string ForecastMoon = "world.forecast.moon";
+
+        public const string ForecastNoClock = "world.forecast.noclock";
+
+        public const string MoonPhaseNew = "world.moonphase.new";
+
+        public const string MoonPhaseWaxingCrescent = "world.moonphase.waxingcrescent";
+
+        public const string MoonPhaseFirstQuarter = "world.moonphase.firstquarter";
+
+        public const string MoonPhaseWaxingGibbous = "world.moonphase.waxinggibbous";
+
+        public const string MoonPhaseFull = "world.moonphase.full";
+
+        public const string MoonPhaseWaningGibbous = "world.moonphase.waninggibbous";
+
+        public const string MoonPhaseLastQuarter = "world.moonphase.lastquarter";
+
+        public const string MoonPhaseWaningCrescent = "world.moonphase.waningcrescent";
+
+        public static string MoonPhaseName(MoonPhase phase) => phase switch
+        {
+            MoonPhase.New => MoonPhaseNew,
+            MoonPhase.WaxingCrescent => MoonPhaseWaxingCrescent,
+            MoonPhase.FirstQuarter => MoonPhaseFirstQuarter,
+            MoonPhase.WaxingGibbous => MoonPhaseWaxingGibbous,
+            MoonPhase.Full => MoonPhaseFull,
+            MoonPhase.WaningGibbous => MoonPhaseWaningGibbous,
+            MoonPhase.LastQuarter => MoonPhaseLastQuarter,
+            _ => MoonPhaseWaningCrescent,
+        };
+
         public const string WeatherClear = "world.weathername.clear";
 
         public const string WeatherExtraSunny = "world.weathername.extrasunny";

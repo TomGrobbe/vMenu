@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="staff-alerts.css">
     <link rel="stylesheet" href="ticks.css">
     <link rel="stylesheet" href="speedometer.css">
+    <link rel="stylesheet" href="forecast.css">
 </head>
 
 <body>
@@ -31,7 +32,10 @@
     <div id="toasts"></div>
 
     <!-- Somebody asking for help outranks a notification, so it sits over the top of one. -->
-    <div id="staff-alerts"></div>
+    <div id="hud-top">
+        <div id="staff-alerts"></div>
+        <div id="forecast"></div>
+    </div>
 
     <!-- Last, so the debugging overlay stays readable over both the prompt and the notifications. -->
     <div id="ticks"></div>
@@ -42,6 +46,7 @@
     <script src="staff-alerts.js"></script>
     <script src="ticks.js"></script>
     <script src="speedometer.js"></script>
+    <script src="forecast.js"></script>
 </body>
 
 </html>

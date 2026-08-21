@@ -11,6 +11,7 @@ using vMenu.Enhanced.Data.World;
 using vMenu.Enhanced.MenuFramework;
 using vMenu.Enhanced.MenuFramework.Localization;
 using vMenu.Enhanced.Menus.World;
+using vMenu.Enhanced.Storage;
 using vMenu.Enhanced.Ticks;
 
 using TimeOptionsPermissions = vMenu.Enhanced.Data.Permissions.Menus.TimeOptions;
@@ -32,6 +33,9 @@ public sealed class WorldMenu : MenuDefinition
 
     private static readonly MenuGate TimeAllowed =
         MenuGate.Setting(TimeOptionsSettings.Enabled) & MenuGate.Permission(TimeOptionsPermissions.SetTime);
+
+    private static readonly MenuGate ForecastAllowed =
+        MenuGate.Setting(WeatherOptionsSettings.Enabled) & MenuGate.Permission(WeatherOptionsPermissions.Forecast);
 
     private static readonly TimePresetOptions Presets = new();
 
@@ -84,6 +88,15 @@ public sealed class WorldMenu : MenuDefinition
                     WeatherOptionsSettings.TransitionSeconds,
                     MenuText.Key(Loc.World.WeatherName(type)));
             },
+        });
+
+        menu.Entries.Add(new CheckboxEntry
+        {
+            Text = MenuText.Key(Loc.World.Forecast),
+            Description = MenuText.Key(Loc.World.ForecastDescription),
+            Gate = ForecastAllowed,
+            ReadState = () => UserDefaults.WorldWeatherForecast.Value,
+            OnChanged = changed => WeatherForecast.SetEnabled(changed.Checked),
         });
 
         menu.Entries.Add(new ButtonEntry

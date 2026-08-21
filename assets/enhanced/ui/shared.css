@@ -32,3 +32,18 @@ body {
 html {
     font-size: clamp(13px, 1.6vh, 40px);
 }
+
+#hud-top {
+    position: fixed;
+    top: 3%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 34%;
+
+    /* So it stays readable on an ultrawide, where a third of the screen is a very long line. */
+    max-width: 32rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    pointer-events: none;
+}

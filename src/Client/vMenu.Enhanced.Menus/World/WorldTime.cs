@@ -66,12 +66,14 @@ public static class WorldTime
             : $"vMenu set day {_shownDay} of the {MoonCycle.PeriodDays} day loop, " +
               $"game reports day {GameDayNow() - MoonCycle.EpochDay}";
 
+    public static double MoonCycleDays => GameDayNow() - MoonCycle.EpochDay + FractionOfDayNow();
+
     /// <summary>Where the moon is, worked out from the date the game is holding right now.</summary>
     // Read back out of the natives rather than from _shownDay, for the same reason Describe is: this
     // is the number the sky is actually being drawn from, not the one vMenu believes it sent.
     public static string DescribeMoon()
     {
-        var cycleDays = GameDayNow() - MoonCycle.EpochDay + FractionOfDayNow();
+        var cycleDays = MoonCycleDays;
 
         return $"{MoonCycle.DayOfCycle(cycleDays).ToString("0.##", CultureInfo.InvariantCulture)} of " +
             $"{MoonCycle.CycleDays.ToString("0", CultureInfo.InvariantCulture)} days through the cycle, " +

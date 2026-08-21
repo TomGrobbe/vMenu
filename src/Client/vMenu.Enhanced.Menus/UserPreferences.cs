@@ -6,6 +6,7 @@ using vMenu.Enhanced.Logging;
 using vMenu.Enhanced.MenuFramework;
 using vMenu.Enhanced.MenuFramework.Localization;
 using vMenu.Enhanced.Menus.Misc;
+using vMenu.Enhanced.Menus.World;
 using vMenu.Enhanced.Storage;
 using vMenu.Enhanced.Ticks;
 
@@ -35,6 +36,8 @@ public static class UserPreferences
         TickOverlay.Restore();
 
         Speedometer.Restore();
+
+        WeatherForecast.Restore();
     }
 
     /// <summary>Whether the menu is currently right aligned. The live value, not the stored one.</summary>

@@ -7,5 +7,6 @@ public static class WorldSync
         WorldState.Initialize();
         WorldTime.Initialize();
         WorldWeather.Initialize();
+        WeatherForecast.Initialize();
     }
 }

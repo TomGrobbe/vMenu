@@ -4,14 +4,7 @@
    asking for help, and it has to be seen rather than noticed.
 */
 #staff-alerts {
-    position: fixed;
-    top: 3%;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 34%;
-
-    /* So it stays readable on an ultrawide, where a third of the screen is a very long line. */
-    max-width: 32rem;
+    width: 100%;
     display: flex;
     flex-direction: column;
     gap: 0.4rem;
