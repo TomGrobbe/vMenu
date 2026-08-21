@@ -132,6 +132,7 @@ public sealed class Main : IScript
         MinimapControls.Initialize();
         FingerPointing.Initialize();
         Speedometer.Initialize();
+        LocationDisplay.Initialize();
         PlayerPresence.Initialize();
         PlayerBlipsDebugCommands.Initialize();
 

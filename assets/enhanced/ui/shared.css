@@ -33,6 +33,23 @@ html {
     font-size: clamp(13px, 1.6vh, 40px);
 }
 
+#hud-left {
+    /*
+       Every one of these is overwritten by the client, which is the only side that can see where the
+       minimap starts and ends. The values here are the 16:9 defaults, in case a message ever arrives
+       without an anchor.
+    */
+    position: fixed;
+    left: 2%;
+    bottom: 20%;
+    width: 14%;
+    min-width: 12rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    pointer-events: none;
+}
+
 #hud-top {
     position: fixed;
     top: 3%;

@@ -42,21 +42,6 @@
     let paused = false;
 
     /*
-       Written per message rather than per frame: the client only recalculates where the map ends
-       when it has something to say, so this is the one moment the anchor can have changed.
-    */
-    function place(anchor) {
-        if (!anchor || typeof anchor.left !== "number" || typeof anchor.bottom !== "number" || typeof anchor.width !== "number") {
-            return;
-        }
-
-        // Flush with the minimap's own edges, so the two read as one column.
-        listEl.style.left = `${(anchor.left * 100).toFixed(3)}%`;
-        listEl.style.width = `${(anchor.width * 100).toFixed(3)}%`;
-        listEl.style.bottom = `calc(${(anchor.bottom * 100).toFixed(3)}% + 0.5rem)`;
-    }
-
-    /*
        Translates GTA's text tokens to markup. The strings these come from are also drawn by MenuAPI
        as item descriptions, where the game renders the tokens itself, so they stay in the strings and
        are dealt with here instead. Anything not understood — a HUD colour name, a game placeholder —
@@ -293,8 +278,6 @@
         if (text.length === 0) {
             return;
         }
-
-        place(data.anchor);
 
         const key = keyFor(style, footer, text);
         const repeat = tracked.get(key);

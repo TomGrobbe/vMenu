@@ -19,12 +19,6 @@ public static class Notifications
 
     public const int SpawnDurationMs = 4000;
 
-    // Measured off the game's own HUD. No native reports either, the map being a scaleform rather
-    // than a HUD component whose size could be asked for.
-    private const float MinimapHeight = 1f / 5.674f;
-
-    private const float BigmapHeight = 1f / 2.35f;
-
     private const int VisibilityCheckMs = 500;
 
     /// <summary>Thirty seconds of waiting for a spawn, after which the message is shown regardless.</summary>
@@ -169,32 +163,9 @@ public static class Notifications
         }
     }
 
-    /// <summary>The box the stack grows out of, as fractions of the screen, lined up with the minimap.</summary>
-    private static (float Left, float Bottom, float Width) Anchor()
-    {
-        // Halved because the safe zone is split between two opposite edges. The figure MenuAPI and
-        // the legacy HUD both position by.
-        var inset = (1f - Native.GetSafeZoneSize()) / 2f;
-
-        var map = Native.IsRadarHidden()
-            ? 0f
-            : Native.IsBigmapActive() ? BigmapHeight : MinimapHeight;
-
-        return (inset, inset + map, MinimapWidth());
-    }
-
-    // Always the unexpanded width, even under the big map, because a notification as wide as the
-    // expanded map would be a banner across the screen.
-    private static float MinimapWidth()
-    {
-        var aspect = Native.GetScreenAspectRatio(false);
-
-        return aspect > 0f ? 1f / (4f * aspect) : 1f / 4f;
-    }
-
     private static string BuildMessage(string style, string text, int durationMs, string? source, bool paused)
     {
-        var (left, bottom, width) = Anchor();
+        var (left, bottom, width) = HudAnchor.AboveMinimap();
 
         return ClientJson.Serialize(new NotifyMessage
         {
@@ -205,15 +176,12 @@ public static class Notifications
             Paused = paused,
             Anchor = new AnchorBox
             {
-                Left = Fraction(left),
-                Bottom = Fraction(bottom),
-                Width = Fraction(width),
+                Left = HudAnchor.Fraction(left),
+                Bottom = HudAnchor.Fraction(bottom),
+                Width = HudAnchor.Fraction(width),
             },
         });
     }
-
-    /// <summary>Drops the float noise a screen measurement carries past what the page lays out.</summary>
-    private static float Fraction(float value) => MathF.Round(value, 5);
 
     private sealed class NotifyMessage
     {

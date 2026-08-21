@@ -12,10 +12,13 @@
     <link rel="stylesheet" href="ticks.css">
     <link rel="stylesheet" href="speedometer.css">
     <link rel="stylesheet" href="forecast.css">
+    <link rel="stylesheet" href="location.css">
 </head>
 
 <body>
     <div id="speedometer"></div>
+
+    <div id="coordinates"></div>
 
     <div id="scrim">
         <div id="panel">
@@ -29,7 +32,10 @@
     <div id="transfer"></div>
 
     <!-- After the prompt and the transfer panel, so a notification is never buried under a scrim. -->
-    <div id="toasts"></div>
+    <div id="hud-left">
+        <div id="toasts"></div>
+        <div id="location"></div>
+    </div>
 
     <!-- Somebody asking for help outranks a notification, so it sits over the top of one. -->
     <div id="hud-top">
@@ -40,6 +46,7 @@
     <!-- Last, so the debugging overlay stays readable over both the prompt and the notifications. -->
     <div id="ticks"></div>
 
+    <script src="hud.js"></script>
     <script src="input.js"></script>
     <script src="transfer.js"></script>
     <script src="notifications.js"></script>
@@ -47,6 +54,7 @@
     <script src="ticks.js"></script>
     <script src="speedometer.js"></script>
     <script src="forecast.js"></script>
+    <script src="location.js"></script>
 </body>
 
 </html>

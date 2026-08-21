@@ -90,6 +90,26 @@ public static partial class Loc
 
         public const string PlayerBlipsDescription = "miscsettings.playerblips.desc";
 
+        public const string LocationDisplay = "miscsettings.locationdisplay";
+
+        public const string LocationDisplayDescription = "miscsettings.locationdisplay.desc";
+
+        public const string LocationNear = "miscsettings.locationdisplay.near";
+
+        public const string CompassNorth = "miscsettings.compass.north";
+
+        public const string CompassEast = "miscsettings.compass.east";
+
+        public const string CompassSouth = "miscsettings.compass.south";
+
+        public const string CompassWest = "miscsettings.compass.west";
+
+        public const string CoordinatesDisplay = "miscsettings.coordinatesdisplay";
+
+        public const string CoordinatesDisplayDescription = "miscsettings.coordinatesdisplay.desc";
+
+        public const string CoordinatesHeading = "miscsettings.coordinatesdisplay.heading";
+
         public const string OverheadNames = "miscsettings.overheadnames";
 
         public const string OverheadNamesDescription = "miscsettings.overheadnames.desc";

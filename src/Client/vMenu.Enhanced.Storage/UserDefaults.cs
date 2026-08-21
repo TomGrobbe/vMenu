@@ -63,6 +63,12 @@ public static class UserDefaults
     public static IntDefault MiscSpeedometerPosition { get; } =
         new("miscSpeedometerPosition") { Default = 0 };
 
+    public static BoolDefault MiscShowLocation { get; } =
+        new("miscShowLocation") { Default = false };
+
+    public static BoolDefault MiscShowCoordinates { get; } =
+        new("miscShowCoordinates") { Default = false };
+
     #endregion
 
     #region Player Options
@@ -243,6 +249,8 @@ public static class UserDefaults
         MiscHideStaffAlerts,
         MiscSpeedometer,
         MiscSpeedometerPosition,
+        MiscShowLocation,
+        MiscShowCoordinates,
 
         PlayerGodMode,
         PlayerSuperJump,

@@ -101,6 +101,24 @@ public sealed class MiscSettingsMenu : MenuDefinition
             OnIndexChanged = changed => Speedometer.Position = changed.NewIndex,
         });
 
+        menu.Entries.Add(new CheckboxEntry
+        {
+            Text = MenuText.Key(Loc.MiscSettings.LocationDisplay),
+            Description = MenuText.Key(Loc.MiscSettings.LocationDisplayDescription),
+            Gate = MiscSettingsPermissions.ShowLocation,
+            ReadState = () => UserDefaults.MiscShowLocation.Value,
+            OnChanged = changed => LocationDisplay.SetShowLocation(changed.Checked),
+        });
+
+        menu.Entries.Add(new CheckboxEntry
+        {
+            Text = MenuText.Key(Loc.MiscSettings.CoordinatesDisplay),
+            Description = MenuText.Key(Loc.MiscSettings.CoordinatesDisplayDescription),
+            Gate = MiscSettingsPermissions.ShowCoordinates,
+            ReadState = () => UserDefaults.MiscShowCoordinates.Value,
+            OnChanged = changed => LocationDisplay.SetShowCoordinates(changed.Checked),
+        });
+
         menu.Entries.Add(new ListEntry
         {
             Text = MenuText.Key(Loc.MiscSettings.MinimapAction),

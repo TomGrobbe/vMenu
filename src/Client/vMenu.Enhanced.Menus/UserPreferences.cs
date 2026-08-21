@@ -37,6 +37,8 @@ public static class UserPreferences
 
         Speedometer.Restore();
 
+        LocationDisplay.Restore();
+
         WeatherForecast.Restore();
     }
 
