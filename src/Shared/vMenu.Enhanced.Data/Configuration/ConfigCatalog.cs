@@ -56,6 +56,16 @@ public static class ConfigCatalog
             OnlinePlayerSettings.ActionLimitSeconds,
         ]),
         new("Join and Leave", [JoinLeaveSettings.LogToConsole]),
+        new("Player Stats",
+        [
+            PlayerStats.MaxShooting,
+            PlayerStats.MaxStrength,
+            PlayerStats.MaxStamina,
+            PlayerStats.MaxStealth,
+            PlayerStats.MaxFlying,
+            PlayerStats.MaxDriving,
+            PlayerStats.MaxLungCapacity,
+        ]),
         new("Vehicle Options",
         [
             VehicleOptions.DeleteVehicleDistance,

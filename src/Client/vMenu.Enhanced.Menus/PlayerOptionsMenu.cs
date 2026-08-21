@@ -94,15 +94,6 @@ public sealed class PlayerOptionsMenu : MenuDefinition
 
         menu.Entries.Add(new CheckboxEntry
         {
-            Text = MenuText.Key(Loc.PlayerOptions.UnlimitedStamina),
-            Description = MenuText.Key(Loc.PlayerOptions.UnlimitedStaminaDescription),
-            Gate = PlayerOptionsPermissions.UnlimitedStamina,
-            ReadState = () => PlayerUnlimitedStamina.Enabled,
-            OnChanged = changed => PlayerUnlimitedStamina.SetEnabled(changed.Checked),
-        });
-
-        menu.Entries.Add(new CheckboxEntry
-        {
             Text = MenuText.Key(Loc.PlayerOptions.UnlimitedOxygen),
             Description = MenuText.Key(Loc.PlayerOptions.UnlimitedOxygenDescription),
             Gate = PlayerOptionsPermissions.UnlimitedOxygen,
@@ -192,6 +183,17 @@ public sealed class PlayerOptionsMenu : MenuDefinition
             Description = MenuText.Key(Loc.PlayerOptions.WetPlayerDescription),
             Gate = PlayerOptionsPermissions.WetPlayer,
             OnSelected = _ => PlayerActions.WetClothes(),
+        });
+
+        menu.Entries.Add(Group(Loc.PlayerOptions.GroupStats, Loc.PlayerOptions.GroupStatsDescription));
+
+        menu.Entries.Add(new SubmenuEntry
+        {
+            Text = MenuText.Key(Loc.PlayerOptions.MpStats),
+            Description = MenuText.Key(Loc.PlayerOptions.MpStatsDescription),
+            LockedDescription = MenuText.Key(Loc.PlayerOptions.MpStatsLocked),
+            MenuSubtitle = MenuText.Key(Loc.PlayerOptions.MpStatsSubtitle),
+            Definition = new MpStatsMenu(),
         });
 
         menu.Entries.Add(Group(Loc.PlayerOptions.GroupScenarios, Loc.PlayerOptions.GroupScenariosDescription));

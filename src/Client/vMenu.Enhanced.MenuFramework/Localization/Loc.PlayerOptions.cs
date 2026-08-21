@@ -26,9 +26,43 @@ public static partial class Loc
 
         public const string FastSwimDescription = "playeroptions.fastswim.desc";
 
-        public const string UnlimitedStamina = "playeroptions.unlimitedstamina";
+        public const string MpStats = "playeroptions.mpstats";
 
-        public const string UnlimitedStaminaDescription = "playeroptions.unlimitedstamina.desc";
+        public const string MpStatsDescription = "playeroptions.mpstats.desc";
+
+        public const string MpStatsSubtitle = "playeroptions.mpstats.subtitle";
+
+        public const string MpStatsLocked = "playeroptions.mpstats.locked";
+
+        public const string MpStatsLimited = "playeroptions.mpstats.limited";
+
+        public const string StatShooting = "playeroptions.mpstats.shooting";
+
+        public const string StatShootingDescription = "playeroptions.mpstats.shooting.desc";
+
+        public const string StatStrength = "playeroptions.mpstats.strength";
+
+        public const string StatStrengthDescription = "playeroptions.mpstats.strength.desc";
+
+        public const string StatStamina = "playeroptions.mpstats.stamina";
+
+        public const string StatStaminaDescription = "playeroptions.mpstats.stamina.desc";
+
+        public const string StatStealth = "playeroptions.mpstats.stealth";
+
+        public const string StatStealthDescription = "playeroptions.mpstats.stealth.desc";
+
+        public const string StatFlying = "playeroptions.mpstats.flying";
+
+        public const string StatFlyingDescription = "playeroptions.mpstats.flying.desc";
+
+        public const string StatDriving = "playeroptions.mpstats.driving";
+
+        public const string StatDrivingDescription = "playeroptions.mpstats.driving.desc";
+
+        public const string StatLungCapacity = "playeroptions.mpstats.lungcapacity";
+
+        public const string StatLungCapacityDescription = "playeroptions.mpstats.lungcapacity.desc";
 
         public const string UnlimitedOxygen = "playeroptions.unlimitedoxygen";
 
@@ -139,6 +173,10 @@ public static partial class Loc
         public const string GroupAppearance = "playeroptions.group.appearance";
 
         public const string GroupAppearanceDescription = "playeroptions.group.appearance.desc";
+
+        public const string GroupStats = "playeroptions.group.stats";
+
+        public const string GroupStatsDescription = "playeroptions.group.stats.desc";
 
         public const string GroupScenarios = "playeroptions.group.scenarios";
 

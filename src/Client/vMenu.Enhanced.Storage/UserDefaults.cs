@@ -86,7 +86,19 @@ public static class UserDefaults
 
     public static BoolDefault PlayerFastSwim { get; } = new("playerFastSwim") { Default = false };
 
-    public static BoolDefault PlayerUnlimitedStamina { get; } = new("playerUnlimitedStamina") { Default = false };
+    public static IntDefault PlayerStatShooting { get; } = new("playerStatShooting") { Default = 100 };
+
+    public static IntDefault PlayerStatStrength { get; } = new("playerStatStrength") { Default = 100 };
+
+    public static IntDefault PlayerStatStamina { get; } = new("playerStatStamina") { Default = 100 };
+
+    public static IntDefault PlayerStatStealth { get; } = new("playerStatStealth") { Default = 100 };
+
+    public static IntDefault PlayerStatFlying { get; } = new("playerStatFlying") { Default = 100 };
+
+    public static IntDefault PlayerStatDriving { get; } = new("playerStatDriving") { Default = 100 };
+
+    public static IntDefault PlayerStatLungCapacity { get; } = new("playerStatLungCapacity") { Default = 100 };
 
     public static BoolDefault PlayerUnlimitedOxygen { get; } = new("playerUnlimitedOxygen") { Default = false };
 
@@ -256,7 +268,13 @@ public static class UserDefaults
         PlayerSuperJump,
         PlayerFastRun,
         PlayerFastSwim,
-        PlayerUnlimitedStamina,
+        PlayerStatShooting,
+        PlayerStatStrength,
+        PlayerStatStamina,
+        PlayerStatStealth,
+        PlayerStatFlying,
+        PlayerStatDriving,
+        PlayerStatLungCapacity,
         PlayerUnlimitedOxygen,
         PlayerNoRagdoll,
         PlayerInvisible,

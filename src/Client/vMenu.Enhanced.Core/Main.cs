@@ -103,7 +103,7 @@ public sealed class Main : IScript
         PlayerSuperJump.Initialize();
         PlayerFastRun.Initialize();
         PlayerFastSwim.Initialize();
-        PlayerUnlimitedStamina.Initialize();
+        MpStats.Initialize();
         PlayerUnlimitedOxygen.Initialize();
         PlayerNoRagdoll.Initialize();
         PlayerInvisible.Initialize();

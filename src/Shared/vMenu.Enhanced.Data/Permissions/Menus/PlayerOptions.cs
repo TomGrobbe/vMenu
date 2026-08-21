@@ -26,7 +26,7 @@ public static class PlayerOptions
 
     public const string FastSwim = "vMenu.Enhanced.Menus.PlayerOptions.FastSwim";
 
-    public const string UnlimitedStamina = "vMenu.Enhanced.Menus.PlayerOptions.UnlimitedStamina";
+    public const string MpStats = "vMenu.Enhanced.Menus.PlayerOptions.MpStats";
 
     public const string UnlimitedOxygen = "vMenu.Enhanced.Menus.PlayerOptions.UnlimitedOxygen";
 
