@@ -755,10 +755,11 @@ public sealed class OnlinePlayersMenu : MenuDefinition
     }
 
     /// <summary>
-    /// The selected player, once it is somebody other than the player doing the selecting.
+    /// The selected player, refusing the person doing the selecting unless the action allows them.
     /// </summary>
-    // The server refuses these on itself anyway. Checking here only turns a generic refusal into a
-    // sentence that says what actually happened.
+    // Summon and teleporting into somebody's vehicle are the two the server still refuses on yourself,
+    // so for those this only turns a generic refusal into a sentence that says what actually happened.
+    // Everything else passes allowSelf and is not refused on either side.
     private OnlinePlayer? Target(bool allowSelf = false)
     {
         if (_selected is not { } player)
