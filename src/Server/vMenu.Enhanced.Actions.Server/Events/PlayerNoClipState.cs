@@ -2,12 +2,12 @@ using CitizenFX.FiveM.Server;
 using CitizenFX.FiveM.Server.Entities;
 using CitizenFX.FiveM.Shared.Serialization;
 
+using vMenu.Enhanced.Data.Permissions;
 using vMenu.Enhanced.Data.PlayerState;
 using vMenu.Enhanced.Logging;
 using vMenu.Enhanced.Permissions.Server;
 using vMenu.Enhanced.Serialization.Server;
 
-using MiscSettingsPermissions = vMenu.Enhanced.Data.Permissions.Menus.MiscSettings;
 
 namespace vMenu.Enhanced.Actions.Server.Events;
 
@@ -64,7 +64,7 @@ public static class PlayerNoClipState
         // Somebody without the permission cannot be in noclip, so a claim that they are is either a
         // stale message from a revoke or somebody trying it on. Either way the answer is the same:
         // they are visible. Not logged as a warning, because a revoke racing a toggle is normal.
-        if (active && !ServerPermissions.IsPlayerAllowed(source, MiscSettingsPermissions.NoClip))
+        if (active && !ServerPermissions.IsPlayerAllowed(source, Global.NoClip))
         {
             active = false;
         }

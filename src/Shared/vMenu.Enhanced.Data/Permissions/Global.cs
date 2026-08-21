@@ -16,4 +16,6 @@ public static class Global
     /// </summary>
     [StaffOnly]
     public const string Staff = "vMenu.Enhanced.Staff";
+
+    public const string NoClip = "vMenu.Enhanced.NoClip";
 }

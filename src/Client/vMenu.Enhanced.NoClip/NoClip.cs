@@ -1,7 +1,7 @@
 using CitizenFX.FiveM.Client;
 using CitizenFX.FiveM.Shared;
 
-using vMenu.Enhanced.Data.Permissions.Menus;
+using vMenu.Enhanced.Data.Permissions;
 using vMenu.Enhanced.Data.PlayerState;
 using vMenu.Enhanced.Data.Ticks;
 using vMenu.Enhanced.MenuFramework;
@@ -59,7 +59,7 @@ public static class NoClip
 
     public static bool IsActive => NoclipActive;
 
-    private static bool IsAllowed => ClientPermissions.IsAllowed(MiscSettings.NoClip);
+    private static bool IsAllowed => ClientPermissions.IsAllowed(Global.NoClip);
 
     private static int _noclipEntity;
     private static int _noclipPed;
