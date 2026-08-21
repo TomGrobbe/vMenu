@@ -182,13 +182,14 @@ public sealed class PlayerAppearanceMenu : MenuDefinition
 
         return rows.Count > 0
             ? rows
-            : [
+            : new List<MenuEntry>
+            {
                 new ButtonEntry
                 {
                     Text = MenuText.Key(Loc.PlayerAppearance.Empty),
                     Description = MenuText.Key(Loc.PlayerAppearance.EmptyDescription),
                 },
-            ];
+            };
     }
 
     /// <summary>
