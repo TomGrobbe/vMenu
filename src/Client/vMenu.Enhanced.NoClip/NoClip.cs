@@ -30,9 +30,9 @@ public static class NoClip
     private static readonly (float Multiplier, string Label)[] MoveSpeeds =
     [
         (0.1f, "1"),
-        (0.5f, "2"),
-        (1.0f, "3"),
-        (1.5f, "4"),
+        (0.25f, "2"),
+        (0.75f, "3"),
+        (1.15f, "4"),
         (2.5f, "5"),
         (5.5f, "6"),
         (8.5f, "7"),
