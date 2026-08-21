@@ -85,6 +85,14 @@ public sealed class VehicleSpawnerMenu : MenuDefinition
 
     protected override void Build(MenuBuilder menu)
     {
+        menu.Entries.Add(new ButtonEntry
+        {
+            Text = MenuText.Key(Loc.VehicleSpawner.SpawnByName),
+            Description = MenuText.Key(Loc.VehicleSpawner.SpawnByNameDescription),
+            Gate = VehicleSpawnerPermissions.SpawnByName,
+            OnSelectedAsync = _ => SpawnByNameAsync(),
+        });
+
         menu.Entries.Add(new SubmenuEntry
         {
             Text = MenuText.Key(Loc.VehicleSpawner.SpawnByCategory),
@@ -92,14 +100,6 @@ public sealed class VehicleSpawnerMenu : MenuDefinition
             MenuTitle = MenuText.Key(Loc.VehicleSpawner.Title),
             MenuSubtitle = MenuText.Key(Loc.VehicleSpawner.SpawnByCategorySubtitle),
             Build = BuildCategoryList,
-        });
-
-        menu.Entries.Add(new ButtonEntry
-        {
-            Text = MenuText.Key(Loc.VehicleSpawner.SpawnByName),
-            Description = MenuText.Key(Loc.VehicleSpawner.SpawnByNameDescription),
-            Gate = VehicleSpawnerPermissions.SpawnByName,
-            OnSelectedAsync = _ => SpawnByNameAsync(),
         });
 
         menu.Entries.Add(new CheckboxEntry
