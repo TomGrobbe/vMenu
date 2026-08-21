@@ -2,7 +2,6 @@ using System.Globalization;
 
 using CitizenFX.FiveM.Client;
 using CitizenFX.FiveM.Client.Extensions;
-using CitizenFX.FiveM.Shared.Data;
 
 using vMenu.Enhanced.Actions;
 using vMenu.Enhanced.Configuration;

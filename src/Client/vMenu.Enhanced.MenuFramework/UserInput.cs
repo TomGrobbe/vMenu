@@ -1,6 +1,6 @@
-using CitizenFX.FiveM.Client;
-
 using System.Text.Json.Serialization;
+
+using CitizenFX.FiveM.Client;
 
 using MenuAPI;
 

@@ -4,7 +4,6 @@ using System.Numerics;
 using CitizenFX.FiveM.Client;
 using CitizenFX.FiveM.Client.Entities;
 using CitizenFX.FiveM.Client.Extensions;
-using CitizenFX.FiveM.Shared.Data;
 
 using vMenu.Enhanced.Configuration;
 using vMenu.Enhanced.MenuFramework;

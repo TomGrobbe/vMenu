@@ -230,7 +230,7 @@ public static class JoinLeaveBroadcast
         Record(player.ServerId, player.Name, "joined the server");
     }
 
-    
+
     // Whether this server id still belongs to the person it was recorded for.
     private static bool StillTheSamePerson(
         List<ConnectedPlayer> players,
@@ -271,7 +271,7 @@ public static class JoinLeaveBroadcast
         return false;
     }
 
-    
+
     // Somebody still on the loading screen holds a server id without having a character yet, that's the difference between connecting and having arrived.
     private static bool HasArrived(string handle)
     {
@@ -348,7 +348,7 @@ public static class JoinLeaveBroadcast
         }
     }
 
-    
+
     private static void OnPlayerDropped([FromSource] int source, string? reason = null)
     {
         if (!_reportedDrop)

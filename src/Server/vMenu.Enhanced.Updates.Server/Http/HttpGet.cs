@@ -1,5 +1,3 @@
-using System.Net.Http;
-
 namespace vMenu.Enhanced.Updates.Server.Http;
 
 /// <summary>
