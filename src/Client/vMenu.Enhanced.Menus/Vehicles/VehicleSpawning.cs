@@ -150,6 +150,13 @@ public static class VehicleSpawning
 
         var clearance = (Math.Abs((spawnedMin - spawnedMax).Y) / 2) + 1f;
 
+        var replace = VehicleSpawnOptions.ReplacePrevious;
+
+        if (currentVehicle is not null && replace && currentVehicle.GetPedInVehicleSeat(-1, false) == ped.Handle)
+        {
+            return currentVehicle.Position;
+        }
+
         if (currentVehicle is null)
         {
             return Native.GetOffsetFromEntityInWorldCoords(ped.Handle, 0f, clearance + 2f, 0f);
