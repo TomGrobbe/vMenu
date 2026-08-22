@@ -154,6 +154,7 @@ public static class NativeFixer
     /// "Unsupported type" on a null one. <see cref="StringArg" /> is the only push that carries a
     /// null pointer through.
     /// </remarks>
+    // Reached only through StateBags.Watch, which is not used yet
     public static int AddStateBagChangeHandler(string? keyName, string? bagName, Delegate handler)
     {
         // Same registry as AddConvarChangeListener, for the same reason.

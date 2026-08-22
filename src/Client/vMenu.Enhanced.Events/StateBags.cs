@@ -45,6 +45,7 @@ public static class StateBags
     public static string LocalPlayerBag => PlayerBag(Native.GetPlayerServerId(Native.PlayerId()));
 
     /// <summary>The server id a bag name belongs to, or null when it is not a player bag.</summary>
+    // Not being used yet.
     public static int? PlayerFromBag(string bagName) =>
         bagName.StartsWith(PlayerBagPrefix, StringComparison.Ordinal)
         && int.TryParse(
@@ -111,6 +112,7 @@ public static class StateBags
     /// <see cref="Get{T}" />, where the caller knows what type it wants, costs one native call on an
     /// event that fires rarely and cannot guess wrong.
     /// </remarks>
+    // Watch and StopWatching are not being used yet.
     public static int Watch(string? key, string? bagName, Action<string, string> handler)
     {
         try
