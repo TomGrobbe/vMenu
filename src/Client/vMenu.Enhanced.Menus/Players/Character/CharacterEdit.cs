@@ -91,7 +91,7 @@ internal static class CharacterEdit
 
         FreemodeWriter.ApplyExpression(Ped, draft.FacialExpression);
 
-        Log.Trace($"[Character] Facial expression set to '{draft.FacialExpression}'.");
+        Log.Debug($"[Character] Facial expression set to '{draft.FacialExpression}'.");
     }
 
     private const int ExpressionRenewMs = 1000;

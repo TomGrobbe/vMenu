@@ -56,7 +56,7 @@ public static class ClientJson
     {
         if (Failure is null)
         {
-            Log.Trace($"[Json] System.Text.Json is working, escaping with {_encoderName}.");
+            Log.Debug($"[Json] System.Text.Json is working, escaping with {_encoderName}.");
 
             return;
         }

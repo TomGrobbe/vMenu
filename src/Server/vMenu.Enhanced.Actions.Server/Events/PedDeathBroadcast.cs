@@ -39,7 +39,7 @@ public static class PedDeathBroadcast
         {
             _reported = true;
 
-            Log.Trace(
+            Log.Debug(
                 $"[Deaths] onPedDeath is firing. First one: entity {entity}, attacker {attacker}, "
                 + $"cause {cause}, entity is a player: {Native.IsPedAPlayer(victimPed)}.");
         }
@@ -65,7 +65,7 @@ public static class PedDeathBroadcast
             killer = null;
         }
 
-        Log.Trace(
+        Log.Debug(
             $"[Deaths] {victim.Name} ({victim.ServerId}) died. "
             + $"Attacker entity {attackerPed}, killer {killer?.Name ?? "none"}, cause {cause}.");
 

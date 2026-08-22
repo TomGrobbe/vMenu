@@ -393,7 +393,7 @@ public static class OnlineOutfitCatalogue
         {
             _baseGameDropped++;
 
-            Log.Trace($"[Outfits] Skipping base game piece {pending.Drawable} for slot {pending.Slot}: only the game can say which drawable that is.");
+            Log.Debug($"[Outfits] Skipping base game piece {pending.Drawable} for slot {pending.Slot}: only the game can say which drawable that is.");
 
             return null;
         }
@@ -420,7 +420,7 @@ public static class OnlineOutfitCatalogue
 
         if (drawable >= Native.GetNumberOfPedDrawableVariations(ped, PedComponentSlots.Undershirt))
         {
-            Log.Trace($"[Outfits] This ped has no drawable {drawable} for the undershirt, so one was not added.");
+            Log.Debug($"[Outfits] This ped has no drawable {drawable} for the undershirt, so one was not added.");
 
             return;
         }

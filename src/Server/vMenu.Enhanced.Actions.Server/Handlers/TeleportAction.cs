@@ -333,7 +333,7 @@ public static class TeleportActions
 
             Categories.Add(category);
 
-            Log.Trace($"[Teleport] Category '{category.Name}' holds {category.Locations.Count} location(s).");
+            Log.Debug($"[Teleport] Category '{category.Name}' holds {category.Locations.Count} location(s).");
         }
 
         _payload = ServerJson.Serialize(Categories);

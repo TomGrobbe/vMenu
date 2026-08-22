@@ -355,7 +355,7 @@ public static class JoinLeaveBroadcast
         {
             _reportedDrop = true;
 
-            Log.Trace($"[JoinLeave] {DroppedEvent} is firing. First one: source {source}, reason \"{reason}\".");
+            Log.Debug($"[JoinLeave] {DroppedEvent} is firing. First one: source {source}, reason \"{reason}\".");
         }
 
         // An unparseable source arrives as -1, and there is nobody to record a reason against.

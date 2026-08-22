@@ -294,7 +294,7 @@ public static class ClothingPresetActions
 
             Categories.Add(category);
 
-            Log.Trace($"[Presets] Category '{category.Name}' holds {category.Presets.Count} outfit(s).");
+            Log.Debug($"[Presets] Category '{category.Name}' holds {category.Presets.Count} outfit(s).");
         }
 
         _payload = ServerJson.Serialize(Categories);

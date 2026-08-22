@@ -78,6 +78,6 @@ public static class PlayerNoClipState
 
         ServerStateBags.SetPlayer(source.Handle, PlayerStateKeys.NoClip, active);
 
-        Log.Trace($"[NoClip] {source.Name} ({source.Handle}) is {(active ? "now" : "no longer")} noclipping.");
+        Log.Debug($"[NoClip] {source.Name} ({source.Handle}) is {(active ? "now" : "no longer")} noclipping.");
     }
 }

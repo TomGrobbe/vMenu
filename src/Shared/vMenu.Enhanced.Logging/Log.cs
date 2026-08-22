@@ -6,7 +6,7 @@ namespace vMenu.Enhanced.Logging;
 
 public static class Log
 {
-    public const string LevelNames = "Trace, Debug or Info";
+    public const string LevelNames = "Debug or Info";
 
     public static LogLevel Level { get; private set; } = LogLevel.Info;
 
@@ -37,9 +37,6 @@ public static class Log
     {
         switch (text?.Trim().ToLowerInvariant())
         {
-            case "trace":
-                level = LogLevel.Trace;
-                return true;
             case "debug":
                 level = LogLevel.Debug;
                 return true;
@@ -49,22 +46,6 @@ public static class Log
             default:
                 level = LogLevel.Info;
                 return false;
-        }
-    }
-
-    public static void Trace(string message)
-    {
-        if (IsEnabled(LogLevel.Trace))
-        {
-            SharedAPI.Log.Trace(message);
-        }
-    }
-
-    public static void Trace([StringSyntax(StringSyntaxAttribute.CompositeFormat)] string format, params object?[] args)
-    {
-        if (IsEnabled(LogLevel.Trace))
-        {
-            SharedAPI.Log.Trace(format, args);
         }
     }
 
