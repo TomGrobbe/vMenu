@@ -3,14 +3,13 @@
     --location-accent: rgba(138, 190, 255, 0.9);
 }
 
+
 #location {
     width: 100%;
     display: none;
     flex-direction: column;
     gap: 0.1rem;
-    padding: 0.3rem 0.1rem 0.15rem;
     pointer-events: none;
-    text-shadow: 0 0.08rem 0.4rem rgba(0, 0, 0, 0.95), 0 0 0.15rem rgba(0, 0, 0, 0.8);
 }
 
 #location.shown {
@@ -97,11 +96,13 @@
     column-gap: 0.7rem;
     row-gap: 0.05rem;
     padding: 0.45rem 0.7rem 0.5rem;
-    border-radius: 0.5rem;
-    background: rgba(12, 14, 19, 0.3);
+    border-radius: var(--hud-panel-radius);
+    border: 1px solid var(--hud-panel-edge);
+    background: var(--hud-panel-bg);
+    box-shadow: var(--hud-panel-shadow);
     pointer-events: none;
     font-variant-numeric: tabular-nums;
-    text-shadow: 0 0.08rem 0.4rem rgba(0, 0, 0, 0.9);
+    text-shadow: var(--hud-panel-text-shadow);
 }
 
 #coordinates.shown {

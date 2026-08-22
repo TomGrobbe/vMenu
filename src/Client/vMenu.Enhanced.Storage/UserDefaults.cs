@@ -165,6 +165,9 @@ public static class UserDefaults
     public static BoolDefault WorldWeatherForecast { get; } =
         new("worldWeatherForecast") { Default = false };
 
+    public static IntDefault WorldWeatherForecastStyle { get; } =
+        new("worldWeatherForecastStyle") { Default = 0 };
+
     #endregion
 
     #region Teleport
@@ -303,6 +306,7 @@ public static class UserDefaults
         VehicleSpawnerReplacePrevious,
 
         WorldWeatherForecast,
+        WorldWeatherForecastStyle,
 
         WeaponsUnlimitedAmmo,
         WeaponsNoReload,

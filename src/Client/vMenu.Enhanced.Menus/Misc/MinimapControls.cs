@@ -221,15 +221,11 @@ public static class MinimapControls
     {
         if (ExpandWanted)
         {
-            Native.SetBigmapActive(true, false);
-
-            _expanded = true;
+            SetBigmap(true);
         }
         else if (_expanded)
         {
-            Native.SetBigmapActive(false, false);
-
-            _expanded = false;
+            SetBigmap(false);
         }
 
         GlideTo(ZoomWanted ? ZoomValue(ZoomAmount) : NoZoom);
@@ -265,10 +261,17 @@ public static class MinimapControls
         // asked for again rather than assumed to have stuck.
         if (ExpandWanted && !Native.IsRadarHidden() && !Native.IsBigmapActive())
         {
-            Native.SetBigmapActive(true, false);
-
-            _expanded = true;
+            SetBigmap(true);
         }
+    }
+
+    private static void SetBigmap(bool active)
+    {
+        Native.SetBigmapActive(active, false);
+
+        _expanded = active;
+
+        LocationDisplay.RefreshAnchor();
     }
 
     private static void GlideTo(float zoom)

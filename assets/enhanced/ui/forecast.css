@@ -41,6 +41,12 @@
     color: var(--forecast-accent);
 }
 
+#forecast .head .clock {
+    font-size: 0.82rem;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+}
+
 #forecast .moon {
     display: flex;
     align-items: center;
@@ -180,4 +186,66 @@
         opacity: 1;
         transform: none;
     }
+}
+
+#forecast-compact {
+    width: 100%;
+    display: none;
+    flex-direction: column;
+    gap: 0.1rem;
+    pointer-events: none;
+}
+
+#forecast-compact.shown {
+    display: flex;
+}
+
+#forecast-compact .line {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+#forecast-compact .line svg {
+    width: 1.15rem;
+    height: 1.15rem;
+    flex: none;
+    color: var(--forecast-accent);
+}
+
+#forecast-compact .line .what {
+    flex: 1 1 auto;
+    min-width: 0;
+    font-size: 0.85rem;
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+#forecast-compact .line .clock {
+    flex: none;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+#forecast-compact .next {
+    opacity: 0.78;
+}
+
+#forecast-compact .next svg {
+    width: 0.95rem;
+    height: 0.95rem;
+}
+
+#forecast-compact .next .what {
+    font-size: 0.72rem;
+    font-weight: 400;
+    color: var(--forecast-muted);
+}
+
+#forecast-compact .next .when {
+    flex: none;
+    font-size: 0.72rem;
+    color: var(--forecast-accent);
 }

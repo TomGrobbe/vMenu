@@ -12,13 +12,13 @@
     align-items: stretch;
     gap: 0.3rem;
     padding: 0.55rem 0.9rem 0.5rem;
-    border-radius: 0.7rem;
-    border: 1px solid rgba(255, 255, 255, 0.09);
-    background: rgba(12, 14, 19, 0.34);
-    box-shadow: 0 0.1rem 0.7rem rgba(0, 0, 0, 0.25);
+    border-radius: var(--hud-panel-radius);
+    border: 1px solid var(--hud-panel-edge);
+    background: var(--hud-panel-bg);
+    box-shadow: var(--hud-panel-shadow);
     pointer-events: none;
     font-variant-numeric: tabular-nums;
-    text-shadow: 0 0.08rem 0.35rem rgba(0, 0, 0, 0.85);
+    text-shadow: var(--hud-panel-text-shadow);
     transition: bottom 0.3s ease;
 }
 

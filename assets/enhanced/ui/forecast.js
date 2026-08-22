@@ -3,6 +3,8 @@
 (() => {
     const boxEl = document.getElementById("forecast");
 
+    const compactEl = document.getElementById("forecast-compact");
+
     const SVG = "http://www.w3.org/2000/svg";
 
     const CLOUD_MID = '<path d="M7.5 18h9.2a3.6 3.6 0 0 0 .3-7.2 5.2 5.2 0 0 0-9.9-1A3.6 3.6 0 0 0 7.5 18z"/>';
@@ -105,6 +107,10 @@
 
         row.appendChild(element("span", "name", data.title));
 
+        if (data.time) {
+            row.appendChild(element("span", "clock", data.time));
+        }
+
         const moon = element("div", "moon");
 
         moon.appendChild(moonIcon(data.moonLit, data.moonWaxing));
@@ -168,6 +174,37 @@
         }
     }
 
+    function renderCompact(data) {
+        compactEl.textContent = "";
+
+        const current = element("div", "line");
+
+        current.appendChild(weatherIcon(data.currentIcon));
+        current.appendChild(element("span", "what", data.currentName));
+        current.appendChild(element("span", "clock", data.time));
+
+        compactEl.appendChild(current);
+
+        const entry = Array.isArray(data.upcoming) ? data.upcoming[0] : undefined;
+
+        if (!entry) {
+            return;
+        }
+
+        const next = element("div", "line next");
+
+        next.appendChild(weatherIcon(entry.icon));
+        next.appendChild(element("span", "what", entry.name));
+        next.appendChild(element("span", "when", duration(entry.inSeconds)));
+
+        compactEl.appendChild(next);
+    }
+
+    function clear(target) {
+        target.classList.remove("shown");
+        target.textContent = "";
+    }
+
     window.addEventListener("message", event => {
         let data = event.data;
 
@@ -184,14 +221,22 @@
         }
 
         if (!data.visible) {
-            boxEl.classList.remove("shown");
-            boxEl.textContent = "";
+            clear(boxEl);
+            clear(compactEl);
 
             return;
         }
 
-        render(data);
+        const target = data.compact ? compactEl : boxEl;
 
-        boxEl.classList.add("shown");
+        clear(data.compact ? boxEl : compactEl);
+
+        if (data.compact) {
+            renderCompact(data);
+        } else {
+            render(data);
+        }
+
+        target.classList.add("shown");
     });
 })();

@@ -2,6 +2,29 @@
 
 (() => {
     const boxEl = document.getElementById("hud-left");
+    const infoEl = document.getElementById("hud-info");
+
+    function syncInfo() {
+        let any = false;
+
+        for (const child of infoEl.children) {
+            if (child.classList.contains("shown")) {
+                any = true;
+
+                break;
+            }
+        }
+
+        infoEl.classList.toggle("shown", any);
+    }
+
+    const watcher = new MutationObserver(syncInfo);
+
+    for (const child of infoEl.children) {
+        watcher.observe(child, { attributes: true, attributeFilter: ["class"] });
+    }
+
+    syncInfo();
 
     function place(anchor) {
         if (!anchor || typeof anchor.left !== "number" || typeof anchor.bottom !== "number" || typeof anchor.width !== "number") {

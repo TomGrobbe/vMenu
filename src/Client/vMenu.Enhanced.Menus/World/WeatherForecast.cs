@@ -5,6 +5,7 @@ using vMenu.Enhanced.Data.Ticks;
 using vMenu.Enhanced.Data.World;
 using vMenu.Enhanced.MenuFramework;
 using vMenu.Enhanced.MenuFramework.Localization;
+using vMenu.Enhanced.Menus.Misc;
 using vMenu.Enhanced.Permissions;
 using vMenu.Enhanced.Serialization;
 using vMenu.Enhanced.Storage;
@@ -20,6 +21,10 @@ public static class WeatherForecast
     private const long RefreshIntervalMs = 1000;
 
     private const int UpcomingCount = 3;
+
+    public const int Full = 0;
+
+    public const int Compact = 1;
 
     private const int Unknown = -1;
 
@@ -52,6 +57,11 @@ public static class WeatherForecast
 
     public static void Restore() => Reevaluate();
 
+    public static int Style =>
+        UserDefaults.WorldWeatherForecastStyle.Value == Compact ? Compact : Full;
+
+    public static bool CompactShown => Enabled && Style == Compact;
+
     public static void SetEnabled(bool enabled)
     {
         UserDefaults.WorldWeatherForecast.Value = enabled;
@@ -59,9 +69,18 @@ public static class WeatherForecast
         Reevaluate();
     }
 
+    public static void SetStyle(int style)
+    {
+        UserDefaults.WorldWeatherForecastStyle.Value = style;
+
+        Reevaluate();
+    }
+
     private static void Reevaluate()
     {
         _tick?.Reevaluate();
+
+        LocationDisplay.RefreshAnchor();
 
         if (!Enabled)
         {
@@ -116,11 +135,13 @@ public static class WeatherForecast
         var scheduled = WorldState.HasClock && forced is null;
         var speed = WorldState.TimeSpeed;
         var current = WorldState.Weather;
-        var upcoming = new List<ForecastRow>(UpcomingCount);
+        var compact = Style == Compact;
+        var wanted = compact ? 1 : UpcomingCount;
+        var upcoming = new List<ForecastRow>(wanted);
 
         if (scheduled)
         {
-            var entries = WeatherCycle.Forecast(GameClock.CycleGameHours(WorldState.UnixSeconds, speed), UpcomingCount);
+            var entries = WeatherCycle.Forecast(GameClock.CycleGameHours(WorldState.UnixSeconds, speed), wanted);
 
             foreach (var entry in entries)
             {
@@ -138,6 +159,8 @@ public static class WeatherForecast
 
         return new ForecastMessage
         {
+            Compact = compact,
+            Time = ClockText(),
             Title = localizer.Get(Loc.World.ForecastTitle),
             NowLabel = localizer.Get(Loc.World.ForecastNow),
             NextLabel = localizer.Get(Loc.World.ForecastNext),
@@ -154,6 +177,9 @@ public static class WeatherForecast
             MoonWaxing = MoonCycle.DayOfCycle(moonDays) < MoonCycle.FullMoonDay,
         };
     }
+
+    private static string ClockText() =>
+        TimeText.Format((Native.GetClockHours() * 3600) + (Native.GetClockMinutes() * 60));
 
     private static int RealSeconds(double gameHours, double speed) =>
         (int)Math.Round(gameHours * GameClock.RealSecondsPerGameHourAt(speed));
@@ -196,6 +222,10 @@ public static class WeatherForecast
         public string Type { get; } = "forecast";
 
         public bool Visible { get; } = true;
+
+        public required bool Compact { get; init; }
+
+        public required string Time { get; init; }
 
         public required string Title { get; init; }
 

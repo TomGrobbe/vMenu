@@ -79,6 +79,16 @@ public static partial class Loc
 
         public const string ForecastNoClock = "world.forecast.noclock";
 
+        public const string ForecastStyle = "world.forecast.style";
+
+        public const string ForecastStyleDescription = "world.forecast.style.desc";
+
+        public const string ForecastStyleLocked = "world.forecast.style.locked";
+
+        public const string ForecastStyleFull = "world.forecast.style.full";
+
+        public const string ForecastStyleCompact = "world.forecast.style.compact";
+
         public const string MoonPhaseNew = "world.moonphase.new";
 
         public const string MoonPhaseWaxingCrescent = "world.moonphase.waxingcrescent";

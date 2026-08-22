@@ -6,6 +6,7 @@ using CitizenFX.FiveM.Client;
 using vMenu.Enhanced.Data.Ticks;
 using vMenu.Enhanced.MenuFramework;
 using vMenu.Enhanced.MenuFramework.Localization;
+using vMenu.Enhanced.Menus.World;
 using vMenu.Enhanced.Permissions;
 using vMenu.Enhanced.Serialization;
 using vMenu.Enhanced.Storage;
@@ -51,6 +52,8 @@ public static class LocationDisplay
     public static bool ShowCoordinates =>
         UserDefaults.MiscShowCoordinates.Value && ClientPermissions.IsAllowed(MiscSettingsPermissions.ShowCoordinates);
 
+    private static bool AnchorWanted => ShowLocation || WeatherForecast.CompactShown;
+
     public static void Initialize()
     {
         _locationTick = TickRegistry.Register(
@@ -71,13 +74,23 @@ public static class LocationDisplay
             "Misc.LocationAnchor",
             FlushAnchor,
             TickRate.Every(AnchorIntervalMs),
-            () => ShowLocation,
+            () => AnchorWanted,
             autoStart: false);
 
         ClientPermissions.PermissionsChanged += Reevaluate;
     }
 
     public static void Restore() => Reevaluate();
+
+    public static void RefreshAnchor()
+    {
+        _anchorTick?.Reevaluate();
+
+        if (AnchorWanted)
+        {
+            FlushAnchor();
+        }
+    }
 
     public static void SetShowLocation(bool show)
     {

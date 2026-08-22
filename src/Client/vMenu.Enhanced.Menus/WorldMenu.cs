@@ -99,6 +99,21 @@ public sealed class WorldMenu : MenuDefinition
             OnChanged = changed => WeatherForecast.SetEnabled(changed.Checked),
         });
 
+        menu.Entries.Add(new ListEntry
+        {
+            Text = MenuText.Key(Loc.World.ForecastStyle),
+            Description = MenuText.Key(Loc.World.ForecastStyleDescription),
+            LockedDescription = MenuText.Key(Loc.World.ForecastStyleLocked),
+            Gate = ForecastAllowed & MenuGate.When(() => UserDefaults.WorldWeatherForecast.Value),
+            Options =
+            [
+                MenuText.Key(Loc.World.ForecastStyleFull),
+                MenuText.Key(Loc.World.ForecastStyleCompact),
+            ],
+            ReadSelectedIndex = () => WeatherForecast.Style,
+            OnIndexChanged = changed => WeatherForecast.SetStyle(changed.NewIndex),
+        });
+
         menu.Entries.Add(new ButtonEntry
         {
             Text = MenuText.Key(Loc.World.SetTime),
