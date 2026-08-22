@@ -52,6 +52,14 @@ public static partial class Loc
 
         public const string Washed = "vehicleoptions.wash.success";
 
+        public const string CycleSeat = "vehicleoptions.cycleseat";
+
+        public const string CycleSeatDescription = "vehicleoptions.cycleseat.desc";
+
+        public const string CycleSeatNoVehicle = "vehicleoptions.cycleseat.novehicle";
+
+        public const string CycleSeatNoFreeSeat = "vehicleoptions.cycleseat.nofreeseat";
+
         #region Shared by every modification section
 
         public const string NoVehicle = "vehicleoptions.novehicle";

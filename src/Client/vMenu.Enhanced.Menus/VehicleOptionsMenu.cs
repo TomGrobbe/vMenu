@@ -51,6 +51,15 @@ public sealed class VehicleOptionsMenu : MenuDefinition
             OnSelected = _ => VehicleWash.WashCurrent(),
         });
 
+        menu.Entries.Add(new ButtonEntry
+        {
+            Text = MenuText.Key(Loc.VehicleOptions.CycleSeat),
+            Description = MenuText.Key(Loc.VehicleOptions.CycleSeatDescription),
+            Gate = VehicleOptionsPermissions.CycleSeat,
+            ReadEnabled = () => VehicleSeatCycle.CanCycle,
+            OnSelected = _ => VehicleSeatCycle.CycleToNextFreeSeat(),
+        });
+
         menu.Entries.Add(new CheckboxEntry
         {
             Text = MenuText.Key(Loc.VehicleOptions.KeepClean),
