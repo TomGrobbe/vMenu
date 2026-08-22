@@ -13,6 +13,17 @@ public static class ActionIds
         public const string RemoveLocation = "TeleportMenu.RemoveLocation";
     }
 
+    public static class CharacterCreator
+    {
+        public const string AddPresetCategory = "CharacterCreator.AddPresetCategory";
+
+        public const string AddPreset = "CharacterCreator.AddPreset";
+
+        public const string RemovePresetCategory = "CharacterCreator.RemovePresetCategory";
+
+        public const string RemovePreset = "CharacterCreator.RemovePreset";
+    }
+
     public static class VehicleOptions
     {
         public const string DeleteVehicle = "VehicleOptions.DeleteVehicle";

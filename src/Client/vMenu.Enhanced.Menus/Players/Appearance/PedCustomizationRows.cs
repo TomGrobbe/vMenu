@@ -1,4 +1,4 @@
-using System.Globalization;
+﻿using System.Globalization;
 
 using CitizenFX.FiveM.Client;
 
@@ -7,6 +7,9 @@ using MenuAPI;
 using vMenu.Enhanced.MenuFramework;
 using vMenu.Enhanced.MenuFramework.Localization;
 
+using vMenu.Enhanced.Menus.Players.Appearance.Torso;
+
+using CharacterCreatorPermissions = vMenu.Enhanced.Data.Permissions.Menus.CharacterCreator;
 using PlayerAppearancePermissions = vMenu.Enhanced.Data.Permissions.Menus.PlayerAppearance;
 
 namespace vMenu.Enhanced.Menus.Players.Appearance;
@@ -27,6 +30,16 @@ namespace vMenu.Enhanced.Menus.Players.Appearance;
 /// </remarks>
 public static class PedCustomizationRows
 {
+    [Flags]
+    internal enum PedRows
+    {
+        Components = 1,
+
+        Props = 2,
+
+        Everything = Components | Props,
+    }
+
     /// <summary>Fills a menu and keeps it honest when the player comes back to it.</summary>
     /// <param name="scope">
     /// Asked again on every opening rather than taken once, because the collections menu points every
@@ -34,7 +47,12 @@ public static class PedCustomizationRows
     /// </param>
     // Refilled on open rather than built once, because the player can change ped model in another
     // menu entirely and come back to rows describing a wardrobe that is no longer theirs.
-    internal static void Attach(MenuBuilder menu, Func<PedVariationScope> scope)
+    internal static void Attach(
+        MenuBuilder menu,
+        Func<PedVariationScope> scope,
+        PedRows show = PedRows.Everything,
+        IReadOnlyList<int>? components = null,
+        bool fitTorso = false)
     {
         menu.InstructionalButtons.Add((Control.Duck, MenuText.Key(Loc.PlayerAppearance.ExactIdButton)));
 
@@ -47,39 +65,56 @@ public static class PedCustomizationRows
             (_, _) => _ = ExactIdForHighlightedAsync(menu, scope),
             true));
 
-        menu.AddRange(Rows(scope()));
+        menu.AddRange(Rows(scope(), show, components, fitTorso));
 
-        menu.OnOpened = _ => Refill(menu, Rows(scope()));
+        menu.OnOpened = _ => Refill(menu, Rows(scope(), show, components, fitTorso));
     }
 
-    internal static IReadOnlyList<MenuEntry> Rows(PedVariationScope scope)
+    internal static IReadOnlyList<MenuEntry> Rows(
+        PedVariationScope scope,
+        PedRows show = PedRows.Everything,
+        IReadOnlyList<int>? components = null,
+        bool fitTorso = false)
     {
         var ped = Native.PlayerPedId();
-
-        // Half of what a freemode ped is lives in the character creator, which is not ported yet, so
-        // dressing one here would leave it with a default grey face and no way to fix it.
-        if (PedSpawning.IsWearingFreemode())
-        {
-            return [Notice(Loc.PlayerAppearance.Freemode, Loc.PlayerAppearance.FreemodeDescription)];
-        }
-
         var rows = new List<MenuEntry>();
 
-        foreach (var slot in PedComponentSlots.All)
+        DynamicListEntry? torsoRow = null;
+        var redrawTorso = fitTorso ? () => RedrawTorso(scope, torsoRow) : (Action?)null;
+
+        if (show.HasFlag(PedRows.Components))
         {
-            if (scope.DrawableCount(ped, slot) > 0)
+            if (fitTorso && !scope.IsCollection)
             {
-                rows.Add(ComponentRow(scope, slot));
+                rows.Add(FitTorsoRow());
+            }
+
+            foreach (var slot in components ?? PedComponentSlots.All)
+            {
+                if (scope.DrawableCount(ped, slot) > 0)
+                {
+                    var row = ComponentRow(scope, slot, fitTorso, redrawTorso);
+
+                    if (slot == PedComponentSlots.Torso)
+                    {
+                        torsoRow = row;
+                    }
+
+                    rows.Add(row);
+                }
             }
         }
 
         var props = new List<MenuEntry>();
 
-        foreach (var slot in PedPropSlots.All)
+        if (show.HasFlag(PedRows.Props))
         {
-            if (scope.PropCount(ped, slot) > 0)
+            foreach (var slot in PedPropSlots.All)
             {
-                props.Add(PropRow(scope, slot));
+                if (scope.PropCount(ped, slot) > 0)
+                {
+                    props.Add(PropRow(scope, slot));
+                }
             }
         }
 
@@ -110,12 +145,15 @@ public static class PedCustomizationRows
 
     /// <summary>Which slot a row edits, kept on the item so a control handler can find it.</summary>
     // The handler fires for the menu rather than for a row, so the row it landed on has to be able to
-    // say what it is. ItemData is the escape hatch the framework keeps for exactly this.
-    private sealed class SlotReference(int slot, bool component)
+    internal sealed class SlotReference(int slot, bool component, bool fitTorso = false, Action? redrawTorso = null)
     {
         internal int Slot { get; } = slot;
 
         internal bool IsComponent { get; } = component;
+
+        internal bool FitTorso { get; } = fitTorso;
+
+        internal Action? RedrawTorso { get; } = redrawTorso;
     }
 
     private static async Task ExactIdForHighlightedAsync(MenuBuilder menu, Func<PedVariationScope> scope)
@@ -127,25 +165,37 @@ public static class PedCustomizationRows
             return;
         }
 
-        await AskForExactIdAsync(scope(), reference.Slot, item, reference.IsComponent);
+        await AskForExactIdAsync(
+            scope(),
+            reference.Slot,
+            item,
+            reference.IsComponent,
+            reference.FitTorso,
+            reference.RedrawTorso);
     }
 
     #region Component rows
 
-    private static DynamicListEntry ComponentRow(PedVariationScope scope, int slot)
+    private static DynamicListEntry ComponentRow(
+        PedVariationScope scope,
+        int slot,
+        bool fitTorso = false,
+        Action? redrawTorso = null)
     {
+        var fits = fitTorso && TorsoFit.Triggers(slot);
+
         return new DynamicListEntry
         {
             Text = MenuText.Key(PedComponentSlots.NameKey(slot)),
             Description = MenuText.From(() => ComponentDescription(scope, slot)),
             Gate = PlayerAppearancePermissions.Customize,
-            Configure = item => item.ItemData = new SlotReference(slot, component: true),
+            Configure = item => item.ItemData = new SlotReference(slot, component: true, fits, redrawTorso),
             ReadValue = () => ComponentValue(scope, slot),
 
             // Applied as it scrolls, which is the only way to see what you are choosing.
             Change = changing =>
             {
-                Shift(scope, slot, changing.Left, component: true);
+                Shift(scope, slot, changing.Left, component: true, fits, redrawTorso);
 
                 // A description is only rewritten on a refresh pass, and scrolling is not one, so the
                 // numbers underneath would sit a step behind what the row is showing.
@@ -154,7 +204,7 @@ public static class PedCustomizationRows
                 return ComponentValue(scope, slot);
             },
 
-            OnSelected = selected => ComponentSelected(scope, slot, selected.Item),
+            OnSelected = selected => ComponentSelected(scope, slot, selected.Item, fits, redrawTorso),
         };
     }
 
@@ -196,7 +246,12 @@ public static class PedCustomizationRows
             scope.TextureCount(ped, slot, drawable));
     }
 
-    private static void ComponentSelected(PedVariationScope scope, int slot, MenuDynamicListItem item)
+    private static void ComponentSelected(
+        PedVariationScope scope,
+        int slot,
+        MenuDynamicListItem item,
+        bool fitTorso = false,
+        Action? redrawTorso = null)
     {
         var ped = Native.PlayerPedId();
 
@@ -209,7 +264,11 @@ public static class PedCustomizationRows
             PedVariationScope.CurrentTexture(ped, slot),
             scope.TextureCount(ped, slot, drawable));
 
+        var before = TorsoFit.Before(ped, fitTorso);
+
         scope.SetComponent(ped, slot, drawable, texture, PedVariationScope.CurrentPalette(ped, slot));
+
+        TorsoFit.Apply(before, slot, redrawTorso);
 
         // Selecting is not a refresh, so nothing re-reads the row on its own and the texture number
         // would sit on whatever it said before while the ped already wore the new one.
@@ -375,7 +434,13 @@ public static class PedCustomizationRows
     /// Components have no such thing: every one of them is always showing something.
     /// </para>
     /// </remarks>
-    private static void Shift(PedVariationScope scope, int slot, bool left, bool component)
+    private static void Shift(
+        PedVariationScope scope,
+        int slot,
+        bool left,
+        bool component,
+        bool fitTorso = false,
+        Action? redrawTorso = null)
     {
         var ped = Native.PlayerPedId();
         var count = component ? scope.DrawableCount(ped, slot) : scope.PropCount(ped, slot);
@@ -402,7 +467,11 @@ public static class PedCustomizationRows
 
         if (component)
         {
+            var before = TorsoFit.Before(ped, fitTorso);
+
             scope.SetComponent(ped, slot, next, 0, PedVariationScope.CurrentPalette(ped, slot));
+
+            TorsoFit.Apply(before, slot, redrawTorso);
 
             return;
         }
@@ -431,7 +500,9 @@ public static class PedCustomizationRows
         PedVariationScope scope,
         int slot,
         MenuDynamicListItem item,
-        bool component)
+        bool component,
+        bool fitTorso = false,
+        Action? redrawTorso = null)
     {
         var ped = Native.PlayerPedId();
         var count = component ? scope.DrawableCount(ped, slot) : scope.PropCount(ped, slot);
@@ -472,7 +543,11 @@ public static class PedCustomizationRows
 
         if (component)
         {
+            var before = TorsoFit.Before(ped, fitTorso);
+
             scope.SetComponent(ped, slot, drawable, 0, PedVariationScope.CurrentPalette(ped, slot));
+
+            TorsoFit.Apply(before, slot, redrawTorso);
 
             Redraw(item, ComponentValue(scope, slot), ComponentDescription(scope, slot));
 
@@ -492,6 +567,28 @@ public static class PedCustomizationRows
         item.CurrentItem = value;
         item.Description = description;
     }
+
+    private static void RedrawTorso(PedVariationScope scope, DynamicListEntry? torsoRow)
+    {
+        if (torsoRow?.Typed is not { } item)
+        {
+            return;
+        }
+
+        Redraw(
+            item,
+            ComponentValue(scope, PedComponentSlots.Torso),
+            ComponentDescription(scope, PedComponentSlots.Torso));
+    }
+
+    private static CheckboxEntry FitTorsoRow() => new()
+    {
+        Text = MenuText.Key(Loc.CharacterCreator.FitTorso),
+        Description = MenuText.Key(Loc.CharacterCreator.FitTorsoDescription),
+        Gate = CharacterCreatorPermissions.Create,
+        ReadState = () => TorsoFit.IsEnabled,
+        OnChanged = changed => TorsoFit.SetEnabled(changed.Checked),
+    };
 
     private static MenuText CollectionName(PedVariationScope scope) => scope.CollectionName.Length == 0
         ? MenuText.Key(Loc.PlayerAppearance.BaseCollection)

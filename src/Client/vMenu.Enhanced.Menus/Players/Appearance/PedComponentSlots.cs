@@ -37,6 +37,9 @@ public static class PedComponentSlots
 
     public static readonly int[] All = [Head, Mask, Hair, Torso, Legs, Bags, Shoes, Neck, Undershirt, Armour, Decals, Tops];
 
+    public static readonly int[] Clothing =
+        [Mask, Torso, Legs, Bags, Shoes, Neck, Undershirt, Armour, Decals, Tops];
+
     /// <summary>What the menu calls this slot.</summary>
     public static string NameKey(int slot) => slot switch
     {

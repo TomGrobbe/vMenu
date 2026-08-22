@@ -146,9 +146,7 @@ public static partial class Loc
 
         public const string EmptyDescription = "playerappearance.empty.desc";
 
-        public const string Freemode = "playerappearance.freemode";
 
-        public const string FreemodeDescription = "playerappearance.freemode.desc";
 
         public const string VisorHint = "playerappearance.visorhint";
 

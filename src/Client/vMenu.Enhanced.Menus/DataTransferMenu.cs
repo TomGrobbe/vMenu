@@ -66,6 +66,7 @@ public sealed class DataTransferMenu : MenuDefinition
                 ("total", Number(inventory.Total)),
                 ("vehicles", Number(inventory.Vehicles)),
                 ("peds", Number(inventory.Peds)),
+                ("characters", Number(inventory.Characters)),
                 ("loadouts", Number(inventory.Loadouts)),
                 ("settings", Number(inventory.Settings)));
 

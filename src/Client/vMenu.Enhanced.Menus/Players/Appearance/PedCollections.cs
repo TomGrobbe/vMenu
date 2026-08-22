@@ -34,4 +34,22 @@ internal static class PedCollections
 
         return collections;
     }
+
+    internal static bool Has(int ped, string name)
+    {
+        if (name.Length == 0)
+        {
+            return true;
+        }
+
+        for (var index = Native.GetPedCollectionsCount(ped) - 1; index >= 0; index--)
+        {
+            if (string.Equals(Native.GetPedCollectionName(ped, index), name, StringComparison.Ordinal))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }

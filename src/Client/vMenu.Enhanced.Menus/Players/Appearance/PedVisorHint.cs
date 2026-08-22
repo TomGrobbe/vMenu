@@ -28,20 +28,7 @@ public static class PedVisorHint
             return;
         }
 
-        var drawable = Native.GetPedPropIndex(ped, slot, false);
-
-        if (drawable < 0)
-        {
-            return;
-        }
-
-        var texture = Native.GetPedPropTextureIndex(ped, slot);
-
-        // A helmet with a visor is one the game has an alternate version of, which is exactly what
-        // the variant count answers. A plain hat has none.
-        var prop = (uint)Native.GetHashNameForProp(ped, slot, drawable, texture);
-
-        if (Native.GetShopPedApparelVariantPropCount(prop) <= 0)
+        if (!VisorToggle.HasVisor(ped))
         {
             return;
         }

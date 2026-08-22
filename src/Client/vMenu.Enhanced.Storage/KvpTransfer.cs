@@ -10,6 +10,8 @@ public static class KvpTransfer
 
     private const string PedPrefix = "vmenu_ped_";
 
+    private const string CharacterPrefix = "vmenu_mpchar_";
+
     private const string LoadoutPrefix = "vmenu_weaponloadout_";
 
     public static KvpBundle Export()
@@ -78,6 +80,10 @@ public static class KvpTransfer
             else if (key.StartsWith(PedPrefix, StringComparison.Ordinal))
             {
                 inventory.Peds++;
+            }
+            else if (key.StartsWith(CharacterPrefix, StringComparison.Ordinal))
+            {
+                inventory.Characters++;
             }
             else if (key.StartsWith(LoadoutPrefix, StringComparison.Ordinal))
             {

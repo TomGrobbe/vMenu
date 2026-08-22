@@ -32,6 +32,29 @@ public static class NativeFixer
         MessagePackSerializer.Deserialize<int[]>(
             Native.GetGamePool(poolName), MessagePackSerializerOptions.Standard);
 
+    public static List<(uint Collection, uint Overlay)> GetPedDecorations(int ped)
+    {
+        var raw = MessagePackSerializer.Deserialize<long[][]?>(
+            Native.GetPedDecorations(ped), MessagePackSerializerOptions.Standard);
+
+        var decorations = new List<(uint, uint)>();
+
+        if (raw is null)
+        {
+            return decorations;
+        }
+
+        foreach (var pair in raw)
+        {
+            if (pair is { Length: >= 2 })
+            {
+                decorations.Add(((uint)pair[0], (uint)pair[1]));
+            }
+        }
+
+        return decorations;
+    }
+
     /// <summary>
     /// Replacement call for <see cref="Native.TestVerticalProbeAgainstAllWater(float, float, float, int, out float)" />
     /// because both generated forms read the height back before checking whether there is one.
@@ -57,6 +80,19 @@ public static class NativeFixer
         height = result == 0 ? default : nativeApi.GetResFloat(1);
 
         return result;
+    }
+
+    public static void SetFacialIdleAnimOverride(int ped, string clipName)
+    {
+        using var clip = new StringArg(clipName);
+        using var dictionary = new StringArg(null);
+
+        nativeApi.ResetContext();
+        nativeApi.PushArg(ped);
+        nativeApi.PushArg(clip);
+        nativeApi.PushArg(dictionary);
+        // Hash from the wrapper IL, not the published tables: Enhanced remaps it.
+        nativeApi.Invoke(3173285894442253041uL, "SetFacialIdleAnimOverride");
     }
 
     /// <summary>

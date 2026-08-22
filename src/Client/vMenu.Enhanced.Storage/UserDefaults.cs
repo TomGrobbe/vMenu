@@ -250,8 +250,20 @@ public static class UserDefaults
 
     #endregion
 
+    #region Character Creator
+
+    public static StringDefault DefaultCharacterName { get; } =
+        new("defaultCharacterName") { Default = string.Empty };
+
+    public static BoolDefault CharacterCreatorFitTorso { get; } =
+        new("characterCreatorFitTorso") { Default = true };
+
+    #endregion
+
     public static IReadOnlyList<UserDefault> All { get; } =
     [
+        DefaultCharacterName,
+        CharacterCreatorFitTorso,
         MiscRightAlignMenu,
         Language,
         MiscDisableIdleCamera,

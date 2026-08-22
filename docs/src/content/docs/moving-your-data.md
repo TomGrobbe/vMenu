@@ -60,6 +60,7 @@ In it:
 
 - Saved vehicles, and the categories you sorted them into
 - Saved peds, and their categories
+- Custom characters, their categories, and every outfit and hair style saved against them
 - Weapon loadouts
 - Every vMenu setting you have changed, including your language and which side the menu sits on
 
@@ -87,5 +88,8 @@ You don't have to worry that being able to import preferences and saved items fr
 on your server. Anything restricted by permissions will still have the same permission check applied when settings
 are restored. Same goes for any configuration options.
 Any saved cars or weapon loadouts that may be added, will still follow the permissions and configuration.
-Peds may appear broken between servers, but that's to be expected if different servers have different clothing collections
-that may conflict with their ids.
+Peds and characters saved by a recent vMenu record which clothing pack each piece came from, so they
+survive being restored on a server with a different set of packs installed. Anything a server genuinely
+does not have goes back to the model default, and vMenu tells the player how many pieces it could not
+find. Saves written before that was recorded can still come back wearing the wrong thing, and there is
+nothing vMenu can do about those beyond saving over them once.

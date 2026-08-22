@@ -1,6 +1,7 @@
 using vMenu.Enhanced.MenuFramework;
 using vMenu.Enhanced.MenuFramework.Localization;
 
+using CharacterCreatorPermissions = vMenu.Enhanced.Data.Permissions.Menus.CharacterCreator;
 using PedModelsPermissions = vMenu.Enhanced.Data.Permissions.Menus.PedModels;
 using PlayerAppearancePermissions = vMenu.Enhanced.Data.Permissions.Menus.PlayerAppearance;
 using PlayerOptionsPermissions = vMenu.Enhanced.Data.Permissions.Menus.PlayerOptions;
@@ -22,6 +23,7 @@ public sealed class PlayerMenu : MenuDefinition
         MenuGate.Permission(PlayerOptionsPermissions.Menu)
         | MenuGate.Permission(PedModelsPermissions.Menu)
         | MenuGate.Permission(PlayerAppearancePermissions.Menu)
+        | MenuGate.Permission(CharacterCreatorPermissions.Menu)
         | MenuGate.Permission(SavedPedsPermissions.Menu)
         | MenuGate.Permission(WeaponOptionsPermissions.Menu)
         | MenuGate.Permission(WeaponLoadoutsPermissions.Menu);
@@ -32,6 +34,7 @@ public sealed class PlayerMenu : MenuDefinition
         menu.Entries.Add(SubmenuEntry.For(new PedModelsMenu()));
 
         menu.Entries.Add(SubmenuEntry.For(new PlayerAppearanceMenu()));
+        menu.Entries.Add(SubmenuEntry.For(new CharacterCreatorMenu()));
         menu.Entries.Add(SubmenuEntry.For(new SavedPedsMenu()));
 
         menu.Entries.Add(SubmenuEntry.For(new WeaponOptionsMenu()));

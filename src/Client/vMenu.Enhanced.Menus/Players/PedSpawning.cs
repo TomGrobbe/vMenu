@@ -31,6 +31,10 @@ public static class PedSpawning
     /// </remarks>
     public static bool IsFreemode(uint hash) => hash == FreemodeMale || hash == FreemodeFemale;
 
+    public static bool IsFreemodeMale(uint hash) => hash == FreemodeMale;
+
+    public static uint FreemodeModel(bool male) => male ? FreemodeMale : FreemodeFemale;
+
     /// <summary>Whether the player is wearing one right now.</summary>
     public static bool IsWearingFreemode() =>
         IsFreemode((uint)Native.GetEntityModel(Native.PlayerPedId()));
@@ -98,6 +102,8 @@ public static class PedSpawning
         }
 
         await ResetAppearanceAsync(hash);
+
+        PedKeepProps.Apply(Native.PlayerPedId());
 
         // A new ped walks the way its model walks, so the choice the player made has to be put back
         // on by hand. A saved ped applied on top of this brings its own and wins, which is right.

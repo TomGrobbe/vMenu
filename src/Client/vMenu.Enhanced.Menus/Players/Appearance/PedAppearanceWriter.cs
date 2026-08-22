@@ -1,5 +1,6 @@
 using CitizenFX.FiveM.Client;
 
+using vMenu.Enhanced.Data.Appearance;
 using vMenu.Enhanced.Menus.Appearance;
 
 namespace vMenu.Enhanced.Menus.Players.Appearance;
@@ -29,7 +30,7 @@ public static class PedAppearanceWriter
     }
 
     /// <summary>One pass. Every call here is idempotent, so repeating it is safe.</summary>
-    public static void Apply(int ped, PedAppearance appearance)
+    public static void Apply(int ped, PedOutfit outfit)
     {
         // A clean base first, so a slot the save says nothing about comes back as the model's own
         // default rather than whatever the ped worn before this one left in it. It is also what lets
@@ -37,12 +38,12 @@ public static class PedAppearanceWriter
         Native.SetPedDefaultComponentVariation(ped);
         Native.ClearAllPedProps(ped, false);
 
-        foreach (var component in appearance.Components)
+        foreach (var component in outfit.Components)
         {
             ApplyComponent(ped, component);
         }
 
-        foreach (var prop in appearance.Props)
+        foreach (var prop in outfit.Props)
         {
             ApplyProp(ped, prop);
         }
@@ -53,6 +54,16 @@ public static class PedAppearanceWriter
     // that from both the player and the diff.
     private static void ApplyComponent(int ped, PedComponentValue component)
     {
+        if (ApplyComponentFromCollection(ped, component))
+        {
+            return;
+        }
+
+        if (component.LocalDrawable >= 0 && !PedCollections.Has(ped, component.Collection))
+        {
+            return;
+        }
+
         if (component.Drawable < 0
             || component.Drawable >= Native.GetNumberOfPedDrawableVariations(ped, component.Slot))
         {
@@ -69,8 +80,46 @@ public static class PedAppearanceWriter
         Native.SetPedComponentVariation(ped, component.Slot, component.Drawable, component.Texture, component.Palette);
     }
 
+    private static bool ApplyComponentFromCollection(int ped, PedComponentValue component)
+    {
+        if (component.LocalDrawable < 0 || !PedCollections.Has(ped, component.Collection))
+        {
+            return false;
+        }
+
+        var drawables = Native.GetNumberOfPedCollectionDrawableVariations(ped, component.Slot, component.Collection);
+
+        if (component.LocalDrawable >= drawables)
+        {
+            return false;
+        }
+
+        var textures = Native.GetNumberOfPedCollectionTextureVariations(
+            ped, component.Slot, component.Collection, component.LocalDrawable);
+
+        if (component.Texture < 0 || component.Texture >= textures)
+        {
+            return false;
+        }
+
+        Native.SetPedCollectionComponentVariation(
+            ped, component.Slot, component.Collection, component.LocalDrawable, component.Texture, component.Palette);
+
+        return true;
+    }
+
     private static void ApplyProp(int ped, PedPropValue prop)
     {
+        if (ApplyPropFromCollection(ped, prop))
+        {
+            return;
+        }
+
+        if (prop.LocalDrawable >= 0 && !PedCollections.Has(ped, prop.Collection))
+        {
+            return;
+        }
+
         if (prop.Drawable < 0 || prop.Drawable >= Native.GetNumberOfPedPropDrawableVariations(ped, prop.Slot))
         {
             return;
@@ -86,5 +135,33 @@ public static class PedAppearanceWriter
         // True attaches the prop, which is what makes it survive the ped being redrawn. False is the
         // dead check the enhanced natives added, off so a restore works on a ped that is down.
         Native.SetPedPropIndex(ped, prop.Slot, prop.Drawable, prop.Texture, true, false);
+    }
+
+    private static bool ApplyPropFromCollection(int ped, PedPropValue prop)
+    {
+        if (prop.LocalDrawable < 0 || !PedCollections.Has(ped, prop.Collection))
+        {
+            return false;
+        }
+
+        var drawables = Native.GetNumberOfPedCollectionPropDrawableVariations(ped, prop.Slot, prop.Collection);
+
+        if (prop.LocalDrawable >= drawables)
+        {
+            return false;
+        }
+
+        var textures = Native.GetNumberOfPedCollectionPropTextureVariations(
+            ped, prop.Slot, prop.Collection, prop.LocalDrawable);
+
+        if (prop.Texture < 0 || prop.Texture >= textures)
+        {
+            return false;
+        }
+
+        Native.SetPedCollectionPropIndex(
+            ped, prop.Slot, prop.Collection, prop.LocalDrawable, prop.Texture, true);
+
+        return true;
     }
 }

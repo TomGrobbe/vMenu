@@ -15,7 +15,7 @@ namespace vMenu.Enhanced.Menus.Players.Saved;
 public sealed class SavedPed
 {
     /// <summary>What this build understands the shape below to be.</summary>
-    public const int SchemaVersion = 1;
+    public const int SchemaVersion = 2;
 
     public string Name { get; set; } = string.Empty;
 

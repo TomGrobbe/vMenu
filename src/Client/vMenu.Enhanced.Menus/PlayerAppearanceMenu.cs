@@ -145,18 +145,6 @@ public sealed class PlayerAppearanceMenu : MenuDefinition
 
     private IReadOnlyList<MenuEntry> CollectionRows()
     {
-        if (PedSpawning.IsWearingFreemode())
-        {
-            return
-            [
-                new ButtonEntry
-                {
-                    Text = MenuText.Key(Loc.PlayerAppearance.Freemode),
-                    Description = MenuText.Key(Loc.PlayerAppearance.FreemodeDescription),
-                },
-            ];
-        }
-
         var rows = new List<MenuEntry>();
 
         foreach (var collection in PedCollections.All(Native.PlayerPedId()))
@@ -279,13 +267,6 @@ public sealed class PlayerAppearanceMenu : MenuDefinition
     // to reach that. Picking twelve slots at random ourselves would put a police hat on a hiker.
     private static void Randomise()
     {
-        if (PedSpawning.IsWearingFreemode())
-        {
-            Notifications.Warning(MenuText.Key(Loc.PlayerAppearance.FreemodeDescription));
-
-            return;
-        }
-
         var ped = Native.PlayerPedId();
 
         // The second argument asks the game to keep the combination coherent rather than picking each

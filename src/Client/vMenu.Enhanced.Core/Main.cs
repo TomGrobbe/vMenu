@@ -17,6 +17,7 @@ using vMenu.Enhanced.Menus.Developer;
 using vMenu.Enhanced.Menus.Misc;
 using vMenu.Enhanced.Menus.Players;
 using vMenu.Enhanced.Menus.Players.Appearance;
+using vMenu.Enhanced.Menus.Players.Character;
 using vMenu.Enhanced.Menus.Teleport;
 using vMenu.Enhanced.Menus.Vehicles;
 using vMenu.Enhanced.Menus.Weapons;
@@ -66,6 +67,7 @@ public sealed class Main : IScript
         ServerActions.RegisterEventHandlers();
 
         TeleportSync.RegisterEventHandlers();
+        ClothingPresetSync.RegisterEventHandlers();
 
         PedModelSync.RegisterEventHandlers();
 
@@ -90,11 +92,16 @@ public sealed class Main : IScript
 
         LanguageLoader.Load();
 
+        TattooCatalogue.Load();
+
         ClientPermissions.PermissionsChanged += TickRegistry.Reevaluate;
 
         VehicleCommands.Initialize();
         VehicleDumpCommands.Initialize();
         PedDumpCommands.Initialize();
+        CharacterDumpCommands.Initialize();
+        CharacterCamera.Initialize();
+        PedHeadFit.Initialize();
         DeveloperOverlay.Initialize();
         NoClip.NoClip.Initialize();
 
@@ -112,6 +119,7 @@ public sealed class Main : IScript
         EveryoneIgnoresPlayer.Initialize();
         PlayerNeverWanted.Initialize();
         PedIlluminatedClothing.Initialize();
+        PedKeepProps.Initialize();
         VehicleGodMode.Initialize();
         VehicleKeepClean.Initialize();
         PersonalVehicleFeature.Initialize();
@@ -119,6 +127,7 @@ public sealed class Main : IScript
         WeaponUnlimitedAmmo.Initialize();
         WeaponNoReload.Initialize();
         ParachuteOptions.Initialize();
+        CharacterRespawn.Initialize();
         WeaponLoadoutRespawn.Initialize();
 
         NoClip.NoClip.EntityReleased += _ =>
@@ -155,6 +164,7 @@ public sealed class Main : IScript
         }
 
         TeleportSync.Request();
+        ClothingPresetSync.Request();
 
         PedModelSync.Request();
 
@@ -170,6 +180,7 @@ public sealed class Main : IScript
 
         PluginHost.AnnounceReady();
 
+        await CharacterRespawn.ApplyOnJoinAsync();
         await WeaponLoadoutRespawn.RestoreOnJoinAsync();
     }
 }

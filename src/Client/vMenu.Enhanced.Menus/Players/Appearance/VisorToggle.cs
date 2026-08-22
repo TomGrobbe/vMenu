@@ -2,6 +2,7 @@ using CitizenFX.FiveM.Client;
 
 using MenuAPI;
 
+using vMenu.Enhanced.BrokenNatives;
 using vMenu.Enhanced.MenuFramework;
 using vMenu.Enhanced.MenuFramework.Localization;
 using vMenu.Enhanced.Permissions;
@@ -38,6 +39,10 @@ public static class VisorToggle
     /// <summary>The camera mode the game reports when the player is looking out of their own eyes.</summary>
     private const int FirstPersonView = 4;
 
+    private const int PropApparel = 1;
+
+    private const int NoVariant = 1849449579;
+
     private const float BlendIn = 8f;
 
     private const float BlendOut = 1f;
@@ -54,6 +59,32 @@ public static class VisorToggle
         && !Native.IsPlayerSwitchInProgress()
         && Native.IsScreenFadedIn()
         && !Native.IsPedDeadOrDying(Native.PlayerPedId(), true);
+
+    public static bool HasVisor(int ped)
+    {
+        var drawable = Native.GetPedPropIndex(ped, PedPropSlots.Hats, false);
+
+        if (drawable < 0)
+        {
+            return false;
+        }
+
+        var texture = Native.GetPedPropTextureIndex(ped, PedPropSlots.Hats);
+        var prop = (uint)Native.GetHashNameForProp(ped, PedPropSlots.Hats, drawable, texture);
+
+        if (Native.GetShopPedApparelVariantPropCount(prop) <= 0)
+        {
+            return false;
+        }
+
+        return VisorAnimations.IsGoggles((uint)Native.GetEntityModel(ped), drawable)
+            || Tagged(prop, "HELMET")
+            || Tagged(prop, "FULL_FACE")
+            || Tagged(prop, "DOME_HELMET");
+    }
+
+    private static bool Tagged(uint prop, string tag) =>
+        Native.DoesShopPedApparelHaveRestrictionTag(prop, (uint)Native.GetHashKey(tag), PropApparel);
 
     /// <summary>Flips the visor, if the player is wearing a helmet that has one.</summary>
     public static async Task ToggleAsync()
@@ -94,14 +125,31 @@ public static class VisorToggle
         var texture = Native.GetPedPropTextureIndex(ped, PedPropSlots.Hats);
         var helmet = (uint)Native.GetHashNameForProp(ped, PedPropSlots.Hats, drawable, texture);
 
-        // No alternate version means a hat rather than a helmet with a visor. Nothing to say about it:
-        // the player pressed a key that does not apply, which is not an error.
-        if (Native.GetShopPedApparelVariantPropCount(helmet) <= 0)
+        if (!HasVisor(ped))
         {
             return;
         }
 
-        Native.GetVariantProp(helmet, 0, out var altDrawable, out var altTexture, out _);
+        Native.GetVariantProp(helmet, 0, out var altName, out _, out _);
+
+        if (altName is 0 or NoVariant)
+        {
+            return;
+        }
+
+        var alt = new ShopPedPropBuffer();
+
+        Native.GetShopPedProp((uint)altName, alt);
+
+        await NextFrameAsync();
+
+        var altDrawable = alt.Drawable;
+        var altTexture = alt.Texture;
+
+        if (altDrawable < 0)
+        {
+            return;
+        }
 
         var model = (uint)Native.GetEntityModel(ped);
         var goggles = VisorAnimations.IsGoggles(model, drawable);
@@ -157,6 +205,16 @@ public static class VisorToggle
     }
 
     private static string Direction(bool up, string what) => $"{what}_{(up ? "up" : "down")}";
+
+    private static async Task NextFrameAsync()
+    {
+        var asked = Native.GetFrameCount();
+
+        while (Native.GetFrameCount() == asked)
+        {
+            await API.Delay(0);
+        }
+    }
 
     private static async Task<bool> LoadAsync(string dictionary)
     {

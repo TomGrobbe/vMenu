@@ -63,6 +63,8 @@ public sealed class KvpInventory
 
     public int Peds { get; set; }
 
+    public int Characters { get; set; }
+
     public int Loadouts { get; set; }
 
     public int Settings { get; set; }

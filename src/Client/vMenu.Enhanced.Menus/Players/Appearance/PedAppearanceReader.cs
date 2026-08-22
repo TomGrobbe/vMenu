@@ -1,5 +1,7 @@
 using CitizenFX.FiveM.Client;
 
+using vMenu.Enhanced.Data.Appearance;
+
 namespace vMenu.Enhanced.Menus.Players.Appearance;
 
 /// <summary>
@@ -15,15 +17,22 @@ public static class PedAppearanceReader
     public static PedAppearance Read(int ped)
     {
         var model = (uint)Native.GetEntityModel(ped);
+        var outfit = ReadOutfit(ped);
 
         return new PedAppearance
         {
             ModelHash = model,
             ModelName = PedModelNames.Resolve(model),
-            Components = ReadComponents(ped),
-            Props = ReadProps(ped),
+            Components = outfit.Components,
+            Props = outfit.Props,
         };
     }
+
+    public static PedOutfit ReadOutfit(int ped) => new()
+    {
+        Components = ReadComponents(ped),
+        Props = ReadProps(ped),
+    };
 
     private static List<PedComponentValue> ReadComponents(int ped)
     {
@@ -47,6 +56,9 @@ public static class PedAppearanceReader
                 // because that is the texture it will draw, and -1 is not a value anything can set.
                 Texture = Math.Max(0, Native.GetPedTextureVariation(ped, slot)),
                 Palette = Math.Max(0, Native.GetPedPaletteVariation(ped, slot)),
+
+                Collection = Native.GetPedDrawableVariationCollectionName(ped, slot) ?? string.Empty,
+                LocalDrawable = Native.GetPedDrawableVariationCollectionLocalIndex(ped, slot),
             });
         }
 
@@ -75,6 +87,8 @@ public static class PedAppearanceReader
                 Slot = slot,
                 Drawable = drawable,
                 Texture = Math.Max(0, Native.GetPedPropTextureIndex(ped, slot)),
+                Collection = Native.GetPedPropCollectionName(ped, slot) ?? string.Empty,
+                LocalDrawable = Native.GetPedPropCollectionLocalIndex(ped, slot),
             });
         }
 

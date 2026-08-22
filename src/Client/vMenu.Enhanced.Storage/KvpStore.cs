@@ -252,6 +252,11 @@ public static class KvpStore
         {
             while (Native.FindKvp(handle) is { Length: > 0 } key)
             {
+                if (!key.StartsWith(prefix, StringComparison.Ordinal))
+                {
+                    continue;
+                }
+
                 keys.Add(key);
             }
         }

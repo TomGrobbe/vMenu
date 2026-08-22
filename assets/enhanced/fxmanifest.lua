@@ -17,7 +17,8 @@ files {
     -- A wildcard, so a language an owner adds is picked up without touching this file.
     'language/*.json',
 
-    
+    'config/tattoos.json',
+
     'client/*.dll',
 }
 

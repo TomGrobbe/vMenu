@@ -38,7 +38,8 @@ public static class PedAppearanceReport
                 $"Component {Text(slot)} ({PedComponentSlots.TechnicalName(slot)}): "
                 + $"drawable {Text(component.Drawable)} of {Text(available)}, "
                 + $"texture {Text(component.Texture)} of {Text(textures)}, "
-                + $"palette {Text(component.Palette)}";
+                + $"palette {Text(component.Palette)}"
+                + Collection(component.Collection, component.LocalDrawable);
         }
 
         foreach (var slot in PedPropSlots.All)
@@ -57,8 +58,21 @@ public static class PedAppearanceReport
             yield return
                 $"Prop {Text(slot)} ({PedPropSlots.TechnicalName(slot)}): "
                 + $"drawable {Text(prop.Drawable)} of {Text(available)}, "
-                + $"texture {Text(prop.Texture)} of {Text(textures)}";
+                + $"texture {Text(prop.Texture)} of {Text(textures)}"
+                + Collection(prop.Collection, prop.LocalDrawable);
         }
+    }
+
+    private static string Collection(string collection, int local)
+    {
+        if (local < 0)
+        {
+            return string.Empty;
+        }
+
+        return collection.Length == 0
+            ? $", base game #{Text(local)}"
+            : $", {collection} #{Text(local)}";
     }
 
     private static string Text(int value) => value.ToString(CultureInfo.InvariantCulture);

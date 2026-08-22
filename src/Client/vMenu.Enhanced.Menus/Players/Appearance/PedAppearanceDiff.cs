@@ -1,5 +1,6 @@
 using System.Globalization;
 
+using vMenu.Enhanced.Data.Appearance;
 using vMenu.Enhanced.Menus.Appearance;
 
 namespace vMenu.Enhanced.Menus.Players.Appearance;
@@ -36,8 +37,8 @@ public static class PedAppearanceDiff
     }
 
     private static void CompareComponents(
-        PedAppearance expected,
-        PedAppearance actual,
+        PedOutfit expected,
+        PedOutfit actual,
         List<AppearanceDifference> differences)
     {
         foreach (var component in expected.Components)
@@ -52,9 +53,7 @@ public static class PedAppearanceDiff
                 continue;
             }
 
-            if (worn.Drawable != component.Drawable
-                || worn.Texture != component.Texture
-                || worn.Palette != component.Palette)
+            if (!Matches(component, worn))
             {
                 differences.Add(new AppearanceDifference(field, ComponentText(component), ComponentText(worn)));
             }
@@ -75,8 +74,8 @@ public static class PedAppearanceDiff
     }
 
     private static void CompareProps(
-        PedAppearance expected,
-        PedAppearance actual,
+        PedOutfit expected,
+        PedOutfit actual,
         List<AppearanceDifference> differences)
     {
         foreach (var prop in expected.Props)
@@ -91,7 +90,7 @@ public static class PedAppearanceDiff
                 continue;
             }
 
-            if (worn.Drawable != prop.Drawable || worn.Texture != prop.Texture)
+            if (!Matches(prop, worn))
             {
                 differences.Add(new AppearanceDifference(field, PropText(prop), PropText(worn)));
             }
@@ -106,6 +105,23 @@ public static class PedAppearanceDiff
         }
     }
 
+    private static bool Matches(PedComponentValue expected, PedComponentValue worn) =>
+        expected.Texture == worn.Texture
+        && expected.Palette == worn.Palette
+        && (SharesCollection(expected.LocalDrawable, worn.LocalDrawable)
+            ? string.Equals(expected.Collection, worn.Collection, StringComparison.Ordinal)
+                && expected.LocalDrawable == worn.LocalDrawable
+            : expected.Drawable == worn.Drawable);
+
+    private static bool Matches(PedPropValue expected, PedPropValue worn) =>
+        expected.Texture == worn.Texture
+        && (SharesCollection(expected.LocalDrawable, worn.LocalDrawable)
+            ? string.Equals(expected.Collection, worn.Collection, StringComparison.Ordinal)
+                && expected.LocalDrawable == worn.LocalDrawable
+            : expected.Drawable == worn.Drawable);
+
+    private static bool SharesCollection(int expected, int worn) => expected >= 0 && worn >= 0;
+
     private static string ComponentField(int slot) =>
         $"Component {Text(slot)} ({PedComponentSlots.TechnicalName(slot)})";
 
@@ -113,10 +129,23 @@ public static class PedAppearanceDiff
         $"Prop {Text(slot)} ({PedPropSlots.TechnicalName(slot)})";
 
     private static string ComponentText(PedComponentValue component) =>
-        $"drawable {Text(component.Drawable)}, texture {Text(component.Texture)}, palette {Text(component.Palette)}";
+        $"drawable {Drawable(component.Drawable, component.Collection, component.LocalDrawable)}, "
+        + $"texture {Text(component.Texture)}, palette {Text(component.Palette)}";
 
     private static string PropText(PedPropValue prop) =>
-        $"drawable {Text(prop.Drawable)}, texture {Text(prop.Texture)}";
+        $"drawable {Drawable(prop.Drawable, prop.Collection, prop.LocalDrawable)}, texture {Text(prop.Texture)}";
+
+    private static string Drawable(int drawable, string collection, int local)
+    {
+        if (local < 0)
+        {
+            return Text(drawable);
+        }
+
+        return collection.Length == 0
+            ? $"{Text(drawable)} (base game #{Text(local)})"
+            : $"{Text(drawable)} ({collection} #{Text(local)})";
+    }
 
     private static string Named(string name, uint hash) => name.Length > 0 ? name : hash.ToString();
 

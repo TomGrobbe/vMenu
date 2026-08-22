@@ -64,6 +64,7 @@ public class CoreServer : IScript
         VehicleSpawnActions.Register();
         PersonalVehicleActions.Register();
         TeleportActions.Register();
+        ClothingPresetActions.Register();
         WorldActions.Register();
         OnlinePlayerActions.Register();
         StaffAlertActions.Register();
