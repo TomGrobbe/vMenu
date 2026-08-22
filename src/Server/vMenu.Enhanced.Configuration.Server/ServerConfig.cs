@@ -20,9 +20,9 @@ public static class ServerConfig
     {
         Store.Prime();
 
-        ApplyLogLevel();
+        ApplyDebugMode();
 
-        Store.Watch([Debugging.LogLevel], ApplyLogLevel);
+        Store.Watch([Debugging.Server], ApplyDebugMode);
 
         // One listener per convar rather than a single wildcard filter: an exact name cannot be
         // matched wrongly, and a filter that silently matches nothing would look like the whole
@@ -89,7 +89,7 @@ public static class ServerConfig
 
     private static void OnConvarChanged(string convar, object? reserved) => Store.NotifyChanged(convar);
 
-    private static void ApplyLogLevel() => Log.SetLevel(Store.Value(Debugging.LogLevel));
+    private static void ApplyDebugMode() => Log.SetDebug(Store.Value(Debugging.Server));
 
     private static void Write(ConfigLog level, string message)
     {

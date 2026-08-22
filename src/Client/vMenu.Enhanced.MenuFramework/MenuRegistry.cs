@@ -6,7 +6,6 @@ using vMenu.Enhanced.Logging;
 using vMenu.Enhanced.MenuFramework.Localization;
 using vMenu.Enhanced.Permissions;
 
-using DebuggingSettings = vMenu.Enhanced.Data.Configuration.Settings.Debugging;
 using KeyBindingSettings = vMenu.Enhanced.Data.Configuration.Settings.KeyBindings;
 using LocalizationSettings = vMenu.Enhanced.Data.Configuration.Settings.Localization;
 
@@ -23,8 +22,6 @@ public static class MenuRegistry
     /// </summary>
     private static readonly Setting[] Ignored =
     [
-        DebuggingSettings.LogLevel,
-
         // Read once by LanguageLoader before the menus are built.
         // Can't be updated at runtime because the translation files would not be
         // streamed to the client if changed without a resource restart.

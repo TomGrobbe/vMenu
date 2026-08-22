@@ -102,7 +102,6 @@ public static class ConfigCatalog
         new("Developer Features", [DeveloperFeatures.Enabled]),
         new("Debugging",
         [
-            Debugging.LogLevel,
             Debugging.Client,
             Debugging.Server,
             Debugging.ExperimentalFeatures,

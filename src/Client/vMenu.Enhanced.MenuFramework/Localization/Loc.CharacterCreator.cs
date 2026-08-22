@@ -1,4 +1,4 @@
-﻿namespace vMenu.Enhanced.MenuFramework.Localization;
+namespace vMenu.Enhanced.MenuFramework.Localization;
 
 public static partial class Loc
 {

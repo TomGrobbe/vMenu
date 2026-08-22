@@ -9,29 +9,21 @@ public static class Debugging
             "Most of them only print what vMenu currently thinks is going on. A couple also put test " +
             "data on your own screen, such as the fake players the blip test draws, which nobody else " +
             "can see and which go away when you switch them off. None of them change anything on the " +
-            "server. Turn this on while you are chasing a problem and turn it back off afterwards.",
+            "server. It also makes the client print its debug lines, which are the extra ones that are " +
+            "far too noisy to read during normal play. With this off the client only prints the handful " +
+            "of lines worth seeing, plus any warnings and errors, which are always printed either way " +
+            "because something has gone wrong by the time vMenu writes one. Turn this on while you are " +
+            "chasing a problem and turn it back off afterwards.",
         Default = false,
     };
 
     public static readonly BoolSetting Server = new("vMenu.Enhanced.Debugging.Server")
     {
         Description =
-            "The same thing for the server console. These commands are already limited to the console " +
-            "and cannot be run by a player, so leaving this on is harmless, it just adds output you " +
-            "would otherwise not see.",
+            "The same thing for the server console, and it is a separate switch, so turning one on does " +
+            "not turn the other on. These commands are already limited to the console and cannot be run " +
+            "by a player, so leaving this on is harmless, it just adds output you would otherwise not see.",
         Default = false,
-    };
-
-    public static readonly StringSetting LogLevel = new("vMenu.Enhanced.Debugging.LogLevel")
-    {
-        Description =
-            "How much vMenu writes to the console, on both the client and the server. Pick Debug " +
-            "or Info. Debug prints everything, and Info prints only the handful of lines worth " +
-            "reading during normal play. Anything below the level you pick is dropped and never " +
-            "reaches a console. Warnings and errors are always printed whichever you choose, " +
-            "because something has gone wrong by the time vMenu writes one. Use Debug while you " +
-            "are chasing a problem, and leave it on Info the rest of the time.",
-        Default = "Info",
     };
 
     public static readonly BoolSetting ExperimentalFeatures = new("vMenu.Enhanced.Debugging.ExperimentalFeatures")

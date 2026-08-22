@@ -23,9 +23,9 @@ public static class ClientConfig
     {
         Store.Prime();
 
-        ApplyLogLevel();
+        ApplyDebugMode();
 
-        Store.Watch([Debugging.LogLevel], ApplyLogLevel);
+        Store.Watch([Debugging.Client], ApplyDebugMode);
 
         Listen(Store.Tracked);
 
@@ -107,7 +107,7 @@ public static class ClientConfig
 
     private static void OnConvarChanged(string convar, object? reserved) => Store.NotifyChanged(convar);
 
-    private static void ApplyLogLevel() => Log.SetLevel(Store.Value(Debugging.LogLevel));
+    private static void ApplyDebugMode() => Log.SetDebug(Store.Value(Debugging.Client));
 
     private static void ForwardLog(ConfigLog level, string message)
     {

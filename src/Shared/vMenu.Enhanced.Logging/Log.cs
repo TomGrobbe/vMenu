@@ -6,22 +6,14 @@ namespace vMenu.Enhanced.Logging;
 
 public static class Log
 {
-    public const string LevelNames = "Debug or Info";
-
     public static LogLevel Level { get; private set; } = LogLevel.Info;
 
     public static bool IsEnabled(LogLevel level) => level >= Level;
 
-    public static void SetLevel(string? text)
+    /// <summary>Debug mode opens up the Debug level, everything else stays on Info.</summary>
+    public static void SetDebug(bool enabled)
     {
-        if (!TryParseLevel(text, out var level))
-        {
-            Level = LogLevel.Info;
-
-            Warning($"[Logging] '{text}' is not a log level. Use {LevelNames}. Staying on Info.");
-
-            return;
-        }
+        var level = enabled ? LogLevel.Debug : LogLevel.Info;
 
         if (level == Level)
         {
@@ -31,22 +23,6 @@ public static class Log
         Level = level;
 
         Info($"[Logging] Log level is now {level}.");
-    }
-
-    public static bool TryParseLevel(string? text, out LogLevel level)
-    {
-        switch (text?.Trim().ToLowerInvariant())
-        {
-            case "debug":
-                level = LogLevel.Debug;
-                return true;
-            case "info":
-                level = LogLevel.Info;
-                return true;
-            default:
-                level = LogLevel.Info;
-                return false;
-        }
     }
 
     public static void Debug(string message)
