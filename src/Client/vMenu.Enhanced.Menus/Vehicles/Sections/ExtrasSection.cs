@@ -32,6 +32,7 @@ internal static class ExtrasSection
         }
 
         var rows = new List<MenuEntry>();
+        var model = (uint)Native.GetEntityModel(handle);
 
         for (var id = 0; id < VehicleAppearanceReader.ExtraCount; id++)
         {
@@ -40,7 +41,7 @@ internal static class ExtrasSection
                 continue;
             }
 
-            rows.Add(ExtraRow(id));
+            rows.Add(ExtraRow(model, id));
         }
 
         if (rows.Count == 0)
@@ -51,13 +52,16 @@ internal static class ExtrasSection
         return rows;
     }
 
-    private static CheckboxEntry ExtraRow(int id)
+    private static CheckboxEntry ExtraRow(uint model, int id)
     {
         var number = MenuText.Literal(id.ToString(CultureInfo.InvariantCulture));
+        var named = VehicleExtraLabels.For(model, id);
 
         return new CheckboxEntry
         {
-            Text = MenuText.Key(Loc.VehicleOptions.ExtraName, ("number", number)),
+            Text = named is null
+                ? MenuText.Key(Loc.VehicleOptions.ExtraName, ("number", number))
+                : MenuText.Literal(named),
             Description = MenuText.Key(Loc.VehicleOptions.ExtraDescription, ("number", number)),
             ReadState = () => SectionRows.Driven() is { } handle && Native.IsVehicleExtraTurnedOn(handle, id),
             OnChanged = changed =>

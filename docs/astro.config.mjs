@@ -64,6 +64,12 @@ export default defineConfig({
         { label: 'Moving Your Data', link: '/moving-your-data/' },
         { label: 'Custom Character Creator', link: '/character-creator/' },
         {
+          label: 'Configuration',
+          items: [
+            { label: 'extras.json', link: '/configuration/extras-json/' },
+          ],
+        },
+        {
           label: 'Plugins',
           items: [
             { label: 'What plugins are', link: '/plugins/' },

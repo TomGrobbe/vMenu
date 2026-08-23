@@ -1,6 +1,8 @@
 using CitizenFX.FiveM.Client;
 using CitizenFX.FiveM.Client.Entities;
 
+using vMenu.Enhanced.Data.VehicleData;
+
 namespace vMenu.Enhanced.Menus.Vehicles.Appearance;
 
 /// <summary>
@@ -16,7 +18,7 @@ public static class VehicleAppearanceReader
     /// <summary>How many optional part slots the game is asked about.</summary>
     // The game has no way to say how many a vehicle has, so this walks a fixed range. Twenty covers
     // every stock vehicle with room to spare for add-ons.
-    public const int ExtraCount = 20;
+    public const int ExtraCount = VehicleExtras.Count;
 
     private const int NeonLeft = 0;
 

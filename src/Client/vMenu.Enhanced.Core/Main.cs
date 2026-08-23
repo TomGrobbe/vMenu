@@ -68,6 +68,7 @@ public sealed class Main : IScript
 
         TeleportSync.RegisterEventHandlers();
         ClothingPresetSync.RegisterEventHandlers();
+        VehicleExtraLabels.RegisterEventHandlers();
 
         PedModelSync.RegisterEventHandlers();
 
@@ -168,6 +169,7 @@ public sealed class Main : IScript
 
         TeleportSync.Request();
         ClothingPresetSync.Request();
+        VehicleExtraLabels.Request();
 
         PedModelSync.Request();
 

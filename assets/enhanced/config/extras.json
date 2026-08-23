@@ -1,0 +1,32 @@
+{
+  // Gives the numbered extras on a vehicle a real name.
+  //
+  // Each key is a vehicle's spawn name in lowercase, and each key inside it is an extra id written
+  // in quotes, pointing at the text you want the menu row to say.
+  //
+  // This only changes what the rows are called. It never enables, disables or adds an extra, and an
+  // id a vehicle does not actually have simply never shows up. Ids run from 0 to 19, and anything
+  // you leave out keeps its numbered name.
+  //
+  // Deleting this file is fine. Every extra just goes back to being called "Extra 1", "Extra 2" and
+  // so on.
+
+  "policecharger": {
+    "1": "Push Bar",
+    "2": "Push Bar Wrap",
+    "3": "Light Bar",
+    "4": "Visor Lights",
+    "5": "Antennas",
+    "9": "Rear Deck Lights"
+  },
+  "policecvpi": {
+    "1": "Push Bar",
+    "2": "Push Bar Wrap",
+    "3": "Light Bar",
+    "4": "Visor Lights",
+    "5": "Antennas",
+    "7": "Rear Deck Lights",
+    "11": "Cage",
+    "12": "Trunk Modem and Antennas"
+  }
+}
