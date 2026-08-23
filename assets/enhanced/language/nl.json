@@ -792,6 +792,8 @@
     "playeroptions.mpstats.subtitle": "Spelerstatistieken",
     "playeroptions.neverwanted": "Nooit gezocht",
     "playeroptions.neverwanted.desc": "Je krijgt nooit een wanted level. Sterren die je al hebt, worden gewist.",
+    "playeroptions.nohelmet": "Geen helm opzetten",
+    "playeroptions.nohelmet.desc": "Het spel zet je geen helm meer op als je op een motor stapt of in een luchtvaartuig gaat zitten. Helmen die je zelf opzet blijven gewoon op.",
     "playeroptions.noragdoll": "Geen ragdoll",
     "playeroptions.noragdoll.desc": "Je blijft op je benen staan, wat je ook raakt, en je wordt nooit van een motor geworpen.",
     "playeroptions.scenario.cutscene": "Je kunt geen scenario starten tijdens een cutscene.",

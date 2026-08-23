@@ -16,6 +16,8 @@ public static class PlayerOptions
 
     public const string NoRagdoll = "vMenu.Enhanced.Menus.PlayerOptions.NoRagdoll";
 
+    public const string NoHelmet = "vMenu.Enhanced.Menus.PlayerOptions.NoHelmet";
+
     public const string StayInVehicle = "vMenu.Enhanced.Menus.PlayerOptions.StayInVehicle";
 
     public const string Ignored = "vMenu.Enhanced.Menus.PlayerOptions.Ignored";

@@ -104,6 +104,8 @@ public static class UserDefaults
 
     public static BoolDefault PlayerNoRagdoll { get; } = new("playerNoRagdoll") { Default = false };
 
+    public static BoolDefault PlayerNoHelmet { get; } = new("playerNoHelmet") { Default = false };
+
     public static BoolDefault PlayerInvisible { get; } = new("playerInvisible") { Default = false };
 
     public static BoolDefault PlayerStayInVehicle { get; } = new("playerStayInVehicle") { Default = false };
@@ -300,6 +302,7 @@ public static class UserDefaults
         PlayerStatLungCapacity,
         PlayerUnlimitedOxygen,
         PlayerNoRagdoll,
+        PlayerNoHelmet,
         PlayerInvisible,
         PlayerStayInVehicle,
         PlayerEveryoneIgnores,

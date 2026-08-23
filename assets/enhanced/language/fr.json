@@ -792,6 +792,8 @@
     "playeroptions.mpstats.subtitle": "Statistiques du joueur",
     "playeroptions.neverwanted": "Jamais recherché",
     "playeroptions.neverwanted.desc": "Vous n'obtenez jamais de niveau de recherche. Les étoiles que vous avez déjà sont effacées.",
+    "playeroptions.nohelmet": "Ne pas mettre de casque",
+    "playeroptions.nohelmet.desc": "Le jeu arrête de vous mettre un casque sur la tête quand vous montez sur une moto ou dans un aéronef. Les casques que vous mettez vous-même restent en place.",
     "playeroptions.noragdoll": "Pas de ragdoll",
     "playeroptions.noragdoll.desc": "Vous restez debout quoi qu'il vous percute, et vous n'êtes jamais éjecté d'une moto.",
     "playeroptions.scenario.cutscene": "Vous ne pouvez pas lancer de scénario pendant une cinématique.",

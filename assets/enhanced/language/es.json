@@ -792,6 +792,8 @@
     "playeroptions.mpstats.subtitle": "Estadísticas del jugador",
     "playeroptions.neverwanted": "Nunca buscado",
     "playeroptions.neverwanted.desc": "Nunca consigues nivel de búsqueda. Las estrellas que ya tengas se borran.",
+    "playeroptions.nohelmet": "No equipar casco",
+    "playeroptions.nohelmet.desc": "El juego deja de ponerte un casco cuando te subes a una moto o a una aeronave. Los cascos que te pongas tú mismo siguen puestos.",
     "playeroptions.noragdoll": "Sin ragdoll",
     "playeroptions.noragdoll.desc": "Te mantienes en pie te golpee lo que te golpee, y nunca sales despedido de una moto.",
     "playeroptions.scenario.cutscene": "No puedes iniciar un escenario durante una escena.",

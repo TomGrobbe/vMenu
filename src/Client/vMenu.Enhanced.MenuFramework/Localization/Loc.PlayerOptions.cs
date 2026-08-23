@@ -72,6 +72,10 @@ public static partial class Loc
 
         public const string NoRagdollDescription = "playeroptions.noragdoll.desc";
 
+        public const string NoHelmet = "playeroptions.nohelmet";
+
+        public const string NoHelmetDescription = "playeroptions.nohelmet.desc";
+
         public const string Invisible = "playeroptions.invisible";
 
         public const string InvisibleDescription = "playeroptions.invisible.desc";

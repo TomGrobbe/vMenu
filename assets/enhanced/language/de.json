@@ -792,6 +792,8 @@
     "playeroptions.mpstats.subtitle": "Spielerstatistiken",
     "playeroptions.neverwanted": "Nie gesucht",
     "playeroptions.neverwanted.desc": "Du bekommst nie ein Fahndungslevel. Sterne, die du schon hast, werden entfernt.",
+    "playeroptions.nohelmet": "Keinen Helm aufsetzen",
+    "playeroptions.nohelmet.desc": "Das Spiel setzt dir keinen Helm mehr auf, wenn du auf ein Motorrad steigst oder in ein Luftfahrzeug einsteigst. Helme, die du selbst aufsetzt, bleiben auf.",
     "playeroptions.noragdoll": "Kein Ragdoll",
     "playeroptions.noragdoll.desc": "Du bleibst auf den Beinen, egal was dich trifft, und wirst nie von einem Motorrad geworfen.",
     "playeroptions.scenario.cutscene": "Du kannst während einer Zwischensequenz kein Szenario starten.",

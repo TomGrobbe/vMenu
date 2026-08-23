@@ -144,6 +144,15 @@ public sealed class PlayerOptionsMenu : MenuDefinition
 
         menu.Entries.Add(Group(Loc.PlayerOptions.GroupAppearance, Loc.PlayerOptions.GroupAppearanceDescription));
 
+        menu.Entries.Add(new CheckboxEntry
+        {
+            Text = MenuText.Key(Loc.PlayerOptions.NoHelmet),
+            Description = MenuText.Key(Loc.PlayerOptions.NoHelmetDescription),
+            Gate = PlayerOptionsPermissions.NoHelmet,
+            ReadState = () => PlayerNoHelmet.Enabled,
+            OnChanged = changed => PlayerNoHelmet.SetEnabled(changed.Checked),
+        });
+
         menu.Entries.Add(new ButtonEntry
         {
             Text = MenuText.Key(Loc.PlayerOptions.ClearBlood),

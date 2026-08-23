@@ -1207,6 +1207,8 @@ internal static class EnglishStrings
             [Loc.PlayerOptions.SetArmor] = "Set Player Armor",
             [Loc.PlayerOptions.SetArmorDescription] = "Give yourself body armor, or remove it.",
             [Loc.PlayerOptions.ArmorNone] = "No Armor",
+            [Loc.PlayerOptions.NoHelmet] = "Do Not Equip Helmet",
+            [Loc.PlayerOptions.NoHelmetDescription] = "The game stops putting a helmet on your head when you get on a bike or into an aircraft. Helmets you put on yourself stay on.",
             [Loc.PlayerOptions.ClearBlood] = "Clear Blood",
             [Loc.PlayerOptions.ClearBloodDescription] = "Wipes off all the blood, bruises and scars you have picked up.",
             [Loc.PlayerOptions.ClearBloodDone] = "Blood and damage cleared.",

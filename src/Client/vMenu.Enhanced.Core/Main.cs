@@ -114,6 +114,7 @@ public sealed class Main : IScript
         MpStats.Initialize();
         PlayerUnlimitedOxygen.Initialize();
         PlayerNoRagdoll.Initialize();
+        PlayerNoHelmet.Initialize();
         PlayerInvisible.Initialize();
         PlayerStayInVehicle.Initialize();
         EveryoneIgnoresPlayer.Initialize();
