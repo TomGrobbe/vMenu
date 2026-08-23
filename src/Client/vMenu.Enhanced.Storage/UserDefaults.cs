@@ -175,6 +175,22 @@ public static class UserDefaults
 
     #endregion
 
+    #region Prop Spawner
+
+    public static BoolDefault PropSpawnerNetworked { get; } =
+        new("propSpawnerNetworked") { Default = true };
+
+    public static BoolDefault PropSpawnerFrozen { get; } =
+        new("propSpawnerFrozen") { Default = true };
+
+    public static BoolDefault PropSpawnerSnapGround { get; } =
+        new("propSpawnerSnapGround") { Default = false };
+
+    public static IntDefault PropSpawnerDistance { get; } =
+        new("propSpawnerDistance") { Default = 10 };
+
+    #endregion
+
     #region World
 
     #endregion
@@ -330,6 +346,11 @@ public static class UserDefaults
 
         VehicleSpawnerSpawnInside,
         VehicleSpawnerReplacePrevious,
+
+        PropSpawnerNetworked,
+        PropSpawnerFrozen,
+        PropSpawnerSnapGround,
+        PropSpawnerDistance,
 
         DisplayWeatherForecast,
         DisplayWeatherForecastStyle,

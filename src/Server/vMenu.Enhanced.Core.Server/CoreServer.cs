@@ -63,6 +63,7 @@ public class CoreServer : IScript
         VehicleActions.Register();
         VehicleSpawnActions.Register();
         VehicleExtraActions.Register();
+        PropSpawnActions.Register();
         PersonalVehicleActions.Register();
         TeleportActions.Register();
         LocationBlipActions.Register();

@@ -16,6 +16,7 @@ using vMenu.Enhanced.Menus;
 using vMenu.Enhanced.Menus.Developer;
 using vMenu.Enhanced.Menus.Misc;
 using vMenu.Enhanced.Menus.Players;
+using vMenu.Enhanced.Menus.Props;
 using vMenu.Enhanced.Menus.Players.Appearance;
 using vMenu.Enhanced.Menus.Players.Character;
 using vMenu.Enhanced.Menus.Teleport;
@@ -150,6 +151,9 @@ public sealed class Main : IScript
         VisionModes.Initialize();
         TimecycleState.Initialize();
         LocationBlips.Initialize();
+        SpawnedProps.Initialize();
+        PropPlacement.Initialize();
+        PropPreview.Initialize();
         FingerPointing.Initialize();
         Speedometer.Initialize();
         LocationDisplay.Initialize();

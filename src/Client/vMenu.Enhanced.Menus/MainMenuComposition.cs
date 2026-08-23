@@ -14,6 +14,7 @@ public static class MainMenuComposition
         new VehiclesMenu(),
         new WorldMenu(),
         new TeleportMenu(),
+        new PropSpawnerMenu(),
         new RecordingMenu(),
         new DisplaySettingsMenu(),
         new MiscSettingsMenu(),

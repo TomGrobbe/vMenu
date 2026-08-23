@@ -10,7 +10,7 @@ namespace vMenu.Enhanced.Menus.Developer;
 // Allocation free on purpose, running for every tracked entity on every frame. Corners go in a
 // shared buffer and the faces and edges are index tables into it. Sharing is safe because a draw
 // never spans an await and the client runs one tick body at a time.
-internal static class EntityBox
+public static class EntityBox
 {
     /// <summary>Keeps coplanar faces of touching boxes from fighting over the same pixels.</summary>
     private const float Pad = 0.001f;
@@ -49,6 +49,35 @@ internal static class EntityBox
 
     public static void Draw(int entity, uint model, int red, int green, int blue, int alpha)
     {
+        Place(entity, model);
+
+        for (var i = 0; i < PolyIndices.Length; i += 3)
+        {
+            ref var first = ref Corners[PolyIndices[i]];
+            ref var second = ref Corners[PolyIndices[i + 1]];
+            ref var third = ref Corners[PolyIndices[i + 2]];
+
+            Native.DrawPoly(
+                first.X, first.Y, first.Z,
+                second.X, second.Y, second.Z,
+                third.X, third.Y, third.Z,
+                red, green, blue, alpha);
+        }
+
+        Edges(EdgeRed, EdgeGreen, EdgeBlue, EdgeAlpha);
+    }
+
+    public static void DrawEdges(int entity, uint model, int red, int green, int blue, int alpha)
+    {
+        Place(entity, model);
+
+        Edges(red, green, blue, alpha);
+    }
+
+    public static void ClearCache() => BoundsByModel.Clear();
+
+    private static void Place(int entity, uint model)
+    {
         var (min, max) = GetBounds(model);
 
         var minX = min.X - Pad;
@@ -66,30 +95,18 @@ internal static class EntityBox
         Corners[5] = Native.GetOffsetFromEntityInWorldCoords(entity, maxX, minY, maxZ);
         Corners[6] = Native.GetOffsetFromEntityInWorldCoords(entity, maxX, maxY, maxZ);
         Corners[7] = Native.GetOffsetFromEntityInWorldCoords(entity, minX, maxY, maxZ);
+    }
 
-        for (var i = 0; i < PolyIndices.Length; i += 3)
-        {
-            ref var first = ref Corners[PolyIndices[i]];
-            ref var second = ref Corners[PolyIndices[i + 1]];
-            ref var third = ref Corners[PolyIndices[i + 2]];
-
-            Native.DrawPoly(
-                first.X, first.Y, first.Z,
-                second.X, second.Y, second.Z,
-                third.X, third.Y, third.Z,
-                red, green, blue, alpha);
-        }
-
+    private static void Edges(int red, int green, int blue, int alpha)
+    {
         for (var i = 0; i < EdgeIndices.Length; i += 2)
         {
             ref var from = ref Corners[EdgeIndices[i]];
             ref var to = ref Corners[EdgeIndices[i + 1]];
 
-            Native.DrawLine(from.X, from.Y, from.Z, to.X, to.Y, to.Z, EdgeRed, EdgeGreen, EdgeBlue, EdgeAlpha);
+            Native.DrawLine(from.X, from.Y, from.Z, to.X, to.Y, to.Z, red, green, blue, alpha);
         }
     }
-
-    public static void ClearCache() => BoundsByModel.Clear();
 
     private static (Vector3 Min, Vector3 Max) GetBounds(uint model)
     {
