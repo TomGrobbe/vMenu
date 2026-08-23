@@ -71,16 +71,16 @@ public static class Speedometer
 
     public static int Mode
     {
-        get => UserDefaults.MiscSpeedometer.Value;
+        get => UserDefaults.DisplaySpeedometer.Value;
 
         set
         {
-            if (UserDefaults.MiscSpeedometer.Value == value)
+            if (UserDefaults.DisplaySpeedometer.Value == value)
             {
                 return;
             }
 
-            UserDefaults.MiscSpeedometer.Value = value;
+            UserDefaults.DisplaySpeedometer.Value = value;
 
             Reevaluate();
         }
@@ -88,9 +88,9 @@ public static class Speedometer
 
     public static int Position
     {
-        get => UserDefaults.MiscSpeedometerPosition.Value;
+        get => UserDefaults.DisplaySpeedometerPosition.Value;
 
-        set => UserDefaults.MiscSpeedometerPosition.Value = value;
+        set => UserDefaults.DisplaySpeedometerPosition.Value = value;
     }
 
     public static void Initialize()

@@ -1,0 +1,67 @@
+{
+  // Named markers that vMenu puts on everybody's map.
+  //
+  // There are two lists. Blips in "alwaysOn" are always drawn and a player cannot hide them. Blips
+  // in "toggleable" are drawn only while the player has "Location Blips" ticked in the Display
+  // Settings menu, so use that one for anything that is nice to have rather than essential.
+  //
+  // Each blip takes:
+  //   name         the text shown on the map. Written exactly as you type it, never translated.
+  //   sprite       which icon to use. There is a full list of sprite ids on the FiveM docs site.
+  //   colour       which colour the icon is drawn in.
+  //   scaleOffset  added to the normal size. 0 is normal, a negative number is smaller.
+  //   shortRange   true means it only appears once you are near it, which is what most map
+  //                furniture does. false means it is always visible on the big map.
+  //   x, y, z      where it goes.
+  //
+  // Staff with the ManageBlips permission can also add and remove blips from inside the menu, which
+  // rewrites this file. Comments you leave in here are not kept when that happens.
+  //
+  // Deleting this file is fine. It just means no blips are added.
+
+  "alwaysOn": [
+    {
+      "name": "Police Station",
+      "sprite": 60,
+      "colour": 29,
+      "scaleOffset": 0.0,
+      "shortRange": true,
+      "x": 425.13,
+      "y": -979.55,
+      "z": 30.71
+    },
+    {
+      "name": "Hospital",
+      "sprite": 61,
+      "colour": 1,
+      "scaleOffset": 0.0,
+      "shortRange": true,
+      "x": 295.83,
+      "y": -1446.94,
+      "z": 29.97
+    }
+  ],
+
+  "toggleable": [
+    {
+      "name": "Ammu-Nation",
+      "sprite": 110,
+      "colour": 1,
+      "scaleOffset": -0.1,
+      "shortRange": true,
+      "x": 22.09,
+      "y": -1107.28,
+      "z": 29.8
+    },
+    {
+      "name": "Los Santos Customs",
+      "sprite": 72,
+      "colour": 0,
+      "scaleOffset": -0.1,
+      "shortRange": true,
+      "x": -337.18,
+      "y": -136.7,
+      "z": 39.01
+    }
+  ]
+}

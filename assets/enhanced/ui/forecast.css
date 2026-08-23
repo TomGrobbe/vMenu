@@ -229,6 +229,21 @@
     font-weight: 500;
 }
 
+#forecast-clock {
+    width: 100%;
+    display: none;
+    pointer-events: none;
+}
+
+#forecast-clock.shown {
+    display: block;
+}
+
+#forecast-clock .line .clock {
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
 #forecast-compact .next {
     opacity: 0.78;
 }

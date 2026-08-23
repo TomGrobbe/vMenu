@@ -15,6 +15,7 @@ public static class MainMenuComposition
         new WorldMenu(),
         new TeleportMenu(),
         new RecordingMenu(),
+        new DisplaySettingsMenu(),
         new MiscSettingsMenu(),
         new DeveloperFeaturesMenu(),
         new PluginsMenu(),

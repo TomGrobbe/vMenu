@@ -12,7 +12,7 @@ using vMenu.Enhanced.Serialization;
 using vMenu.Enhanced.Storage;
 using vMenu.Enhanced.Ticks;
 
-using MiscSettingsPermissions = vMenu.Enhanced.Data.Permissions.Menus.MiscSettings;
+using DisplaySettingsPermissions = vMenu.Enhanced.Data.Permissions.Menus.DisplaySettings;
 
 namespace vMenu.Enhanced.Menus.Misc;
 
@@ -47,12 +47,13 @@ public static class LocationDisplay
     private static string _paintedAnchor = string.Empty;
 
     public static bool ShowLocation =>
-        UserDefaults.MiscShowLocation.Value && ClientPermissions.IsAllowed(MiscSettingsPermissions.ShowLocation);
+        UserDefaults.DisplayShowLocation.Value && ClientPermissions.IsAllowed(DisplaySettingsPermissions.ShowLocation);
 
     public static bool ShowCoordinates =>
-        UserDefaults.MiscShowCoordinates.Value && ClientPermissions.IsAllowed(MiscSettingsPermissions.ShowCoordinates);
+        UserDefaults.DisplayShowCoordinates.Value && ClientPermissions.IsAllowed(DisplaySettingsPermissions.ShowCoordinates);
 
-    private static bool AnchorWanted => ShowLocation || WeatherForecast.CompactShown;
+    private static bool AnchorWanted =>
+        ShowLocation || WeatherForecast.CompactShown || WeatherForecast.ClockOnlyShown;
 
     public static void Initialize()
     {
@@ -94,14 +95,14 @@ public static class LocationDisplay
 
     public static void SetShowLocation(bool show)
     {
-        UserDefaults.MiscShowLocation.Value = show;
+        UserDefaults.DisplayShowLocation.Value = show;
 
         Reevaluate();
     }
 
     public static void SetShowCoordinates(bool show)
     {
-        UserDefaults.MiscShowCoordinates.Value = show;
+        UserDefaults.DisplayShowCoordinates.Value = show;
 
         Reevaluate();
     }
@@ -144,7 +145,7 @@ public static class LocationDisplay
             Crossing = crossing == 0 ? null : Native.GetStreetNameFromHashKey((uint)crossing),
             Zone = ZoneName(position),
             Near = IsOffRoad(position),
-            NearLabel = localizer.Get(Loc.MiscSettings.LocationNear),
+            NearLabel = localizer.Get(Loc.DisplaySettings.LocationNear),
             Compass = localizer.Get(CompassKey(Native.GetEntityHeading(ped))),
         });
 
@@ -177,7 +178,7 @@ public static class LocationDisplay
             Y = Format(position.Y),
             Z = Format(position.Z),
             Heading = Format(Native.GetEntityHeading(ped)),
-            HeadingLabel = Localizer.Current.Get(Loc.MiscSettings.CoordinatesHeading),
+            HeadingLabel = Localizer.Current.Get(Loc.DisplaySettings.CoordinatesHeading),
             Side = UserPreferences.IsRightAligned ? "left" : "right",
             Inset = HudAnchor.Fraction(HudAnchor.Inset),
         });
@@ -255,10 +256,10 @@ public static class LocationDisplay
 
     private static string CompassKey(float heading) => heading switch
     {
-        > 320f or < 45f => Loc.MiscSettings.CompassNorth,
-        <= 135f => Loc.MiscSettings.CompassWest,
-        < 225f => Loc.MiscSettings.CompassSouth,
-        _ => Loc.MiscSettings.CompassEast,
+        > 320f or < 45f => Loc.DisplaySettings.CompassNorth,
+        <= 135f => Loc.DisplaySettings.CompassWest,
+        < 225f => Loc.DisplaySettings.CompassSouth,
+        _ => Loc.DisplaySettings.CompassEast,
     };
 
     private static string Format(float value) =>

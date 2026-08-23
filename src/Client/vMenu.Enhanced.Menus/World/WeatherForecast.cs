@@ -11,7 +11,7 @@ using vMenu.Enhanced.Serialization;
 using vMenu.Enhanced.Storage;
 using vMenu.Enhanced.Ticks;
 
-using WeatherOptionsPermissions = vMenu.Enhanced.Data.Permissions.Menus.WeatherOptions;
+using DisplaySettingsPermissions = vMenu.Enhanced.Data.Permissions.Menus.DisplaySettings;
 using WeatherOptionsSettings = vMenu.Enhanced.Data.Configuration.Settings.WeatherOptions;
 
 namespace vMenu.Enhanced.Menus.World;
@@ -36,10 +36,20 @@ public static class WeatherForecast
 
     private static string _painted = string.Empty;
 
+    public static MenuGate Allowed { get; } =
+        MenuGate.Setting(WeatherOptionsSettings.Enabled)
+        & MenuGate.Permission(DisplaySettingsPermissions.Forecast);
+
     public static bool Enabled =>
-        UserDefaults.WorldWeatherForecast.Value
+        UserDefaults.DisplayWeatherForecast.Value
         && ClientConfig.Value(WeatherOptionsSettings.Enabled)
-        && ClientPermissions.IsAllowed(WeatherOptionsPermissions.Forecast);
+        && ClientPermissions.IsAllowed(DisplaySettingsPermissions.Forecast);
+
+    public static bool ClockEnabled => UserDefaults.DisplayShowTime.Value;
+
+    public static bool ClockOnlyShown => ClockEnabled && !Enabled;
+
+    private static bool Wanted => Enabled || ClockEnabled;
 
     public static void Initialize()
     {
@@ -47,7 +57,7 @@ public static class WeatherForecast
             "World.Forecast",
             Flush,
             TickRate.Every(RefreshIntervalMs),
-            () => Enabled,
+            () => Wanted,
             autoStart: false);
 
         ClientPermissions.PermissionsChanged += Reevaluate;
@@ -58,20 +68,27 @@ public static class WeatherForecast
     public static void Restore() => Reevaluate();
 
     public static int Style =>
-        UserDefaults.WorldWeatherForecastStyle.Value == Compact ? Compact : Full;
+        UserDefaults.DisplayWeatherForecastStyle.Value == Compact ? Compact : Full;
 
     public static bool CompactShown => Enabled && Style == Compact;
 
     public static void SetEnabled(bool enabled)
     {
-        UserDefaults.WorldWeatherForecast.Value = enabled;
+        UserDefaults.DisplayWeatherForecast.Value = enabled;
 
         Reevaluate();
     }
 
     public static void SetStyle(int style)
     {
-        UserDefaults.WorldWeatherForecastStyle.Value = style;
+        UserDefaults.DisplayWeatherForecastStyle.Value = style;
+
+        Reevaluate();
+    }
+
+    public static void SetClockEnabled(bool enabled)
+    {
+        UserDefaults.DisplayShowTime.Value = enabled;
 
         Reevaluate();
     }
@@ -82,7 +99,7 @@ public static class WeatherForecast
 
         LocationDisplay.RefreshAnchor();
 
-        if (!Enabled)
+        if (!Wanted)
         {
             Hide();
 
@@ -130,6 +147,11 @@ public static class WeatherForecast
 
     private static ForecastMessage Build()
     {
+        if (ClockOnlyShown)
+        {
+            return ClockOnly();
+        }
+
         var localizer = Localizer.Current;
         var forced = WorldState.WeatherOverride;
         var scheduled = WorldState.HasClock && forced is null;
@@ -159,15 +181,17 @@ public static class WeatherForecast
 
         return new ForecastMessage
         {
+            ShowForecast = true,
+            ShowTime = ClockEnabled,
             Compact = compact,
             Time = ClockText(),
-            Title = localizer.Get(Loc.World.ForecastTitle),
-            NowLabel = localizer.Get(Loc.World.ForecastNow),
-            NextLabel = localizer.Get(Loc.World.ForecastNext),
-            MoonLabel = localizer.Get(Loc.World.ForecastMoon),
+            Title = localizer.Get(Loc.DisplaySettings.ForecastTitle),
+            NowLabel = localizer.Get(Loc.DisplaySettings.ForecastNow),
+            NextLabel = localizer.Get(Loc.DisplaySettings.ForecastNext),
+            MoonLabel = localizer.Get(Loc.DisplaySettings.ForecastMoon),
             Note = WorldState.HasClock
-                ? forced is null ? string.Empty : localizer.Get(Loc.World.ForecastForced)
-                : localizer.Get(Loc.World.ForecastNoClock),
+                ? forced is null ? string.Empty : localizer.Get(Loc.DisplaySettings.ForecastForced)
+                : localizer.Get(Loc.DisplaySettings.ForecastNoClock),
             CurrentName = localizer.Get(Loc.World.WeatherName(current)),
             CurrentIcon = IconOf(current),
             CurrentForSeconds = scheduled ? RealSeconds(WorldState.Schedule.GameHoursUntilNext, speed) : Unknown,
@@ -177,6 +201,26 @@ public static class WeatherForecast
             MoonWaxing = MoonCycle.DayOfCycle(moonDays) < MoonCycle.FullMoonDay,
         };
     }
+
+    private static ForecastMessage ClockOnly() => new()
+    {
+        ShowForecast = false,
+        ShowTime = true,
+        Compact = true,
+        Time = ClockText(),
+        Title = string.Empty,
+        NowLabel = string.Empty,
+        NextLabel = string.Empty,
+        MoonLabel = string.Empty,
+        Note = string.Empty,
+        CurrentName = string.Empty,
+        CurrentIcon = string.Empty,
+        CurrentForSeconds = Unknown,
+        Upcoming = [],
+        MoonName = string.Empty,
+        MoonLit = 0,
+        MoonWaxing = false,
+    };
 
     private static string ClockText() =>
         TimeText.Format((Native.GetClockHours() * 3600) + (Native.GetClockMinutes() * 60));
@@ -222,6 +266,10 @@ public static class WeatherForecast
         public string Type { get; } = "forecast";
 
         public bool Visible { get; } = true;
+
+        public required bool ShowForecast { get; init; }
+
+        public required bool ShowTime { get; init; }
 
         public required bool Compact { get; init; }
 

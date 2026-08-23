@@ -90,6 +90,13 @@ public static class ActionIds
         public const string GetStatus = "OnlinePlayers.GetStatus";
     }
 
+    public static class DisplaySettings
+    {
+        public const string AddBlip = "DisplaySettings.AddBlip";
+
+        public const string RemoveBlip = "DisplaySettings.RemoveBlip";
+    }
+
     public static class MiscSettings
     {
         public const string ClearArea = "MiscSettings.ClearArea";

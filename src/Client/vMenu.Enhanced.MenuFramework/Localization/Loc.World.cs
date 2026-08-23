@@ -63,32 +63,6 @@ public static partial class Loc
 
         public const string Failed = "world.failed";
 
-        public const string Forecast = "world.forecast";
-
-        public const string ForecastDescription = "world.forecast.desc";
-
-        public const string ForecastTitle = "world.forecast.title";
-
-        public const string ForecastNow = "world.forecast.now";
-
-        public const string ForecastNext = "world.forecast.next";
-
-        public const string ForecastForced = "world.forecast.forced";
-
-        public const string ForecastMoon = "world.forecast.moon";
-
-        public const string ForecastNoClock = "world.forecast.noclock";
-
-        public const string ForecastStyle = "world.forecast.style";
-
-        public const string ForecastStyleDescription = "world.forecast.style.desc";
-
-        public const string ForecastStyleLocked = "world.forecast.style.locked";
-
-        public const string ForecastStyleFull = "world.forecast.style.full";
-
-        public const string ForecastStyleCompact = "world.forecast.style.compact";
-
         public const string MoonPhaseNew = "world.moonphase.new";
 
         public const string MoonPhaseWaxingCrescent = "world.moonphase.waxingcrescent";

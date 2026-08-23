@@ -17,7 +17,6 @@ public static class UserDefaults
     public static BoolDefault MiscRightAlignMenu { get; } =
         new("miscRightAlignMenu") { Default = true };
 
-
     public static StringDefault Language { get; } =
         new("language") { Default = "en" };
 
@@ -32,15 +31,6 @@ public static class UserDefaults
 
     public static BoolDefault MiscJoinLeaveNotifications { get; } =
         new("miscJoinLeaveNotifications") { Default = true };
-
-    public static IntDefault MiscMinimapAction { get; } =
-        new("miscMinimapAction") { Default = 0 };
-
-    public static IntDefault MiscMinimapZoom { get; } =
-        new("miscMinimapZoom") { Default = 5 };
-
-    public static BoolDefault MiscMinimapAlwaysOn { get; } =
-        new("miscMinimapAlwaysOn") { Default = false };
 
     public static BoolDefault MiscFingerPointing { get; } =
         new("miscFingerPointing") { Default = true };
@@ -57,17 +47,42 @@ public static class UserDefaults
     public static BoolDefault MiscHideStaffAlerts { get; } =
         new("miscHideStaffAlerts") { Default = false };
 
-    public static IntDefault MiscSpeedometer { get; } =
-        new("miscSpeedometer") { Default = 0 };
+    #endregion
 
-    public static IntDefault MiscSpeedometerPosition { get; } =
-        new("miscSpeedometerPosition") { Default = 0 };
+    #region Display Settings
 
-    public static BoolDefault MiscShowLocation { get; } =
-        new("miscShowLocation") { Default = false };
+    public static IntDefault DisplayMinimapAction { get; } =
+        new("displayMinimapAction") { Default = 0 };
 
-    public static BoolDefault MiscShowCoordinates { get; } =
-        new("miscShowCoordinates") { Default = false };
+    public static IntDefault DisplayMinimapZoom { get; } =
+        new("displayMinimapZoom") { Default = 5 };
+
+    public static BoolDefault DisplayMinimapAlwaysOn { get; } =
+        new("displayMinimapAlwaysOn") { Default = false };
+
+    public static IntDefault DisplaySpeedometer { get; } =
+        new("displaySpeedometer") { Default = 0 };
+
+    public static IntDefault DisplaySpeedometerPosition { get; } =
+        new("displaySpeedometerPosition") { Default = 0 };
+
+    public static BoolDefault DisplayShowLocation { get; } =
+        new("displayShowLocation") { Default = false };
+
+    public static BoolDefault DisplayShowCoordinates { get; } =
+        new("displayShowCoordinates") { Default = false };
+
+    public static BoolDefault DisplayWeatherForecast { get; } =
+        new("displayWeatherForecast") { Default = false };
+
+    public static BoolDefault DisplayShowTime { get; } =
+        new("displayShowTime") { Default = false };
+
+    public static BoolDefault DisplayLocationBlips { get; } =
+        new("displayLocationBlips") { Default = false };
+
+    public static IntDefault DisplayWeatherForecastStyle { get; } =
+        new("displayWeatherForecastStyle") { Default = 0 };
 
     #endregion
 
@@ -78,9 +93,7 @@ public static class UserDefaults
 
     public static BoolDefault PlayerGodMode { get; } = new("playerGodMode") { Default = false };
 
-
     public static BoolDefault PlayerSuperJump { get; } = new("playerSuperJump") { Default = false };
-
 
     public static BoolDefault PlayerFastRun { get; } = new("playerFastRun") { Default = false };
 
@@ -163,12 +176,6 @@ public static class UserDefaults
     #endregion
 
     #region World
-
-    public static BoolDefault WorldWeatherForecast { get; } =
-        new("worldWeatherForecast") { Default = false };
-
-    public static IntDefault WorldWeatherForecastStyle { get; } =
-        new("worldWeatherForecastStyle") { Default = 0 };
 
     #endregion
 
@@ -276,18 +283,18 @@ public static class UserDefaults
         MiscDisableVehicleIdleCamera,
         MiscDeathNotifications,
         MiscJoinLeaveNotifications,
-        MiscMinimapAction,
-        MiscMinimapZoom,
-        MiscMinimapAlwaysOn,
+        DisplayMinimapAction,
+        DisplayMinimapZoom,
+        DisplayMinimapAlwaysOn,
         MiscFingerPointing,
         MiscShowPlayerBlips,
         MiscShowOverheadNames,
         MiscSeeNoClipPlayers,
         MiscHideStaffAlerts,
-        MiscSpeedometer,
-        MiscSpeedometerPosition,
-        MiscShowLocation,
-        MiscShowCoordinates,
+        DisplaySpeedometer,
+        DisplaySpeedometerPosition,
+        DisplayShowLocation,
+        DisplayShowCoordinates,
 
         PlayerGodMode,
         PlayerSuperJump,
@@ -324,8 +331,10 @@ public static class UserDefaults
         VehicleSpawnerSpawnInside,
         VehicleSpawnerReplacePrevious,
 
-        WorldWeatherForecast,
-        WorldWeatherForecastStyle,
+        DisplayWeatherForecast,
+        DisplayWeatherForecastStyle,
+        DisplayShowTime,
+        DisplayLocationBlips,
 
         WeaponsUnlimitedAmmo,
         WeaponsNoReload,

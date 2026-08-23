@@ -69,6 +69,7 @@ public sealed class Main : IScript
         TeleportSync.RegisterEventHandlers();
         ClothingPresetSync.RegisterEventHandlers();
         VehicleExtraLabels.RegisterEventHandlers();
+        LocationBlipSync.RegisterEventHandlers();
 
         PedModelSync.RegisterEventHandlers();
 
@@ -145,6 +146,10 @@ public sealed class Main : IScript
         TeleportKeyBinding.Initialize();
         VisorKeyBinding.Initialize();
         MinimapControls.Initialize();
+        HudVisibility.Initialize();
+        VisionModes.Initialize();
+        TimecycleState.Initialize();
+        LocationBlips.Initialize();
         FingerPointing.Initialize();
         Speedometer.Initialize();
         LocationDisplay.Initialize();
@@ -170,6 +175,7 @@ public sealed class Main : IScript
         TeleportSync.Request();
         ClothingPresetSync.Request();
         VehicleExtraLabels.Request();
+        LocationBlipSync.Request();
 
         PedModelSync.Request();
 

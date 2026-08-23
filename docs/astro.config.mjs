@@ -66,6 +66,7 @@ export default defineConfig({
         {
           label: 'Configuration',
           items: [
+            { label: 'blips.json', link: '/configuration/blips-json/' },
             { label: 'extras.json', link: '/configuration/extras-json/' },
           ],
         },

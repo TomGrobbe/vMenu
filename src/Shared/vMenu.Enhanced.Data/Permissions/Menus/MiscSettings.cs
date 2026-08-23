@@ -16,10 +16,6 @@ public static class MiscSettings
 
     public const string OverheadNames = "vMenu.Enhanced.Menus.MiscSettings.OverheadNames";
 
-    public const string ShowLocation = "vMenu.Enhanced.Menus.MiscSettings.ShowLocation";
-
-    public const string ShowCoordinates = "vMenu.Enhanced.Menus.MiscSettings.ShowCoordinates";
-
     [StaffOnly]
     public const string ClearArea = "vMenu.Enhanced.Menus.MiscSettings.ClearArea";
 

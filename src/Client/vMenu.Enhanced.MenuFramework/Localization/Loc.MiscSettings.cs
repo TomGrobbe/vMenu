@@ -38,50 +38,6 @@ public static partial class Loc
 
         public const string DisableVehicleIdleCameraDescription = "miscsettings.idlecam.vehicle.desc";
 
-        public const string Speedometer = "miscsettings.speedometer";
-
-        public const string SpeedometerDescription = "miscsettings.speedometer.desc";
-
-        public const string SpeedometerOff = "miscsettings.speedometer.off";
-
-        public const string SpeedometerKmh = "miscsettings.speedometer.kmh";
-
-        public const string SpeedometerMph = "miscsettings.speedometer.mph";
-
-        public const string SpeedometerBoth = "miscsettings.speedometer.both";
-
-        public const string SpeedometerPosition = "miscsettings.speedometer.position";
-
-        public const string SpeedometerPositionDescription = "miscsettings.speedometer.position.desc";
-
-        public const string SpeedometerPositionLocked = "miscsettings.speedometer.position.locked";
-
-        public const string SpeedometerPositionRight = "miscsettings.speedometer.position.right";
-
-        public const string SpeedometerPositionCenter = "miscsettings.speedometer.position.center";
-
-        public const string MinimapAction = "miscsettings.minimap.action";
-
-        public const string MinimapActionDescription = "miscsettings.minimap.action.desc";
-
-        public const string MinimapActionOff = "miscsettings.minimap.action.off";
-
-        public const string MinimapActionExpand = "miscsettings.minimap.action.expand";
-
-        public const string MinimapActionZoom = "miscsettings.minimap.action.zoom";
-
-        public const string MinimapZoom = "miscsettings.minimap.zoom";
-
-        public const string MinimapZoomDescription = "miscsettings.minimap.zoom.desc";
-
-        public const string MinimapZoomLocked = "miscsettings.minimap.zoom.locked";
-
-        public const string MinimapAlwaysOn = "miscsettings.minimap.alwayson";
-
-        public const string MinimapAlwaysOnDescription = "miscsettings.minimap.alwayson.desc";
-
-        public const string MinimapAlwaysOnLocked = "miscsettings.minimap.alwayson.locked";
-
         public const string FingerPointing = "miscsettings.pointing";
 
         public const string FingerPointingDescription = "miscsettings.pointing.desc";
@@ -89,26 +45,6 @@ public static partial class Loc
         public const string PlayerBlips = "miscsettings.playerblips";
 
         public const string PlayerBlipsDescription = "miscsettings.playerblips.desc";
-
-        public const string LocationDisplay = "miscsettings.locationdisplay";
-
-        public const string LocationDisplayDescription = "miscsettings.locationdisplay.desc";
-
-        public const string LocationNear = "miscsettings.locationdisplay.near";
-
-        public const string CompassNorth = "miscsettings.compass.north";
-
-        public const string CompassEast = "miscsettings.compass.east";
-
-        public const string CompassSouth = "miscsettings.compass.south";
-
-        public const string CompassWest = "miscsettings.compass.west";
-
-        public const string CoordinatesDisplay = "miscsettings.coordinatesdisplay";
-
-        public const string CoordinatesDisplayDescription = "miscsettings.coordinatesdisplay.desc";
-
-        public const string CoordinatesHeading = "miscsettings.coordinatesdisplay.heading";
 
         public const string OverheadNames = "miscsettings.overheadnames";
 

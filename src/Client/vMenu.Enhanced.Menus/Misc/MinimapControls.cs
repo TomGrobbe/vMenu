@@ -97,7 +97,7 @@ public static class MinimapControls
     /// <summary>What the key does: <see cref="Off"/>, <see cref="Expand"/> or <see cref="Zoom"/>.</summary>
     public static int Action
     {
-        get => UserDefaults.MiscMinimapAction.Value;
+        get => UserDefaults.DisplayMinimapAction.Value;
 
         set
         {
@@ -106,7 +106,7 @@ public static class MinimapControls
                 return;
             }
 
-            UserDefaults.MiscMinimapAction.Value = value;
+            UserDefaults.DisplayMinimapAction.Value = value;
 
             Apply();
         }
@@ -115,11 +115,11 @@ public static class MinimapControls
     /// <summary>A slider position, not a zoom value. <see cref="ZoomValue"/> turns it into one.</summary>
     public static int ZoomAmount
     {
-        get => Math.Clamp(UserDefaults.MiscMinimapZoom.Value, MinZoom, MaxZoom);
+        get => Math.Clamp(UserDefaults.DisplayMinimapZoom.Value, MinZoom, MaxZoom);
 
         set
         {
-            UserDefaults.MiscMinimapZoom.Value = Math.Clamp(value, MinZoom, MaxZoom);
+            UserDefaults.DisplayMinimapZoom.Value = Math.Clamp(value, MinZoom, MaxZoom);
 
             // Retargeted rather than reapplied, so moving the slider mid press glides to the new
             // amount instead of cancelling the ten seconds the player is in the middle of.
@@ -133,11 +133,11 @@ public static class MinimapControls
     /// <summary>Whether the chosen action is held on permanently, leaving the key nothing to toggle.</summary>
     public static bool AlwaysOn
     {
-        get => UserDefaults.MiscMinimapAlwaysOn.Value;
+        get => UserDefaults.DisplayMinimapAlwaysOn.Value;
 
         set
         {
-            UserDefaults.MiscMinimapAlwaysOn.Value = value;
+            UserDefaults.DisplayMinimapAlwaysOn.Value = value;
 
             Apply();
         }

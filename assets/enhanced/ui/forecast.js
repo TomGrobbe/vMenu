@@ -5,6 +5,8 @@
 
     const compactEl = document.getElementById("forecast-compact");
 
+    const clockEl = document.getElementById("forecast-clock");
+
     const SVG = "http://www.w3.org/2000/svg";
 
     const CLOUD_MID = '<path d="M7.5 18h9.2a3.6 3.6 0 0 0 .3-7.2 5.2 5.2 0 0 0-9.9-1A3.6 3.6 0 0 0 7.5 18z"/>';
@@ -107,7 +109,7 @@
 
         row.appendChild(element("span", "name", data.title));
 
-        if (data.time) {
+        if (data.showTime && data.time) {
             row.appendChild(element("span", "clock", data.time));
         }
 
@@ -181,7 +183,10 @@
 
         current.appendChild(weatherIcon(data.currentIcon));
         current.appendChild(element("span", "what", data.currentName));
-        current.appendChild(element("span", "clock", data.time));
+
+        if (data.showTime) {
+            current.appendChild(element("span", "clock", data.time));
+        }
 
         compactEl.appendChild(current);
 
@@ -198,6 +203,17 @@
         next.appendChild(element("span", "when", duration(entry.inSeconds)));
 
         compactEl.appendChild(next);
+    }
+
+    // The clock with no weather around it, for a player who only wanted the time.
+    function renderClock(data) {
+        clockEl.textContent = "";
+
+        const line = element("div", "line");
+
+        line.appendChild(element("span", "clock", data.time));
+
+        clockEl.appendChild(line);
     }
 
     function clear(target) {
@@ -223,9 +239,22 @@
         if (!data.visible) {
             clear(boxEl);
             clear(compactEl);
+            clear(clockEl);
 
             return;
         }
+
+        if (!data.showForecast) {
+            clear(boxEl);
+            clear(compactEl);
+
+            renderClock(data);
+            clockEl.classList.add("shown");
+
+            return;
+        }
+
+        clear(clockEl);
 
         const target = data.compact ? compactEl : boxEl;
 
