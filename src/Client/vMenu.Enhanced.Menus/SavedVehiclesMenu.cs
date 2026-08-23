@@ -68,6 +68,10 @@ public sealed class SavedVehiclesMenu : MenuDefinition
 
         _detailMenu.Builder.OnOpened = _ => Fill(_detailMenu, DetailRows());
 
+        VehicleSpawnShortcuts.Attach(menu);
+        VehicleSpawnShortcuts.Attach(_vehicleMenu.Builder);
+        VehicleSpawnShortcuts.Attach(_detailMenu.Builder);
+
         menu.AddRange(RootRows());
 
         // The store changes from inside this menu, so the rows are rebuilt whenever the player comes

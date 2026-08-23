@@ -23,7 +23,7 @@ public sealed class MenuBuilder
     /// Extra button hints along the bottom of the screen, on top of the select and back MenuAPI draws
     /// itself. Resolved on every refresh, so they follow a language change like everything else.
     /// </summary>
-    public List<(Control Control, MenuText Text)> InstructionalButtons { get; } = [];
+    public List<ButtonHint> InstructionalButtons { get; } = [];
 
     /// <summary>Null inherits <see cref="MenuFrameworkOptions.DefaultGateBehaviour"/>.</summary>
     public GateBehaviour? DefaultGateBehaviour { get; set; }

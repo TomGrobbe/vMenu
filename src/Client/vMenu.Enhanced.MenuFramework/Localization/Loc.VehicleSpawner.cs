@@ -36,11 +36,19 @@ public static partial class Loc
 
         public const string SpawnInsideDescription = "vehiclespawner.spawninside.desc";
 
+        public const string SpawnInsideButtonOn = "vehiclespawner.spawninside.button.on";
+
+        public const string SpawnInsideButtonOff = "vehiclespawner.spawninside.button.off";
+
         public const string ReplacePrevious = "vehiclespawner.replaceprevious";
 
         public const string ReplacePreviousDescription = "vehiclespawner.replaceprevious.desc";
 
         public const string ReplacePreviousLocked = "vehiclespawner.replaceprevious.locked";
+
+        public const string ReplacePreviousButtonOn = "vehiclespawner.replaceprevious.button.on";
+
+        public const string ReplacePreviousButtonOff = "vehiclespawner.replaceprevious.button.off";
 
         public const string OldVehicleRemoved = "vehiclespawner.oldvehicleremoved";
 

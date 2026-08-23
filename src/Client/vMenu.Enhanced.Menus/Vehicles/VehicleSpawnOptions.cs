@@ -13,14 +13,14 @@ public static class VehicleSpawnOptions
         UserDefaults.VehicleSpawnerSpawnInside.Value = spawnInside;
 
     public static bool ReplacePrevious =>
-        UserDefaults.VehicleSpawnerReplacePrevious.Value || !IsAllowedToKeep;
+        UserDefaults.VehicleSpawnerReplacePrevious.Value || !CanKeepPrevious;
 
-    private static bool IsAllowedToKeep =>
+    public static bool CanKeepPrevious =>
         ClientPermissions.IsAllowed(VehicleSpawnerPermissions.AllowKeepPreviousVehicle);
 
     public static void SetReplacePrevious(bool replace)
     {
-        if (!replace && !IsAllowedToKeep)
+        if (!replace && !CanKeepPrevious)
         {
             return;
         }

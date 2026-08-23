@@ -174,9 +174,16 @@ internal sealed class MenuHost : IDisposable
     {
         RefreshHeader(localizer);
 
-        foreach (var button in Builder.InstructionalButtons)
+        foreach (var hint in Builder.InstructionalButtons)
         {
-            Menu.InstructionalButtons[button.Control] = button.Text.Resolve(localizer);
+            if (hint.Gate.Evaluate())
+            {
+                Menu.InstructionalButtons[hint.Control] = hint.Text.Resolve(localizer);
+            }
+            else
+            {
+                Menu.InstructionalButtons.Remove(hint.Control);
+            }
         }
 
         var fallback = Builder.DefaultGateBehaviour ?? MenuFrameworkOptions.DefaultGateBehaviour;

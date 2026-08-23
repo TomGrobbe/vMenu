@@ -119,10 +119,14 @@ public sealed class VehicleSpawnerMenu : MenuDefinition
             ReadState = () => VehicleSpawnOptions.ReplacePrevious,
             OnChanged = changed => VehicleSpawnOptions.SetReplacePrevious(changed.Checked),
         });
+
+        VehicleSpawnShortcuts.Attach(menu);
     }
 
     private void BuildCategoryList(MenuBuilder byCategory)
     {
+        VehicleSpawnShortcuts.Attach(byCategory);
+
         foreach (var category in _categories)
         {
             // Copied out of the loop variable so each entry's callbacks capture its own category.
@@ -149,6 +153,8 @@ public sealed class VehicleSpawnerMenu : MenuDefinition
     /// </summary>
     private static void BuildCategoryMenu(MenuBuilder categoryMenu, (string Model, int Class, string Label)[] vehicles)
     {
+        VehicleSpawnShortcuts.Attach(categoryMenu);
+
         foreach (var (Model, Class, Label) in vehicles)
         {
             var modelName = Model;
