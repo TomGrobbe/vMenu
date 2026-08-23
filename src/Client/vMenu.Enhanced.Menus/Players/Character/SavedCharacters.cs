@@ -1,4 +1,4 @@
-﻿using System.Globalization;
+using System.Globalization;
 
 using CitizenFX.FiveM.Client;
 
@@ -1101,7 +1101,9 @@ internal sealed class SavedCharacters
         var typed = await UserInput.GetTextAsync(
             MenuText.Key(Loc.CharacterCreator.CategoryName),
             NameLength,
-            categories[0].Name);
+            categories[0].Name,
+            CategorySuggestions(categories),
+            suggestWhenEmpty: true);
 
         if (string.IsNullOrWhiteSpace(typed))
         {
@@ -1158,6 +1160,23 @@ internal sealed class SavedCharacters
         Notifications.Success(MenuText.Key(Loc.CharacterCreator.CategoryDeleted, ("name", MenuText.Literal(name))));
 
         Rebuild();
+    }
+
+    private static IReadOnlyList<InputSuggestion> CategorySuggestions(List<MpCharacterCategory> categories)
+    {
+        var rows = new InputSuggestion[categories.Count];
+
+        for (var index = 0; index < rows.Length; index++)
+        {
+            rows[index] = new InputSuggestion
+            {
+                Value = categories[index].Name,
+                Label = string.Empty,
+                Detail = categories[index].Description,
+            };
+        }
+
+        return rows;
     }
 
     private static MpCharacterCategory? Find(List<MpCharacterCategory> categories, string name)

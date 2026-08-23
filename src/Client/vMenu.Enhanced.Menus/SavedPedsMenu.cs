@@ -438,7 +438,11 @@ public sealed class SavedPedsMenu : MenuDefinition
         if (await UserInput.GetTextAsync(
             new InputPrompt(MenuText.Key(Loc.SavedPeds.NamePrompt), NameLength),
             new InputPrompt(MenuText.Key(Loc.SavedPeds.DescriptionPrompt), DescriptionLength),
-            new InputPrompt(MenuText.Key(Loc.SavedPeds.CategoryPrompt), NameLength)) is not { } answers)
+            new InputPrompt(
+                MenuText.Key(Loc.SavedPeds.CategoryPrompt),
+                NameLength,
+                suggestions: CategorySuggestions(),
+                suggestWhenEmpty: true)) is not { } answers)
         {
             return;
         }
@@ -794,6 +798,43 @@ public sealed class SavedPedsMenu : MenuDefinition
 
     private string CategoryTitle() =>
         _category.Length == 0 ? Localizer.Current.Get(Loc.SavedPeds.Uncategorised) : _category;
+
+    private static IReadOnlyList<InputSuggestion> CategorySuggestions()
+    {
+        var peds = SavedPedStore.All();
+        var declared = SavedPedStore.Categories();
+        var rows = new List<InputSuggestion>();
+
+        foreach (var name in GroupNames(peds))
+        {
+            if (name.Length == 0)
+            {
+                continue;
+            }
+
+            rows.Add(new InputSuggestion
+            {
+                Value = name,
+                Label = $"({Count(peds, name).ToString(CultureInfo.InvariantCulture)})",
+                Detail = DeclaredDescription(declared, name),
+            });
+        }
+
+        return rows;
+    }
+
+    private static string DeclaredDescription(List<SavedPedCategory> declared, string name)
+    {
+        foreach (var category in declared)
+        {
+            if (string.Equals(category.Name, name, StringComparison.OrdinalIgnoreCase))
+            {
+                return category.Description;
+            }
+        }
+
+        return string.Empty;
+    }
 
     /// <summary>
     /// Every group with something in it, plus every category that was declared, so a ped naming a

@@ -39,9 +39,11 @@ public static class UserInput
         MenuText title,
         int maxLength,
         string initialValue = "",
-        IReadOnlyList<InputSuggestion>? suggestions = null)
+        IReadOnlyList<InputSuggestion>? suggestions = null,
+        bool suggestWhenEmpty = false)
     {
-        var answers = await GetTextAsync(new InputPrompt(title, maxLength, initialValue, suggestions));
+        var answers = await GetTextAsync(
+            new InputPrompt(title, maxLength, initialValue, suggestions, suggestWhenEmpty));
 
         return answers?[0];
     }
@@ -108,11 +110,7 @@ public static class UserInput
 
         try
         {
-            Native.SendNuiMessage(BuildOpenMessage(
-                prompt.Title.Resolve(Localizer.Current),
-                prompt.MaxLength,
-                prompt.InitialValue,
-                prompt.Suggestions));
+            Native.SendNuiMessage(BuildOpenMessage(prompt));
 
             Native.SetNuiFocus(true, true);
 
@@ -185,9 +183,10 @@ public static class UserInput
         return string.Empty;
     }
 
-    private static string BuildOpenMessage(string title, int maxLength, string initialValue, IReadOnlyList<InputSuggestion>? suggestions)
+    private static string BuildOpenMessage(InputPrompt prompt)
     {
         var localizer = Localizer.Current;
+        var suggestions = prompt.Suggestions;
         var rows = new SuggestionRow[suggestions?.Count ?? 0];
 
         for (var index = 0; index < rows.Length; index++)
@@ -205,12 +204,13 @@ public static class UserInput
 
         return ClientJson.Serialize(new OpenMessage
         {
-            Title = title,
-            Value = initialValue,
-            MaxLength = maxLength,
+            Title = prompt.Title.Resolve(localizer),
+            Value = prompt.InitialValue,
+            MaxLength = prompt.MaxLength,
             Placeholder = localizer.Get(Loc.Framework.InputPlaceholder),
             Hint = localizer.Get(Loc.Framework.InputHint),
             NoMatches = localizer.Get(Loc.Framework.InputNoMatches),
+            SuggestWhenEmpty = prompt.SuggestWhenEmpty,
             Suggestions = rows,
         });
     }
@@ -230,6 +230,8 @@ public static class UserInput
         public required string Hint { get; init; }
 
         public required string NoMatches { get; init; }
+
+        public required bool SuggestWhenEmpty { get; init; }
 
         public required IReadOnlyList<SuggestionRow> Suggestions { get; init; }
     }

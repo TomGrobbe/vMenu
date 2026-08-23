@@ -29,6 +29,7 @@
     let active = -1;
     let pressed = null;
     let noMatchesText = "";
+    let suggestWhenEmpty = false;
 
     /* Must be valid JSON: the body is parsed before anything is dispatched. Nothing answers
        these, so they are dropped after a moment, or they would use up every connection the
@@ -225,8 +226,14 @@
 
         active = -1;
 
-        if (query.length === 0 || suggestions.length === 0) {
+        if (suggestions.length === 0) {
             matches = [];
+            render();
+            return;
+        }
+
+        if (query.length === 0) {
+            matches = suggestWhenEmpty ? suggestions.slice(0, MAX_ROWS) : [];
             render();
             return;
         }
@@ -282,11 +289,13 @@
         matches = [];
         active = -1;
         pressed = null;
+        suggestWhenEmpty = false;
         render();
     }
 
     function open(data) {
         suggestions = Array.isArray(data.suggestions) ? data.suggestions : [];
+        suggestWhenEmpty = data.suggestWhenEmpty === true;
         titleEl.textContent = data.title || "";
         footerEl.textContent = data.hint || "";
         noMatchesText = data.noMatches || "";

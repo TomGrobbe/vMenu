@@ -437,7 +437,11 @@ public sealed class SavedVehiclesMenu : MenuDefinition
         if (await UserInput.GetTextAsync(
             new InputPrompt(MenuText.Key(Loc.SavedVehicles.NamePrompt), NameLength),
             new InputPrompt(MenuText.Key(Loc.SavedVehicles.DescriptionPrompt), DescriptionLength),
-            new InputPrompt(MenuText.Key(Loc.SavedVehicles.CategoryPrompt), NameLength)) is not { } answers)
+            new InputPrompt(
+                MenuText.Key(Loc.SavedVehicles.CategoryPrompt),
+                NameLength,
+                suggestions: CategorySuggestions(),
+                suggestWhenEmpty: true)) is not { } answers)
         {
             return;
         }
@@ -782,6 +786,27 @@ public sealed class SavedVehiclesMenu : MenuDefinition
 
     private string CategoryTitle() =>
         _category.Length == 0 ? Localizer.Current.Get(Loc.SavedVehicles.Uncategorised) : _category;
+
+    private static IReadOnlyList<InputSuggestion> CategorySuggestions()
+    {
+        var vehicles = SavedVehicleStore.All();
+        var categories = ManageableCategories(GroupNames(vehicles));
+        var rows = new InputSuggestion[categories.Count];
+
+        for (var index = 0; index < rows.Length; index++)
+        {
+            var category = categories[index];
+
+            rows[index] = new InputSuggestion
+            {
+                Value = category.Name,
+                Label = $"({Count(vehicles, category.Name).ToString(CultureInfo.InvariantCulture)})",
+                Detail = category.Description,
+            };
+        }
+
+        return rows;
+    }
 
     /// <summary>
     /// Every named category the player can act on, from the same groups the menu shows. A declared

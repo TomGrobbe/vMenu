@@ -8,7 +8,8 @@ public sealed class InputPrompt(
     MenuText title,
     int maxLength,
     string initialValue = "",
-    IReadOnlyList<InputSuggestion>? suggestions = null)
+    IReadOnlyList<InputSuggestion>? suggestions = null,
+    bool suggestWhenEmpty = false)
 {
     public MenuText Title { get; } = title;
 
@@ -17,4 +18,6 @@ public sealed class InputPrompt(
     public string InitialValue { get; } = initialValue;
 
     public IReadOnlyList<InputSuggestion>? Suggestions { get; } = suggestions;
+
+    public bool SuggestWhenEmpty { get; } = suggestWhenEmpty;
 }
