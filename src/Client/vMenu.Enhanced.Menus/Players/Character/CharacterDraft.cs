@@ -7,8 +7,6 @@ namespace vMenu.Enhanced.Menus.Players.Character;
 
 public static class CharacterDraft
 {
-    public const string FirstVariantName = "Default";
-
     public const string DefaultExpression = "mood_Normal_1";
 
     public static readonly string[] Expressions =
@@ -37,20 +35,9 @@ public static class CharacterDraft
             },
         };
 
-        character.Styles.Add(new MpCharacterStyle
-        {
-            Name = FirstVariantName,
-            Overlays = BlankOverlays(PedHeadOverlays.Style),
-        });
+        character.CurrentStyle = new MpCharacterStyle { Overlays = BlankOverlays(PedHeadOverlays.Style) };
 
-        character.Outfits.Add(new MpCharacterOutfit
-        {
-            Name = FirstVariantName,
-            Outfit = StartingClothes(male),
-        });
-
-        character.LastStyle = FirstVariantName;
-        character.LastOutfit = FirstVariantName;
+        character.CurrentOutfit = new MpCharacterOutfit { Outfit = StartingClothes(male) };
 
         return character;
     }
@@ -62,27 +49,13 @@ public static class CharacterDraft
             return null;
         }
 
-        var style = FreemodeReader.ReadStyle(ped);
-
-        style.Name = FirstVariantName;
-
-        var character = new MpCharacter
+        return new MpCharacter
         {
             Core = core,
             FacialExpression = DefaultExpression,
-            LastStyle = FirstVariantName,
-            LastOutfit = FirstVariantName,
+            CurrentStyle = FreemodeReader.ReadStyle(ped),
+            CurrentOutfit = new MpCharacterOutfit { Outfit = FreemodeReader.ReadOutfit(ped) },
         };
-
-        character.Styles.Add(style);
-
-        character.Outfits.Add(new MpCharacterOutfit
-        {
-            Name = FirstVariantName,
-            Outfit = FreemodeReader.ReadOutfit(ped),
-        });
-
-        return character;
     }
 
     public static void Randomise(MpCharacter character, MpCharacterStyle style, int ped)

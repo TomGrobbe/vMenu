@@ -37,9 +37,28 @@ From there the pages are:
 | Character Category | Which group this one is saved into |
 
 While the creator is open the camera follows whichever row you are on, so scrolling onto the shoes
-row shows you the shoes. You can turn your head with the left and right movement keys, turn the whole
-character around with the jump key, and swing the camera round the side with the parachute brake keys.
-The buttons along the bottom of the screen say which is which.
+row shows you the shoes. From there the camera is yours to move, and it stays where you put it while
+you keep working on the same page. Opening a different page hands it back to that page's own angle.
+
+| What you want | Keyboard and mouse | Controller |
+| --- | --- | --- |
+| Look at the character from another angle | Move the mouse | Right stick |
+| Swing around the character | `A` and `D` | Left stick left and right |
+| Zoom in and out | `W` and `S` | Right and left trigger |
+| Raise and lower the camera | `E` and `Q` | Left stick up and down |
+| Put the camera back where it started | `C` | Right stick click |
+| Turn the whole character around | `Space` | `X` on Xbox, square on PlayStation |
+
+The character looks back at the camera on their own, so you always get the face while you are moving
+around. Walk the camera far enough round the back and they face front again, because a neck only
+turns so far. The buttons along the bottom of the screen cover the rest.
+
+If you would rather the camera never moved itself, there is a **Disable Auto Camera** switch at the
+very top of the creator. Turn it on and the camera stops jumping to the shoes, the face or whatever
+else the row you are on is about, and simply stays where you left it. `N` on the keyboard, or the
+right bumper on a controller, does the same thing without opening the menu page, so you can flip it
+while you are lining a shot up. Like every key in vMenu Enhanced you can rebind that one, and the
+choice is remembered between sessions.
 
 Backing out is deliberately blocked while you are in there. Save the character, or use **Exit Without
 Saving** if you have changed your mind. That one asks you to press it twice.
@@ -87,6 +106,12 @@ have a work outfit and a going out outfit without being saved twice.
 
 Both live under **Saved Characters**, pick a character, then **Outfits** or **Hair & Makeup Styles**.
 Wear something you like, pick **Save Current As New**, and give it a name.
+
+Alongside those lists every character quietly keeps the clothes and hair it is wearing right now, and
+that one is not part of the lists. Editing a character, or putting a saved outfit on, changes only
+that. So a saved outfit is only ever written to when you ask for it by name, with **Save Current As
+New** or **Replace**, and going into the creator can never quietly rewrite one. That also means you
+are free to delete every saved outfit a character has. It carries on wearing what it had on.
 
 ### Coming back as yourself
 

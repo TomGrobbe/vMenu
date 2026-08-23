@@ -5,7 +5,7 @@ namespace vMenu.Enhanced.Menus.Players.Character;
 // Not a record: the client sandbox has no default equality comparer.
 public sealed class MpCharacter
 {
-    public const int SchemaVersion = 1;
+    public const int SchemaVersion = 2;
 
     public string Name { get; set; } = string.Empty;
 
@@ -14,6 +14,10 @@ public sealed class MpCharacter
     public string Category { get; set; } = string.Empty;
 
     public MpCharacterCore Core { get; set; } = new();
+
+    public MpCharacterStyle? CurrentStyle { get; set; }
+
+    public MpCharacterOutfit? CurrentOutfit { get; set; }
 
     public List<MpCharacterStyle> Styles { get; set; } = [];
 
@@ -52,6 +56,35 @@ public sealed class MpCharacter
 
         return null;
     }
+
+    public MpCharacter Copy()
+    {
+        var copy = new MpCharacter
+        {
+            Name = Name,
+            Description = Description,
+            Category = Category,
+            Core = Core.Copy(),
+            CurrentStyle = CurrentStyle?.Copy(),
+            CurrentOutfit = CurrentOutfit?.Copy(),
+            LastStyle = LastStyle,
+            LastOutfit = LastOutfit,
+            FacialExpression = FacialExpression,
+            MovementClipset = MovementClipset,
+        };
+
+        foreach (var style in Styles)
+        {
+            copy.Styles.Add(style.Copy());
+        }
+
+        foreach (var outfit in Outfits)
+        {
+            copy.Outfits.Add(outfit.Copy());
+        }
+
+        return copy;
+    }
 }
 
 public sealed class MpCharacterCore
@@ -79,6 +112,25 @@ public sealed class MpCharacterCore
         }
 
         return null;
+    }
+
+    public MpCharacterCore Copy()
+    {
+        var copy = new MpCharacterCore
+        {
+            IsMale = IsMale,
+            Blend = Blend.Copy(),
+            FaceFeatures = new List<float>(FaceFeatures),
+            EyeColour = EyeColour,
+            Tattoos = Tattoos.Copy(),
+        };
+
+        foreach (var overlay in Overlays)
+        {
+            copy.Overlays.Add(overlay.Copy());
+        }
+
+        return copy;
     }
 }
 
@@ -112,6 +164,27 @@ public sealed class MpCharacterStyle
 
         return null;
     }
+
+    public MpCharacterStyle Copy()
+    {
+        var copy = new MpCharacterStyle
+        {
+            Name = Name,
+            Description = Description,
+            HairStyle = HairStyle,
+            HairColour = HairColour,
+            HairHighlight = HairHighlight,
+            HairDecorationCollection = HairDecorationCollection,
+            HairDecorationName = HairDecorationName,
+        };
+
+        foreach (var overlay in Overlays)
+        {
+            copy.Overlays.Add(overlay.Copy());
+        }
+
+        return copy;
+    }
 }
 
 public sealed class MpCharacterOutfit
@@ -121,6 +194,13 @@ public sealed class MpCharacterOutfit
     public string Description { get; set; } = string.Empty;
 
     public PedOutfit Outfit { get; set; } = new();
+
+    public MpCharacterOutfit Copy() => new()
+    {
+        Name = Name,
+        Description = Description,
+        Outfit = Outfit.Copy(),
+    };
 }
 
 public sealed class MpCharacterCategory

@@ -101,7 +101,7 @@ internal sealed class SavedCharacters
 
         Rebuild();
 
-        _detailPage?.Open();
+        Enter(_detailPage);
 
         if (_detailPage is { } detail && _listPage is { } list)
         {
@@ -249,7 +249,7 @@ internal sealed class SavedCharacters
             {
                 _category = group;
 
-                _listPage?.Open();
+                Enter(_listPage);
             },
         });
     }
@@ -294,7 +294,7 @@ internal sealed class SavedCharacters
                 {
                     _selected = character;
 
-                    _detailPage?.Open();
+                    Enter(_detailPage);
                 },
             });
         }
@@ -420,7 +420,7 @@ internal sealed class SavedCharacters
         {
             _showingOutfits = outfits;
 
-            _variantPage?.Open();
+            Enter(_variantPage);
         },
     };
 
@@ -538,7 +538,7 @@ internal sealed class SavedCharacters
             {
                 _variant = index;
 
-                _variantDetailPage?.Open();
+                Enter(_variantDetailPage);
             },
         };
     }
@@ -561,7 +561,6 @@ internal sealed class SavedCharacters
 
         var outfits = _showingOutfits;
         var index = _variant;
-        var last = (outfits ? entry.Character.Outfits.Count : entry.Character.Styles.Count) <= 1;
 
         return
         [
@@ -591,10 +590,8 @@ internal sealed class SavedCharacters
             {
                 Text = MenuText.Key(Loc.CharacterCreator.VariantDelete),
                 Description = MenuText.Key(Loc.CharacterCreator.VariantRowDescription, ("name", name)),
-                LockedDescription = MenuText.Key(Loc.CharacterCreator.LastVariant),
                 ConfirmationDescription = MenuText.Key(Loc.CharacterCreator.VariantDeleteConfirm, ("name", name)),
-                Gate = MenuGate.Permission(CharacterCreatorPermissions.Manage) & MenuGate.When(() => !last),
-                Behaviour = GateBehaviour.Lock,
+                Gate = CharacterCreatorPermissions.Manage,
                 OnConfirmed = _ => DeleteVariant(entry, index, outfits),
             },
         ];
@@ -650,9 +647,10 @@ internal sealed class SavedCharacters
 
             FreemodeWriter.ApplyDecorations(ped, entry.Character.Core.Tattoos, MpCharacterState.Style);
 
+            entry.Character.CurrentOutfit = outfit.Copy();
             entry.Character.LastOutfit = outfit.Name;
 
-            MpCharacterState.Wearing(entry.Character, MpCharacterState.Style, outfit, entry);
+            MpCharacterState.Wearing(entry.Character, MpCharacterState.Style, entry.Character.CurrentOutfit, entry);
 
         }
         else
@@ -667,9 +665,10 @@ internal sealed class SavedCharacters
             FreemodeWriter.ApplyStyle(ped, style);
             FreemodeWriter.ApplyDecorations(ped, entry.Character.Core.Tattoos, style);
 
+            entry.Character.CurrentStyle = style.Copy();
             entry.Character.LastStyle = style.Name;
 
-            MpCharacterState.Wearing(entry.Character, style, MpCharacterState.Outfit, entry);
+            MpCharacterState.Wearing(entry.Character, entry.Character.CurrentStyle, MpCharacterState.Outfit, entry);
 
         }
 
@@ -825,11 +824,8 @@ internal sealed class SavedCharacters
             return;
         }
 
-        var style = character.StyleNamed(character.LastStyle)
-            ?? (character.Styles.Count > 0 ? character.Styles[0] : null);
-
-        var outfit = character.OutfitNamed(character.LastOutfit)
-            ?? (character.Outfits.Count > 0 ? character.Outfits[0] : null);
+        var style = character.CurrentStyle;
+        var outfit = character.CurrentOutfit;
 
         var ped = Native.PlayerPedId();
 
@@ -879,7 +875,7 @@ internal sealed class SavedCharacters
             return;
         }
 
-        _editChoicePage?.Open();
+        Enter(_editChoicePage);
     }
 
     private void BuildEditChoice(MenuBuilder menu)
@@ -920,8 +916,7 @@ internal sealed class SavedCharacters
             return false;
         }
 
-        var outfit = character.OutfitNamed(character.LastOutfit)
-            ?? (character.Outfits.Count > 0 ? character.Outfits[0] : null);
+        var outfit = character.CurrentOutfit;
 
         if (outfit is not null)
         {
@@ -938,8 +933,7 @@ internal sealed class SavedCharacters
             }
         }
 
-        var style = character.StyleNamed(character.LastStyle)
-            ?? (character.Styles.Count > 0 ? character.Styles[0] : null);
+        var style = character.CurrentStyle;
 
         if (style is null)
         {
@@ -1237,6 +1231,17 @@ internal sealed class SavedCharacters
         }
 
         return -1;
+    }
+
+    private static void Enter(DetachedMenu? page)
+    {
+        if (page is null)
+        {
+            return;
+        }
+
+        page.Menu.RefreshIndex();
+        page.Open();
     }
 
     private static void Fill(MenuBuilder builder, IReadOnlyList<MenuEntry> rows)

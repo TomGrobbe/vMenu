@@ -9,6 +9,7 @@ using vMenu.Enhanced.Data.Ticks;
 using vMenu.Enhanced.MenuFramework;
 using vMenu.Enhanced.MenuFramework.Localization;
 using vMenu.Enhanced.Menus.Players.Appearance;
+using vMenu.Enhanced.Storage;
 using vMenu.Enhanced.Ticks;
 
 namespace vMenu.Enhanced.Menus.Players.Character;
@@ -34,65 +35,121 @@ public static class CharacterCamera
 
     private const float FieldOfView = 45f;
 
-    private const int InterpMs = 1000;
-
     private const int TurnMs = 1600;
 
     private const int LookMs = 10000;
 
-    private const int LookRenewMs = 8000;
+    private const int LookRenewMs = 4000;
 
-    private static readonly (Vector3 From, Vector3 At)[] Framings =
-    [
-        (new Vector3(0f, 2.8f, 0.3f), new Vector3(0f, 0f, 0f)),
-        (new Vector3(0f, 0.9f, 0.65f), new Vector3(0f, 0f, 0.6f)),
-        (new Vector3(0f, 1.4f, 0.5f), new Vector3(0f, 0f, 0.3f)),
-        (new Vector3(0f, 1.6f, -0.3f), new Vector3(0f, 0f, -0.45f)),
-        (new Vector3(0f, 0.98f, -0.7f), new Vector3(0f, 0f, -0.90f)),
-        (new Vector3(0f, 0.98f, 0.1f), new Vector3(0f, 0f, 0f)),
-        (new Vector3(0f, 1.3f, 0.35f), new Vector3(0f, 0f, 0.15f)),
-    ];
+    private const int LookThrottleMs = 150;
 
-    private static readonly (float X, float Y)[] SideSwings =
+    private const float LookStep = 0.2f;
+
+    private const float LookArc = 115f;
+
+    private const float MouseSpeed = 8f;
+
+    private const float StickSpeed = 140f;
+
+    private const float TurnSpeed = 100f;
+
+    private const float ZoomSpeed = 1.7f;
+
+    private const float HeightSpeed = 0.85f;
+
+    private const float Deadzone = 0.15f;
+
+    private const float MinPitch = -55f;
+
+    private const float MaxPitch = 78f;
+
+    private const float MinZoom = 0.4f;
+
+    private const float MaxZoom = 3f;
+
+    private const float MinHeight = -0.9f;
+
+    private const float MaxHeight = 1.3f;
+
+    private const float MinDistance = 0.3f;
+
+    private const float MaxDistance = 8f;
+
+    private const float FramingSpeed = 7f;
+
+    private const float Degrees = MathF.PI / 180f;
+
+    private const string IconSeparator = "%b_998%";
+
+    private static readonly (float PivotZ, float Distance, float Pitch)[] Framings =
     [
-        (2.2f, -1f),
-        (0.7f, -0.45f),
-        (1.35f, -0.4f),
-        (1f, -0.4f),
-        (0.9f, -0.4f),
-        (0.8f, -0.7f),
-        (1.5f, -1f),
+        (0f, 2.8f, 6f),
+        (0.6f, 0.9f, 3f),
+        (0.3f, 1.4f, 8f),
+        (-0.45f, 1.6f, 5f),
+        (-0.9f, 1f, 12f),
+        (0f, 0.98f, 6f),
+        (0.15f, 1.3f, 9f),
     ];
 
     private static readonly int[] Suppressed =
     [
-        24, 25, 30, 31, 32, 33, 34, 35, 36, 37, 44, 45, 47, 55, 56, 57, 58,
-        71, 72, 75, 76, 81, 82, 83, 84, 85, 99, 100, 114, 115, 140, 141, 142, 143, 257, 263, 264,
+        1, 2, 22, 24, 25, 26, 30, 31, 32, 33, 34, 35, 36, 37, 44, 45, 47, 55, 56, 57, 58,
+        71, 72, 75, 76, 81, 82, 83, 84, 85, 99, 100, 114, 115, 140, 141, 142, 143, 152, 153,
+        257, 263, 264,
     ];
 
     private static TickHandle? _tick;
 
     private static int _camera;
 
-    private static Vector3 _from;
+    private static CameraFocus _page = CameraFocus.FullBody;
 
-    private static Vector3 _at;
+    private static CameraFocus _framing = CameraFocus.FullBody;
 
-    private static bool _interpolating;
+    private static float _yaw;
 
-    private static int _previous;
+    private static float _pitch;
 
-    private static bool _reversed;
+    private static float _zoom = 1f;
+
+    private static float _height;
+
+    private static float _pivotZ;
+
+    private static float _distance;
+
+    private static float _basePitch;
+
+    private static bool _seeded;
 
     private static bool _watchesLoaded;
 
     private static bool _watchPlaying;
 
-    private static int _looking = int.MinValue;
+    private static Vector3 _lookAt;
 
     private static int _lookedAt;
 
-    public static void Initialize() =>
+    private static Menu? _buttonsMenu;
+
+    private static bool _buttonsKeyboard;
+
+    private static bool _buttonsStale = true;
+
+    public static void Initialize()
+    {
+        Localizer.Changed += () => _buttonsStale = true;
+
+        CharacterCameraKeyBinding.Register(ToggleAutoCamera);
+
+        UserDefaults.CharacterCreatorDisableAutoCamera.Changed += () =>
+        {
+            _buttonsStale = true;
+
+            MenuRegistry.RefreshAll();
+        };
+
         _tick = TickRegistry.Register(
             "CharacterCreator.Camera",
             Frame,
@@ -100,15 +157,15 @@ public static class CharacterCamera
             condition: () => MpCharacterState.IsEditing,
             onStarted: Begin,
             onStopped: End);
+    }
 
     public static void Reevaluate() => _tick?.Reevaluate();
 
     public static void AddButtons(MenuBuilder menu)
     {
-        menu.InstructionalButtons.Add((Control.MoveLeftRight, MenuText.Key(Loc.CharacterCreator.TurnHead)));
+        menu.InstructionalButtons.Add((Control.LookLeftRight, MenuText.Key(Loc.CharacterCreator.MoveCamera)));
+        menu.InstructionalButtons.Add((Control.LookBehind, MenuText.Key(Loc.CharacterCreator.ResetCamera)));
         menu.InstructionalButtons.Add((Control.Jump, MenuText.Key(Loc.CharacterCreator.TurnCharacter)));
-        menu.InstructionalButtons.Add((Control.ParachuteBrakeLeft, MenuText.Key(Loc.CharacterCreator.TurnCameraLeft)));
-        menu.InstructionalButtons.Add((Control.ParachuteBrakeRight, MenuText.Key(Loc.CharacterCreator.TurnCameraRight)));
     }
 
     public static CameraFocus FocusFor(Menu? menu, CameraFocus page)
@@ -127,7 +184,46 @@ public static class CharacterCamera
         };
     }
 
-    public static CameraFocus Page { get; set; } = CameraFocus.FullBody;
+    public static CameraFocus Page
+    {
+        get => _page;
+        set
+        {
+            if (_page == value)
+            {
+                return;
+            }
+
+            _page = value;
+
+            if (!AutoCameraDisabled)
+            {
+                Recentre();
+            }
+        }
+    }
+
+    public static bool AutoCameraDisabled
+    {
+        get => UserDefaults.CharacterCreatorDisableAutoCamera.Value;
+        set => UserDefaults.CharacterCreatorDisableAutoCamera.Value = value;
+    }
+
+    private static void ToggleAutoCamera() => SharedAPI.RunOnMainThread(() =>
+    {
+        if (!MpCharacterState.IsEditing)
+        {
+            return;
+        }
+
+        var disabled = !AutoCameraDisabled;
+
+        AutoCameraDisabled = disabled;
+
+        Notifications.Info(MenuText.Key(disabled
+            ? Loc.CharacterCreator.AutoCameraOff
+            : Loc.CharacterCreator.AutoCameraOn));
+    });
 
     private static CameraFocus FocusForSlot(PedCustomizationRows.SlotReference slot)
     {
@@ -146,18 +242,17 @@ public static class CharacterCamera
         return slot.Slot switch
         {
             PedPropSlots.Hats or PedPropSlots.Glasses or PedPropSlots.Ears => CameraFocus.Head,
-
-            PedPropSlots.Watches => _reversed ? CameraFocus.LowerArms : CameraFocus.FullArms,
+            PedPropSlots.Watches => CameraFocus.FullArms,
             _ => CameraFocus.LowerArms,
         };
     }
 
     private static void Begin() => SharedAPI.RunOnMainThread(() =>
     {
-        _reversed = false;
-        _interpolating = false;
+        _seeded = false;
         _watchPlaying = false;
-        _looking = int.MinValue;
+        _lookAt = default;
+        _lookedAt = 0;
 
         var ped = Native.PlayerPedId();
 
@@ -169,6 +264,8 @@ public static class CharacterCamera
 
         Native.DisplayHud(false);
         Native.DisplayRadar(false);
+
+        Recentre(ped);
     });
 
     private static void End() => SharedAPI.RunOnMainThread(() =>
@@ -183,7 +280,6 @@ public static class CharacterCamera
         Native.SetPedCanPlayAmbientIdles(ped, false, false);
 
         _watchPlaying = false;
-        _looking = int.MinValue;
 
         Native.DisplayHud(true);
         Native.DisplayRadar(true);
@@ -197,8 +293,6 @@ public static class CharacterCamera
         Destroy();
 
         MenuController.DisableBackButton = false;
-
-        _reversed = false;
     });
 
     private static async Task Frame()
@@ -215,99 +309,143 @@ public static class CharacterCamera
 
         _watchesLoaded = Native.HasAnimDictLoaded(WatchDictionary);
 
-        var focus = FocusFor(MenuController.GetCurrentMenu(), Page);
+        var current = MenuController.GetCurrentMenu();
+        var focus = FocusFor(current, _page);
 
+        SyncButtons(current);
         PlayWatchIdle(ped, focus);
-        LookWherePlayerAsks(ped);
 
-        if (Native.IsControlJustReleased(ControlGroup, (int)Control.Jump))
+        if (Native.IsDisabledControlJustReleased(ControlGroup, (int)Control.Jump))
         {
             await TurnAroundAsync(ped);
 
             return;
         }
 
-        Aim(ped, focus);
+        ReadInput(ped);
+
+        LookAt(ped, Place(ped, focus));
     }
 
-    private static void Aim(int ped, CameraFocus focus)
+    private static void ReadInput(int ped)
     {
-        var framing = Framings[(int)focus];
-        var swing = Swing(focus);
+        if (MenuController.DisableMenuButtons || Native.IsPauseMenuActive())
+        {
+            return;
+        }
 
-        var x = framing.From.X + swing.X;
-        var y = framing.From.Y + swing.Y;
+        if (Native.IsDisabledControlJustPressed(ControlGroup, (int)Control.LookBehind))
+        {
+            Recentre(ped);
 
-        var from = Native.GetOffsetFromEntityInWorldCoords(
-            ped, _reversed ? -x : x, _reversed ? -y : y, framing.From.Z);
+            return;
+        }
 
-        var at = Native.GetOffsetFromEntityInWorldCoords(ped, framing.At.X, framing.At.Y, framing.At.Z);
+        var delta = Native.GetFrameTime();
+        var keyboard = Native.IsUsingKeyboardAndMouse(2);
+
+        var lookX = Native.GetDisabledControlNormal(ControlGroup, (int)Control.LookLeftRight);
+        var lookY = Native.GetDisabledControlNormal(ControlGroup, (int)Control.LookUpDown);
+
+        if (keyboard)
+        {
+            _yaw -= lookX * MouseSpeed;
+            _pitch += lookY * MouseSpeed;
+        }
+        else
+        {
+            _yaw -= Curve(lookX) * StickSpeed * delta;
+            _pitch += Curve(lookY) * StickSpeed * delta;
+        }
+
+        var swing = Curve(Native.GetDisabledControlNormal(ControlGroup, (int)Control.MoveLeftRight));
+        var stick = Curve(Native.GetDisabledControlNormal(ControlGroup, (int)Control.MoveUpDown));
+
+        _yaw += swing * TurnSpeed * delta;
+
+        if (keyboard)
+        {
+            _zoom *= 1f + (stick * ZoomSpeed * delta);
+
+            var down = Native.IsDisabledControlPressed(ControlGroup, (int)Control.ParachuteBrakeLeft);
+            var up = Native.IsDisabledControlPressed(ControlGroup, (int)Control.ParachuteBrakeRight);
+
+            if (down != up)
+            {
+                _height += (up ? HeightSpeed : -HeightSpeed) * delta;
+            }
+        }
+        else
+        {
+            _height -= stick * HeightSpeed * delta;
+
+            var closer = Curve(Native.GetDisabledControlNormal(ControlGroup, (int)Control.Attack));
+            var further = Curve(Native.GetDisabledControlNormal(ControlGroup, (int)Control.Aim));
+
+            _zoom *= 1f + ((further - closer) * ZoomSpeed * delta);
+        }
+
+        _yaw = Wrap(_yaw);
+        _zoom = Math.Clamp(_zoom, MinZoom, MaxZoom);
+        _height = Math.Clamp(_height, MinHeight, MaxHeight);
+    }
+
+    private static Vector3 Place(int ped, CameraFocus focus)
+    {
+        if (!AutoCameraDisabled)
+        {
+            _framing = focus;
+        }
+
+        var framing = Framings[(int)_framing];
+
+        if (!_seeded)
+        {
+            _pivotZ = framing.PivotZ;
+            _distance = framing.Distance;
+            _basePitch = framing.Pitch;
+            _seeded = true;
+        }
+        else
+        {
+            var step = 1f - MathF.Exp(-FramingSpeed * Native.GetFrameTime());
+
+            _pivotZ += (framing.PivotZ - _pivotZ) * step;
+            _distance += (framing.Distance - _distance) * step;
+            _basePitch += (framing.Pitch - _basePitch) * step;
+        }
+
+        _pitch = Math.Clamp(_pitch, MinPitch - _basePitch, MaxPitch - _basePitch);
+
+        var pitch = (_basePitch + _pitch) * Degrees;
+        var yaw = _yaw * Degrees;
+        var distance = Math.Clamp(_distance * _zoom, MinDistance, MaxDistance);
+        var reach = MathF.Cos(pitch) * distance;
+
+        var pivot = Native.GetOffsetFromEntityInWorldCoords(ped, 0f, 0f, _pivotZ + _height);
+
+        var position = new Vector3(
+            pivot.X - (MathF.Sin(yaw) * reach),
+            pivot.Y + (MathF.Cos(yaw) * reach),
+            pivot.Z + (MathF.Sin(pitch) * distance));
 
         if (!Native.DoesCamExist(_camera))
         {
-            _camera = Create(from, at);
-            _from = from;
-            _at = at;
+            _camera = Native.CreateCam(ScriptedCamera, false);
 
+            Native.SetCamFov(_camera, FieldOfView);
             Native.SetCamActive(_camera, true);
             Native.RenderScriptCams(true, false, 0, false, false, 0);
-
-            return;
         }
 
-        if (_interpolating)
-        {
-            if (Native.IsCamInterpolating(_camera))
-            {
-                return;
-            }
+        Native.SetCamCoord(_camera, position.X, position.Y, position.Z);
+        Native.PointCamAtCoord(_camera, pivot.X, pivot.Y, pivot.Z);
 
-            Retire();
-
-            _interpolating = false;
-        }
-
-        if (Same(_from, from) && Same(_at, at))
-        {
-            return;
-        }
-
-        var replacement = Create(from, at);
-
-        Native.SetCamActiveWithInterp(replacement, _camera, InterpMs, 1, 1);
-
-        _previous = _camera;
-        _camera = replacement;
-        _from = from;
-        _at = at;
-        _interpolating = true;
-    }
-
-    private static int Create(Vector3 from, Vector3 at)
-    {
-        var camera = Native.CreateCam(ScriptedCamera, false);
-
-        Native.SetCamCoord(camera, from.X, from.Y, from.Z);
-        Native.SetCamFov(camera, FieldOfView);
-        Native.PointCamAtCoord(camera, at.X, at.Y, at.Z);
-
-        return camera;
-    }
-
-    private static void Retire()
-    {
-        if (_previous != 0 && Native.DoesCamExist(_previous))
-        {
-            Native.DestroyCam(_previous, false);
-        }
-
-        _previous = 0;
+        return position;
     }
 
     private static void Destroy()
     {
-        Retire();
-
         Native.RenderScriptCams(false, false, 0, true, true, 0);
 
         if (Native.DoesCamExist(_camera))
@@ -317,22 +455,65 @@ public static class CharacterCamera
         }
 
         _camera = 0;
-        _interpolating = false;
+        _seeded = false;
     }
 
-    private static (float X, float Y) Swing(CameraFocus focus)
+    private static void SyncButtons(Menu? menu)
     {
-        var left = Native.IsDisabledControlPressed(ControlGroup, (int)Control.ParachuteBrakeLeft);
-        var right = Native.IsDisabledControlPressed(ControlGroup, (int)Control.ParachuteBrakeRight);
+        var keyboard = Native.IsUsingKeyboardAndMouse(2);
 
-        if (left == right)
+        if (!_buttonsStale && keyboard == _buttonsKeyboard && ReferenceEquals(menu, _buttonsMenu))
         {
-            return (0f, 0f);
+            return;
         }
 
-        var swing = SideSwings[(int)focus];
+        _buttonsStale = false;
+        _buttonsKeyboard = keyboard;
+        _buttonsMenu = menu;
 
-        return right ? (-swing.X, swing.Y) : swing;
+        if (menu is null)
+        {
+            return;
+        }
+
+        var localizer = Localizer.Current;
+        var axis = keyboard ? Loc.CharacterCreator.ZoomCamera : Loc.CharacterCreator.CameraHeight;
+        var pair = keyboard ? Loc.CharacterCreator.CameraHeight : Loc.CharacterCreator.ZoomCamera;
+
+        var low = keyboard ? Control.ParachuteBrakeLeft : Control.Aim;
+        var high = keyboard ? Control.ParachuteBrakeRight : Control.Attack;
+
+        var auto = keyboard
+            ? CharacterCameraKeyBinding.KeyboardControl
+            : CharacterCameraKeyBinding.ControllerControl;
+
+        menu.InstructionalButtons[Control.MoveUpDown] = localizer.Get(axis);
+
+        menu.CustomInstructionalButtons.Clear();
+
+        menu.CustomInstructionalButtons.Add(
+            new Menu.InstructionalButton($"{Icon((int)low)}{IconSeparator}{Icon((int)high)}", localizer.Get(pair)));
+
+        menu.CustomInstructionalButtons.Add(new Menu.InstructionalButton(
+            Icon(auto),
+            localizer.Get(AutoCameraDisabled
+                ? Loc.CharacterCreator.AutoCameraButtonOff
+                : Loc.CharacterCreator.AutoCameraButtonOn)));
+    }
+
+    private static string Icon(int control) =>
+        Native.GetControlInstructionalButton(ControlGroup, control, true);
+
+    private static void Recentre() => Recentre(Native.PlayerPedId());
+
+    private static void Recentre(int ped)
+    {
+        _yaw = Native.GetEntityHeading(ped);
+        _pitch = 0f;
+        _zoom = 1f;
+        _height = 0f;
+
+        _framing = CameraFocus.FullBody;
     }
 
     private static void StandStill(int ped)
@@ -342,29 +523,32 @@ public static class CharacterCamera
         Native.SetPedCanPlayAmbientIdles(ped, true, true);
     }
 
-    private static void LookWherePlayerAsks(int ped)
+    private static void LookAt(int ped, Vector3 camera)
     {
-        var left = Native.IsDisabledControlPressed(ControlGroup, (int)Control.MoveLeftOnly);
-        var right = Native.IsDisabledControlPressed(ControlGroup, (int)Control.MoveRightOnly);
+        var behind = MathF.Abs(Wrap(_yaw - Native.GetEntityHeading(ped))) > LookArc;
 
-        var side = left && !right ? 1 : right && !left ? -1 : 0;
+        var target = behind
+            ? Native.GetOffsetFromEntityInWorldCoords(ped, 0f, 2f, 0.6f)
+            : camera;
 
-        if (side == _looking && Native.GetGameTimer() - _lookedAt < LookRenewMs)
+        var now = Native.GetGameTimer();
+        var since = now - _lookedAt;
+
+        if (since < LookThrottleMs
+            || (since < LookRenewMs && Vector3.DistanceSquared(target, _lookAt) < LookStep * LookStep))
         {
             return;
         }
 
-        _looking = side;
-        _lookedAt = Native.GetGameTimer();
+        _lookAt = target;
+        _lookedAt = now;
 
-        var at = Native.GetOffsetFromEntityInWorldCoords(ped, side * 1.2f, 0.5f, 0.7f);
-
-        Native.TaskLookAtCoord(ped, at.X, at.Y, at.Z, LookMs, 0, 2);
+        Native.TaskLookAtCoord(ped, target.X, target.Y, target.Z, LookMs, 0, 2);
     }
 
     private static void PlayWatchIdle(int ped, CameraFocus focus)
     {
-        var wanted = focus == CameraFocus.FullArms && !_reversed && _watchesLoaded;
+        var wanted = focus == CameraFocus.FullArms && _watchesLoaded;
 
         if (wanted)
         {
@@ -411,7 +595,8 @@ public static class CharacterCamera
         Native.FreezeEntityPosition(ped, true);
         Native.SetEntityCollision(ped, false, false);
 
-        _reversed = !_reversed;
+        _lookAt = default;
+        _lookedAt = 0;
     }
 
     private static void Suppress()
@@ -422,8 +607,24 @@ public static class CharacterCamera
         }
     }
 
-    private static bool Same(Vector3 left, Vector3 right) =>
-        Math.Abs(left.X - right.X) < 0.001f
-        && Math.Abs(left.Y - right.Y) < 0.001f
-        && Math.Abs(left.Z - right.Z) < 0.001f;
+    private static float Curve(float value)
+    {
+        var size = MathF.Abs(value);
+
+        if (size < Deadzone)
+        {
+            return 0f;
+        }
+
+        var scaled = (size - Deadzone) / (1f - Deadzone);
+
+        return MathF.CopySign(scaled * scaled, value);
+    }
+
+    private static float Wrap(float degrees)
+    {
+        var wrapped = degrees % 360f;
+
+        return wrapped > 180f ? wrapped - 360f : wrapped < -180f ? wrapped + 360f : wrapped;
+    }
 }

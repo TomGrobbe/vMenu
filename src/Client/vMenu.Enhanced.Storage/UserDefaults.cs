@@ -258,12 +258,16 @@ public static class UserDefaults
     public static BoolDefault CharacterCreatorFitTorso { get; } =
         new("characterCreatorFitTorso") { Default = true };
 
+    public static BoolDefault CharacterCreatorDisableAutoCamera { get; } =
+        new("characterCreatorDisableAutoCamera") { Default = false };
+
     #endregion
 
     public static IReadOnlyList<UserDefault> All { get; } =
     [
         DefaultCharacterName,
         CharacterCreatorFitTorso,
+        CharacterCreatorDisableAutoCamera,
         MiscRightAlignMenu,
         Language,
         MiscDisableIdleCamera,

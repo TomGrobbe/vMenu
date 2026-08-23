@@ -71,11 +71,8 @@ public static class CharacterRespawn
             return;
         }
 
-        var style = character.StyleNamed(character.LastStyle)
-            ?? (character.Styles.Count > 0 ? character.Styles[0] : null);
-
-        var outfit = character.OutfitNamed(character.LastOutfit)
-            ?? (character.Outfits.Count > 0 ? character.Outfits[0] : null);
+        var style = character.CurrentStyle;
+        var outfit = character.CurrentOutfit;
 
         await FreemodeWriter.ApplyAsync(Native.PlayerPedId(), character, style, outfit);
 

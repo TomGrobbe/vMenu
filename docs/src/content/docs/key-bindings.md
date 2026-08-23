@@ -18,6 +18,7 @@ everybody with a convar in your `server.cfg`.
 | Flip a helmet visor, held | `F11` | D-pad right | none, see below |
 | Expand or zoom the minimap | `Z` | D-pad down | none, see below |
 | Point your finger | `B` | right stick click | none, see below |
+| Character creator auto camera | `N` | right bumper | none, see below |
 
 Noclip also uses `W`, `S`, `A`, `D`, `Q`, `Z`, `Left Shift`, `Left Ctrl` and `H` while it is switched
 on. Those are ordinary bindings too, so they show up in the same settings list and can be changed the
@@ -25,7 +26,7 @@ same way.
 
 ## The keys with no convar
 
-The minimap, visor and pointing keys have no convar, and they won't get one either. They are personal
+The minimap, visor, pointing and auto camera keys have no convar, and they won't get one either. They are personal
 comfort keys rather than anything a server needs a say in, the defaults match what GTA Online already
 uses, and every player can move them for themselves in the pause menu settings. That is the right
 place for them, so there is nothing here for you to set.
@@ -39,6 +40,13 @@ key is pressed again.
 ## The visor key
 Some helmets on the multiplayer peds have a visor or gadget that can be flipped up or down. Holding down
 the Visor key while on foot or on a motorcyle will allow you to flip your visor/gadget. Just like in GTA Online.
+
+## The auto camera key
+
+This one only does anything while the character creator is open. It turns the creator's automatic
+camera on and off, so the camera either follows whatever you are editing or stays exactly where you
+put it. The same switch sits at the top of the creator page, called **Disable Auto Camera**, and both
+of them remember your choice between sessions.
 
 ## The pointing key
 

@@ -67,14 +67,16 @@ internal sealed class CharacterBuilder
             return;
         }
 
-        MpCharacterState.BeginEditing(character, from);
+        var draft = character.Copy();
+
+        MpCharacterState.BeginEditing(draft, from);
         CharacterCamera.Reevaluate();
 
         if (rebuild)
         {
             await FreemodeWriter.ApplyAsync(
                 Native.PlayerPedId(),
-                character,
+                draft,
                 MpCharacterState.Style,
                 MpCharacterState.Outfit);
         }
@@ -110,6 +112,15 @@ internal sealed class CharacterBuilder
     private void Build(MenuBuilder menu)
     {
         CharacterCamera.AddButtons(menu);
+
+        menu.Entries.Add(new CheckboxEntry
+        {
+            Text = MenuText.Key(Loc.CharacterCreator.DisableAutoCamera),
+            Description = MenuText.Key(Loc.CharacterCreator.DisableAutoCameraDescription),
+            Gate = CharacterCreatorPermissions.Create,
+            ReadState = () => CharacterCamera.AutoCameraDisabled,
+            OnChanged = changed => CharacterCamera.AutoCameraDisabled = changed.Checked,
+        });
 
         menu.Entries.Add(new ButtonEntry
         {
@@ -515,8 +526,8 @@ internal sealed class CharacterBuilder
             await FreemodeWriter.ApplyAsync(
                 CharacterEdit.Ped,
                 saved.Character,
-                saved.Character.Styles.Count > 0 ? saved.Character.Styles[0] : null,
-                saved.Character.Outfits.Count > 0 ? saved.Character.Outfits[0] : null);
+                saved.Character.CurrentStyle,
+                saved.Character.CurrentOutfit);
         }
 
         Close(MpCharacterState.From?.Character.Name);

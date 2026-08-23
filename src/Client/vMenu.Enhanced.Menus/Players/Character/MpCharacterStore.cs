@@ -94,6 +94,8 @@ public static class MpCharacterStore
                 Description = entry.Character.Description,
                 Category = entry.Character.Category,
                 Core = entry.Character.Core,
+                CurrentStyle = entry.Character.CurrentStyle,
+                CurrentOutfit = entry.Character.CurrentOutfit,
                 Styles = entry.Character.Styles,
                 Outfits = entry.Character.Outfits,
                 LastStyle = entry.Character.LastStyle,
@@ -373,7 +375,18 @@ public static class MpCharacterStore
             return null;
         }
 
+        Adopt(character);
+
         return new MpCharacterEntry(character, version);
+    }
+
+    private static void Adopt(MpCharacter character)
+    {
+        character.CurrentStyle ??= (character.StyleNamed(character.LastStyle)
+            ?? (character.Styles.Count > 0 ? character.Styles[0] : null))?.Copy();
+
+        character.CurrentOutfit ??= (character.OutfitNamed(character.LastOutfit)
+            ?? (character.Outfits.Count > 0 ? character.Outfits[0] : null))?.Copy();
     }
 
     private static string CharacterKey(string name) => CharacterPrefix + name;

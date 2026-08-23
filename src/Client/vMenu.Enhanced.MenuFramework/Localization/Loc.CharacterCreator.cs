@@ -340,13 +340,27 @@ public static partial class Loc
 
         #region Camera
 
-        public const string TurnHead = "charactercreator.camera.turnhead";
+        public const string MoveCamera = "charactercreator.camera.move";
+
+        public const string ZoomCamera = "charactercreator.camera.zoom";
+
+        public const string CameraHeight = "charactercreator.camera.height";
+
+        public const string ResetCamera = "charactercreator.camera.reset";
 
         public const string TurnCharacter = "charactercreator.camera.turncharacter";
 
-        public const string TurnCameraLeft = "charactercreator.camera.left";
+        public const string DisableAutoCamera = "charactercreator.camera.auto";
 
-        public const string TurnCameraRight = "charactercreator.camera.right";
+        public const string DisableAutoCameraDescription = "charactercreator.camera.auto.desc";
+
+        public const string AutoCameraButtonOn = "charactercreator.camera.auto.button.on";
+
+        public const string AutoCameraButtonOff = "charactercreator.camera.auto.button.off";
+
+        public const string AutoCameraOn = "charactercreator.camera.auto.on";
+
+        public const string AutoCameraOff = "charactercreator.camera.auto.off";
 
         #endregion
 
@@ -498,8 +512,6 @@ public static partial class Loc
         public const string NoVariants = "charactercreator.variants.empty";
 
         public const string NoVariantsDescription = "charactercreator.variants.empty.desc";
-
-        public const string LastVariant = "charactercreator.variants.last";
 
         #endregion
 

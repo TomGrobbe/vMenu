@@ -20,6 +20,38 @@ public class PedOutfit
         return null;
     }
 
+    public PedOutfit Copy()
+    {
+        var copy = new PedOutfit();
+
+        foreach (var component in Components)
+        {
+            copy.Components.Add(new PedComponentValue
+            {
+                Slot = component.Slot,
+                Drawable = component.Drawable,
+                Texture = component.Texture,
+                Palette = component.Palette,
+                Collection = component.Collection,
+                LocalDrawable = component.LocalDrawable,
+            });
+        }
+
+        foreach (var prop in Props)
+        {
+            copy.Props.Add(new PedPropValue
+            {
+                Slot = prop.Slot,
+                Drawable = prop.Drawable,
+                Texture = prop.Texture,
+                Collection = prop.Collection,
+                LocalDrawable = prop.LocalDrawable,
+            });
+        }
+
+        return copy;
+    }
+
     public PedPropValue? PropAt(int slot)
     {
         foreach (var prop in Props)

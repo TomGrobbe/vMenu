@@ -26,11 +26,18 @@ public static class MpCharacterState
 
     public static void BeginEditing(MpCharacter draft, MpCharacterEntry? from)
     {
+        draft.CurrentStyle ??= new MpCharacterStyle
+        {
+            Overlays = CharacterDraft.BlankOverlays(PedHeadOverlays.Style),
+        };
+
+        draft.CurrentOutfit ??= new MpCharacterOutfit();
+
         Draft = draft;
         From = from;
         Worn = draft.Core;
-        Style = draft.Styles.Count > 0 ? draft.Styles[0] : null;
-        Outfit = draft.Outfits.Count > 0 ? draft.Outfits[0] : null;
+        Style = draft.CurrentStyle;
+        Outfit = draft.CurrentOutfit;
         IsEditing = true;
     }
 

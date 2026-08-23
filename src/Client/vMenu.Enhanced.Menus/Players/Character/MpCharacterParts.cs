@@ -9,6 +9,14 @@ public sealed class PedOverlayValue
     public float Opacity { get; set; }
 
     public int Colour { get; set; }
+
+    public PedOverlayValue Copy() => new()
+    {
+        Slot = Slot,
+        Style = Style,
+        Opacity = Opacity,
+        Colour = Colour,
+    };
 }
 
 public sealed class PedHeadBlend
@@ -32,6 +40,20 @@ public sealed class PedHeadBlend
     public float ThirdMix { get; set; }
 
     public bool IsParent { get; set; }
+
+    public PedHeadBlend Copy() => new()
+    {
+        FirstShape = FirstShape,
+        SecondShape = SecondShape,
+        ThirdShape = ThirdShape,
+        FirstSkin = FirstSkin,
+        SecondSkin = SecondSkin,
+        ThirdSkin = ThirdSkin,
+        ShapeMix = ShapeMix,
+        SkinMix = SkinMix,
+        ThirdMix = ThirdMix,
+        IsParent = IsParent,
+    };
 }
 
 public sealed class TattooRef
@@ -39,6 +61,8 @@ public sealed class TattooRef
     public string Collection { get; set; } = string.Empty;
 
     public string Name { get; set; } = string.Empty;
+
+    public TattooRef Copy() => new() { Collection = Collection, Name = Name };
 }
 
 public sealed class PedTattooSet
@@ -81,5 +105,23 @@ public sealed class PedTattooSet
         {
             list.Clear();
         }
+    }
+
+    public PedTattooSet Copy()
+    {
+        var copy = new PedTattooSet();
+
+        var mine = Lists();
+        var theirs = copy.Lists();
+
+        for (var list = 0; list < mine.Count; list++)
+        {
+            foreach (var tattoo in mine[list])
+            {
+                theirs[list].Add(tattoo.Copy());
+            }
+        }
+
+        return copy;
     }
 }
