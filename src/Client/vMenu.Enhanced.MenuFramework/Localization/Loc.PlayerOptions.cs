@@ -84,6 +84,10 @@ public static partial class Loc
 
         public const string StayInVehicleDescription = "playeroptions.stayinvehicle.desc";
 
+        public const string Freeze = "playeroptions.freeze";
+
+        public const string FreezeDescription = "playeroptions.freeze.desc";
+
         public const string EveryoneIgnores = "playeroptions.everyoneignores";
 
         public const string EveryoneIgnoresDescription = "playeroptions.everyoneignores.desc";
@@ -103,6 +107,12 @@ public static partial class Loc
         public const string HealPlayerDescription = "playeroptions.healplayer.desc";
 
         public const string HealPlayerDone = "playeroptions.healplayer.done";
+
+        public const string Suicide = "playeroptions.suicide";
+
+        public const string SuicideDescription = "playeroptions.suicide.desc";
+
+        public const string SuicideConfirm = "playeroptions.suicide.confirm";
 
         public const string SetArmor = "playeroptions.setarmor";
 

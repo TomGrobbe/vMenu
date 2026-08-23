@@ -56,6 +56,15 @@ public sealed class PlayerOptionsMenu : MenuDefinition
 
         menu.Entries.Add(new CheckboxEntry
         {
+            Text = MenuText.Key(Loc.PlayerOptions.Freeze),
+            Description = MenuText.Key(Loc.PlayerOptions.FreezeDescription),
+            Gate = PlayerOptionsPermissions.Freeze,
+            ReadState = () => PlayerFreeze.Enabled,
+            OnChanged = changed => PlayerFreeze.SetEnabled(changed.Checked),
+        });
+
+        menu.Entries.Add(new CheckboxEntry
+        {
             Text = MenuText.Key(Loc.PlayerOptions.EveryoneIgnores),
             Description = MenuText.Key(Loc.PlayerOptions.EveryoneIgnoresDescription),
             Gate = PlayerOptionsPermissions.Ignored,
@@ -130,6 +139,15 @@ public sealed class PlayerOptionsMenu : MenuDefinition
             Description = MenuText.Key(Loc.PlayerOptions.HealPlayerDescription),
             Gate = PlayerOptionsPermissions.MaxHealth,
             OnSelected = _ => PlayerActions.Heal(),
+        });
+
+        menu.Entries.Add(new ConfirmButtonEntry
+        {
+            Text = MenuText.Key(Loc.PlayerOptions.Suicide),
+            Description = MenuText.Key(Loc.PlayerOptions.SuicideDescription),
+            ConfirmationDescription = MenuText.Key(Loc.PlayerOptions.SuicideConfirm),
+            Gate = PlayerOptionsPermissions.Suicide,
+            OnConfirmed = _ => PlayerActions.CommitSuicide(),
         });
 
         menu.Entries.Add(new ListEntry

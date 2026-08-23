@@ -20,6 +20,8 @@ public static class PlayerOptions
 
     public const string StayInVehicle = "vMenu.Enhanced.Menus.PlayerOptions.StayInVehicle";
 
+    public const string Freeze = "vMenu.Enhanced.Menus.PlayerOptions.Freeze";
+
     public const string Ignored = "vMenu.Enhanced.Menus.PlayerOptions.Ignored";
 
     public const string SuperJump = "vMenu.Enhanced.Menus.PlayerOptions.SuperJump";
@@ -37,6 +39,8 @@ public static class PlayerOptions
     public const string SetWanted = "vMenu.Enhanced.Menus.PlayerOptions.SetWanted";
 
     public const string MaxHealth = "vMenu.Enhanced.Menus.PlayerOptions.MaxHealth";
+
+    public const string Suicide = "vMenu.Enhanced.Menus.PlayerOptions.Suicide";
 
     public const string MaxArmor = "vMenu.Enhanced.Menus.PlayerOptions.MaxArmor";
 

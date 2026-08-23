@@ -117,6 +117,7 @@ public sealed class Main : IScript
         PlayerNoHelmet.Initialize();
         PlayerInvisible.Initialize();
         PlayerStayInVehicle.Initialize();
+        PlayerFreeze.Initialize();
         EveryoneIgnoresPlayer.Initialize();
         PlayerNeverWanted.Initialize();
         PedIlluminatedClothing.Initialize();
@@ -137,6 +138,7 @@ public sealed class Main : IScript
             VehicleGodMode.Reapply();
             PlayerInvisible.Reapply();
             EveryoneIgnoresPlayer.Reapply();
+            PlayerFreeze.Reapply();
         };
 
         TeleportKeyBinding.Initialize();

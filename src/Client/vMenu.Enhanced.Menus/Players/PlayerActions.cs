@@ -27,6 +27,20 @@ public static class PlayerActions
         Notifications.Success(MenuText.Key(Loc.PlayerOptions.HealPlayerDone));
     }
 
+    public static void CommitSuicide()
+    {
+        var player = Native.PlayerId();
+        var ped = Native.PlayerPedId();
+
+        // God mode would swallow the health write. Both flags, since either half could be live.
+        Native.SetPlayerInvincibleKeepRagdollEnabled(player, false);
+        Native.SetEntityInvincible(ped, false, false);
+
+        Native.SetEntityHealth(ped, 0, 0, 0);
+
+        PlayerGodMode.Reapply();
+    }
+
     public static int ArmorTier()
     {
         var player = Native.PlayerId();
