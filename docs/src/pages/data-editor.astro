@@ -1,0 +1,83 @@
+---
+import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
+
+import '../styles/data-tool.css';
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<StarlightPage
+  frontmatter={{
+    title: 'Edit Your Data',
+    description: 'Open a vMenu transfer code in your browser, look through everything it holds, change it, and get a new code back.',
+    tableOfContents: false,
+  }}
+>
+  <p>
+    A transfer code is everything vMenu has saved on your computer, squashed into one long line of
+    text. Paste one in below to see what is in it, change it, and get a new code back. If you do not
+    have one yet, <a href={`${base}/moving-your-data/`}>Moving Your Data</a> explains how to get one
+    out of the game.
+  </p>
+
+  <div class="vmt not-content">
+    <div class="vmt-panel">
+      <label class="vmt-label" for="vmt-code">Your transfer code</label>
+
+      <textarea id="vmt-code" class="vmt-code" spellcheck="false" autocomplete="off" placeholder="VME1G:..."></textarea>
+
+      <div class="vmt-actions">
+        <button id="vmt-load" class="vmt-button vmt-primary" type="button">Open my code</button>
+        <button id="vmt-pick" class="vmt-button" type="button">Open a text file instead</button>
+        <input id="vmt-file" class="vmt-file" type="file" accept=".txt,.json,text/plain" />
+        <span id="vmt-status" class="vmt-status"></span>
+      </div>
+    </div>
+
+    <div id="vmt-result" class="vmt-result" hidden>
+      <div class="vmt-panel" id="vmt-summary"></div>
+
+      <div id="vmt-groups" class="vmt-groups"></div>
+
+      <div class="vmt-panel vmt-sticky">
+        <div class="vmt-actions">
+          <button id="vmt-download" class="vmt-button vmt-primary" type="button">Download zip</button>
+          <button id="vmt-copy" class="vmt-button" type="button">Copy the new code</button>
+          <span id="vmt-out" class="vmt-status"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h2>What the buttons do</h2>
+
+  <p>
+    Every item opens into its name and its contents, written out as JSON. Break the JSON and the page
+    says so, and holds the download until you have fixed it.
+  </p>
+
+  <ul>
+    <li><strong>Rename</strong> changes the name in both of the places vMenu keeps it.</li>
+    <li><strong>Reformat JSON</strong> re-indents the box without changing anything in it.</li>
+    <li>
+      <strong>Delete item</strong> leaves it out of the new code, and <strong>Put it back</strong> undoes
+      that. It only leaves the game itself if you import with <strong>Paste A Code And Replace Everything</strong>.
+    </li>
+    <li><strong>Download zip</strong> gives you the new code, a readable copy of it, and a backup of the one you pasted in.</li>
+  </ul>
+
+  <h2>Worth knowing</h2>
+
+  <ul>
+    <li>Nothing reaches the game until you paste the new code back in under <strong>Misc Settings, Import &amp; Export</strong>.</li>
+    <li>The type and version beside each name are how vMenu knows what it is looking at, so the page will not let you edit them.</li>
+    <li>An item marked <strong>unreadable</strong> is one vMenu would skip anyway, and it is passed through untouched.</li>
+    <li>If an edit goes wrong, the backup in the zip is the code you walked in with.</li>
+  </ul>
+</StarlightPage>
+
+<script>
+  import { setup } from '../scripts/data-tool.js';
+
+  setup();
+</script>
