@@ -54,6 +54,14 @@ starting over from a known good copy.
 Either way, paste the code into the box with `Ctrl+V` and press `Enter`. vMenu tells you how many
 things it brought back, and everything takes effect straight away. You do not need to reconnect.
 
+## Looking inside a code
+
+A code is not meant to be read by a human, but you do not have to take its word for what is in it.
+The [Edit Your Data](/vmenu/enhanced/data-editor/) page unpacks one in your browser and shows you every saved
+vehicle, ped, character, loadout and setting it holds. You can rename things there, change them,
+throw out the ones you no longer want, and download a fresh code together with a backup of the one
+you started with.
+
 ## What is and is not in the code
 
 In it:
