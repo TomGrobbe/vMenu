@@ -58,7 +58,7 @@ nothing for anybody who leaves it off.
 
 Put the convar in your `server.cfg` **before** the line that starts vMenu Enhanced:
 
-```cfg
+```ini
 setr vMenu.Enhanced.KeyBindings.TeleportKey "F7"
 setr vMenu.Enhanced.KeyBindings.NoClipToggleKey "F3"
 ensure vMenu.Enhanced

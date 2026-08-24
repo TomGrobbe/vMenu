@@ -36,7 +36,7 @@ prints an error in your server console telling you what to rename it to.
 
 Open your `server.cfg` and add this:
 
-```cfg
+```ini
 add_filesystem_permission vMenu.Enhanced write vMenu.Enhanced
 ensure vMenu.Enhanced
 ```
@@ -85,7 +85,7 @@ Open `permissions.cfg` and set it up however you like.
 If you just want to get going quickly and only play with friends, all you need in there is this single
 line:
 
-```cfg
+```ini
 add_ace builtin.everyone "vMenu.Enhanced.Everything" allow
 ```
 
@@ -99,7 +99,7 @@ join.
 
 Go back to your `server.cfg` and update what you added earlier so it now looks like this:
 
-```cfg
+```ini
 exec @vMenu.Enhanced/config/permissions.cfg
 add_filesystem_permission vMenu.Enhanced write vMenu.Enhanced
 ensure vMenu.Enhanced
@@ -116,7 +116,7 @@ settings rather than permissions, so things like how vMenu behaves and what is t
 It works exactly the same way. Make a copy, call it `configuration.cfg`, edit it how you like, and add
 one more `exec` line to your `server.cfg`:
 
-```cfg
+```ini
 exec @vMenu.Enhanced/config/permissions.cfg
 exec @vMenu.Enhanced/config/configuration.cfg
 add_filesystem_permission vMenu.Enhanced write vMenu.Enhanced
