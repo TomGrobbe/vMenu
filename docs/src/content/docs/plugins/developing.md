@@ -1,36 +1,34 @@
 ---
 title: "Making a plugin"
-description: "How to write a vMenu Enhanced plugin in C#: the two NuGet packages, the project layout, the menu API, permissions and settings, and the rules to keep to."
+description: "How to write a vMenu Enhanced plugin in C#: the packages, the project layout, the menu API, permissions and settings."
 ---
 
-This page is for developers. A plugin is a normal FiveM resource of your own, written in C#, that asks vMenu to draw a menu on its behalf.
-C# is currently the only officially supported language to make a plugin in, but this will change in the future, allowing you to also make plugins using both Lua and JavaScript.
+A plugin is a normal FiveM resource of your own that asks vMenu to draw a menu on its behalf. C# is the only officially supported language for now, Lua and JavaScript will follow later.
 
 :::tip[Start from the example]
-There is a complete, working plugin to copy from at [vMenu.ExamplePlugin](https://github.com/TomGrobbe/vMenu.ExamplePlugin). It uses every kind of row once, with a comment next to each, and its build produces a resource you can drop straight onto a server. Everything below is on show in there.
+[vMenu.ExamplePlugin](https://github.com/TomGrobbe/vMenu.ExamplePlugin) is a complete working plugin that uses every kind of row once. Copy from it.
 :::
 
-## For licensing, see the bottom of this page!
-[here](#license)
+:::caution[Read the license section]
+Plugins are GPL-3.0-or-later, the same as vMenu. See [License](#license) at the bottom.
+:::
 
 ## How it fits together
 
-Your resource has two halves and both talk to vMenu over events. You never reference vMenu's own assemblies and vMenu never references yours.
+Your resource has two halves, and both talk to vMenu over events. Neither side references the other's assemblies.
 
-The **client** half describes the menu. Rows, translations, and which rows are hidden or locked. The **server** half declares the permissions and settings the server owner controls. As soon as permissions and configuration options have been defined in your server side, and you use them in your client side, they will automatically work and vMenu will do all the config and permissions checking for you.
-
-Two NuGet packages do the talking:
+The **client** half describes the menu: rows, translations, and which rows are hidden or locked. The **server** half declares the permissions and settings the server owner controls. Use the same names on both sides and vMenu does all the checking for you.
 
 | Package | Used by |
 | --- | --- |
 | `vMenu.Enhanced.ClientAPI` | your client script |
 | `vMenu.Enhanced.ServerAPI` | your server script |
 
-Their version always matches the vMenu Enhanced release they belong to, so pin them to the vMenu version your server runs. Both bring the CitizenFX assemblies with them, so you do not reference those yourself.
+Pin both to the vMenu Enhanced version your server runs. They bring the CitizenFX assemblies with them, so you do not reference those yourself.
 
 ## Project layout
 
-Keep the two halves in separate output folders. The client and server packages each ship their own copy of `CitizenFX.Base.dll` and `CitizenFX.FiveM.Shared.dll`, and they can not be in the same folder together because they have the same names.
+Keep the two halves in separate output folders. Each package ships its own copy of `CitizenFX.Base.dll` and `CitizenFX.FiveM.Shared.dll`, and two files with the same name cannot share a folder.
 
 ```
 MyPlugin/
@@ -39,7 +37,7 @@ MyPlugin/
     server/     the server assembly and everything it depends on
 ```
 
-The manifest names both halves, and every client side DLL has to be listed in `files`, because a client assembly and its dependencies are downloaded by each player rather than read off the server's disk:
+Every client side DLL has to be listed in `files`, because players download those rather than reading them off the server's disk:
 
 ```lua
 fx_version 'cerulean'
@@ -60,13 +58,11 @@ client_script 'client/MyPlugin.Client.dll'
 server_script 'server/MyPlugin.Server.dll'
 ```
 
-Every time you add a package reference, check whether a new DLL turned up in your client output and add a line for it. 
-Forget one and players get an assembly load error the moment they open the menu. 
-The server side needs no `files` entries, it loads from disk.
+Add a package reference, check for a new DLL in your client output, add a line for it. Miss one and players get an assembly load error the moment they open the menu. The server half needs no `files` entries.
 
 ## The smallest plugin that works
 
-The client half:
+Client:
 
 ```csharp
 using CitizenFX.FiveM.Client;
@@ -83,26 +79,17 @@ public sealed class Main : IScript
         greet.Description = "Shows a notification, to prove this thing works.";
         greet.Selected += () => plugin.Notify(NotifyStyle.Success, "Hello!");
 
-        // Optional, this is where the permission and the setting from the server half get used.
-        // Same short names on both sides, vMenu does the checking and keeps the row up to date.
         var enabled = plugin.Settings.Bool("Enabled", true, "Turns my plugin on or off.");
-
         greet.Gate = PluginGate.Permission("Greet") & PluginGate.Setting(enabled);
-
-        // Optional, a locked row is greyed out with a lock by default. This hides it instead.
         greet.HideWhenLocked = true;
 
         var result = await plugin.ConnectAsync();
-
-        // NOTE!
-        // An Initialize function of any class that inherits from IScript, that does not call any FiveM code, will FAIL to load.
-        // This is most likely a bug in FiveM Enhanced right now, but just add a logging statement and you're good.
         API.Log.Info($"[My Plugin] Registered with vMenu: {result.Accepted}.");
     }
 }
 ```
 
-And the server half:
+Server:
 
 ```csharp
 using CitizenFX.FiveM.Server;
@@ -118,26 +105,22 @@ public sealed class Main : IScript
             .AddBoolSetting("Enabled", true, "Turns my plugin on or off.");
 
         var result = await VMenuServer.RegisterAsync(declaration);
-
-        // NOTE!
-        // An Initialize function of any class that inherits from IScript, that does not call any FiveM code, will FAIL to load.
-        // This is most likely a bug in FiveM Enhanced right now, but just add a logging statement and you're good.
         API.Log.Info($"[My Plugin] Registered with vMenu: {result.Accepted}.");
     }
 }
 ```
 
-The optional lines in the middle are the whole point of declaring a permission and a setting on the server. Without them the button is always there for everybody, and the server owner's config file does nothing. With them, the button only works for a player who has the `Greet` permission while the `Enabled` setting is on, and it follows along by itself when the owner changes either one. You can also read a setting's value straight out with `enabled.Value` whenever you need the value rather than a gate.
+:::caution[Call at least one native in Initialize]
+An `Initialize` that calls no FiveM code fails to load. This looks like a FiveM Enhanced bug. A logging statement is enough to work around it.
+:::
 
-`ConnectAsync` and `RegisterAsync` never throw. A refusal comes back as a result with `Accepted` set to false and a reason in `Errors`, and anything vMenu accepted but was unhappy about is in `Warnings`. Both are logged for you as well.
+The gate is the point of declaring the permission and the setting. Without it the button is always there for everybody and the owner's config file does nothing. With it, the button only works for a player who has `Greet` while `Enabled` is on, and it follows along by itself when either changes. Read a value directly with `enabled.Value` when you want the value rather than a gate.
+
+`ConnectAsync` and `RegisterAsync` never throw. A refusal comes back with `Accepted` false and a reason in `Errors`, and anything vMenu accepted but was unhappy about is in `Warnings`. Both are logged for you too.
 
 ## Start order and reconnecting
 
-Your plugin can start before or after vMenu and it registers either way.
-
-Restarts are handled in both directions too. If vMenu restarts, the packages re-register everything you declared, including changes you made since. 
-If your plugin restarts, vMenu drops your menus while you are gone and rebuilds them when you come back. 
-`IsConnected` tells you where you stand, and the `Disconnected` and `RegistrationAnswered` events fire on the way through.
+Your plugin can start before or after vMenu and registers either way. If vMenu restarts, the packages re-register everything you declared. If your plugin restarts, vMenu drops your menus while you are gone and rebuilds them when you return. `IsConnected` tells you where you stand, and the `Disconnected` and `RegistrationAnswered` events fire on the way through.
 
 ## Rows
 
@@ -159,22 +142,21 @@ var sub = menu.AddSubmenu("A submenu", subtitle: "My Plugin");
 sub.Menu.AddButton("A row inside it");
 ```
 
-Each returns an object whose properties you can set at any time, before or after connecting: `Text`, `Description`, `Label`, `LockedDescription`, `Visible`, `Enabled`, `Gate`, `SetIcons`, plus whatever that kind of row has of its own. Setting one after connecting updates the live menu.
+Each returns an object you can change at any time, before or after connecting: `Text`, `Description`, `Label`, `LockedDescription`, `Visible`, `Enabled`, `Gate`, `SetIcons`, plus whatever that row type has of its own. Changes after connecting update the live menu.
 
 :::tip[Write a description for every row]
-`Description` is the line vMenu shows at the bottom of the screen while a row is highlighted. Write one for every row you add. 
-A menu where half the rows explain themselves and the other half say nothing looks unfinished, and players will probably notice.
+`Description` is the line at the bottom of the screen while a row is highlighted. A menu where half the rows explain themselves and half say nothing looks unfinished.
 :::
 
-A checkbox can remember itself between sessions with `persist: true`, which stores the player's choice in your resource's own key value store. Pass a stable `id` along with it, because the automatic ids follow creation order and reordering your code would otherwise hand a saved value to the wrong box.
+A checkbox can remember itself between sessions with `persist: true`, which stores the choice in your own resource's key value store. Pass a stable `id` with it, because automatic ids follow creation order and reordering your code would hand a saved value to the wrong box.
 
-Menus take a `subtitle`, the bar under the banner. Leave it out and vMenu falls back to the menu's own title, so it is never empty. Leaving it empty would cause issues, that's why there's an automatic fallback.
+A menu's `subtitle` is the bar under the banner. Leave it out and vMenu uses the menu's title instead, so it is never empty.
 
 ### Adding rows later
 
-You can connect first and build afterwards. Your row under Plugins appears as soon as your menu has something in it, and stays hidden while it is empty, so a plugin that only contributes player actions never advertises an empty menu.
+You can connect first and build afterwards. Your row under Plugins appears as soon as your menu has something in it, so a plugin that only contributes player actions never advertises an empty menu.
 
-Changing many things at once? Wrap it in a batch, and vMenu repaints once instead of once per change:
+Wrap many changes in a batch and vMenu repaints once instead of once per change:
 
 ```csharp
 using (plugin.BeginBatch())
@@ -186,11 +168,11 @@ using (plugin.BeginBatch())
 }
 ```
 
-Batches nest safely. If something you call inside a batch opens one of its own, only the outermost one sends, so a helper that batches internally cannot cut your batch short.
+Batches nest safely. Only the outermost one sends, so a helper that batches internally cannot cut your batch short.
 
 ## Text and translations
 
-Every piece of text is a `Text` object, which is either a literal or a key into your own translation tables:
+Every piece of text is a `Text` object, either a literal or a key into your own translation tables:
 
 ```csharp
 plugin.Translations.Add("en", new Dictionary<string, string>
@@ -201,11 +183,11 @@ plugin.Translations.Add("en", new Dictionary<string, string>
 menu.AddButton(Text.Key("greet", ("name", Text.Literal("world"))));
 ```
 
-A plain string is a literal, so translating is always the deliberate act. Keys are looked up in the player's current vMenu language, then in your English table, which is why an `en` table is required as soon as you provide any. Your keys are yours alone, so `greet` never collides with vMenu's or with another plugin's. When the player changes language, your menu follows along without you doing anything.
+A plain string is a literal, so translating is always deliberate. Keys are looked up in the player's current vMenu language and then in your English table, which is why an `en` table is required as soon as you provide any. Your keys are yours alone, so they never collide with vMenu's or another plugin's. When the player changes language, your menu follows.
 
 ## Permissions and settings
 
-Declare both on the server, and use them on the client.
+Declare both on the server, use them on the client.
 
 ```csharp
 // Server
@@ -222,46 +204,43 @@ var enabled = plugin.Settings.Bool("Enabled", true, "Turns my plugin on or off."
 greet.Gate = PluginGate.Permission("Greet") & PluginGate.Setting(enabled);
 ```
 
-Gates combine with `&` and `|`, they are evaluated live, and they refresh by themselves when a server owner changes a permission or a setting.
-`HideWhenLocked` decides whether a row the player may not use is greyed out with a lock or gone entirely.
+Gates combine with `&` and `|`, are evaluated live, and refresh by themselves when the owner changes a permission or setting. `HideWhenLocked` decides whether a row the player may not use is greyed out with a lock or gone entirely.
 
-Names are short, and vMenu scopes them to your resource for you, so `Greet` becomes `vMenu.Enhanced.Plugins.MyPlugin.Greet`. Only letters, digits and underscores are allowed in the short name.
+Names are short and vMenu scopes them to your resource, so `Greet` becomes `vMenu.Enhanced.Plugins.MyPlugin.Greet`. Only letters, digits and underscores are allowed.
 
-Settings come in `Bool`, `Int`, `Float` and `String`. Declare them on both sides: the server half is what puts them in the template a server owner reads, the client half is what your menu gates on and reads values from.
+Settings come in `Bool`, `Int`, `Float` and `String`. Declare them on both sides. The server half puts them in the owner's template, the client half is what you gate on and read from.
 
-For anything that matters, check on the server before you act on it:
+For anything that matters, check on the server before you act:
 
 ```csharp
 if (VMenuServer.IsPlayerAllowed(source, "Poke")) { ... }
 ```
 
-If you use `VMenuServer.IsPlayerAllowed` instead of FiveM's native `IsPlayerAceAllowed`, you get the benefit of parent permissions being checked as well. For example, if a server owner granted the whole plugin instead of each individual permission, checking with vMenu's function makes it work out of the box. Checking with IsPlayerAceAllowed would require you to manually check all parent permisisons as well.
+Use this rather than FiveM's `IsPlayerAceAllowed`, because it checks parent permissions too. An owner who granted the whole plugin instead of each individual permission then works out of the box.
 
 ### What the server owner ends up with
 
-You never ship a config file. vMenu writes one for the owner out of what you declared, and rewrites it every time your plugin registers, so what they read is always what your running plugin actually has. Both files land in the one shared folder `vMenu.Enhanced/config/plugins/`, named after your resource:
+You never ship a config file. vMenu writes one for the owner out of what you declared, and rewrites it every time your plugin registers. Both files land in `vMenu.Enhanced/config/plugins/`, named after your resource:
 
 ```
 vMenu.Enhanced/config/plugins/MyPlugin.permissions.cfg.example
 vMenu.Enhanced/config/plugins/MyPlugin.configuration.cfg.example
 ```
 
-The owner copies each file, drops the `.example`, edits the copy, and execs the copy from `server.cfg`. 
-That is their job, not yours, and [installing plugins](/vmenu/enhanced/plugins/installing/) walks them through it.
+The owner copies each file, drops the `.example`, edits the copy, and execs it from `server.cfg`. [Installing plugins](/vmenu/enhanced/plugins/installing/) walks them through it.
 
-Please provide your own instructions with your plugin if they differ from a typical installation. And link back to [installing plugins](/vmenu/enhanced/plugins/installing/) in your documentation if you have nothing specific to add. That way people always know where to find installation instructions.
-Please also add a way for server owners to contact you regarding your plugin. We cannot provide support for your plugin, that's your responsibility.
+For your own README:
 
-Two things worth doing for them in your own plugin's README:
+- Link to [installing plugins](/vmenu/enhanced/plugins/installing/), or write your own instructions if yours differ.
+- Tell owners to exec your two files as their own lines rather than pasting your lines into vMenu's configs. Separate files are what makes your plugin removable in one step later.
+- Tell them your resource name matters, since every permission and both file names are built from it.
+- Give people a way to contact you. We cannot support your plugin, that is your job.
 
-- **Tell them to exec your two files as their own lines**, rather than pasting your permission and setting lines into vMenu's own `permissions.cfg` and `configuration.cfg`. Both work, but separate files are what makes your plugin removable in one step later, and it is the owner's future self who pays if it is not. The [recommendation on the installing page](/vmenu/enhanced/plugins/installing/) explains the whole reasoning, so linking there is enough.
-- **Tell them your resource name matters**, because every permission and both file names are built from it. If you expect anybody to rename your folder, say what that changes.
-
-Also write a real `description` for every permission and setting you declare. The description is the comment that appears above that line in the owner's generated file, and it is the only explanation they will get of what the thing does (unless you write your own documentation elsewhere). 
+Write a real `description` for every permission and setting. It becomes the comment above that line in the owner's generated file, and it may be the only explanation they ever get.
 
 ## Player actions
 
-The one place a plugin reaches outside its own submenu is the **Plugin Actions** submenu inside every player's page in vMenu's **Online Players** menu:
+The one place a plugin reaches outside its own submenu is the **Plugin Actions** submenu inside every player's page in **Online Players**:
 
 ```csharp
 var poke = plugin.PlayerActions.AddButton("Poke");
@@ -270,10 +249,9 @@ poke.Gate = PluginGate.Permission("Poke");
 poke.Selected += target => plugin.Notify(NotifyStyle.Info, $"You poked {target.Name}.");
 ```
 
-The same rows serve every player, and the one that was selected is handed to your callback with their name and server id. 
-vMenu appends a line naming your resource to the description of these rows, so a player can always see which resource added it.
+The same rows serve every player, and the selected one is handed to your callback with their name and server id. vMenu adds a line naming your resource to these descriptions, so players can see which resource added it.
 
-## Talking to the player and getting their input
+## Talking to the player
 
 ```csharp
 plugin.Notify(NotifyStyle.Success, "That worked.");
@@ -284,43 +262,22 @@ if (await plugin.GetTextAsync("What is your name?", maxLength: 32) is { } name)
 }
 ```
 
-Notifications are shown in vMenu's own notification area, credited to your plugin. 
-`GetTextAsync` opens vMenu's input box and returns null when the player cancels. 
-It can ask several questions in a row, and it refuses when something else is already using the input box.
+Notifications appear in vMenu's notification area, credited to your plugin. `GetTextAsync` opens vMenu's input box and returns null when the player cancels. It can ask several questions in a row, and refuses when something else is already using the box.
 
 ## Rules to keep to
 
-### Your resource name is your identity
-Permissions, settings and both of your template files are named after it, so renaming the resource renames all of those. 
-Two resources whose names sanitize to the same identity cannot both register, the second is refused.
+- **Your resource name is your identity.** Permissions, settings and both template files are named after it. Two resources whose names sanitize to the same identity cannot both register, the second is refused.
+- **Limits.** A menu tree may hold 2000 items and nest 8 levels deep. Rows added after connecting count towards the same 2000. Past that, rows are skipped with a warning.
+- **Never trust the client.** The client half decides what a menu looks like, nothing more. Anything that changes the world belongs behind a server side permission check.
+- **vMenu owns the menu.** You describe what you want, vMenu decides how and when it is drawn. That is what keeps your plugin working across vMenu updates.
+- **Update with vMenu.** A breaking change on vMenu's side can stop an old plugin from loading.
 
-### Limits
-A plugin's menu tree may hold 2000 items and nest 8 levels deep. 
-Rows you add after connecting count towards that same 2000, and a submenu you add is measured from the root like everything else, so a plugin that keeps adding rows to a live menu eventually has them skipped with a warning rather than growing without end. 
-Ids may only contain letters, digits and underscores.
+## License
 
-### Never trust the client.
-The client half of your plugin decides what a menu looks like, nothing more. Anything that changes the world belongs behind a server side permission check.
+vMenu and both NuGet packages are **GPL-3.0-or-later**, and so is anything you build with them. **You must use that same license for your plugin.** A plugin built on those packages is a work based on vMenu, so you cannot put a closed license on the result.
 
-### vMenu owns the menu.
-Your plugin describes what it wants, vMenu decides how it is drawn and when. 
-That is what lets your plugin keep working across vMenu updates without you touching it.
+- **Running it only on your own servers asks nothing of you.** Using software is not distributing it, so your source may stay private.
+- **Handing it to anybody else means handing them the source too.** Giving it away, selling it, listing it on a store, or sending it to someone running another server are all distribution.
+- **You may charge money for it.** What you may not do is keep the source to yourself, and whoever paid you is then free to pass both on.
 
-### Updates
-Please update your resource whenever a new vMenu version becomes available.
-Failing to update to the latest version may mean that your plugin will fail to load in case of any breaking changes on vMenu's side.
-
-### License
-vMenu uses the **GPL-3.0-or-later** license, and so do the two NuGet packages you build a plugin with. Their full license text ships inside the packages themselves.
-
-**You must use that same license for your plugins.**
-A plugin built on those packages is a work based on vMenu, so you cannot put your own closed license on the result.
-
-What that means in practice:
-
-- **Only running it on your own servers asks nothing of you.** Using software is not distributing it, so your source may stay private.
-- **Handing your plugin to anybody else means handing them the source with it.** Giving it away, selling it, listing it on a store, or sending it to someone who runs another server are all distribution, and every one of them means the complete source code goes along, under this same license.
-- **You are allowed to charge money for it.** The GPL has nothing against being paid. What it does not allow is taking the money and keeping the source to yourself, and whoever paid you is then free to pass both on to other people.
-- **So if your plugin will ever run on a server that is not yours, plan on open sourcing it.** That is not an extra rule stacked on top of the license, it is what the license already asks of you.
-
-This is a plain language summary rather than legal advice. The [license text](https://github.com/TomGrobbe/vMenu/blob/enhanced/LICENSE.md) is what actually counts, so read it if the details matter to your situation.
+This is a plain language summary, not legal advice. The [license text](https://github.com/TomGrobbe/vMenu/blob/enhanced/LICENSE.md) is what counts.
