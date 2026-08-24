@@ -61,6 +61,10 @@ public static class ActionIds
     public static class WeatherOptions
     {
         public const string SetWeather = "WeatherOptions.SetWeather";
+
+        public const string SetBlackout = "WeatherOptions.SetBlackout";
+
+        public const string SetSnow = "WeatherOptions.SetSnow";
     }
 
     public static class OnlinePlayers
@@ -116,6 +120,8 @@ public static class ActionIds
     public static class TimeOptions
     {
         public const string SetTime = "TimeOptions.SetTime";
+
+        public const string SetFrozen = "TimeOptions.SetFrozen";
 
         public const string RealTime = "realtime";
     }

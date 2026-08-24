@@ -40,6 +40,12 @@ public static class WorldState
 
     public static int TimeOffsetSeconds { get; private set; }
 
+    public static double? FrozenAtUnix { get; private set; }
+
+    public static BlackoutMode Blackout { get; private set; }
+
+    public static SnowMode SnowSetting { get; private set; }
+
     #region convars
     public static int TimeTransitionSeconds { get; private set; }
 
@@ -52,15 +58,23 @@ public static class WorldState
 
     public static event Action? Changed;
 
+    public static bool IsTimeFrozen => FrozenAtUnix.HasValue;
+
+    public static bool SnowWanted => SnowModes.Resolve(SnowSetting, Weather);
+
     public static double UnixSeconds =>
         _anchored ? _anchorUnix + ((Native.GetGameTimer() - _anchorTimerMs) / 1000.0) : 0.0;
+
+    public static double ClockUnixSeconds => FrozenAtUnix ?? UnixSeconds;
 
     public static double TimeSpeed =>
         GameClock.ClampSpeed(_speedMultiplier);
 
     // The clock with the server's offset applied, as an in-game second of day.
     public static double SecondOfDay =>
-        GameClock.Mod(GameClock.SecondOfDay(UnixSeconds, TimeSpeed) + TimeOffsetSeconds, GameClock.SecondsPerGameDay);
+        GameClock.Mod(
+            GameClock.SecondOfDay(ClockUnixSeconds, TimeSpeed) + TimeOffsetSeconds,
+            GameClock.SecondsPerGameDay);
 
     // What the schedule says right now, ignoring any override.
     public static CycleResolution Schedule => WeatherCycle.Resolve(GameClock.CycleGameHours(UnixSeconds, TimeSpeed));
@@ -91,7 +105,14 @@ public static class WorldState
             ReadSettings);
 
         ClientConfig.AddEventListenerFor([WorldStateConvars.Utc], ReadClock);
-        ClientConfig.AddEventListenerFor([WorldStateConvars.Weather, WorldStateConvars.TimeOffset], ReadOverrides);
+        ClientConfig.AddEventListenerFor(
+            [
+                WorldStateConvars.Weather,
+                WorldStateConvars.TimeOffset,
+                WorldStateConvars.Blackout,
+                WorldStateConvars.Snow,
+            ],
+            ReadOverrides);
 
         // Gated to match the server, which publishes nothing while both features are off.
         _fallback = TickRegistry.Register(
@@ -112,6 +133,7 @@ public static class WorldState
         if (!IsNeeded())
         {
             Log.Info("[World] Both weather and time sync are off on this server, so nothing is being synced.");
+            return;
         }
 
         Log.Info($"[World] {WorldStateConvars.Utc} = '{Native.GetConvar(WorldStateConvars.Utc, string.Empty)}'");
@@ -127,11 +149,17 @@ public static class WorldState
         Log.Info(
             $"[World] override: {(WeatherOverride is { } forced ? WeatherTypes.NameOf(forced) : "none")}, " +
             $"schedule: {WeatherTypes.NameOf(Schedule.Current)}, " +
-            $"in force: {WeatherTypes.NameOf(Weather)}, time offset: {TimeOffsetSeconds}s");
+            $"in force: {WeatherTypes.NameOf(Weather)}, time offset: {TimeOffsetSeconds}s, " +
+            $"clock: {(FrozenAtUnix is { } pinned ? $"frozen at unix {pinned:0.000}" : "running")}");
+        Log.Info(
+            $"[World] blackout: {BlackoutModes.NameOf(Blackout)}, " +
+            $"snow: {SnowModes.NameOf(SnowSetting)} (wanted right now: {SnowWanted})");
 
         // Everything above is what vMenu believes. This is what the game actually has.
         Log.Info($"[World] game reports: {WorldWeather.Describe()}");
         Log.Info($"[World] clouds: {WorldClouds.Describe()}");
+        Log.Info($"[World] snow: {WorldSnow.Describe()}");
+        Log.Info($"[World] blackout: {WorldBlackout.Describe()}");
         Log.Info($"[World] game clock: {WorldTime.Describe()}");
         Log.Info($"[World] date: {WorldTime.DescribeDate()}");
         Log.Info($"[World] moon: {WorldTime.DescribeMoon()}");
@@ -165,10 +193,25 @@ public static class WorldState
     private static void ReadOverrides()
     {
         var weather = Native.GetConvar(WorldStateConvars.Weather, WorldStateConvars.Dynamic);
-        var offset = Native.GetConvar(WorldStateConvars.TimeOffset, "0");
+        var time = Native.GetConvar(WorldStateConvars.TimeOffset, "0");
+        var blackout = Native.GetConvar(WorldStateConvars.Blackout, string.Empty);
+        var snow = Native.GetConvar(WorldStateConvars.Snow, string.Empty);
 
         WeatherOverride = WeatherTypes.TryParse(weather, out var type) ? type : null;
-        TimeOffsetSeconds = WorldStateConvars.TryParseOffset(offset, out var seconds) ? seconds : 0;
+
+        if (WorldStateConvars.TryParseTime(time, out var seconds, out var frozen))
+        {
+            TimeOffsetSeconds = seconds;
+            FrozenAtUnix = frozen;
+        }
+        else
+        {
+            TimeOffsetSeconds = 0;
+            FrozenAtUnix = null;
+        }
+
+        Blackout = BlackoutModes.TryParse(blackout, out var mode) ? mode : BlackoutMode.Off;
+        SnowSetting = SnowModes.TryParse(snow, out var snowMode) ? snowMode : SnowMode.Automatic;
 
         Changed?.Invoke();
     }

@@ -51,4 +51,11 @@ public static class WeatherTypes
     }
 
     public static bool IsKnown(string? name) => TryParse(name, out _);
+
+    public static bool IsSnowy(WeatherType type) =>
+        type is WeatherType.Xmas
+            or WeatherType.Snow
+            or WeatherType.SnowLight
+            or WeatherType.Blizzard
+            or WeatherType.SnowHalloween;
 }

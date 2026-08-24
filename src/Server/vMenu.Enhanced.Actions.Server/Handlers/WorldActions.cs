@@ -27,6 +27,74 @@ public static class WorldActions
             ActionIds.TimeOptions.SetTime,
             TimeOptionsPermissions.SetTime,
             SetTime);
+
+        ActionRegistry.Register(
+            ActionIds.WeatherOptions.SetBlackout,
+            WeatherOptionsPermissions.Blackout,
+            SetBlackout);
+
+        ActionRegistry.Register(
+            ActionIds.WeatherOptions.SetSnow,
+            WeatherOptionsPermissions.Snow,
+            SetSnow);
+
+        ActionRegistry.Register(
+            ActionIds.TimeOptions.SetFrozen,
+            TimeOptionsPermissions.FreezeTime,
+            SetFrozen);
+    }
+
+    // No Enabled check, unlike the rest: blackout is street lighting, not weather.
+    private static ActionResponse SetBlackout(Player source, string[] args)
+    {
+        if (args.Length < 1 || !BlackoutModes.TryParse(args[0], out var mode))
+        {
+            return ActionResponse.InvalidRequest();
+        }
+
+        ServerState.SetBlackout(mode);
+
+        Log.Debug($"[State] {source} set the blackout to {BlackoutModes.NameOf(mode)}.");
+
+        return ActionResponse.Ok();
+    }
+
+    private static ActionResponse SetSnow(Player source, string[] args)
+    {
+        if (!ServerConfig.Value(WeatherOptionsSettings.Enabled))
+        {
+            return ActionResponse.Refused();
+        }
+
+        if (args.Length < 1 || !SnowModes.TryParse(args[0], out var mode))
+        {
+            return ActionResponse.InvalidRequest();
+        }
+
+        ServerState.SetSnow(mode);
+
+        Log.Debug($"[State] {source} set the snow effects to {SnowModes.NameOf(mode)}.");
+
+        return ActionResponse.Ok();
+    }
+
+    private static ActionResponse SetFrozen(Player source, string[] args)
+    {
+        if (!ServerConfig.Value(TimeOptionsSettings.Enabled))
+        {
+            return ActionResponse.Refused();
+        }
+
+        if (args.Length < 1 || !bool.TryParse(args[0], out var frozen))
+        {
+            return ActionResponse.InvalidRequest();
+        }
+
+        ServerState.SetTimeFrozen(frozen);
+
+        Log.Debug($"[State] {source} {(frozen ? "froze" : "unfroze")} the clock.");
+
+        return ActionResponse.Ok();
     }
 
     private static ActionResponse SetWeather(Player source, string[] args)
@@ -79,7 +147,7 @@ public static class WorldActions
         // speed the server is actually running at.
         if (string.Equals(args[0], ActionIds.TimeOptions.RealTime, StringComparison.OrdinalIgnoreCase))
         {
-            ServerState.SetTimeOffset(ServerClock.RealTimeOffset());
+            ServerState.SetTimeOffsetRunning(ServerClock.RealTimeOffset());
 
             Log.Debug(
                 $"[State] {source} put the clock back on the server's own time, " +

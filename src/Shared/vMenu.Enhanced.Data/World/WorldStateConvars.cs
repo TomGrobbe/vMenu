@@ -13,11 +13,15 @@ public static class WorldStateConvars
 
     public const string TimeOffset = "vMenu.Enhanced.State.TimeOffset";
 
-    // All three, for handing to the configuration module in one go.
-    public static readonly string[] All = [Utc, Weather, TimeOffset];
+    public const string Blackout = "vMenu.Enhanced.State.Blackout";
 
-    // Weather is following the schedule.
+    public const string Snow = "vMenu.Enhanced.State.Snow";
+
+    public static readonly string[] All = [Utc, Weather, TimeOffset, Blackout, Snow];
+
     public const string Dynamic = "dynamic";
+
+    private const char FrozenSeparator = '@';
 
     public static int NormaliseOffset(int seconds)
     {
@@ -46,6 +50,46 @@ public static class WorldStateConvars
 
     public static string FormatOffset(int seconds) =>
         NormaliseOffset(seconds).ToString(CultureInfo.InvariantCulture);
+
+    public static string FormatTime(int offsetSeconds, double? frozenAtUnix) =>
+        frozenAtUnix is { } pinned
+            ? FormatOffset(offsetSeconds) + FrozenSeparator + pinned.ToString("F3", CultureInfo.InvariantCulture)
+            : FormatOffset(offsetSeconds);
+
+    public static bool TryParseTime(string? value, out int offsetSeconds, out double? frozenAtUnix)
+    {
+        offsetSeconds = 0;
+        frozenAtUnix = null;
+
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return false;
+        }
+
+        var separator = value.IndexOf(FrozenSeparator);
+
+        if (separator < 0)
+        {
+            return TryParseOffset(value, out offsetSeconds);
+        }
+
+        if (!TryParseOffset(value[..separator], out offsetSeconds))
+        {
+            return false;
+        }
+
+        if (double.TryParse(
+                value[(separator + 1)..],
+                NumberStyles.Float,
+                CultureInfo.InvariantCulture,
+                out var pinned)
+            && pinned > 0.0)
+        {
+            frozenAtUnix = pinned;
+        }
+
+        return true;
+    }
 
     public static string FormatUnix(long unixSeconds) =>
         unixSeconds.ToString(CultureInfo.InvariantCulture);

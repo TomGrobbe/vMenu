@@ -47,8 +47,9 @@ public static class ServerClock
     // what both the menu's reset button and vmenu_resettime ask for. Worked out here because the
     // published time and the speed convar both live here, and because a client working it out for itself
     // would use its own slightly older idea of what time it is.
-    public static int RealTimeOffset() =>
-        TryPublishedUnixSeconds(out var now) ? (int)GameClock.RealTimeOffset(now, Speed()) : 0;
+    public static int RealTimeOffset() => (int)GameClock.RealTimeOffset(Now(), Speed());
+
+    internal static double Now() => DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() / 1000.0;
 
     // The console side of the menu's reset button.
     public static void ResetToRealTime()
@@ -64,7 +65,7 @@ public static class ServerClock
 
         var offset = RealTimeOffset();
 
-        ServerState.SetTimeOffset(offset);
+        ServerState.SetTimeOffsetRunning(offset);
 
         Log.Debug(
             offset == 0
@@ -93,12 +94,17 @@ public static class ServerClock
         var speed = Speed();
         var offset = Offset();
         var utcSecondOfDay = (int)(now % 86400L);
-        var secondOfDay = GameClock.Mod(GameClock.SecondOfDay(now, speed) + offset, GameClock.SecondsPerGameDay);
+
+        var clock = ServerState.FrozenAtUnix ?? now;
+        var secondOfDay = GameClock.Mod(GameClock.SecondOfDay(clock, speed) + offset, GameClock.SecondsPerGameDay);
+
+        // Live clock, not the pinned one: the weather keeps cycling while the time of day is held.
         var cycle = GameClock.CycleGameHours(now, speed);
         var resolved = WeatherCycle.Resolve(cycle);
 
         Log.Info(
-            $"[Clock] UTC {now} ({utcSecondOfDay / 3600:00}:{utcSecondOfDay % 3600 / 60:00}:{utcSecondOfDay % 60:00})");
+            $"[Clock] UTC {now} ({utcSecondOfDay / 3600:00}:{utcSecondOfDay % 3600 / 60:00}:{utcSecondOfDay % 60:00})"
+            + (ServerState.FrozenAtUnix is { } pinned ? $", FROZEN at unix {pinned:0.000}" : string.Empty));
         Log.Info(
             $"[Clock]   in-game {(int)(secondOfDay / 3600):00}:{(int)(secondOfDay % 3600 / 60):00} " +
             $"(offset {offset}s), " +
@@ -109,10 +115,10 @@ public static class ServerClock
             $"{WeatherTypes.NameOf(resolved.Next)} in " +
             $"{(resolved.GameHoursUntilNext * GameClock.RealSecondsPerGameHourAt(speed) / 60.0).ToString("0.#", CultureInfo.InvariantCulture)} real minutes");
 
-        DumpDate(now, speed, offset, secondOfDay);
+        DumpDate(clock, speed, offset, secondOfDay);
     }
 
-    private static void DumpDate(long now, double speed, int offset, double secondOfDay)
+    private static void DumpDate(double now, double speed, int offset, double secondOfDay)
     {
         var day = (long)GameClock.Mod(GameClock.GameDay(now, offset, speed), MoonCycle.PeriodDays);
         var cycleDays = day + (secondOfDay / GameClock.SecondsPerGameDay);
@@ -131,7 +137,7 @@ public static class ServerClock
     }
 
     private static int Offset() =>
-        WorldStateConvars.TryParseOffset(Native.GetConvar(WorldStateConvars.TimeOffset, "0"), out var seconds)
+        WorldStateConvars.TryParseTime(Native.GetConvar(WorldStateConvars.TimeOffset, "0"), out var seconds, out _)
             ? seconds
             : 0;
 

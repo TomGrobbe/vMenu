@@ -17,6 +17,8 @@ public static class WorldTime
     // keeping up with the server has nothing new to send more often than this.
     private const int SteadyIntervalMs = 100;
 
+    private const int NormalMsPerGameMinute = 2000;
+
     private static long _shownDay = long.MinValue;
 
     private static double _shownOffset;
@@ -25,6 +27,11 @@ public static class WorldTime
     private static int _rampStartMs;
     private static bool _started;
     private static bool _ramping;
+    private static bool _wasFrozen;
+    private static bool _catchingUp;
+    private static double _catchUpFrom;
+    private static double _frozenAnchor;
+    private static int _catchUpStartMs;
 
     // See the matching note in WorldWeather: the convar decides, never a permission.
     private static bool IsEnabled() => ClientConfig.Value(TimeOptionsSettings.Enabled);
@@ -36,15 +43,24 @@ public static class WorldTime
             Apply,
             // A manual time change sweeps hours in a couple of seconds, and at the steady rate that sweep is
             // visibly steppy, so the ramp gets a frame each instead.
-            TickRate.Varying(() => _ramping ? TickRate.PerFrame : TickRate.Every(SteadyIntervalMs)),
+            TickRate.Varying(() => _ramping || _catchingUp ? TickRate.PerFrame : TickRate.Every(SteadyIntervalMs)),
             IsEnabled,
             onStarted: () =>
             {
                 _started = false;
                 _ramping = false;
+                _catchingUp = false;
+                _wasFrozen = false;
                 _shownDay = long.MinValue;
             },
-            onStopped: Native.NetworkClearClockTimeOverride);
+            onStopped: () =>
+            {
+                Native.NetworkClearClockTimeOverride();
+
+                // Otherwise switching time sync off while frozen leaves the game's own clock stopped.
+                Native.PauseClock(false);
+                Native.SetMillisecondsPerGameMinute(NormalMsPerGameMinute);
+            });
 
         ClientConfig.AddEventListenerFor([TimeOptionsSettings.Enabled], tick.Reevaluate);
 
@@ -100,14 +116,20 @@ public static class WorldTime
             return;
         }
 
-        var offset = Ramp();
+        var offset = Ramp() + CatchUp();
 
         // Real seconds, not zero. Forcing them to zero is what made the legacy clock visibly step.
         var total = GameClock.Mod(
-            GameClock.SecondOfDay(WorldState.UnixSeconds, WorldState.TimeSpeed) + offset,
+            GameClock.SecondOfDay(WorldState.ClockUnixSeconds, WorldState.TimeSpeed) + offset,
             GameClock.SecondsPerGameDay);
 
-        Native.SetMillisecondsPerGameMinute((int)(2000 / GameClock.ClampSpeed(WorldState.TimeSpeed)));
+        Native.SetMillisecondsPerGameMinute(
+            (int)(NormalMsPerGameMinute / GameClock.ClampSpeed(WorldState.TimeSpeed)));
+
+        // NetworkOverrideClockTime sets the clock, it does not stop it, so without this a frozen clock
+        // creeps forward between re-asserts and snaps back on every one, which the clouds show up badly.
+        Native.PauseClock(WorldState.IsTimeFrozen);
+
         Native.NetworkOverrideClockTime((int)(total / 3600), (int)(total % 3600 / 60), (int)(total % 60));
 
         ApplyDate(offset);
@@ -117,7 +139,7 @@ public static class WorldTime
     private static void ApplyDate(double offset)
     {
         var day = (long)GameClock.Mod(
-            GameClock.GameDay(WorldState.UnixSeconds, offset, WorldState.TimeSpeed),
+            GameClock.GameDay(WorldState.ClockUnixSeconds, offset, WorldState.TimeSpeed),
             MoonCycle.PeriodDays);
 
         if (day == _shownDay)
@@ -140,12 +162,8 @@ public static class WorldTime
         if (!_started)
         {
             _started = true;
-            _ramping = false;
-            _shownOffset = target;
-            _rampFrom = target;
-            _rampTo = target;
 
-            return _shownOffset;
+            return Snap(target);
         }
 
         if (Math.Abs(target - _rampTo) > 0.5)
@@ -177,6 +195,79 @@ public static class WorldTime
         }
 
         _shownOffset = _rampFrom + (Shortest(_rampTo - _rampFrom) * Smooth(progress));
+
+        return _shownOffset;
+    }
+
+    private static double CatchUp()
+    {
+        var frozen = WorldState.IsTimeFrozen;
+
+        if (frozen != _wasFrozen)
+        {
+            _wasFrozen = frozen;
+
+            _catchingUp = false;
+
+            if (!frozen)
+            {
+                BeginCatchUp();
+            }
+        }
+
+        if (frozen)
+        {
+            // Kept for the moment it is let go, when the convar no longer carries it.
+            _frozenAnchor = WorldState.FrozenAtUnix!.Value;
+
+            return 0.0;
+        }
+
+        if (!_catchingUp)
+        {
+            return 0.0;
+        }
+
+        var seconds = Math.Max(0, WorldState.TimeTransitionSeconds);
+
+        if (seconds <= 0)
+        {
+            _catchingUp = false;
+
+            return 0.0;
+        }
+
+        var progress = (Native.GetGameTimer() - _catchUpStartMs) / 1000.0 / seconds;
+
+        if (progress >= 1.0)
+        {
+            _catchingUp = false;
+
+            return 0.0;
+        }
+
+        return _catchUpFrom * (1.0 - Smooth(progress));
+    }
+
+    private static void BeginCatchUp()
+    {
+        // Mod, not Shortest: this time really passed, so it winds forward however far that is.
+        _catchUpFrom = -GameClock.Mod(
+            GameClock.SecondOfDay(WorldState.UnixSeconds, WorldState.TimeSpeed)
+            - GameClock.SecondOfDay(_frozenAnchor, WorldState.TimeSpeed),
+            GameClock.SecondsPerGameDay);
+
+        _catchUpStartMs = Native.GetGameTimer();
+
+        _catchingUp = _catchUpFrom < -0.5;
+    }
+
+    private static double Snap(double target)
+    {
+        _ramping = false;
+        _shownOffset = target;
+        _rampFrom = target;
+        _rampTo = target;
 
         return _shownOffset;
     }

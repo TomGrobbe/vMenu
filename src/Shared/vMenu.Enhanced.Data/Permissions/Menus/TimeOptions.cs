@@ -10,4 +10,7 @@ public static class TimeOptions
 
     [StaffOnly]
     public const string SetTime = "vMenu.Enhanced.Menus.TimeOptions.SetTime";
+
+    [StaffOnly]
+    public const string FreezeTime = "vMenu.Enhanced.Menus.TimeOptions.FreezeTime";
 }

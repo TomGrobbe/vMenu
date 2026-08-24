@@ -33,6 +33,14 @@ public sealed class WorldMenu : MenuDefinition
     private static readonly MenuGate TimeAllowed =
         MenuGate.Setting(TimeOptionsSettings.Enabled) & MenuGate.Permission(TimeOptionsPermissions.SetTime);
 
+    private static readonly MenuGate SnowAllowed =
+        MenuGate.Setting(WeatherOptionsSettings.Enabled) & MenuGate.Permission(WeatherOptionsPermissions.Snow);
+
+    private static readonly MenuGate FreezeAllowed =
+        MenuGate.Setting(TimeOptionsSettings.Enabled) & MenuGate.Permission(TimeOptionsPermissions.FreezeTime);
+
+    private static readonly MenuGate BlackoutAllowed = MenuGate.Permission(WeatherOptionsPermissions.Blackout);
+
     private static readonly TimePresetOptions Presets = new();
 
     // Hides the row rather than showing an empty list when an owner clears the convar.
@@ -105,6 +113,56 @@ public sealed class WorldMenu : MenuDefinition
                 : Task.CompletedTask,
         });
 
+        menu.Entries.Add(new CheckboxEntry
+        {
+            Text = MenuText.Key(Loc.World.FreezeTime),
+            Description = MenuText.Key(Loc.World.FreezeTimeDescription),
+            Gate = FreezeAllowed,
+            ReadState = static () => WorldState.IsTimeFrozen,
+            OnChangedAsync = changed => SendStateAsync(
+                ActionIds.TimeOptions.SetFrozen,
+                changed.Checked ? "true" : "false",
+                changed.Checked ? Loc.World.TimeFrozen : Loc.World.TimeUnfrozen),
+        });
+
+        menu.Entries.Add(new ListEntry
+        {
+            Text = MenuText.Key(Loc.World.Blackout),
+            Description = MenuText.Key(Loc.World.BlackoutDescription),
+            Gate = BlackoutAllowed,
+            Options = ModeOptions(BlackoutModes.Selectable, Loc.World.BlackoutName),
+            ReadSelectedIndex = static () => (int)WorldState.Blackout,
+            OnSelectedAsync = selected =>
+            {
+                var mode = BlackoutModes.Selectable[selected.SelectedIndex];
+
+                return SendStateAsync(
+                    ActionIds.WeatherOptions.SetBlackout,
+                    BlackoutModes.NameOf(mode),
+                    Loc.World.BlackoutSet,
+                    MenuText.Key(Loc.World.BlackoutName(mode)));
+            },
+        });
+
+        menu.Entries.Add(new ListEntry
+        {
+            Text = MenuText.Key(Loc.World.Snow),
+            Description = MenuText.Key(Loc.World.SnowDescription),
+            Gate = SnowAllowed,
+            Options = ModeOptions(SnowModes.Selectable, Loc.World.SnowName),
+            ReadSelectedIndex = static () => (int)WorldState.SnowSetting,
+            OnSelectedAsync = selected =>
+            {
+                var mode = SnowModes.Selectable[selected.SelectedIndex];
+
+                return SendStateAsync(
+                    ActionIds.WeatherOptions.SetSnow,
+                    SnowModes.NameOf(mode),
+                    Loc.World.SnowSet,
+                    MenuText.Key(Loc.World.SnowName(mode)));
+            },
+        });
+
         menu.Entries.Add(new ButtonEntry
         {
             Text = MenuText.Key(Loc.World.ResetWeather),
@@ -156,7 +214,7 @@ public sealed class WorldMenu : MenuDefinition
     {
         // Stored as an offset from the derived clock, not as a fixed time, so the day keeps running.
         var offset = (int)GameClock.Mod(
-            secondOfDay - GameClock.SecondOfDay(WorldState.UnixSeconds, WorldState.TimeSpeed),
+            secondOfDay - GameClock.SecondOfDay(WorldState.ClockUnixSeconds, WorldState.TimeSpeed),
             GameClock.SecondsPerGameDay);
 
         return SendAsync(
@@ -195,6 +253,42 @@ public sealed class WorldMenu : MenuDefinition
         }));
     }
 
+    private static async Task SendStateAsync(string action, string argument, string successKey, MenuText? value = null)
+    {
+        var result = await ServerActions.InvokeAsync(action, argument);
+
+        if (result.Status == ActionStatus.Ok)
+        {
+            Notifications.Success(value is { } text
+                ? MenuText.Key(successKey, ("value", text))
+                : MenuText.Key(successKey));
+
+            return;
+        }
+
+        // A refusal changes no convar, so nothing else would put the row back on the real value.
+        RefreshOpen();
+
+        Notifications.Error(MenuText.Key(result.Status switch
+        {
+            ActionStatus.Denied => Loc.World.Denied,
+            ActionStatus.Refused => Loc.World.Disabled,
+            _ => Loc.World.Failed,
+        }));
+    }
+
+    private static List<MenuText> ModeOptions<T>(IReadOnlyList<T> modes, Func<T, string> key)
+    {
+        var options = new List<MenuText>(modes.Count);
+
+        foreach (var mode in modes)
+        {
+            options.Add(MenuText.Key(key(mode)));
+        }
+
+        return options;
+    }
+
     // Empty when the owner has set the blend to zero, so the message never promises a wait that is not
     // coming. That leaves a trailing space in the sentence, which nobody can see.
     private static MenuText Transition(IntSetting setting)
@@ -229,6 +323,10 @@ public sealed class WorldMenu : MenuDefinition
     {
         _open = menu;
 
+        // State convars are quiet, so the framework's blanket refresh never sees them.
+        WorldState.Changed -= RefreshOpen;
+        WorldState.Changed += RefreshOpen;
+
         _status ??= TickRegistry.Register(
             "World.MenuStatus",
             UpdateSubtitle,
@@ -244,7 +342,17 @@ public sealed class WorldMenu : MenuDefinition
     {
         _status?.Stop();
 
+        WorldState.Changed -= RefreshOpen;
+
         _open = null;
+    }
+
+    private static void RefreshOpen()
+    {
+        if (_open is { } menu)
+        {
+            MenuRegistry.Refresh(menu);
+        }
     }
 
     private static void UpdateSubtitle()
@@ -255,14 +363,17 @@ public sealed class WorldMenu : MenuDefinition
         }
 
         var forced = WorldState.WeatherOverride is not null;
+        var frozen = WorldState.IsTimeFrozen;
         var offset = WorldState.TimeOffsetSeconds != 0;
 
         var status = MenuText.Key(
-            (forced, offset) switch
+            (forced, frozen, offset) switch
             {
-                (true, true) => Loc.World.StatusBothForced,
-                (true, false) => Loc.World.StatusWeatherForced,
-                (false, true) => Loc.World.StatusTimeForced,
+                (true, true, _) => Loc.World.StatusWeatherForcedTimeFrozen,
+                (false, true, _) => Loc.World.StatusTimeFrozen,
+                (true, false, true) => Loc.World.StatusBothForced,
+                (true, false, false) => Loc.World.StatusWeatherForced,
+                (false, false, true) => Loc.World.StatusTimeForced,
                 _ => Loc.World.Status,
             },
             ("weather", MenuText.Key(Loc.World.WeatherName(WorldState.Weather))),

@@ -26,4 +26,6 @@ public static class WeaponOptions
     public const string Modify = "vMenu.Enhanced.Menus.WeaponOptions.Modify";
 
     public const string Parachute = "vMenu.Enhanced.Menus.WeaponOptions.Parachute";
+
+    public const string Snowball = "vMenu.Enhanced.Menus.WeaponOptions.Snowball";
 }

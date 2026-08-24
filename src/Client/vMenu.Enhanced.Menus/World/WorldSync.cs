@@ -7,6 +7,9 @@ public static class WorldSync
         WorldState.Initialize();
         WorldTime.Initialize();
         WorldWeather.Initialize();
+        WorldBlackout.Initialize();
+        WorldSnow.Initialize();
+        SnowballPickup.Initialize();
         WeatherForecast.Initialize();
     }
 }

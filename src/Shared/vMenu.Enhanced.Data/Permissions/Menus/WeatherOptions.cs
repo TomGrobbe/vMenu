@@ -10,4 +10,10 @@ public static class WeatherOptions
 
     [StaffOnly]
     public const string SetWeather = "vMenu.Enhanced.Menus.WeatherOptions.SetWeather";
+
+    [StaffOnly]
+    public const string Blackout = "vMenu.Enhanced.Menus.WeatherOptions.Blackout";
+
+    [StaffOnly]
+    public const string Snow = "vMenu.Enhanced.Menus.WeatherOptions.Snow";
 }

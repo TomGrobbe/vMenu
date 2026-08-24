@@ -36,6 +36,42 @@ public static partial class Loc
 
         public const string TimePresetDescription = "world.timepreset.desc";
 
+        public const string Blackout = "world.blackout";
+
+        public const string BlackoutDescription = "world.blackout.desc";
+
+        public const string BlackoutOff = "world.blackout.off";
+
+        public const string BlackoutCity = "world.blackout.city";
+
+        public const string BlackoutCityAndVehicles = "world.blackout.all";
+
+        public const string BlackoutSet = "world.blackout.set";
+
+        public const string Snow = "world.snow";
+
+        public const string SnowDescription = "world.snow.desc";
+
+        public const string SnowAutomatic = "world.snow.automatic";
+
+        public const string SnowOn = "world.snow.on";
+
+        public const string SnowOff = "world.snow.off";
+
+        public const string SnowSet = "world.snow.set";
+
+        public const string FreezeTime = "world.freezetime";
+
+        public const string FreezeTimeDescription = "world.freezetime.desc";
+
+        public const string TimeFrozen = "world.time.frozen";
+
+        public const string TimeUnfrozen = "world.time.unfrozen";
+
+        public const string StatusTimeFrozen = "world.status.timefrozen";
+
+        public const string StatusWeatherForcedTimeFrozen = "world.status.weatherforcedtimefrozen";
+
         public const string ResetWeather = "world.resetweather";
 
         public const string ResetWeatherDescription = "world.resetweather.desc";
@@ -124,6 +160,20 @@ public static partial class Loc
         public const string WeatherRainHalloween = "world.weathername.rainhalloween";
 
         public const string WeatherSnowHalloween = "world.weathername.snowhalloween";
+
+        public static string BlackoutName(BlackoutMode mode) => mode switch
+        {
+            BlackoutMode.City => BlackoutCity,
+            BlackoutMode.CityAndVehicles => BlackoutCityAndVehicles,
+            _ => BlackoutOff,
+        };
+
+        public static string SnowName(SnowMode mode) => mode switch
+        {
+            SnowMode.On => SnowOn,
+            SnowMode.Off => SnowOff,
+            _ => SnowAutomatic,
+        };
 
         public static string WeatherName(WeatherType type) => type switch
         {

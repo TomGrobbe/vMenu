@@ -17,14 +17,28 @@ public static class ServerState
 
     private static int _timeOffsetSeconds;
 
+    private static double? _frozenAtUnix;
+
+    private static BlackoutMode _blackout;
+
+    private static SnowMode _snow;
+
     public static WeatherType? Weather => _weather;
 
     public static int TimeOffsetSeconds => _timeOffsetSeconds;
 
+    public static double? FrozenAtUnix => _frozenAtUnix;
+
+    public static BlackoutMode Blackout => _blackout;
+
+    public static SnowMode Snow => _snow;
+
     public static void Initialize()
     {
         PublishWeather();
-        PublishTimeOffset();
+        PublishTime();
+        PublishBlackout();
+        PublishSnow();
 
         SharedAPI.Commands.RegisterCommand(DumpCommand, true, DebugCommands.Gate(Dump));
     }
@@ -40,14 +54,51 @@ public static class ServerState
     {
         _timeOffsetSeconds = WorldStateConvars.NormaliseOffset(seconds);
 
-        PublishTimeOffset();
+        PublishTime();
+    }
+
+    public static void SetTimeOffsetRunning(int seconds)
+    {
+        _timeOffsetSeconds = WorldStateConvars.NormaliseOffset(seconds);
+        _frozenAtUnix = null;
+
+        PublishTime();
+    }
+
+    public static void SetTimeFrozen(bool frozen)
+    {
+        if (frozen == _frozenAtUnix.HasValue)
+        {
+            return;
+        }
+
+        _frozenAtUnix = frozen ? ServerClock.Now() : null;
+
+        PublishTime();
+    }
+
+    public static void SetBlackout(BlackoutMode mode)
+    {
+        _blackout = mode;
+
+        PublishBlackout();
+    }
+
+    public static void SetSnow(SnowMode mode)
+    {
+        _snow = mode;
+
+        PublishSnow();
     }
 
     public static void Dump()
     {
         Log.Info(
             $"[State] weather: {(_weather is { } type ? WeatherTypes.NameOf(type) : "dynamic")}, " +
-            $"time offset: {_timeOffsetSeconds}s");
+            $"time offset: {_timeOffsetSeconds}s, " +
+            $"clock: {(_frozenAtUnix is { } pinned ? $"frozen at unix {pinned:0.000}" : "running")}");
+        Log.Info(
+            $"[State] blackout: {BlackoutModes.NameOf(_blackout)}, snow: {SnowModes.NameOf(_snow)}");
     }
 
     private static void PublishWeather() =>
@@ -55,8 +106,14 @@ public static class ServerState
             WorldStateConvars.Weather,
             _weather is { } type ? WeatherTypes.NameOf(type) : WorldStateConvars.Dynamic);
 
-    private static void PublishTimeOffset() =>
+    private static void PublishTime() =>
         Native.SetConvarReplicated(
             WorldStateConvars.TimeOffset,
-            WorldStateConvars.FormatOffset(_timeOffsetSeconds));
+            WorldStateConvars.FormatTime(_timeOffsetSeconds, _frozenAtUnix));
+
+    private static void PublishBlackout() =>
+        Native.SetConvarReplicated(WorldStateConvars.Blackout, BlackoutModes.NameOf(_blackout));
+
+    private static void PublishSnow() =>
+        Native.SetConvarReplicated(WorldStateConvars.Snow, SnowModes.NameOf(_snow));
 }
