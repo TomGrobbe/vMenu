@@ -1,8 +1,6 @@
 namespace vMenu.Enhanced.Data.Permissions.Menus;
 
-/// <summary>
-/// Container grant for the menu tier as a whole.
-/// </summary>
+// Container grant for the menu tier as a whole.
 [PermissionCategory(Prefix = "vMenu.Enhanced.Menus")]
 public static class MenuRoot
 {

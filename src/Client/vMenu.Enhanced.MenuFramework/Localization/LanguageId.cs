@@ -1,13 +1,12 @@
 namespace vMenu.Enhanced.MenuFramework.Localization;
 
-/// <summary>Identifies a language by its lowercase code.</summary>
-// Equality is hand written, not from a record: the generated members route through
-// EqualityComparer<string>.Default, whose internal comparer the sandbox refuses to load. Same rule
-// everywhere, so always hand collections an explicit comparer.
+// Identifies a language by its lowercase code. Equality is hand written, not from a record: the
+// generated members route through EqualityComparer<string>.Default, whose internal comparer the
+// sandbox refuses to load. Same rule everywhere, so always hand collections an explicit comparer.
 public readonly struct LanguageId(string code) : IEquatable<LanguageId>
 {
 
-    /// <summary>The fallback for every other language, and the only one required to be complete.</summary>
+    // The fallback for every other language, and the only one required to be complete.
     public static LanguageId English { get; } = new("en");
 
     public string Code { get; } = code;

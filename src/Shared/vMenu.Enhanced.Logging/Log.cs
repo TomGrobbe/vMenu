@@ -10,7 +10,7 @@ public static class Log
 
     public static bool IsEnabled(LogLevel level) => level >= Level;
 
-    /// <summary>Debug mode opens up the Debug level, everything else stays on Info.</summary>
+    // Debug mode opens up the Debug level, everything else stays on Info.
     public static void SetDebug(bool enabled)
     {
         var level = enabled ? LogLevel.Debug : LogLevel.Info;

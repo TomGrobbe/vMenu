@@ -11,14 +11,13 @@ using WeaponOptionsPermissions = vMenu.Enhanced.Data.Permissions.Menus.WeaponOpt
 
 namespace vMenu.Enhanced.Menus;
 
-/// <summary>Groups the player menus under one item on the main menu.</summary>
 [VMenu(
     TitleKey = Loc.PlayerMenu.Title,
     SubtitleKey = Loc.PlayerMenu.Subtitle,
     DescriptionKey = Loc.PlayerMenu.LinkDescription)]
 public sealed class PlayerMenu : MenuDefinition
 {
-    /// <summary>Open to anybody who can reach at least one of the menus inside it.</summary>
+    // Open to anybody who can reach at least one of the menus inside it.
     public override MenuGate Gate { get; } =
         MenuGate.Permission(PlayerOptionsPermissions.Menu)
         | MenuGate.Permission(PedModelsPermissions.Menu)

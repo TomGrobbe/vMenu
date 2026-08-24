@@ -2,10 +2,9 @@ using vMenu.Enhanced.PluginContracts;
 
 namespace vMenu.Enhanced.ClientAPI;
 
-/// <summary>
-/// One of your plugin's menus: the root under your row in vMenu's Plugins menu, or a submenu.
-/// Rows added before connecting ride along with the registration, rows added later appear live.
-/// </summary>
+/// <summary>One of your plugin's menus: the root under your row in vMenu's Plugins menu, or a
+/// submenu. Rows added before connecting ride along with the registration, rows added later appear
+/// live.</summary>
 public sealed class PluginMenu
 {
     private readonly VMenuPlugin _plugin;
@@ -95,12 +94,9 @@ public sealed class PluginMenu
     public PluginConfirmButton AddConfirmButton(Text text, string? id = null) =>
         Attach(new PluginConfirmButton(NewNode(EntryTypes.ConfirmButton, text, id)));
 
-    /// <summary>
-    /// Adds a checkbox. With persist on, the player's choice is saved in this resource's key
-    /// value store and restored on the next start, so the box reopens the way they left it.
-    /// Pass a stable id along with persist: the automatic ids follow creation order, so
-    /// reordering your code would otherwise hand a saved value to the wrong box.
-    /// </summary>
+    /// <summary>Adds a checkbox. With persist on, the player's choice is saved in this resource's key
+    /// value store and restored on the next start. Pass a stable id along with persist: the automatic
+    /// ids follow creation order, so reordering your code would hand a saved value to the wrong box.</summary>
     public PluginCheckbox AddCheckbox(Text text, bool initiallyChecked = false, string? id = null, bool persist = false)
     {
         var node = NewNode(EntryTypes.Checkbox, text, id);
@@ -161,10 +157,8 @@ public sealed class PluginMenu
     public PluginSeparator AddSeparator(Text text, string? id = null) =>
         Attach(new PluginSeparator(NewNode(EntryTypes.Separator, text, id)));
 
-    /// <summary>
-    /// Adds a row that opens a new menu, returned through the item's <see cref="PluginSubmenu.Menu"/>.
-    /// The title falls back to the row's text when left empty.
-    /// </summary>
+    /// <summary>Adds a row that opens a new menu, returned through the item's
+    /// <see cref="PluginSubmenu.Menu"/>. The title falls back to the row's text when left empty.</summary>
     public PluginSubmenu AddSubmenu(Text text, Text title = default, Text subtitle = default, string? id = null)
     {
         var node = NewNode(EntryTypes.Submenu, text, id);

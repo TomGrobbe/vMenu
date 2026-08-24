@@ -18,9 +18,6 @@ using UpdateSettings = vMenu.Enhanced.Data.Configuration.Settings.Updates;
 
 namespace vMenu.Enhanced.Updates.Server;
 
-/// <summary>
-/// Looks for a newer vMenu Enhanced, says so in the console, and tells staff who are online.
-/// </summary>
 public static class UpdateChecker
 {
     private const string CheckCommand = "vmenu_checkupdates";
@@ -31,13 +28,12 @@ public static class UpdateChecker
 
     private const string VersionKey = "version";
 
-    /// <summary>What CI replaces on a real build. A build made locally still says this.</summary>
+    // What CI replaces on a real build. A build made locally still says this.
     private const string UnstampedVersion = "versiongoeshere";
 
-    /// <summary>Stands in for a build with no version, so it loses to every real release.</summary>
+    // Stands in for a build with no version, so it loses to every real release.
     private const string DevelopmentVersion = "0.0.0";
 
-    /// <summary>Staff already told about whatever is currently in <see cref="_available"/>.</summary>
     private static readonly HashSet<int> Told = [];
 
     private static SemanticVersion? _current;
@@ -66,15 +62,13 @@ public static class UpdateChecker
 
         ServerConfig.AddEventListenerFor([UpdateSettings.CheckMode], tick.Reevaluate);
 
-        // Not behind the debug gate. It does something rather than report on state, and an owner who
-        // has just been told an update exists needs it whether or not they are debugging, which is
-        // the same call ServerClock makes for vmenu_resettime.
+        // Not behind the debug gate. It does something rather than report on state, and an owner who has
+        // just been told an update exists needs it whether or not they are debugging.
         SharedAPI.Commands.RegisterCommand(CheckCommand, true, new Action(CheckNow));
     }
 
-    /// <summary>Identifies vMenu to github.com and nuget.org, both of which want one.</summary>
-    // "dev" rather than the stand-in version, so a request from an unreleased build is recognisable
-    // as one in anybody's logs rather than looking like a real 0.0.0 release.
+    // "dev" rather than the stand-in version, so a request from an unreleased build is recognisable as
+    // one in anybody's logs rather than looking like a real 0.0.0 release.
     public static string UserAgent()
     {
         var current = Current();
@@ -105,8 +99,8 @@ public static class UpdateChecker
         _ = CheckNowAsync();
     }
 
-    // The suppression in Warn is there for the schedule, not for somebody who just typed the command
-    // and is owed an answer either way, so this reports its own outcome at Info regardless.
+    // The suppression in Warn is there for the schedule, not for somebody who just typed the command and
+    // is owed an answer either way, so this reports its own outcome at Info regardless.
     private static async Task CheckNowAsync()
     {
         var before = _available;
@@ -127,8 +121,8 @@ public static class UpdateChecker
         }
         else
         {
-            // An unstamped build loses to every real release, so landing here means the channel had
-            // nothing at all rather than that this copy is up to date.
+            // An unstamped build loses to every real release, so landing here means the channel had nothing at
+            // all rather than that this copy is up to date.
             Log.Info(
                 _unstamped
                     ? $"[Updates] Nothing on the {Describe(Channel())} channel to compare against yet."
@@ -138,8 +132,8 @@ public static class UpdateChecker
 
     private static async Task CheckAsync()
     {
-        // The tick waits after the handler returns rather than on a timer, so it cannot re-enter.
-        // This guard is for vmenu_checkupdates landing on top of a scheduled run.
+        // The tick waits after the handler returns rather than on a timer, so it cannot re-enter. This guard
+        // is for vmenu_checkupdates landing on top of a scheduled run.
         if (_running)
         {
             return;
@@ -162,9 +156,8 @@ public static class UpdateChecker
 
             var result = await GitHubSource.LatestAsync(channel, userAgent, TimeoutMs);
 
-            // nuget.org is asked both when github.com could not be read and when it read but had
-            // nothing, because every enhanced release starts life as a draft that an unauthenticated
-            // caller cannot see at all.
+            // nuget.org is asked both when github.com could not be read and when it read but had nothing,
+            // because every enhanced release starts life as a draft an unauthenticated caller cannot see.
             if (!result.Reached || result.Update is null)
             {
                 var fallback = await NugetSource.LatestAsync(channel, userAgent, TimeoutMs);
@@ -223,7 +216,6 @@ public static class UpdateChecker
 
     private static bool IsWanted() => Channel() != UpdateChannel.Off;
 
-    /// <summary>This build's version, or <see cref="DevelopmentVersion"/> when it has none.</summary>
     // Read once. The manifest cannot change under a running resource.
     private static SemanticVersion Current()
     {
@@ -248,9 +240,8 @@ public static class UpdateChecker
             return _current;
         }
 
-        // A build made on a developer's machine still says versiongoeshere, because CI is what
-        // replaces it. Counting that as older than everything is what makes the check actually run
-        // locally, which is the only way to exercise the rest of this without publishing a release.
+        // A build made on a developer's machine still says versiongoeshere, because CI is what replaces it.
+        // Counting that as older than everything is what makes the check actually run locally.
         _unstamped = true;
 
         if (stamped)
@@ -268,8 +259,8 @@ public static class UpdateChecker
         var raw = ServerConfig.Value(UpdateSettings.CheckMode);
         var value = raw.Trim();
 
-        // An empty setr is an owner clearing the line rather than asking for something unknown, so it
-        // takes the default in silence rather than earning a warning.
+        // An empty setr is an owner clearing the line rather than asking for something unknown, so it takes
+        // the default in silence rather than earning a warning.
         if (value.Length == 0)
         {
             return UpdateChannel.Prerelease;
@@ -304,10 +295,9 @@ public static class UpdateChecker
     private static string Describe(UpdateChannel channel) =>
         channel == UpdateChannel.Stable ? "stable" : "prerelease";
 
-    // The one line the owner asked for, and the only Log.Warning in this feature. Everything beneath
-    // it, in both sources and the HTTP layer, logs at Debug, so a failed check is one line and not
-    // one per source. Suppressed while it stays broken: four identical lines a day about a firewall
-    // helps nobody.
+    // The one line the owner asked for, and the only Log.Warning in this feature. Everything beneath it
+    // logs at Debug, so a failed check is one line and not one per source. Suppressed while it stays
+    // broken: four identical lines a day about a firewall helps nobody.
     private static void Warn()
     {
         if (_warned)
@@ -320,9 +310,8 @@ public static class UpdateChecker
         Log.Warning("[Updates] Could not check whether a newer vMenu Enhanced is out. It will try again on the next check.");
     }
 
-    /// <summary>The client asks once it has its permissions. This answers only if there is news.</summary>
-    // Answered rather than pushed on join, matching every other sync on this side: the client knows
-    // when it is ready and the server does not.
+    // Answered rather than pushed on join, matching every other sync on this side: the client knows when
+    // it is ready and the server does not.
     private static void OnRequested([FromSource] Player source)
     {
         if (_available is not { } update)
@@ -344,11 +333,10 @@ public static class UpdateChecker
         API.EmitClient(source.Handle, UpdateEvents.Available, update.Version.Text, update.Url);
     }
 
-    /// <summary>For staff who were already online when a later check turned something up.</summary>
     private static void Announce(KnownUpdate update)
     {
-        // Rebuilt rather than pruned. ConnectedPlayers.All asks DoesPlayerExist for every index it
-        // walks, so the set this leaves behind has already had everybody who left dropped out of it.
+        // Rebuilt rather than pruned. ConnectedPlayers.All asks DoesPlayerExist for every index it walks, so
+        // the set this leaves behind has already had everybody who left dropped out of it.
         Told.Clear();
 
         var sent = 0;

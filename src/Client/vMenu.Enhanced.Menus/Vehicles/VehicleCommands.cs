@@ -14,9 +14,6 @@ using VehicleOptionsSettings = vMenu.Enhanced.Data.Configuration.Settings.Vehicl
 
 namespace vMenu.Enhanced.Menus.Vehicles;
 
-/// <summary>
-/// Chat commands for vehicle options, kept in step with the settings and permissions behind them.
-/// </summary>
 // Registered unrestricted, because FiveM's restricted flag answers to an ACE on the client's own
 // principal. vMenu checks its own permission instead.
 public static class VehicleCommands
@@ -47,7 +44,7 @@ public static class VehicleCommands
             }),
     ];
 
-    /// <summary>Call after <see cref="ClientConfig.Initialize"/>.</summary>
+    // Call after ClientConfig.Initialize.
     public static void Initialize()
     {
         ClientConfig.AddEventListenerFor(
@@ -71,7 +68,7 @@ public static class VehicleCommands
         }
     }
 
-    /// <summary>A command that exists only while its setting is on and its permission is granted.</summary>
+    // A command that exists only while its setting is on and its permission is granted.
     private sealed class ToggledCommand
     {
         private readonly string _name;
@@ -83,7 +80,7 @@ public static class VehicleCommands
         // Cached, because the func ref registry keys on the delegate, so a new lambda per cycle leaks.
         private readonly Action<int, MessagePackBuffer, string> _handler;
 
-        /// <summary>Null while the command is not registered.</summary>
+        // Null while the command is not registered.
         private int? _id;
 
         public ToggledCommand(string name, BoolSetting setting, string permission, string deniedKey, Func<Task> run)
@@ -115,7 +112,7 @@ public static class VehicleCommands
             }
         }
 
-        /// <summary>A command handler cannot await, so this is the fire and forget boundary.</summary>
+        // A command handler cannot await, so this is the fire and forget boundary.
         private async void Run()
         {
             try

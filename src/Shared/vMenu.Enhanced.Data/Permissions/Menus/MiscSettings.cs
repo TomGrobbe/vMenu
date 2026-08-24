@@ -1,12 +1,7 @@
 namespace vMenu.Enhanced.Data.Permissions.Menus;
 
-/// <summary>
-/// Permissions for the tools that hang off misc settings.
-/// </summary>
-/// <remarks>
-/// There is no <c>Menu</c> entry: the menu itself is deliberately ungated, because everything on it
-/// changes how vMenu presents itself to one player. Only the tools reached from it are grantable.
-/// </remarks>
+// There is no Menu entry: the menu itself is deliberately ungated, because everything on it changes
+// how vMenu presents itself to one player. Only the tools reached from it are grantable.
 [PermissionCategory]
 public static class MiscSettings
 {

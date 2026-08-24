@@ -9,34 +9,21 @@ using vMenu.Enhanced.Permissions;
 
 namespace vMenu.Enhanced.Menus.Players.Appearance;
 
-/// <summary>
-/// Flips the visor on a motorcycle helmet, with the animation the game has for it.
-/// </summary>
-/// <remarks>
-/// A helmet with a visor is really two hats, one with it up and one with it down, and flipping it is
-/// swapping between them halfway through an animation of the player reaching up. The game knows which
-/// two go together, which is what <c>GetVariantProp</c> answers.
-///
-/// <para>
-/// Nothing here is cached. Another resource can put a different hat on the player at any moment, so
-/// every question is asked again at the moment the key is released rather than remembered from the
-/// last time somebody looked.
-/// </para>
-/// </remarks>
+// A helmet with a visor is really two hats, one with it up and one with it down, and flipping it is
+// swapping between them halfway through an animation of the player reaching up. GetVariantProp is
+// what says which two go together. Nothing here is cached, because another resource can put a
+// different hat on the player at any moment.
 public static class VisorToggle
 {
-    /// <summary>How long to wait for the animation to start before giving up on it.</summary>
     private const int StartTimeout = 1000;
 
-    /// <summary>How long to let it run before deciding it is stuck.</summary>
     private const int RunTimeout = 3000;
 
-    /// <summary>How far into the animation the player's hand reaches the visor.</summary>
-    // Swapping the hat at the start would have it change before they touch it, and at the end would
-    // have their hand come away before anything moved.
+    // How far into the animation the player's hand reaches the visor. Swapping at the start would have
+    // the hat change before they touch it, and at the end after their hand came away.
     private const float SwapPoint = 0.39f;
 
-    /// <summary>The camera mode the game reports when the player is looking out of their own eyes.</summary>
+    // The camera mode the game reports when the player is looking out of their own eyes.
     private const int FirstPersonView = 4;
 
     private const int PropApparel = 1;
@@ -47,12 +34,11 @@ public static class VisorToggle
 
     private const float BlendOut = 1f;
 
-    /// <summary>Upper body only, so the player keeps walking or riding while they do it.</summary>
+    // Upper body only, so the player keeps walking or riding while they do it.
     private const int UpperBodyLoop = 48;
 
     private static bool _running;
 
-    /// <summary>Whether now is a sensible moment to play an animation on the player.</summary>
     public static bool CanRunNow() =>
         !MenuController.IsAnyMenuOpen()
         && !Native.IsPauseMenuActive()
@@ -86,14 +72,11 @@ public static class VisorToggle
     private static bool Tagged(uint prop, string tag) =>
         Native.DoesShopPedApparelHaveRestrictionTag(prop, (uint)Native.GetHashKey(tag), PropApparel);
 
-    /// <summary>Flips the visor, if the player is wearing a helmet that has one.</summary>
     public static async Task ToggleAsync()
     {
-        // One at a time. The animation swaps the hat partway through, and two of them overlapping
-        // would each be swapping to what the other just put on.
-        // Permission check is there so that if the player has no permissions at all,
-        // it won't enable this feature. If they have any permission for the menu, then
-        // they're allowed to use this feature.
+        // One at a time. The animation swaps the hat partway through, and two of them overlapping would each
+        // be swapping to what the other just put on. Any permission at all for the menu is enough to use it,
+        // so a player with none does not get the feature.
         if (_running || !ClientPermissions.HasAnyPermission || !CanRunNow())
         {
             return;
@@ -158,8 +141,8 @@ public static class VisorToggle
 
         if (goggles && vehicle != 0)
         {
-            // The game has no goggles animation for somebody sitting on a bike, and playing the visor
-            // one instead has the player reach for a visor that is not there.
+            // The game has no goggles animation for somebody sitting on a bike, and playing the visor one instead
+            // has the player reach for a visor that is not there.
             Notifications.Info(MenuText.Key(Loc.PlayerAppearance.VisorGogglesInVehicle));
 
             return;
@@ -190,8 +173,8 @@ public static class VisorToggle
         var name = goggles
             ? Direction(drawable < altDrawable, "goggles")
 
-            // A handful of helmets have their two versions the other way round, so the same comparison
-            // would have the player pull a visor down to raise it.
+            // A handful of helmets have their two versions the other way round, so the same comparison would have
+            // the player pull a visor down to raise it.
             : Direction(VisorAnimations.IsInverted(model, drawable) ? drawable > altDrawable : drawable < altDrawable, "visor");
 
         if (Native.GetFollowPedCamViewMode() != FirstPersonView)
@@ -199,8 +182,8 @@ public static class VisorToggle
             return name;
         }
 
-        // There is no first person goggles animation, so it borrows the visor one, which from behind
-        // the player's own eyes looks near enough the same.
+        // There is no first person goggles animation, so it borrows the visor one, which from behind the
+        // player's own eyes looks near enough the same.
         return "pov_" + (goggles ? name.Replace("goggles", "visor") : name);
     }
 
@@ -240,12 +223,8 @@ public static class VisorToggle
         return true;
     }
 
-    /// <summary>
-    /// Plays the reach, and swaps the helmet for its other half at the moment the player's hand gets
-    /// there.
-    /// </summary>
-    // Both waits are bounded, because this is reached from a key the player is holding and one that
-    // never came back would leave that key doing nothing for the rest of the session.
+    // Both waits are bounded, because this is reached from a key the player is holding and one that never
+    // came back would leave that key doing nothing for the rest of the session.
     private static async Task PlayAsync(int ped, string dictionary, string animation, int drawable, int texture)
     {
         Native.ClearPedTasks(ped);
@@ -287,8 +266,8 @@ public static class VisorToggle
             await API.Delay(0);
         }
 
-        // A run that timed out never reached the swap point, so the helmet has to be put on anyway,
-        // otherwise the player watched an animation that did nothing.
+        // A run that timed out never reached the swap point, so the helmet has to be put on anyway, otherwise
+        // the player watched an animation that did nothing.
         if (!swapped)
         {
             Native.SetPedPropIndex(ped, PedPropSlots.Hats, drawable, texture, true, false);

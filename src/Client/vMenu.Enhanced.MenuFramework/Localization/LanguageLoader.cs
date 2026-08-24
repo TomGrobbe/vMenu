@@ -8,20 +8,16 @@ using LocalizationSetting = vMenu.Enhanced.Data.Configuration.Settings.Localizat
 
 namespace vMenu.Enhanced.MenuFramework.Localization;
 
-/// <summary>Loads the languages named by the convar from <c>language/&lt;code&gt;.json</c>.</summary>
 public static class LanguageLoader
 {
     private const string Folder = "language";
 
-    /// <summary>The generated template, which is a file to copy rather than a language to load.</summary>
+    // The generated template, which is a file to copy rather than a language to load.
     private const string Template = "example";
 
-    /// <summary>
-    /// Reads the convar and registers every language it names. English is not loaded from a file and
-    /// is registered by <see cref="LanguageCatalog"/> itself.
-    /// </summary>
-    // Call after ClientConfig.Initialize and before the menus are built, since the picker's options
-    // are fixed once its item exists.
+    // Reads the convar and registers every language it names. English is not loaded from a file and is
+    // registered by LanguageCatalog itself. Call after ClientConfig.Initialize and before the menus are
+    // built, since the picker's options are fixed once its item exists.
     public static void Load()
     {
         var resource = Native.GetCurrentResourceName();

@@ -6,16 +6,13 @@ using WeaponOptionsPermissions = vMenu.Enhanced.Data.Permissions.Menus.WeaponOpt
 
 namespace vMenu.Enhanced.Menus.Weapons;
 
-/// <summary>
-/// Handing weapons out, taking them back, and everything done to one that is already held.
-/// </summary>
 // The verbs live here rather than in the menu so the rows stay declarative, and so the permission
 // check sits next to the thing it guards instead of only on the row that happens to offer it.
 public static class WeaponInventory
 {
     private const string Unarmed = "weapon_unarmed";
 
-    /// <summary>What the game hands out when it is not told a number.</summary>
+    // What the game hands out when it is not told a number.
     private const int FallbackAmmo = 250;
 
     public static bool Has(uint weaponHash) =>
@@ -43,7 +40,7 @@ public static class WeaponInventory
     public static int Ammo(uint weaponHash) =>
         Native.GetAmmoInPedWeapon(Native.PlayerPedId(), weaponHash);
 
-    /// <summary>Gives the weapon full, or takes it away if it is already held.</summary>
+    // Gives the weapon full, or takes it away if it is already held.
     public static bool Toggle(uint weaponHash)
     {
         if (Has(weaponHash))
@@ -65,7 +62,7 @@ public static class WeaponInventory
         Refill(weaponHash);
     }
 
-    /// <summary>Tops a weapon up. Does nothing when it is not held, so nothing is given by accident.</summary>
+    // Does nothing when the weapon is not held, so nothing is given by accident.
     public static bool Refill(uint weaponHash)
     {
         if (!Has(weaponHash))
@@ -81,10 +78,7 @@ public static class WeaponInventory
         return true;
     }
 
-    /// <summary>
-    /// Every weapon this player is allowed to have, full. Weapons they are not allowed are skipped,
-    /// whether they came with the game or with an addon.
-    /// </summary>
+    // Weapons this player is not allowed are skipped, whether they came with the game or with an addon.
     public static int GiveAll()
     {
         var given = 0;
@@ -96,8 +90,8 @@ public static class WeaponInventory
             given++;
         }
 
-        // Left unarmed rather than holding whatever happened to be given last, which would otherwise
-        // be a loaded weapon pointed at whoever is standing there.
+        // Left unarmed rather than holding whatever happened to be given last, which would otherwise be a
+        // loaded weapon pointed at whoever is standing there.
         Native.SetCurrentPedWeapon(Native.PlayerPedId(), API.Hash(Unarmed), true);
 
         return given;
@@ -105,7 +99,6 @@ public static class WeaponInventory
 
     public static void RemoveAll() => Native.RemoveAllPedWeapons(Native.PlayerPedId(), true);
 
-    /// <summary>Tops up every weapon already held.</summary>
     public static int RefillAll()
     {
         var refilled = 0;
@@ -121,10 +114,7 @@ public static class WeaponInventory
         return refilled;
     }
 
-    /// <summary>
-    /// Sets the same round count on every weapon already held. Walks the same list
-    /// <see cref="RefillAll"/> does, so the two cannot cover different weapons.
-    /// </summary>
+    // Walks the same list RefillAll does, so the two cannot cover different weapons.
     public static int SetAllAmmo(int ammo)
     {
         var ped = Native.PlayerPedId();
@@ -150,7 +140,6 @@ public static class WeaponInventory
     public static bool HasComponent(uint weaponHash, uint componentHash) =>
         Native.HasPedGotWeaponComponent(Native.PlayerPedId(), weaponHash, componentHash);
 
-    /// <summary>Attaches the component, or takes it off if it is already on.</summary>
     public static void ToggleComponent(uint weaponHash, uint componentHash)
     {
         if (!ClientPermissions.IsAllowed(WeaponOptionsPermissions.Modify) || !Has(weaponHash))
@@ -166,8 +155,8 @@ public static class WeaponInventory
             return;
         }
 
-        // Read back and re-applied around the swap: fitting a component resets the weapon's ammo,
-        // which would quietly empty a gun the player had just filled.
+        // Read back and re-applied around the swap: fitting a component resets the weapon's ammo, which
+        // would quietly empty a gun the player had just filled.
         var reserve = Native.GetAmmoInPedWeapon(ped, weaponHash);
 
         Native.GetAmmoInClip(ped, weaponHash, out var clip);
@@ -178,7 +167,6 @@ public static class WeaponInventory
         Native.SetPedAmmo(ped, weaponHash, reserve, false);
     }
 
-    /// <summary>Every listed weapon, paired with the category it came from.</summary>
     internal static IEnumerable<(string SpawnName, string Category)> Listed()
     {
         foreach (var category in WeaponSync.Categories)
@@ -190,7 +178,6 @@ public static class WeaponInventory
         }
     }
 
-    /// <summary>Every listed weapon this player is allowed to take out of the menu.</summary>
     internal static IEnumerable<(string SpawnName, string Category)> Allowed()
     {
         if (!ClientPermissions.IsAllowed(WeaponOptionsPermissions.Spawn))

@@ -11,7 +11,6 @@ using TimeOptionsSettings = vMenu.Enhanced.Data.Configuration.Settings.TimeOptio
 
 namespace vMenu.Enhanced.Menus.World;
 
-/// <summary>Drives the in-game clock from the server's time.</summary>
 public static class WorldTime
 {
     // NetworkOverrideClockTime takes whole seconds and the clock runs at 30x, so a clock that is only
@@ -27,7 +26,6 @@ public static class WorldTime
     private static bool _started;
     private static bool _ramping;
 
-    /// <summary>Whether the server wants a shared clock at all.</summary>
     // See the matching note in WorldWeather: the convar decides, never a permission.
     private static bool IsEnabled() => ClientConfig.Value(TimeOptionsSettings.Enabled);
 
@@ -36,8 +34,8 @@ public static class WorldTime
         var tick = TickRegistry.Register(
             "World.Time",
             Apply,
-            // A manual time change sweeps hours in a couple of seconds, and at the steady rate that
-            // sweep is visibly steppy, so the ramp gets a frame each instead.
+            // A manual time change sweeps hours in a couple of seconds, and at the steady rate that sweep is
+            // visibly steppy, so the ramp gets a frame each instead.
             TickRate.Varying(() => _ramping ? TickRate.PerFrame : TickRate.Every(SteadyIntervalMs)),
             IsEnabled,
             onStarted: () =>
@@ -53,13 +51,13 @@ public static class WorldTime
         WorldState.Changed += TickRegistry.Reevaluate;
     }
 
-    /// <summary>What the game itself reports, which is the only proof the clock calls are landing.</summary>
+    // What the game itself reports, which is the only proof the clock calls are landing.
     public static string Describe() =>
         $"{Native.GetClockHours():00}:{Native.GetClockMinutes():00}:{Native.GetClockSeconds():00} on " +
         $"{MoonCycle.WeekdayOf(GameDayNow())} " +
         $"{Native.GetClockDayOfMonth():00}/{Native.GetClockMonth() + 1:00}/{Native.GetClockYear()}";
 
-    /// <summary>The day vMenu handed to the game, which is what the whole date and moon rest on.</summary>
+    // The day vMenu handed to the game, which is what the whole date and moon rest on.
     public static string DescribeDate() =>
         _shownDay == long.MinValue
             ? "no date has been set yet"
@@ -68,9 +66,8 @@ public static class WorldTime
 
     public static double MoonCycleDays => GameDayNow() - MoonCycle.EpochDay + FractionOfDayNow();
 
-    /// <summary>Where the moon is, worked out from the date the game is holding right now.</summary>
-    // Read back out of the natives rather than from _shownDay, for the same reason Describe is: this
-    // is the number the sky is actually being drawn from, not the one vMenu believes it sent.
+    // Read back out of the natives rather than from _shownDay, for the same reason Describe is: this is
+    // the number the sky is actually being drawn from, not the one vMenu believes it sent.
     public static string DescribeMoon()
     {
         var cycleDays = MoonCycleDays;
@@ -82,7 +79,7 @@ public static class WorldTime
             $"angle {MoonCycle.Degrees(cycleDays).ToString("0.#", CultureInfo.InvariantCulture)} degrees";
     }
 
-    /// <summary>The date the game holds, as days since the Unix epoch.</summary>
+    // The date the game holds, as days since the Unix epoch.
     private static long GameDayNow() =>
         CivilTime.ToUnixSeconds(
             Native.GetClockYear(),
@@ -116,9 +113,7 @@ public static class WorldTime
         ApplyDate(offset);
     }
 
-    /// <summary>
-    /// Sets the in-game date, which nothing else does and which the moon's position depends on.
-    /// </summary>
+    // Sets the in-game date, which nothing else does and which the moon's position depends on.
     private static void ApplyDate(double offset)
     {
         var day = (long)GameClock.Mod(
@@ -137,7 +132,7 @@ public static class WorldTime
         Native.SetClockDate(dayOfMonth, month - 1, year);
     }
 
-    /// <summary>Eases the displayed offset toward the server's, so a jump reads as a time lapse.</summary>
+    // Eases the displayed offset toward the server's, so a jump reads as a time lapse.
     private static double Ramp()
     {
         var target = WorldState.TimeOffsetSeconds;
@@ -186,7 +181,7 @@ public static class WorldTime
         return _shownOffset;
     }
 
-    /// <summary>Nine hours back sweeps back, not fifteen forward.</summary>
+    // Nine hours back sweeps back, not fifteen forward.
     private static double Shortest(double delta)
     {
         var wrapped = GameClock.Mod(delta, GameClock.SecondsPerGameDay);

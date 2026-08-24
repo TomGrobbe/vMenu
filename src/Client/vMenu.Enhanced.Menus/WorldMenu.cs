@@ -21,7 +21,6 @@ using WeatherOptionsSettings = vMenu.Enhanced.Data.Configuration.Settings.Weathe
 
 namespace vMenu.Enhanced.Menus;
 
-/// <summary>Weather and time, which apply to everybody on the server.</summary>
 [VMenu(
     TitleKey = Loc.World.Title,
     SubtitleKey = Loc.World.Subtitle,
@@ -36,7 +35,7 @@ public sealed class WorldMenu : MenuDefinition
 
     private static readonly TimePresetOptions Presets = new();
 
-    /// <summary>Hides the row rather than showing an empty list when an owner clears the convar.</summary>
+    // Hides the row rather than showing an empty list when an owner clears the convar.
     private static readonly MenuGate PresetsAllowed = TimeAllowed & MenuGate.When(() => Presets.Count > 0);
 
     private static TickHandle? _status;
@@ -168,10 +167,8 @@ public sealed class WorldMenu : MenuDefinition
             MenuText.Literal(TimeText.Format(secondOfDay)));
     }
 
-    /// <param name="transition">
-    /// How long the sky takes to get there, named in the notification. Neither change is instant, and
-    /// without saying so the weather blend in particular reads as nothing having happened.
-    /// </param>
+    // transition is how long the sky takes to get there, named in the notification. Neither change is
+    // instant, and without saying so the weather blend in particular reads as nothing having happened.
     private static async Task SendAsync(
         string action,
         string argument,
@@ -198,10 +195,8 @@ public sealed class WorldMenu : MenuDefinition
         }));
     }
 
-    /// <summary>
-    /// Empty when the owner has set the blend to zero, so the message never promises a wait that is
-    /// not coming. That leaves a trailing space in the sentence, which nobody can see.
-    /// </summary>
+    // Empty when the owner has set the blend to zero, so the message never promises a wait that is not
+    // coming. That leaves a trailing space in the sentence, which nobody can see.
     private static MenuText Transition(IntSetting setting)
     {
         var seconds = Math.Max(0, ClientConfig.Value(setting));

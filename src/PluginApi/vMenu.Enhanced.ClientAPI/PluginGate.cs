@@ -2,11 +2,9 @@ using vMenu.Enhanced.PluginContracts;
 
 namespace vMenu.Enhanced.ClientAPI;
 
-/// <summary>
-/// Decides whether a menu item is available to the player, evaluated live by vMenu. Combine
-/// gates with <c>&amp;</c> and <c>|</c>. Names are short: vMenu scopes them to your plugin, so
-/// you can never gate on another plugin's permissions or settings.
-/// </summary>
+/// <summary>Decides whether a menu item is available to the player, evaluated live by vMenu. Combine
+/// gates with <c>&amp;</c> and <c>|</c>. Names are short: vMenu scopes them to your plugin, so you
+/// can never gate on another plugin's permissions or settings.</summary>
 public sealed class PluginGate
 {
     private readonly GateNode _node;

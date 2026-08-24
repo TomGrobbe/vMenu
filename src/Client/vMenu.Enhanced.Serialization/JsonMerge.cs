@@ -3,19 +3,14 @@ using System.Text.Json;
 
 namespace vMenu.Enhanced.Serialization;
 
-/// <summary>
-/// Carries forward fields one build wrote that another does not know about, so overwriting a save
-/// written by a newer vMenu keeps what this build cannot see rather than dropping it.
-/// </summary>
-// All JsonDocument, JsonElement and Utf8JsonWriter, which work under the sandbox as of API 0.0.4. No
-// mutable DOM (JsonNode), which is the piece that never worked, the same way Newtonsoft's JObject did not.
+// Carries forward fields one build wrote that another does not know about, so overwriting a save
+// written by a newer vMenu keeps what this build cannot see rather than dropping it. All
+// JsonDocument, JsonElement and Utf8JsonWriter, which work under the sandbox as of API 0.0.4. No
+// mutable DOM (JsonNode), which is the piece that never worked, as Newtonsoft's JObject did not.
 public static class JsonMerge
 {
-    /// <summary>
-    /// Deep merges two JSON documents. <paramref name="preferred"/> wins everywhere the two overlap,
-    /// and any object key only <paramref name="fallback"/> has is kept, at every level. Arrays and
-    /// scalars are taken whole from <paramref name="preferred"/>.
-    /// </summary>
+    // preferred wins everywhere the two overlap, and any object key only fallback has is kept, at every
+    // level. Arrays and scalars are taken whole from preferred.
     public static string Merge(string preferred, string fallback)
     {
         using var preferredDoc = JsonDocument.Parse(preferred);
@@ -30,11 +25,8 @@ public static class JsonMerge
         return Encoding.UTF8.GetString(stream.ToArray());
     }
 
-    /// <summary>
-    /// Whether <paramref name="candidate"/> holds every key and array element
-    /// <paramref name="required"/> does, at every level. Scalar values may differ, since a build
-    /// editing a field it understands is not data loss; only missing structure is.
-    /// </summary>
+    // Whether candidate holds every key and array element required does, at every level. Scalar values
+    // may differ, since a build editing a field it understands is not data loss; only missing structure is.
     public static bool IsSupersetOf(string candidate, string required)
     {
         using var candidateDoc = JsonDocument.Parse(candidate);
@@ -45,8 +37,8 @@ public static class JsonMerge
 
     private static void WriteMerged(Utf8JsonWriter writer, JsonElement preferred, JsonElement fallback)
     {
-        // Only objects merge. For anything else the newer-vs-older question does not arise field by
-        // field, so the build doing the writing keeps its own value.
+        // Only objects merge. For anything else the newer-vs-older question does not arise field by field,
+        // so the build doing the writing keeps its own value.
         if (preferred.ValueKind != JsonValueKind.Object || fallback.ValueKind != JsonValueKind.Object)
         {
             preferred.WriteTo(writer);

@@ -6,17 +6,15 @@ using vMenu.Enhanced.PluginContracts;
 
 namespace vMenu.Enhanced.Plugins;
 
-/// <summary>
-/// Turns declared nodes into live framework entries. Every entry closes over its node, so an
-/// update op only has to mutate the node and ask for a refresh.
-/// </summary>
+// Turns declared nodes into live framework entries. Every entry closes over its node, so an update
+// op only has to mutate the node and ask for a refresh.
 internal static class PluginEntryFactory
 {
-    /// <summary>A payload text as late bound menu text, resolved against the plugin's catalogs.</summary>
+    // A payload text as late bound menu text, resolved against the plugin's catalogs.
     internal static MenuText TextFor(PluginState state, TextRef? reference) =>
         reference is null ? MenuText.Empty : MenuText.From(() => state.Resolve(reference));
 
-    /// <summary>The same, but re-reading the node so a set op that replaces the reference lands.</summary>
+    // The same, but re-reading the node so a set op that replaces the reference lands.
     internal static MenuText LiveText(PluginState state, Func<TextRef?> read) =>
         MenuText.From(() => state.Resolve(read()));
 
@@ -154,9 +152,9 @@ internal static class PluginEntryFactory
                     OnHighlighted = HighlightFor(state, node, menuId),
                     Configure = item => state.NodesByItem[item] = node,
                     ReadValue = () => node.Value ?? string.Empty,
-                    // The plugin lives in another resource, so the next value cannot be produced
-                    // synchronously. The current value is kept, the change request goes out as an
-                    // event, and the plugin answers with a setValue op one round trip later.
+                    // The plugin lives in another resource, so the next value cannot be produced synchronously. The
+                    // current value is kept, the change request goes out as an event, and the plugin answers with a
+                    // setValue op one round trip later.
                     Change = changing =>
                     {
                         var callback = Callback(CallbackTypes.DynamicChanging, menuId, node);
@@ -334,10 +332,8 @@ internal static class PluginEntryFactory
         };
     }
 
-    /// <summary>
-    /// The live option list an entry shows. Kept in the state so a setOptions op can rewrite it
-    /// in place, the framework re-reading it on every refresh.
-    /// </summary>
+    // The live option list an entry shows. Kept in the state so a setOptions op can rewrite it in place,
+    // the framework re-reading it on every refresh.
     private static List<MenuText> BuildOptions(PluginState state, ItemNode node)
     {
         var options = new List<MenuText>();
@@ -349,7 +345,6 @@ internal static class PluginEntryFactory
         return options;
     }
 
-    /// <summary>Rebuilds an existing live option list from whatever the node currently declares.</summary>
     internal static void FillOptions(PluginState state, ItemNode node, List<MenuText> options)
     {
         options.Clear();
@@ -384,7 +379,7 @@ internal static class PluginEntryFactory
         _ => null,
     };
 
-    /// <summary>The plugin's confirmation wording, or the framework's own when it declared none.</summary>
+    // The plugin's confirmation wording, or the framework's own when it declared none.
     private static MenuText ConfirmTextFor(PluginState state, ItemNode node) =>
         MenuText.From(() => node.ConfirmationDescription is { } wording
             ? state.Resolve(wording)

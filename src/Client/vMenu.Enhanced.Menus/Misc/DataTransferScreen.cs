@@ -8,7 +8,6 @@ using vMenu.Enhanced.Serialization;
 
 namespace vMenu.Enhanced.Menus.Misc;
 
-/// <summary>The panel that hands the player a transfer code, and the one that takes a pasted one.</summary>
 // The second focus taking screen after UserInput, and a copy of its handshake for the same reasons.
 // A third one is the point at which all of that belongs in the framework rather than in a third copy.
 public static class DataTransferScreen
@@ -25,16 +24,16 @@ public static class DataTransferScreen
 
     private const int ReadyTimeoutMs = 3000;
 
-    /// <summary>The page's first callback of a session takes seconds; every one after is immediate.</summary>
+    // The page's first callback of a session takes seconds; every one after is immediate.
     private const int FirstReadyTimeoutMs = 15000;
 
     private const int ButtonGraceMs = 300;
 
-    /// <summary>How long the rest of a pasted code has to turn up once the first piece has.</summary>
+    // How long the rest of a pasted code has to turn up once the first piece has.
     private const int AssemblyTimeoutMs = 10000;
 
-    // Well under the 64K where a buffer limit would sit. Nothing in vMenu has ever posted more than
-    // a typed line back from a page, so the size that works is not known, only the size that is safe.
+    // Well under the 64K where a buffer limit would sit. Nothing in vMenu has ever posted more than a
+    // typed line back from a page, so the size that works is not known, only the size that is safe.
     private const int ChunkLength = 32 * 1024;
 
     private static bool _callbacksRegistered;
@@ -47,10 +46,9 @@ public static class DataTransferScreen
     private static TaskCompletionSource<bool>? _ready;
     private static TaskCompletionSource<string?>? _finished;
 
-    /// <summary>Shows a code and waits until the player is done with it.</summary>
     public static Task ShowAsync(TransferPrompt prompt, string code) => RunAsync(prompt, code);
 
-    /// <returns>What the player pasted, decoded, or <see langword="null"/> if they gave up.</returns>
+    // What the player pasted, decoded, or null if they gave up.
     public static Task<string?> AskAsync(TransferPrompt prompt) => RunAsync(prompt, null);
 
     private static async Task<string?> RunAsync(TransferPrompt prompt, string? payload)
@@ -93,8 +91,8 @@ public static class DataTransferScreen
                 return null;
             }
 
-            // After the handshake, so a piece is never in flight while it is still unknown whether
-            // there is a page to receive it.
+            // After the handshake, so a piece is never in flight while it is still unknown whether there is a
+            // page to receive it.
             for (var index = 0; index < chunks.Count; index++)
             {
                 Native.SendNuiMessage(BuildChunkMessage(token, index, chunks.Count, chunks[index]));
@@ -119,10 +117,8 @@ public static class DataTransferScreen
         }
     }
 
-    /// <summary>
-    /// The key or click that closed the screen is still held when focus returns to the game, and
-    /// MenuAPI selects on release: without this grace the row that opened it opens it again.
-    /// </summary>
+    // The key or click that closed the screen is still held when focus returns to the game, and MenuAPI
+    // selects on release: without this grace the row that opened it opens it again.
     private static async Task ReleaseMenuButtonsAsync()
     {
         await API.Delay(ButtonGraceMs);
@@ -211,8 +207,8 @@ public static class DataTransferScreen
             _ = WatchAssemblyAsync(_token);
         }
 
-        // Counted rather than ordered: the browser allows six connections per host, so the pieces
-        // do not necessarily arrive in the order the page sent them.
+        // Counted rather than ordered: the browser allows six connections per host, so the pieces do not
+        // necessarily arrive in the order the page sent them.
         if (_arrived < _incoming.Length)
         {
             return;
@@ -249,8 +245,8 @@ public static class DataTransferScreen
         return _open && post is not null && post.Token == _token;
     }
 
-    // The page posts an object, which arrives as the request text. Should the runtime ever unwrap it
-    // the way UserInput's page needs, this still reads it.
+    // The page posts an object, which arrives as the request text. Should the runtime ever unwrap it the
+    // way UserInput's page needs, this still reads it.
     private static TransferPost? Parse(string body)
     {
         if (body.Length == 0)
@@ -389,9 +385,8 @@ public static class DataTransferScreen
     }
 }
 
-/// <summary>Everything the screen says, resolved before it is opened.</summary>
-// A class, not a record: the generated equality routes through EqualityComparer<string>.Default,
-// which the sandbox refuses to load.
+// A class rather than a record: generated equality routes through
+// EqualityComparer<string>.Default, which the sandbox refuses to load.
 public sealed class TransferPrompt
 {
     public required string Title { get; init; }

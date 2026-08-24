@@ -287,10 +287,8 @@ public sealed class PluginDynamicList : PluginItem
         }
     }
 
-    /// <summary>
-    /// Produces the next value when the player scrolls: current value and whether they went left.
-    /// The answer crosses back to vMenu as an update, so it lands one beat after the press.
-    /// </summary>
+    /// <summary>Produces the next value when the player scrolls: current value and whether they went
+    /// left. The answer crosses back to vMenu as an update, so it lands one beat after the press.</summary>
     public Func<string, bool, string>? ChangeRequested { get; set; }
 
     /// <summary>Raised when the player presses the row, with the value it showed.</summary>

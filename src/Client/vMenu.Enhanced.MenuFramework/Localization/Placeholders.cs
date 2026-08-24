@@ -2,11 +2,8 @@ using System.Text;
 
 namespace vMenu.Enhanced.MenuFramework.Localization;
 
-/// <summary>
-/// Named <c>{placeholder}</c> substitution.
-/// </summary>
-// Named rather than positional, so a translator editing another language sees what the slot holds.
-// Reordering, repeating and omitting a placeholder are free consequences.
+// Named {placeholder} substitution. Named rather than positional, so a translator editing another
+// language sees what the slot holds. Reordering, repeating and omitting one are free consequences.
 internal static class Placeholders
 {
     internal static string Substitute(string template, (string Name, MenuText Value)[]? arguments, ILocalizer localizer)
@@ -25,8 +22,8 @@ internal static class Placeholders
 
             if (character == '}')
             {
-                // "}}" is an escaped brace. A lone '}' is passed through rather than treated as an
-                // error, so an unbalanced string still renders.
+                // "}}" is an escaped brace. A lone '}' is passed through rather than treated as an error, so an
+                // unbalanced string still renders.
                 if (index + 1 < template.Length && template[index + 1] == '}')
                 {
                     index++;

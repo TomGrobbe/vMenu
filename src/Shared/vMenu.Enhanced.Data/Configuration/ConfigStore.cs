@@ -8,18 +8,12 @@ public enum ConfigLog
     Error,
 }
 
-/// <summary>
-/// Reads settings from convars and reports when one changes. Both sides own an instance of this and
-/// supply their own convar native and logger, so the parsing, caching and change detection behave
-/// identically on the client and the server.
-/// </summary>
+// Both sides own an instance of this and supply their own convar native and logger, so the parsing,
+// caching and change detection behave identically on the client and the server.
 public sealed class ConfigStore(Func<string, string, string> readConvar, Action<ConfigLog, string> log)
 {
-    /// <remarks>
-    /// A sentinel default is what makes an unset convar distinguishable from one set to an empty
-    /// value. The typed <c>GetConvarBool/Int/Float</c> natives cannot do this: they collapse both
-    /// cases into whatever default they were handed.
-    /// </remarks>
+    // A sentinel default is what makes an unset convar distinguishable from one set to an empty value.
+    // The typed GetConvarBool/Int/Float natives collapse both cases into the default they were handed.
     private const string Unset = "vMenu.Enhanced.Unset";
 
     private readonly Dictionary<string, string?> _cache = new(StringComparer.OrdinalIgnoreCase);
@@ -34,7 +28,7 @@ public sealed class ConfigStore(Func<string, string, string> readConvar, Action<
 
     private string[] _tracked = [];
 
-    /// <summary>The convars worth listening to, known only after <see cref="Prime"/>.</summary>
+    // The convars worth listening to, known only after Prime.
     public IReadOnlyList<string> Tracked => _tracked;
 
     public void Prime()
@@ -58,21 +52,12 @@ public sealed class ConfigStore(Func<string, string, string> readConvar, Action<
         log(ConfigLog.Debug, $"Tracking {_tracked.Length} setting(s).");
     }
 
-    /// <summary>
-    /// Starts watching convars that are not settings, so <see cref="Watch(IReadOnlyList{string}, Action)"/>
-    /// reaches them too.
-    /// </summary>
-    /// <returns>The names actually taken on, which is what the caller registers a native listener for.</returns>
-    /// <remarks>
-    /// For the convars the server publishes state through. Those cannot live in
-    /// <see cref="ConfigCatalog"/>, which is owner authored configuration and drives the generated
-    /// example file, so listing them there would invite editing state the server overwrites. They
-    /// are kept quiet as well: the clock moves once a second, so announcing every change would bury
-    /// the console, and <see cref="WatchExcept"/> never sees them so a subscriber that meant "any
-    /// setting an owner might change" is not woken once a second by the clock.
-    /// </remarks>
-    // Names already being watched are skipped rather than taken on again, so a second caller cannot
-    // leave the same convar with two listeners on it, dispatching everything twice.
+    // For the convars the server publishes state through. Those cannot live in ConfigCatalog, which is
+    // owner authored configuration and drives the generated example file, so listing them there would
+    // invite editing state the server overwrites. They are kept quiet as well: the clock moves once a
+    // second, and WatchExcept never sees them, so a subscriber that meant "any setting an owner might
+    // change" is not woken by it. Names already watched are skipped, so one convar never gets two
+    // listeners dispatching everything twice.
     public IReadOnlyList<string> Track(IReadOnlyList<string> convars)
     {
         var taken = new List<string>();
@@ -98,13 +83,12 @@ public sealed class ConfigStore(Func<string, string, string> readConvar, Action<
         return taken;
     }
 
-    /// <summary>Calls <paramref name="handler"/> whenever any of <paramref name="convars"/> changes.</summary>
     public void Watch(IReadOnlyList<string> convars, Action handler)
     {
         foreach (var convar in convars)
         {
-            // Staying silent would read as the listener working and the convar never moving, which
-            // is the one failure this module goes out of its way not to have.
+            // Staying silent would read as the listener working and the convar never moving, which is the one
+            // failure this module goes out of its way not to have.
             if (!_cache.ContainsKey(convar))
             {
                 log(ConfigLog.Error, $"'{convar}' is not being watched, so a listener on it can never fire.");
@@ -123,7 +107,6 @@ public sealed class ConfigStore(Func<string, string, string> readConvar, Action<
 
     public void Watch(IReadOnlyList<Setting> settings, Action handler) => Watch(Names(settings), handler);
 
-    /// <summary>Calls <paramref name="handler"/> whenever any setting other than these changes.</summary>
     public void WatchExcept(IReadOnlyList<Setting> settings, Action handler)
     {
         var excluded = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -151,7 +134,6 @@ public sealed class ConfigStore(Func<string, string, string> readConvar, Action<
 
     public void UnwatchExcept(Action handler) => _exceptWatchers.RemoveAll(watcher => watcher.Handler == handler);
 
-    /// <summary>Re-reads <paramref name="convar"/> and tells its listeners, if it moved.</summary>
     public void NotifyChanged(string convar)
     {
         if (!_cache.TryGetValue(convar, out var previous))
@@ -176,8 +158,8 @@ public sealed class ConfigStore(Func<string, string, string> readConvar, Action<
             log(ConfigLog.Info, $"{convar} changed to {Quote(current)}.");
         }
 
-        // The listeners that named this convar go first, so one that caches the value has already
-        // refreshed it by the time a broad subscriber reads it back.
+        // The listeners that named this convar go first, so one that caches the value has already refreshed
+        // it by the time a broad subscriber reads it back.
         if (_watchers.TryGetValue(convar, out var handlers))
         {
             foreach (var handler in handlers)
@@ -200,7 +182,7 @@ public sealed class ConfigStore(Func<string, string, string> readConvar, Action<
         }
     }
 
-    /// <summary>One line per setting, for the <c>vmenu_config</c> command.</summary>
+    // One line per setting, for the vmenu_config command.
     public IEnumerable<string> Describe()
     {
         foreach (var setting in ConfigCatalog.All)

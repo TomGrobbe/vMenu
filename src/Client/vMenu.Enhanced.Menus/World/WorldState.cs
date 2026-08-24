@@ -15,15 +15,14 @@ using WeatherOptionsSettings = vMenu.Enhanced.Data.Configuration.Settings.Weathe
 
 namespace vMenu.Enhanced.Menus.World;
 
-/// <summary>The server's clock and overrides, read from the replicated convars.</summary>
 public static class WorldState
 {
     private const string DumpCommand = "vmenu_world";
 
-    // Only ever runs before the server's first value arrives
+    // Only ever runs before the server's first value arrives.
     private const int FallbackIntervalMs = 500;
 
-    /// <summary>Past this the server restarted or its clock jumped, so snap instead of easing.</summary>
+    // Past this the server restarted or its clock jumped, so snap instead of easing.
     private const double HardResyncSeconds = 30.0;
 
     private const double DriftCorrection = 0.1;
@@ -56,21 +55,19 @@ public static class WorldState
     public static double UnixSeconds =>
         _anchored ? _anchorUnix + ((Native.GetGameTimer() - _anchorTimerMs) / 1000.0) : 0.0;
 
-    /// <summary>How fast the clock runs, which the weather schedule follows as well.</summary>
     public static double TimeSpeed =>
         GameClock.ClampSpeed(_speedMultiplier);
 
-    /// <summary>The clock with the server's offset applied, as an in-game second of day.</summary>
+    // The clock with the server's offset applied, as an in-game second of day.
     public static double SecondOfDay =>
         GameClock.Mod(GameClock.SecondOfDay(UnixSeconds, TimeSpeed) + TimeOffsetSeconds, GameClock.SecondsPerGameDay);
 
-    /// <summary>What the schedule says right now, ignoring any override.</summary>
+    // What the schedule says right now, ignoring any override.
     public static CycleResolution Schedule => WeatherCycle.Resolve(GameClock.CycleGameHours(UnixSeconds, TimeSpeed));
 
-    /// <summary>The type actually in force.</summary>
     public static WeatherType Weather => WeatherOverride ?? Schedule.Current;
 
-    /// <summary>Whether either sync feature wants the clock. The same condition the server publishes on.</summary>
+    // Whether either sync feature wants the clock. The same condition the server publishes on.
     public static bool IsNeeded() =>
         ClientConfig.Value(WeatherOptionsSettings.Enabled) || ClientConfig.Value(TimeOptionsSettings.Enabled);
 
@@ -80,8 +77,7 @@ public static class WorldState
 
         ReadSettings();
 
-        // Get these values once, because listeners only trigger when values change
-        // after registering a listener for it.
+        // Read once here, because listeners only fire when a value changes after one is registered.
         ReadClock();
         ReadOverrides();
 
@@ -177,8 +173,8 @@ public static class WorldState
         Changed?.Invoke();
     }
 
-    // Corrected by a fraction of the drift rather than snapped, because a snap on a server whose
-    // clock wobbles by a second would step the sky by thirty in-game seconds each time.
+    // Corrected by a fraction of the drift rather than snapped, because a snap on a server whose clock
+    // wobbles by a second would step the sky by thirty in-game seconds each time.
     private static void Anchor(double published)
     {
         if (!_anchored)
@@ -203,10 +199,8 @@ public static class WorldState
         _anchorUnix += drift * DriftCorrection;
     }
 
-    /// <summary>
-    /// Used only until the server's first value arrives. A wrong machine clock is why the server
-    /// publishes the time at all, so this is a degraded mode, not a supported one.
-    /// </summary>
+    // Used only until the server's first value arrives. A wrong machine clock is why the server
+    // publishes the time at all, so this is a degraded mode, not a supported one.
     private static void AnchorFromLocalClock()
     {
         Native.GetUtcTime(out var year, out var month, out var day, out var hour, out var minute, out var second);

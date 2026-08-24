@@ -10,9 +10,6 @@ using vMenu.Enhanced.Permissions.Server;
 
 namespace vMenu.Enhanced.Actions.Server;
 
-/// <summary>
-/// Server side of the action layer: one net event for every client requested action.
-/// </summary>
 public static class ActionRegistry
 {
     private const string Ungated = "<ungated>";
@@ -70,24 +67,16 @@ public static class ActionRegistry
         Log.Debug($"[Actions] Listening with {Actions.Count} action(s) registered.");
     }
 
-    /// <summary>
-    /// A named method, not a lambda: the binder reads <see cref="FromSourceAttribute"/> off the
-    /// delegate's <c>MethodInfo</c>. Without it the <see cref="Player"/> binds to wire argument 0 and
-    /// every argument after it shifts by one.
-    /// </summary>
-    /// <remarks>
-    /// Hands off rather than awaiting, because the delegate the runtime binds has to be an
-    /// <see cref="Action"/>. A handler that suspends therefore does not hold up the events queued
-    /// behind it, and answers whenever it is done: the client matches a reply to its request by id
-    /// and waits ten seconds for one.
-    /// </remarks>
+    // A named method, not a lambda: the binder reads FromSourceAttribute off the delegate's MethodInfo,
+    // and without it the Player binds to wire argument 0 and every argument after it shifts by one.
+    // Hands off rather than awaiting, because the delegate the runtime binds has to be an Action, so a
+    // handler that suspends does not hold up the events queued behind it. The client matches a reply to
+    // its request by id and waits ten seconds for one.
     private static void OnInvoke([FromSource] Player source, string actionId, int requestId, string[] args) =>
         _ = InvokeAsync(source, actionId, requestId, args ?? []);
 
-    /// <summary>
-    /// Nothing observes the returned task, so anything escaping this method would be lost rather
-    /// than reaching the runtime's own handler logging. Hence the outer catch.
-    /// </summary>
+    // Nothing observes the returned task, so anything escaping this method would be lost rather than
+    // reaching the runtime's own handler logging. Hence the outer catch.
     private static async Task InvokeAsync(Player source, string actionId, int requestId, string[] args)
     {
         try
@@ -159,10 +148,8 @@ public static class ActionRegistry
         }
     }
 
-    /// <summary>
-    /// A handler that awaited can outlive the player it was answering, and the emit asserts a
-    /// handle that is still connected.
-    /// </summary>
+    // A handler that awaited can outlive the player it was answering, and the emit asserts a handle that
+    // is still connected.
     private static void Reply(Player source, int requestId, ActionStatus status, string[] data)
     {
         if (!Native.DoesPlayerExist(source.Handle.ToString(CultureInfo.InvariantCulture)))

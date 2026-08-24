@@ -1,23 +1,17 @@
 namespace vMenu.Enhanced.Data.Permissions.Menus;
 
-/// <summary>
-/// Per category weapon permissions. Every category comes from <c>config/weapons.json</c> and is
-/// registered at runtime, so nothing but the container itself is known at compile time. A category
-/// permission covers every weapon in it except models on the server whitelist, which answer to
-/// <see cref="SupplementalPermissions.Weapons"/> instead.
-/// </summary>
+// Every category comes from config/weapons.json and is registered at runtime, so nothing but the
+// container itself is known at compile time. A category permission covers every weapon in it except
+// models on the server whitelist, which answer to SupplementalPermissions.Weapons instead.
 [PermissionCategory(Prefix = Prefix)]
 public static class WeaponCategories
 {
-    /// <summary>Not a permission itself; it is not deeper than the category prefix.</summary>
+    // Not a permission itself; it is not deeper than the category prefix.
     public const string Prefix = "vMenu.Enhanced.Menus.WeaponOptions.Categories";
 
     public const string All = "vMenu.Enhanced.Menus.WeaponOptions.Categories.All";
 
-    /// <summary>
-    /// The permission for a category a server owner defined. Feed it a segment from
-    /// <see cref="CategoryName.ToPermissionSegment"/>, never a raw name.
-    /// </summary>
+    // Feed it a segment from CategoryName.ToPermissionSegment, never a raw name.
     public static string ForCategory(string segment) =>
         $"{Prefix}{PermissionPath.Separator}{segment}";
 }

@@ -1,8 +1,8 @@
 namespace vMenu.Enhanced.Data.World;
 
-/// <summary>Reads a time of day the way a player would type it.</summary>
-// Whitespace is stripped first, so "12 30 pm" and "1230pm" are the same input and the digit only
-// forms fall out of the length. Without a meridiem the value is read as a 24 hour clock.
+// Reads a time of day the way a player would type it. Whitespace is stripped first, so "12 30 pm"
+// and "1230pm" are the same input and the digit only forms fall out of the length. Without a
+// meridiem the value is read as a 24 hour clock.
 public static class TimeText
 {
     public const string Example = "15:25";

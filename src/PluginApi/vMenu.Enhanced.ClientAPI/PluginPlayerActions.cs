@@ -75,10 +75,8 @@ public sealed class PluginPlayerList : PluginItem
     {
     }
 
-    /// <summary>
-    /// The current selection. Shared across every player the menu shows, since the same rows
-    /// serve them all.
-    /// </summary>
+    /// <summary>The current selection. Shared across every player the menu shows, since the same rows
+    /// serve them all.</summary>
     public int SelectedIndex
     {
         get => Node.SelectedIndex ?? 0;
@@ -127,11 +125,9 @@ public sealed class PluginPlayerList : PluginItem
     }
 }
 
-/// <summary>
-/// Actions vMenu injects into the "Plugin Actions" submenu of every player's entry in its Online
-/// Players menu. The same rows serve every player, the target is handed to your callback when
-/// one fires. This is the one place a plugin reaches outside its own menu tree.
-/// </summary>
+/// <summary>Actions vMenu injects into the "Plugin Actions" submenu of every player's entry in its
+/// Online Players menu. The same rows serve every player, and the target is handed to your callback
+/// when one fires. This is the one place a plugin reaches outside its own menu tree.</summary>
 public sealed class PluginPlayerActions
 {
     private readonly VMenuPlugin _plugin;

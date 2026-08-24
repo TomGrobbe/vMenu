@@ -1,11 +1,8 @@
 namespace vMenu.Enhanced.PluginContracts;
 
-/// <summary>
-/// One menu item in a plugin's tree. Which optional fields matter depends on
-/// <see cref="Type"/>, one of the <see cref="EntryTypes"/> values. Ids are chosen by the
-/// plugin and must be unique within it, they are how update operations and callbacks
-/// refer to the item.
-/// </summary>
+/// <summary>One menu item in a plugin's tree. Which optional fields matter depends on
+/// <see cref="Type"/>, one of the <see cref="EntryTypes"/> values. Ids are chosen by the plugin and
+/// must be unique within it: they are how update operations and callbacks refer to the item.</summary>
 public class ItemNode
 {
     public string Id { get; set; } = string.Empty;

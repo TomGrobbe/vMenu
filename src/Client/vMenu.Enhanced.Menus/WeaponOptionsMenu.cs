@@ -36,7 +36,7 @@ public sealed class WeaponOptionsMenu : MenuDefinition
     private string _selectedCategory = string.Empty;
     private uint _selectedHash;
 
-    /// <summary>What the open weapon looked like last time round, so a change can be spotted.</summary>
+    // What the open weapon looked like last time round, so a change can be spotted.
     private string _lastSeen = string.Empty;
 
     public override async Task PrepareAsync()
@@ -193,8 +193,8 @@ public sealed class WeaponOptionsMenu : MenuDefinition
             var current = weapon;
             var hash = API.Hash(current.SpawnName);
 
-            // Asked for here rather than from the row below, because the game only hands the bars
-            // back a frame later and this runs long before anybody opens the menu.
+            // Asked for here rather than from the row below, because the game only hands the bars back a frame
+            // later and this runs long before anybody opens the menu.
             WeaponStatistics.Request(hash);
 
             categoryMenu.Entries.Add(new ButtonEntry
@@ -206,8 +206,8 @@ public sealed class WeaponOptionsMenu : MenuDefinition
                 LeftIcon = MenuItem.Icon.GUN,
                 Gate = MenuGate.When(() => ClientWeaponPermissions.CanUseWeapon(current.SpawnName, categoryName)),
                 WeaponStats = () => WeaponStatistics.For(hash),
-                // The weapon's own menu is built in the frame it opens, which is too late to ask
-                // about its components, so highlighting the row that opens it is the cue instead.
+                // The weapon's own menu is built in the frame it opens, which is too late to ask about its
+                // components, so highlighting the row that opens it is the cue instead.
                 OnHighlighted = _ => RequestComponentStats(hash),
                 OnSelected = _ => OpenWeapon(current, categoryName, hash),
             });
@@ -245,8 +245,8 @@ public sealed class WeaponOptionsMenu : MenuDefinition
     {
         weaponMenu.Add(new ButtonEntry
         {
-            // One row that says which of the two it currently is, rather than two rows where one is
-            // always the wrong thing to press.
+            // One row that says which of the two it currently is, rather than two rows where one is always the
+            // wrong thing to press.
             Text = MenuText.From(() => Localizer.Current.Get(WeaponInventory.Has(hash)
                 ? Loc.WeaponOptions.RemoveWeapon
                 : Loc.WeaponOptions.EquipWeapon)),
@@ -312,11 +312,11 @@ public sealed class WeaponOptionsMenu : MenuDefinition
                 Description = MenuText.Key(Loc.WeaponOptions.ComponentDescription),
                 Gate = WeaponOptionsPermissions.Modify,
                 WeaponStats = () => WeaponStatistics.For(hash),
-                // Only this component's own effect, whether or not it is fitted, so the panel answers
-                // "what would this one do" rather than showing the weapon as it already is.
+                // Only this component's own effect, whether or not it is fitted, so the panel answers "what would
+                // this one do" rather than showing the weapon as it already is.
                 WeaponComponentStats = () => WeaponStatistics.ForComponent(componentHash),
-                // Read live rather than set once, so a component another resource fits shows up here
-                // without the player having to leave the menu and come back.
+                // Read live rather than set once, so a component another resource fits shows up here without the
+                // player having to leave the menu and come back.
                 ReadLeftIcon = () => WeaponInventory.HasComponent(hash, componentHash)
                     ? MenuItem.Icon.TICK
                     : MenuItem.Icon.NONE,
@@ -380,8 +380,8 @@ public sealed class WeaponOptionsMenu : MenuDefinition
             Text = MenuText.Key(Loc.WeaponOptions.SmokeColor),
             Description = MenuText.Key(Loc.WeaponOptions.SmokeColorDescription),
             Options = [.. Enumerable.Range(0, ParachuteOptions.SmokeCount).Select(ParachuteOptions.SmokeName)],
-            // Applied on select rather than as the player scrolls: each change takes a few seconds,
-            // during which the trail cannot be used.
+            // Applied on select rather than as the player scrolls: each change takes a few seconds, during which
+            // the trail cannot be used.
             OnSelectedAsync = async selected =>
             {
                 Notifications.Info(MenuText.Key(Loc.WeaponOptions.SmokeColorChanging));
@@ -464,7 +464,7 @@ public sealed class WeaponOptionsMenu : MenuDefinition
         WeaponInventory.Give(hash);
     }
 
-    /// <summary>Built per opening: a permission refresh in between changes what belongs in it.</summary>
+    // Built per opening: a permission refresh in between changes what belongs in it.
     private IReadOnlyList<InputSuggestion> Suggestions() =>
         [.. _categories
             .SelectMany(category => category.Weapons.Select(weapon => (weapon.SpawnName, weapon.Label, category.Name)))
@@ -483,11 +483,8 @@ public sealed class WeaponOptionsMenu : MenuDefinition
 
     private void Resync() => Resync(force: false);
 
-    /// <summary>
-    /// Puts the open weapon's rows back in step with the weapon itself. Nothing is rebuilt: every row
-    /// that can go stale reads its own state, so re-applying them is the whole of it, and the
-    /// player's place in the list is kept.
-    /// </summary>
+    // Nothing is rebuilt: every row that can go stale reads its own state, so re-applying them is the
+    // whole of it, and the player's place in the list is kept.
     private void Resync(bool force)
     {
         if (_weaponMenu is not { } weaponMenu || _selected is null)
@@ -507,10 +504,8 @@ public sealed class WeaponOptionsMenu : MenuDefinition
         weaponMenu.Refresh();
     }
 
-    /// <summary>
-    /// Everything about the open weapon that another resource could change, as one string. Compared
-    /// rather than acted on, so a menu that is already right is left alone.
-    /// </summary>
+    // Everything about the open weapon that another resource could change, as one string. Compared
+    // rather than acted on, so a menu that is already right is left alone.
     private string Snapshot()
     {
         if (_selected is null)

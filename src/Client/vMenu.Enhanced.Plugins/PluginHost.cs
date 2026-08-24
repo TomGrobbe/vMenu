@@ -17,15 +17,8 @@ using PluginPermissions = vMenu.Enhanced.Data.Permissions.Plugins;
 
 namespace vMenu.Enhanced.Plugins;
 
-/// <summary>
-/// Client side of the plugin protocol: takes menu registrations from plugin resources, builds
-/// them into the Plugins submenu through the menu framework, applies their update operations and
-/// sends interactions back as per resource events.
-/// </summary>
-/// <remarks>
-/// Handlers are registered imperatively because attribute discovery only scans the assembly named
-/// as the <c>client_script</c>, and this one is a project reference.
-/// </remarks>
+// Handlers are registered imperatively because attribute discovery only scans the assembly named as
+// the client_script, and this one is a project reference.
 public static class PluginHost
 {
     private const string StopEvent = "onResourceStop";
@@ -38,13 +31,13 @@ public static class PluginHost
 
     private static readonly Dictionary<string, PluginState> Plugins = new(StringComparer.OrdinalIgnoreCase);
 
-    /// <summary>Registrations that arrived before the menu tree was built.</summary>
+    // Registrations that arrived before the menu tree was built.
     private static readonly Dictionary<string, string> Pending = new(StringComparer.OrdinalIgnoreCase);
 
-    /// <summary>Last accepted payload per resource, so a repeated registration costs nothing.</summary>
+    // Last accepted payload per resource, so a repeated registration costs nothing.
     private static readonly Dictionary<string, string> LastPayload = new(StringComparer.OrdinalIgnoreCase);
 
-    /// <summary>Convars already wired to a refresh listener, so a re-register cannot double them.</summary>
+    // Convars already wired to a refresh listener, so a re-register cannot double them.
     private static readonly HashSet<string> ListenedConvars = new(StringComparer.OrdinalIgnoreCase);
 
     private static MenuBuilder? _pluginsBuilder;
@@ -55,12 +48,10 @@ public static class PluginHost
 
     private static bool _promptBusy;
 
-    /// <summary>How many plugins are currently registered. Gates the Plugins row on the main menu.</summary>
     public static int Count => Plugins.Count;
 
     internal static IReadOnlyCollection<PluginState> All => Plugins.Values;
 
-    /// <summary>Raised whenever the set of plugins or their player actions change.</summary>
     internal static event Action? PluginsChanged;
 
     public static void RegisterEventHandlers()
@@ -81,7 +72,6 @@ public static class PluginHost
         API.OnEvent(StopEvent, new Action<string>(OnResourceStop), false);
     }
 
-    /// <summary>Call once the menu tree is built: flushes queued registrations, then broadcasts.</summary>
     public static void AnnounceReady()
     {
         _ready = true;
@@ -96,7 +86,6 @@ public static class PluginHost
         NativeFixer.EmitLocal(PluginEvents.Ready, PluginProtocol.Version);
     }
 
-    /// <summary>The Plugins menu hands its live builder over here so rows can be rebuilt into it.</summary>
     internal static void AttachPluginsMenu(MenuBuilder builder) => _pluginsBuilder = builder;
 
     internal static void Emit(PluginState state, PluginCallback callback) =>
@@ -152,8 +141,8 @@ public static class PluginHost
             return;
         }
 
-        // Before the plugin is dropped, since the check walks the registered set and a plugin that
-        // is already out of it can no longer be recognised as the owner of the menu on screen.
+        // Before the plugin is dropped, since the check walks the registered set and a plugin already out of
+        // it can no longer be recognised as the owner of the menu on screen.
         CloseIfInsideAPluginMenu();
 
         Plugins.Remove(resource);
@@ -238,9 +227,8 @@ public static class PluginHost
             return;
         }
 
-        // After validation, never before it: tracking a convar adds a listener that lives as long as
-        // the client does, and a refused registration would leave those behind for a plugin that
-        // never made it in.
+        // After validation, never before it: tracking a convar adds a listener that lives as long as the
+        // client does, and a refused registration would leave those behind for a plugin that never made it in.
         TrackSettings(state, request.Settings, result);
 
         state.RootMenu = request.Menu;
@@ -256,8 +244,8 @@ public static class PluginHost
             }
         }
 
-        // Before the dictionary is written, since the check reads it and the state going in is a
-        // fresh one that knows nothing of the menus the player may be standing in right now.
+        // Before the dictionary is written, since the check reads it and the state going in is a fresh one
+        // that knows nothing of the menus the player may be standing in right now.
         CloseIfInsideAPluginMenu();
 
         Plugins[resource] = state;
@@ -281,14 +269,14 @@ public static class PluginHost
 
         foreach (var pair in tables)
         {
-            // Re-copied with an ordinal comparer: the deserializer builds tables with the default
-            // one, whose internals the sandbox does not always permit.
+            // Re-copied with an ordinal comparer: the deserializer builds tables with the default one, whose
+            // internals the sandbox does not always permit.
             state.Translations[pair.Key.Trim().ToLowerInvariant()] =
                 new Dictionary<string, string>(pair.Value, StringComparer.Ordinal);
         }
 
-        // Asked of the copies, not of the payload: a hand written 'EN' is a perfectly good English
-        // table once the loop above has normalised its code.
+        // Asked of the copies, not of the payload: a hand written 'EN' is a perfectly good English table once
+        // the loop above has normalised its code.
         if (state.Translations.ContainsKey("en"))
         {
             return true;
@@ -339,8 +327,8 @@ public static class PluginHost
 
         ClientConfig.Track(convars);
 
-        // Tracked convars are quiet, so the framework's catch-all listener never fires for them.
-        // Each one needs its own refresh listener, added once even across re-registrations.
+        // Tracked convars are quiet, so the framework's catch-all listener never fires for them. Each one
+        // needs its own refresh listener, added once even across re-registrations.
         var fresh = convars.Where(convar => ListenedConvars.Add(convar)).ToList();
 
         if (fresh.Count > 0)
@@ -349,7 +337,6 @@ public static class PluginHost
         }
     }
 
-    /// <summary>Rebuilds the Plugins menu's rows from the registered set, one submenu per plugin.</summary>
     private static void RebuildRows()
     {
         if (_pluginsBuilder is not { } builder)
@@ -366,9 +353,8 @@ public static class PluginHost
             state.Builders.Clear();
             state.NodesByItem.Clear();
 
-            // An empty menu gets no row at all, so a plugin that only contributes player actions,
-            // or one that has not declared its rows yet, does not advertise a menu with nothing in
-            // it. The first rows it adds bring the row into being through MaterialiseRows.
+            // An empty menu gets no row at all, so a plugin that only contributes player actions does not
+            // advertise a menu with nothing in it. The first rows it adds bring the row into being.
             if (state.RootMenu is not { Items.Count: > 0 } root)
             {
                 continue;
@@ -420,10 +406,8 @@ public static class PluginHost
         return text;
     }
 
-    /// <summary>
-    /// Builds the rows again, for a plugin whose menu was empty at registration and has just been
-    /// given its first ones. Until then it has no row, and so no live menu to add anything to.
-    /// </summary>
+    // For a plugin whose menu was empty at registration and has just been given its first rows. Until
+    // then it has no row, and so no live menu to add anything to.
     internal static void MaterialiseRows()
     {
         CloseIfInsideAPluginMenu();
@@ -431,10 +415,6 @@ public static class PluginHost
         RebuildRows();
     }
 
-    /// <summary>
-    /// Shuts the menu when the player is standing in a plugin's tree, because the rows underneath
-    /// them are about to be rebuilt and the menu they are looking at goes with them.
-    /// </summary>
     // Call this before the registered set changes, never after: it recognises the menu on screen by
     // walking that set, so a plugin already added or removed makes it answer no.
     private static void CloseIfInsideAPluginMenu()
@@ -490,7 +470,6 @@ public static class PluginHost
         }
     }
 
-    /// <summary>Re-applies a menu's visibility filter after a setVisible op.</summary>
     internal static void ReapplyFilter(PluginState state, string menuId)
     {
         if (state.Builders.TryGetValue(menuId, out var builder))
@@ -537,8 +516,8 @@ public static class PluginHost
         Notifications.Show(StyleFor(request.Style), state.Resolve(request.Text), duration, resource);
     }
 
-    // Nullable, because a plugin writing the payload by hand rather than through the API package can
-    // put a null in there, and this handler is not wrapped in a catch.
+    // Nullable, because a plugin writing the payload by hand rather than through the API package can put
+    // a null in there, and this handler is not wrapped in a catch.
     private static NotificationStyle StyleFor(string? style) => style?.ToLowerInvariant() switch
     {
         "success" => NotificationStyle.Success,
@@ -555,8 +534,8 @@ public static class PluginHost
             return;
         }
 
-        // Parsed before anything else is decided, because the plugin is awaiting an answer carrying
-        // this request's id and every path out of here owes it one.
+        // Parsed before anything else is decided, because the plugin is awaiting an answer carrying this
+        // request's id and every path out of here owes it one.
         if (!ClientJson.TryDeserialize<PromptRequest>(json, out var request)
             || request is null
             || request.Prompts.Count == 0)

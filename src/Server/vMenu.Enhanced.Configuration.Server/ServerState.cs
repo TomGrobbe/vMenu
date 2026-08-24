@@ -7,8 +7,8 @@ using vMenu.Enhanced.Logging;
 
 namespace vMenu.Enhanced.Configuration.Server;
 
-/// <summary>The weather and time overrides, held here and mirrored to clients as convars.</summary>
-// Not persisted across restarts: coming back up on the deterministic schedule is the right default.
+// The weather and time overrides, held here and mirrored to clients as convars. Not persisted across
+// restarts: coming back up on the deterministic schedule is the right default.
 public static class ServerState
 {
     private const string DumpCommand = "vmenu_state";

@@ -13,20 +13,15 @@ using VehicleOptionsSettings = vMenu.Enhanced.Data.Configuration.Settings.Vehicl
 
 namespace vMenu.Enhanced.Actions.Server.Handlers;
 
-/// <summary>
-/// Actions on a vehicle that already exists.
-/// </summary>
 public static class VehicleActions
 {
-    /// <summary>There is no <c>IsEntityAVehicle</c> server side, so the entity type is the check.</summary>
+    // There is no IsEntityAVehicle server side, so the entity type is the check.
     private const int VehicleEntityType = 2;
 
     private const int DriverSeat = -1;
 
-    /// <summary>
-    /// Added to the configured reach. The client picked its target a round trip ago, against its own
-    /// copy of the world.
-    /// </summary>
+    // Added to the configured reach. The client picked its target a round trip ago, against its own copy
+    // of the world.
     private const float RangeSlack = 10f;
 
     public static void Register() =>
@@ -35,11 +30,8 @@ public static class VehicleActions
             VehicleOptionsPermissions.DeleteVehicle,
             DeleteVehicle);
 
-    /// <summary>
-    /// Deletes a vehicle the client picked out, once it is really a vehicle and the player is either
-    /// driving it or standing near enough to it. Without those two checks this is a delete-anything
-    /// primitive.
-    /// </summary>
+    // Only once it is really a vehicle and the player is either driving it or standing near enough to
+    // it. Without those two checks this is a delete-anything primitive.
     private static ActionResponse DeleteVehicle(Player source, string[] args)
     {
         if (args.Length < 1 || !int.TryParse(args[0], NumberStyles.Integer, CultureInfo.InvariantCulture, out var networkId))
@@ -66,8 +58,8 @@ public static class VehicleActions
             return ActionResponse.NotFound();
         }
 
-        // Checked before distance, which would otherwise measure the cockpit of a cargo plane against
-        // the plane's own origin and refuse the player flying it.
+        // Checked before distance, which would otherwise measure the cockpit of a cargo plane against the
+        // plane's own origin and refuse the player flying it.
         if (Native.GetVehiclePedIsIn(ped, false) == entity)
         {
             return Native.GetPedInVehicleSeat(entity, DriverSeat) == ped
@@ -87,12 +79,9 @@ public static class VehicleActions
         return Delete(entity);
     }
 
-    /// <remarks>
-    /// The outcome is deliberately not verified. The removal only lands on the next server tick, so
-    /// <c>DoesEntityExist</c> still reports the vehicle right here and every successful delete would
-    /// be answered as a failure. A handler runs to completion on the event's thread and replies from
-    /// it, so there is no point at which the server could look again before answering.
-    /// </remarks>
+    // The outcome is deliberately not verified. The removal only lands on the next server tick, so
+    // DoesEntityExist still reports the vehicle right here and every successful delete would be answered
+    // as a failure. A handler runs to completion on the event's thread and replies from it.
     private static ActionResponse Delete(int entity)
     {
         Native.DeleteEntity(entity);

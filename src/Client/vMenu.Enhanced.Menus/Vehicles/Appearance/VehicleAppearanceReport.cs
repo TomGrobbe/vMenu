@@ -4,18 +4,10 @@ using CitizenFX.FiveM.Client;
 
 namespace vMenu.Enhanced.Menus.Vehicles.Appearance;
 
-/// <summary>
-/// Turns a <see cref="VehicleAppearance"/> into lines a person can read in the console.
-/// </summary>
 public static class VehicleAppearanceReport
 {
-    /// <summary>
-    /// One line per setting, grouped.
-    /// </summary>
-    /// <param name="handle">
-    /// A live vehicle to ask for slot names. Without one the slots are named by vMenu instead, which
-    /// is what happens when reporting on a saved vehicle that is not spawned.
-    /// </param>
+    // One line per setting, grouped. handle is a live vehicle to ask for slot names; without one the
+    // slots are named by vMenu instead, which is what happens for a saved vehicle that is not spawned.
     public static List<string> Describe(VehicleAppearance appearance, int? handle = null)
     {
         var lines = new List<string>
@@ -89,7 +81,7 @@ public static class VehicleAppearanceReport
         return lines;
     }
 
-    /// <summary>The name for an upgrade slot, preferring whatever the game calls it.</summary>
+    // The name for an upgrade slot, preferring whatever the game calls it.
     public static string SlotName(VehicleModSlot slot, int? handle)
     {
         var fallback = VehicleModSlots.TechnicalName(slot);
@@ -138,8 +130,8 @@ public static class VehicleAppearanceReport
         _ => paintType.ToString(CultureInfo.InvariantCulture),
     };
 
-    // Spelled out rather than looked up: this goes to a console, where the player's menu language
-    // would only make the report harder to compare against somebody else's.
+    // Spelled out rather than looked up: this goes to a console, where the player's menu language would
+    // only make the report harder to compare against somebody else's.
     private static string WheelTypeName(int wheelType) => wheelType switch
     {
         0 => "sports",

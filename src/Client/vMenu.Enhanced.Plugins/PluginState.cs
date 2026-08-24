@@ -11,14 +11,10 @@ using PluginPermissions = vMenu.Enhanced.Data.Permissions.Plugins;
 
 namespace vMenu.Enhanced.Plugins;
 
-/// <summary>
-/// Everything the host holds for one registered plugin: its declared tree, translations,
-/// settings and the live builders its menus materialised into. Entries close over the
-/// nodes in here, which is what makes an update op a mutation plus a refresh.
-/// </summary>
+// Entries close over the nodes in here, which is what makes an update op a mutation plus a refresh.
 internal sealed class PluginState
 {
-    /// <summary>Pseudo menu id player action items are owned by, since no plugin menu holds them.</summary>
+    // Pseudo menu id player action items are owned by, since no plugin menu holds them.
     internal const string PlayerActionsMenuId = "playerActions";
 
     internal PluginState(string resource, string id)
@@ -32,19 +28,19 @@ internal sealed class PluginState
 
     internal string Id { get; }
 
-    /// <summary>The per resource event interactions are emitted on.</summary>
+    // The per resource event interactions are emitted on.
     internal string EventName { get; }
 
     internal TextRef? DisplayName { get; set; }
 
-    /// <summary>Extra line under the resource name in the plugin's row, as a key reference.</summary>
+    // Extra line under the resource name in the plugin's row, as a key reference.
     internal TextRef? DescriptionRef { get; set; }
 
-    /// <summary>Language code to key to text, language codes lowercased.</summary>
+    // Language code to key to text, language codes lowercased.
     internal Dictionary<string, Dictionary<string, string>> Translations { get; } =
         new(StringComparer.OrdinalIgnoreCase);
 
-    /// <summary>Declared settings by short name, for gates and value reads.</summary>
+    // Declared settings by short name, for gates and value reads.
     internal Dictionary<string, BoolSetting> BoolSettings { get; } = new(StringComparer.OrdinalIgnoreCase);
 
     internal MenuNode? RootMenu { get; set; }
@@ -53,33 +49,32 @@ internal sealed class PluginState
 
     internal Dictionary<string, ItemNode> ItemsById { get; } = new(StringComparer.Ordinal);
 
-    /// <summary>Item id to the id of the menu whose row it is.</summary>
+    // Item id to the id of the menu whose row it is.
     internal Dictionary<string, string> ItemOwners { get; } = new(StringComparer.Ordinal);
 
     internal HashSet<string> PlayerActionIds { get; } = new(StringComparer.Ordinal);
 
     internal Dictionary<string, MenuNode> MenusById { get; } = new(StringComparer.Ordinal);
 
-    /// <summary>How deep each menu sits, the root being 1. Read when an item is added to it later.</summary>
+    // How deep each menu sits, the root being 1. Read when an item is added to it later.
     internal Dictionary<string, int> MenuDepths { get; } = new(StringComparer.Ordinal);
 
-    /// <summary>Live builders by menu id, filled in as each menu's build action runs.</summary>
+    // Live builders by menu id, filled in as each menu's build action runs.
     internal Dictionary<string, MenuBuilder> Builders { get; } = new(StringComparer.Ordinal);
 
-    /// <summary>The materialised item back to its node, which is what the visibility filter reads.</summary>
+    // The materialised item back to its node, which is what the visibility filter reads.
     internal Dictionary<MenuItem, ItemNode> NodesByItem { get; } = new(ReferenceComparer<MenuItem>.Instance);
 
-    /// <summary>The live option lists by item id, mutated in place by a setOptions op.</summary>
+    // The live option lists by item id, mutated in place by a setOptions op.
     internal Dictionary<string, List<MenuText>> OptionsByItemId { get; } = new(StringComparer.Ordinal);
 
-    /// <summary>Hides rows whose node says invisible. Handed to every one of this plugin's menus.</summary>
+    // Hides rows whose node says invisible. Handed to every one of this plugin's menus.
     internal bool VisibilityFilter(MenuItem item) =>
         !NodesByItem.TryGetValue(item, out var node) || node.Visible != false;
 
-    /// <summary>Forgets the rows a menu materialised, for a rebuild that throws its items away.</summary>
-    // ClearEntries discards the live items, including those of the rows that survive and are made
-    // again. Without this every rebuild would leave a dead item behind in the map the filter reads,
-    // which for a menu built from runtime data is once every refresh.
+    // ClearEntries discards the live items, including those of the rows that survive and are made again.
+    // Without this every rebuild would leave a dead item behind in the map the filter reads, which for a
+    // menu built from runtime data is once every refresh.
     internal void ForgetItemsOf(MenuBuilder builder)
     {
         foreach (var entry in builder.Entries)
@@ -91,7 +86,7 @@ internal sealed class PluginState
         }
     }
 
-    /// <summary>Forgets every live object so a re-registration starts from a clean slate.</summary>
+    // Forgets every live object so a re-registration starts from a clean slate.
     internal void ResetLiveState()
     {
         ItemsById.Clear();
@@ -105,10 +100,8 @@ internal sealed class PluginState
         PlayerActions.Clear();
     }
 
-    /// <summary>
-    /// Resolves a payload text against this plugin's catalogs: the current vMenu language first,
-    /// then the plugin's English table, then a loud marker, mirroring vMenu's own fallback.
-    /// </summary>
+    // The current vMenu language first, then the plugin's English table, then a loud marker, mirroring
+    // vMenu's own fallback.
     internal string Resolve(TextRef? reference)
     {
         if (reference is null)
@@ -141,7 +134,6 @@ internal sealed class PluginState
         return "!!" + key + "!!";
     }
 
-    /// <summary>Evaluates a gate node live, so a setGate op needs no re-materialisation.</summary>
     // Fail closed on anything malformed, matching MenuGate's own policy.
     internal bool EvaluateGate(GateNode? gate)
     {

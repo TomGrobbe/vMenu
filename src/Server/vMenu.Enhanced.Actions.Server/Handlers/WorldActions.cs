@@ -14,7 +14,6 @@ using WeatherOptionsSettings = vMenu.Enhanced.Data.Configuration.Settings.Weathe
 
 namespace vMenu.Enhanced.Actions.Server.Handlers;
 
-/// <summary>Weather and time overrides, which apply to everybody on the server.</summary>
 public static class WorldActions
 {
     public static void Register()
@@ -76,8 +75,8 @@ public static class WorldActions
             return ActionResponse.InvalidRequest();
         }
 
-        // Worked out on the server, not sent as a number, so the offset matches the moment it lands
-        // and the speed the server is actually running at.
+        // Worked out on the server, not sent as a number, so the offset matches the moment it lands and the
+        // speed the server is actually running at.
         if (string.Equals(args[0], ActionIds.TimeOptions.RealTime, StringComparison.OrdinalIgnoreCase))
         {
             ServerState.SetTimeOffset(ServerClock.RealTimeOffset());

@@ -1,11 +1,9 @@
 namespace vMenu.Enhanced.PluginContracts;
 
-/// <summary>
-/// Every event name in the plugin protocol. Plugin to vMenu events share one name and
-/// vMenu reads the sender from the invoking resource, which the runtime sets and a
-/// payload cannot spoof. vMenu to plugin events carry the resource name inside the
-/// event name, so each plugin only ever registers handlers for its own names.
-/// </summary>
+/// <summary>Every event name in the plugin protocol. Plugin to vMenu events share one name and vMenu
+/// reads the sender from the invoking resource, which the runtime sets and a payload cannot spoof.
+/// vMenu to plugin events carry the resource name inside the event name, so each plugin only ever
+/// registers handlers for its own names.</summary>
 public static class PluginEvents
 {
     private const string Prefix = "vMenu.Enhanced:Plugins";

@@ -10,7 +10,6 @@ using vMenu.Enhanced.Serialization;
 
 namespace vMenu.Enhanced.MenuFramework;
 
-/// <summary>Free text typed by the player.</summary>
 public static class UserInput
 {
     private const string SubmitCallback = "vMenuPromptSubmit";
@@ -23,7 +22,7 @@ public static class UserInput
 
     private const int ReadyTimeoutMs = 3000;
 
-    /// <summary>The page's first callback of a session takes seconds; every one after is immediate.</summary>
+    // The page's first callback of a session takes seconds; every one after is immediate.
     private const int FirstReadyTimeoutMs = 15000;
 
     private const int ButtonGraceMs = 300;
@@ -34,7 +33,7 @@ public static class UserInput
     private static TaskCompletionSource<string?>? _pending;
     private static TaskCompletionSource<bool>? _ready;
 
-    /// <returns>What was typed, or <see langword="null"/> if the player cancelled.</returns>
+    // What was typed, or null if the player cancelled.
     public static async Task<string?> GetTextAsync(
         MenuText title,
         int maxLength,
@@ -48,11 +47,7 @@ public static class UserInput
         return answers?[0];
     }
 
-    /// <summary>Asks for several things one after another.</summary>
-    /// <returns>
-    /// One answer per prompt in the order asked, or <see langword="null"/> if the player cancelled
-    /// any of them.
-    /// </returns>
+    // Asks for several things one after another, answering null if the player cancelled any of them.
     // One session rather than repeated GetTextAsync calls: the page is only closed and NUI focus only
     // dropped at the end, so the next prompt does not need a delay in front of it to come up focused.
     public static async Task<string[]?> GetTextAsync(params InputPrompt[] prompts)
@@ -132,10 +127,8 @@ public static class UserInput
         }
     }
 
-    /// <summary>
-    /// The key or click that closed the prompt is still held when focus returns to the game, and
-    /// MenuAPI selects on release: without this grace the row that opened the prompt reopens it.
-    /// </summary>
+    // The key or click that closed the prompt is still held when focus returns to the game, and MenuAPI
+    // selects on release: without this grace the row that opened the prompt reopens it.
     private static async Task ReleaseMenuButtonsAsync()
     {
         await API.Delay(ButtonGraceMs);
@@ -165,7 +158,7 @@ public static class UserInput
         });
     }
 
-    /// <summary>The page posts what was typed as a JSON string, so the body arrives quoted and escaped.</summary>
+    // The page posts what was typed as a JSON string, so the body arrives quoted and escaped.
     private static string Text(string raw)
     {
         if (raw.Length == 0)
@@ -236,7 +229,7 @@ public static class UserInput
         public required IReadOnlyList<SuggestionRow> Suggestions { get; init; }
     }
 
-    /// <summary>Single letter keys: a spawner sends thousands of these in one message.</summary>
+    // Single letter keys: a spawner sends thousands of these in one message.
     private sealed class SuggestionRow
     {
         [JsonPropertyName("v")]

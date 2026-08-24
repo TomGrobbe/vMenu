@@ -44,7 +44,7 @@ public static class DeathNotifications
                 ("what", Describe(killer, Hash(cause)))));
     }
 
-    /// <summary>The middle of the sentence: everything except who it happened to.</summary>
+    // The middle of the sentence: everything except who it happened to.
     private static MenuText Describe(MenuText? killer, uint cause)
     {
         if (DeathCauses.Find(cause) is { } known)
@@ -54,8 +54,8 @@ public static class DeathNotifications
                 : MenuText.Key(known.Solo);
         }
 
-        // Null whenever the server owner left this weapon out of their config, which is the whole
-        // reason there is a wording for a kill with no weapon named.
+        // Null whenever the server owner left this weapon out of their config, which is the whole reason
+        // there is a wording for a kill with no weapon named.
         var weapon = WeaponHashNames.Resolve(cause);
 
         if (killer is { } who)

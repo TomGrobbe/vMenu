@@ -1,13 +1,13 @@
 namespace vMenu.Enhanced.Data.World;
 
-/// <summary>Reads the preset times of day a server owner lists in a convar.</summary>
-// Deliberately stricter than TimeText: this is written once in a config file rather than typed by a
-// player under pressure, so a malformed entry is reported instead of guessed at.
+// Reads the preset times of day a server owner lists in a convar. Deliberately stricter than
+// TimeText: this is written once in a config file rather than typed by a player under pressure, so a
+// malformed entry is reported instead of guessed at.
 public static class TimePresets
 {
     public const string Default = "0000,0300,0600,0900,1200,1500,1800,2100";
 
-    /// <param name="rejected">Entries that were not four digit 24 hour times, for the caller to report.</param>
+    // rejected collects entries that were not four digit 24 hour times, for the caller to report.
     public static List<int> Parse(string? text, List<string>? rejected = null)
     {
         var presets = new List<int>();

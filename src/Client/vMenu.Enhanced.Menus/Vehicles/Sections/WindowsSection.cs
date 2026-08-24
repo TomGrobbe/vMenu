@@ -5,14 +5,9 @@ using vMenu.Enhanced.MenuFramework.Localization;
 
 namespace vMenu.Enhanced.Menus.Vehicles.Sections;
 
-/// <summary>
-/// Rolling windows up and down, and breaking them.
-/// </summary>
-/// <remarks>
-/// Each window is a list of the two things that can be done to it rather than a tick box, because
-/// the game will not say whether a window is currently up or down. A tick box would have to guess,
-/// and would then be wrong for anyone who wound a window down before opening this menu.
-/// </remarks>
+// Each window is a list of the two things that can be done to it rather than a tick box, because the
+// game will not say whether a window is currently up or down. A tick box would have to guess, and
+// would then be wrong for anyone who wound a window down before opening this menu.
 internal static class WindowsSection
 {
     private const int RollUp = 0;
@@ -92,8 +87,7 @@ internal static class WindowsSection
             MenuText.Key(Loc.VehicleOptions.WindowRollDown),
         ],
 
-        // On enter rather than on scroll: these are actions, and scrolling past one should not
-        // perform it.
+        // On enter rather than on scroll: these are actions, and scrolling past one should not perform it.
         OnSelected = selected => Set(index, selected.SelectedIndex == RollUp),
     };
 

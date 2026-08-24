@@ -5,11 +5,9 @@ using vMenu.Enhanced.PluginContracts;
 
 namespace vMenu.Enhanced.ClientAPI;
 
-/// <summary>
-/// Your plugin's client side entry point. Create it once, declare your menus, translations and
-/// settings, then call <see cref="ConnectAsync"/>. The plugin re-registers itself automatically
-/// whenever vMenu restarts, so everything you declared and changed since is restored.
-/// </summary>
+/// <summary>Your plugin's client side entry point. Create it once, declare your menus, translations
+/// and settings, then call <see cref="ConnectAsync"/>. It re-registers itself whenever vMenu
+/// restarts, so everything you declared and changed since is restored.</summary>
 public sealed class VMenuPlugin
 {
     private static VMenuPlugin? _instance;
@@ -79,9 +77,7 @@ public sealed class VMenuPlugin
     /// <summary>Raised when vMenu stops, after which the plugin waits to re-register.</summary>
     public event Action? Disconnected;
 
-    /// <summary>
-    /// Creates the plugin. One per resource: a second call returns the first instance.
-    /// </summary>
+    /// <summary>Creates the plugin. One per resource: a second call returns the first instance.</summary>
     public static VMenuPlugin Create(Text displayName)
     {
         if (_instance is { } existing)
@@ -95,11 +91,9 @@ public sealed class VMenuPlugin
         return _instance;
     }
 
-    /// <summary>
-    /// Registers with vMenu. The returned task completes when vMenu answers for the first time,
-    /// which can be a while when vMenu starts later than your resource. It never throws,
-    /// refusals arrive as a result with <c>Accepted</c> false.
-    /// </summary>
+    /// <summary>Registers with vMenu. The task completes on vMenu's first answer, which can be a while
+    /// when vMenu starts later than your resource. It never throws: a refusal arrives as a result with
+    /// <c>Accepted</c> false.</summary>
     public Task<RegisterResult> ConnectAsync()
     {
         _firstResult ??= new TaskCompletionSource<RegisterResult>();
@@ -131,10 +125,8 @@ public sealed class VMenuPlugin
         PluginEmit.Local(PluginEvents.Notify, PluginJson.Serialize(request));
     }
 
-    /// <summary>
-    /// Asks the player for text through vMenu's input box.
-    /// </summary>
-    /// <returns>What they typed, or null if they cancelled or the box was unavailable.</returns>
+    /// <summary>Asks the player for text through vMenu's input box. Null if they cancelled or the box
+    /// was unavailable.</summary>
     public async Task<string?> GetTextAsync(
         Text title,
         int maxLength = 60,
@@ -146,8 +138,7 @@ public sealed class VMenuPlugin
         return answers is { Length: > 0 } ? answers[0] : null;
     }
 
-    /// <summary>Asks several questions one after another.</summary>
-    /// <returns>One answer per prompt, or null if the player cancelled any of them.</returns>
+    /// <summary>Asks several questions one after another. Null if the player cancelled any of them.</summary>
     public async Task<string[]?> GetTextAsync(params PluginPrompt[] prompts)
     {
         if (prompts.Length == 0 || !IsConnected)
@@ -195,10 +186,8 @@ public sealed class VMenuPlugin
         return result.Cancelled || result.Answers is null ? null : result.Answers.ToArray();
     }
 
-    /// <summary>
-    /// Groups every change made until the returned handle is disposed into one update, so many
-    /// small changes cost vMenu a single repaint. Nesting is fine: only the outermost handle sends.
-    /// </summary>
+    /// <summary>Groups every change made until the returned handle is disposed into one update, so many
+    /// small changes cost vMenu a single repaint. Nesting is fine: only the outermost handle sends.</summary>
     public IDisposable BeginBatch()
     {
         _batch ??= new List<UpdateOp>();
@@ -297,8 +286,8 @@ public sealed class VMenuPlugin
             ProtocolVersion = PluginProtocol.Version,
             DisplayName = _displayName.ToRef(),
             DescriptionKey = DescriptionKey,
-            // Always sent, even while empty. vMenu leaves the plugin's row out until the menu has
-            // something in it, and it can only accept rows added later for a menu it knows about.
+            // Always sent, even while empty. vMenu leaves the plugin's row out until the menu has something in
+            // it, and it can only accept rows added later for a menu it knows about.
             Menu = RootMenu.Node,
             PlayerActions = PlayerActions.Nodes.Count > 0 ? PlayerActions.Nodes : null,
         };

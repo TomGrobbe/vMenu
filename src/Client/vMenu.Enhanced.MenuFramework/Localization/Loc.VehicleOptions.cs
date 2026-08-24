@@ -74,7 +74,7 @@ public static partial class Loc
 
         public const string NothingDescription = "vehicleoptions.nothing.desc";
 
-        /// <summary>Fallback name for anything the game has no label for, such as "Colour #42".</summary>
+        // Fallback name for anything the game has no label for, such as "Colour #42".
         public const string Numbered = "vehicleoptions.numbered";
 
         #endregion
@@ -147,14 +147,14 @@ public static partial class Loc
 
         public const string ModSlotDescription = "vehicleoptions.mods.slot.desc";
 
-        /// <summary>Shown instead when the slot's name is vMenu's guess rather than the game's.</summary>
+        // Shown instead when the slot's name is vMenu's guess rather than the game's.
         public const string ModSlotGuessedDescription = "vehicleoptions.mods.slot.guessed.desc";
 
         public const string ModStock = "vehicleoptions.mods.stock";
 
         public const string ModNumbered = "vehicleoptions.mods.numbered";
 
-        /// <summary>Used when the game has no name for a slot, so vMenu's guess is not passed off as fact.</summary>
+        // Used when the game has no name for a slot, so vMenu's guess is not passed off as fact.
         public const string ModSlotUnnamed = "vehicleoptions.mods.slot.unnamed";
 
         public const string Turbo = "vehicleoptions.mods.turbo";

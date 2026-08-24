@@ -5,19 +5,13 @@ using vMenu.Enhanced.Data.VehicleData;
 
 namespace vMenu.Enhanced.Menus.Vehicles.Appearance;
 
-/// <summary>
-/// Reads a vehicle's current state back out of the game.
-/// </summary>
-/// <remarks>
-/// Every value here is asked of the game the moment it is wanted. Nothing is remembered from when it
-/// was set, which is the whole point: this is what the dump command reports and what the writer
-/// checks its own work against, so a value that came from vMenu's memory would prove nothing.
-/// </remarks>
+// Every value here is asked of the game the moment it is wanted. Nothing is remembered from when it
+// was set, which is the whole point: this is what the dump command reports and what the writer checks
+// its own work against, so a value that came from vMenu's memory would prove nothing.
 public static class VehicleAppearanceReader
 {
-    /// <summary>How many optional part slots the game is asked about.</summary>
-    // The game has no way to say how many a vehicle has, so this walks a fixed range. Twenty covers
-    // every stock vehicle with room to spare for add-ons.
+    // The game has no way to say how many optional part slots a vehicle has, so this walks a fixed
+    // range. Twenty covers every stock vehicle with room to spare for add-ons.
     public const int ExtraCount = VehicleExtras.Count;
 
     private const int NeonLeft = 0;
@@ -28,7 +22,7 @@ public static class VehicleAppearanceReader
 
     private const int NeonBack = 3;
 
-    /// <summary>Drift tyres arrived in this game build. Asking an older one throws.</summary>
+    // Drift tyres arrived in this game build. Asking an older one throws.
     private const int DriftTyresBuild = 2372;
 
     public static VehicleAppearance Read(Vehicle vehicle) => Read(vehicle.Handle);
@@ -174,9 +168,9 @@ public static class VehicleAppearanceReader
         appearance.TyreSmokeBlue = blue;
     }
 
-    // The generated wrapper reads all three output slots whether or not the game filled them, and
-    // the runtime throws rather than handing back a zero when it did not. A vehicle with no custom
-    // xenon colour is the normal case, so this is expected rather than exceptional.
+    // The generated wrapper reads all three output slots whether or not the game filled them, and the
+    // runtime throws rather than handing back a zero when it did not. A vehicle with no custom xenon
+    // colour is the normal case, so this is expected rather than exceptional.
     private static bool TryReadCustomXenon(int handle, out int red, out int green, out int blue)
     {
         try
@@ -193,7 +187,6 @@ public static class VehicleAppearanceReader
         }
     }
 
-    /// <inheritdoc cref="TryReadCustomXenon"/>
     private static int ReadPrimaryPaintType(int handle)
     {
         try
@@ -208,7 +201,6 @@ public static class VehicleAppearanceReader
         }
     }
 
-    /// <inheritdoc cref="TryReadCustomXenon"/>
     private static int ReadSecondaryPaintType(int handle)
     {
         try

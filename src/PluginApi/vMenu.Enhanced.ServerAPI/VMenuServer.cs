@@ -5,11 +5,9 @@ using vMenu.Enhanced.PluginContracts;
 
 namespace vMenu.Enhanced.ServerAPI;
 
-/// <summary>
-/// The server side entry point for a plugin. Call <see cref="RegisterAsync"/> once at startup,
-/// re-registration after a vMenu restart happens automatically. Then use
-/// <see cref="IsPlayerAllowed"/> to check the permissions you declared.
-/// </summary>
+/// <summary>The server side entry point for a plugin. Call <see cref="RegisterAsync"/> once at
+/// startup; re-registration after a vMenu restart happens automatically. Then use
+/// <see cref="IsPlayerAllowed"/> to check the permissions you declared.</summary>
 public static class VMenuServer
 {
     private const string PermissionPrefix = "vMenu.Enhanced.Plugins";
@@ -29,11 +27,9 @@ public static class VMenuServer
     /// <summary>Fires on every registration answer, including automatic re-registrations.</summary>
     public static event Action<RegisterResult>? RegistrationAnswered;
 
-    /// <summary>
-    /// Declares the plugin with vMenu. The returned task completes when vMenu answers for the
-    /// first time, which can be a while when vMenu starts later than the plugin. It never throws,
-    /// refusals arrive as a result with <c>Accepted</c> false.
-    /// </summary>
+    /// <summary>Declares the plugin with vMenu. The task completes on vMenu's first answer, which can be
+    /// a while when vMenu starts later than the plugin. It never throws: a refusal arrives as a result
+    /// with <c>Accepted</c> false.</summary>
     public static Task<RegisterResult> RegisterAsync(ServerPluginDeclaration declaration)
     {
         _declaration = declaration;
@@ -46,10 +42,8 @@ public static class VMenuServer
         return _firstResult.Task;
     }
 
-    /// <summary>
-    /// Whether a player holds one of the plugin's own permissions, by its short name. Also honours
-    /// the container grants a server owner may have used instead of the exact name.
-    /// </summary>
+    /// <summary>Whether a player holds one of the plugin's own permissions, by its short name. Also
+    /// honours the container grants a server owner may have used instead of the exact name.</summary>
     public static bool IsPlayerAllowed(string playerSource, string permissionName)
     {
         if (string.IsNullOrEmpty(playerSource))

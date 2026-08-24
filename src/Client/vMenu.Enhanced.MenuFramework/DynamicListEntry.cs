@@ -4,19 +4,14 @@ using vMenu.Enhanced.MenuFramework.Localization;
 
 namespace vMenu.Enhanced.MenuFramework;
 
-/// <summary>
-/// A row whose value is produced on demand rather than picked from a list.
-/// </summary>
 public sealed class DynamicListEntry : MenuEntry<MenuDynamicListItem>
 {
-    /// <summary>The value to show. Re-read on every refresh.</summary>
+    // The value to show. Re-read on every refresh.
     public required Func<string> ReadValue { get; init; }
 
-    /// <summary>
-    /// Produces the next value. The framework wraps this before handing it to MenuAPI, because
-    /// MenuAPI invokes it directly from <c>GoLeft</c>/<c>GoRight</c> without checking whether the
-    /// item is enabled — an unwrapped callback would run on a locked row.
-    /// </summary>
+    // Produces the next value. The framework wraps this before handing it to MenuAPI, because MenuAPI
+    // invokes it directly from GoLeft/GoRight without checking whether the item is enabled, so an
+    // unwrapped callback would run on a locked row.
     public required Func<DynamicListChanging, string> Change { get; init; }
 
     public Action<DynamicListChanged>? OnChanged { get; init; }
@@ -40,8 +35,8 @@ public sealed class DynamicListEntry : MenuEntry<MenuDynamicListItem>
 
     private string Guarded(MenuDynamicListItem item, bool left)
     {
-        // MenuAPI allows CurrentItem to be null. Every entry the framework builds seeds it from
-        // ReadValue, which cannot be, so this only covers a row something else re-seeded.
+        // MenuAPI allows CurrentItem to be null. Every entry the framework builds seeds it from ReadValue,
+        // which cannot be, so this only covers a row something else re-seeded.
         var current = item.CurrentItem ?? string.Empty;
 
         return item.Enabled ? Change(new DynamicListChanging(item, current, left)) : current;

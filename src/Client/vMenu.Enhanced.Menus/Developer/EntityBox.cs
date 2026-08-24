@@ -4,15 +4,13 @@ using CitizenFX.FiveM.Client;
 
 namespace vMenu.Enhanced.Menus.Developer;
 
-/// <summary>
-/// Draws an entity's model bounding box: shaded faces in the caller's colour, white edges.
-/// </summary>
-// Allocation free on purpose, running for every tracked entity on every frame. Corners go in a
-// shared buffer and the faces and edges are index tables into it. Sharing is safe because a draw
-// never spans an await and the client runs one tick body at a time.
+// Draws an entity's model bounding box: shaded faces in the caller's colour, white edges. Allocation
+// free on purpose, running for every tracked entity on every frame. Corners go in a shared buffer
+// and the faces and edges are index tables into it. Sharing is safe because a draw never spans an
+// await and the client runs one tick body at a time.
 public static class EntityBox
 {
-    /// <summary>Keeps coplanar faces of touching boxes from fighting over the same pixels.</summary>
+    // Keeps coplanar faces of touching boxes from fighting over the same pixels.
     private const float Pad = 0.001f;
 
     private const int EdgeRed = 255;
@@ -25,7 +23,7 @@ public static class EntityBox
 
     private static readonly Vector3[] Corners = new Vector3[8];
 
-    /// <summary>Corner indices, three per triangle, two triangles per face.</summary>
+    // Corner indices, three per triangle, two triangles per face.
     private static readonly byte[] PolyIndices =
     [
         2, 1, 0,   3, 2, 0,
@@ -36,7 +34,7 @@ public static class EntityBox
         4, 7, 3,   4, 3, 0,
     ];
 
-    /// <summary>Corner index pairs: the bottom ring, the top ring, then the four uprights.</summary>
+    // Corner index pairs: the bottom ring, the top ring, then the four uprights.
     private static readonly byte[] EdgeIndices =
     [
         0, 1,   1, 2,   2, 3,   3, 0,
@@ -44,7 +42,7 @@ public static class EntityBox
         0, 4,   1, 5,   2, 6,   3, 7,
     ];
 
-    /// <summary>Model bounds never change, and the native behind them is a slow reflective invoke.</summary>
+    // Model bounds never change, and the native behind them is a slow reflective invoke.
     private static readonly Dictionary<uint, (Vector3 Min, Vector3 Max)> BoundsByModel = [];
 
     public static void Draw(int entity, uint model, int red, int green, int blue, int alpha)

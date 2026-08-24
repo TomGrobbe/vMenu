@@ -2,9 +2,9 @@ using System.Globalization;
 
 namespace vMenu.Enhanced.Data.World;
 
-/// <summary>The replicated convars the server publishes world state through.</summary>
-// Not Settings, and not in ConfigCatalog: that catalog is owner authored config and drives the
-// generated example file, so listing these would invite editing state the server overwrites.
+// The replicated convars the server publishes world state through. Not Settings, and not in
+// ConfigCatalog: that catalog is owner authored config and drives the generated example file, so
+// listing these would invite editing state the server overwrites.
 public static class WorldStateConvars
 {
     public const string Utc = "vMenu.Enhanced.State.Utc";
@@ -13,10 +13,10 @@ public static class WorldStateConvars
 
     public const string TimeOffset = "vMenu.Enhanced.State.TimeOffset";
 
-    /// <summary>All three, for handing to the configuration module in one go.</summary>
+    // All three, for handing to the configuration module in one go.
     public static readonly string[] All = [Utc, Weather, TimeOffset];
 
-    /// <summary>Weather is following the schedule.</summary>
+    // Weather is following the schedule.
     public const string Dynamic = "dynamic";
 
     public static int NormaliseOffset(int seconds)

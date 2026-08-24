@@ -8,13 +8,8 @@ using vMenu.Enhanced.Menus.Vehicles.Appearance;
 
 namespace vMenu.Enhanced.Menus.Vehicles.Sections;
 
-/// <summary>
-/// The paint jobs printed onto the bodywork.
-/// </summary>
-/// <remarks>
-/// These are the vehicle's own liveries. Liveries that arrived with a mod kit are an upgrade slot
-/// like any other, so they show up in the modifications menu instead.
-/// </remarks>
+// These are the vehicle's own liveries. Liveries that arrived with a mod kit are an upgrade slot
+// like any other, so they show up in the modifications menu instead.
 internal static class LiveriesSection
 {
     public static void Build(MenuBuilder menu)
@@ -75,8 +70,7 @@ internal static class LiveriesSection
         Func<int, int> read,
         Action<int, int> write)
     {
-        // The game counts from zero and uses -1 for none, so "None" is prepended and everything
-        // shifts by one.
+        // The game counts from zero and uses -1 for none, so "None" is prepended and everything shifts by one.
         var options = new List<MenuText>(count + 1)
         {
             MenuText.Key(Loc.VehicleOptions.LiveryNone),

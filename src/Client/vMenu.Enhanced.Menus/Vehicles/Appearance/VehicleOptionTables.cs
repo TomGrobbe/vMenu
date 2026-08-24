@@ -2,22 +2,18 @@ using vMenu.Enhanced.MenuFramework.Localization;
 
 namespace vMenu.Enhanced.Menus.Vehicles.Appearance;
 
-/// <summary>One choice in a fixed list, where the order shown is not the order the natives use.</summary>
+// One choice in a fixed list, where the order shown is not the order the natives use.
 public sealed class VehicleChoice(int value, MenuText text)
 {
-    /// <summary>What the native wants, which is not the same as this choice's position in the list.</summary>
+    // What the native wants, which is not the same as this choice's position in the list.
     public int Value { get; } = value;
 
     public MenuText Text { get; } = text;
 }
 
-/// <summary>The fixed lists the game does not enumerate for us.</summary>
 public static class VehicleOptionTables
 {
-    /// <summary>
-    /// Wheel families, in the order <c>SetVehicleWheelType</c> numbers them, so the position in this
-    /// list is the value.
-    /// </summary>
+    // In the order SetVehicleWheelType numbers them, so the position in this list is the value.
     public static IReadOnlyList<string> WheelTypeKeys { get; } =
     [
         Loc.VehicleOptions.WheelTypeSports,
@@ -35,9 +31,7 @@ public static class VehicleOptionTables
         Loc.VehicleOptions.WheelTypeTrack,
     ];
 
-    /// <summary>
-    /// Window tints from clearest to darkest, which is not the order the native numbers them in.
-    /// </summary>
+    // Clearest to darkest, which is not the order the native numbers them in.
     public static IReadOnlyList<VehicleChoice> WindowTints { get; } =
     [
         new(4, MenuText.Key(Loc.VehicleOptions.TintStock)),
@@ -49,12 +43,8 @@ public static class VehicleOptionTables
         new(6, MenuText.Key(Loc.VehicleOptions.TintGreen)),
     ];
 
-    /// <summary>
-    /// Plate designs, where the position in the list is the value
-    /// <c>SetVehicleNumberPlateTextIndex</c> wants.
-    /// </summary>
-    // North Yankton is the odd one out: the game files its name under PROL rather than under the
-    // CMOD_PLA key its neighbours use.
+    // The position in the list is the value SetVehicleNumberPlateTextIndex wants. North Yankton is the
+    // odd one out: the game files its name under PROL rather than under the CMOD_PLA key its neighbours use.
     public static IReadOnlyList<MenuText> PlateStyles { get; } =
     [
         GameLabels.GameOrLiteral("CMOD_PLA_0", "Blue on White 1"),
@@ -72,10 +62,7 @@ public static class VehicleOptionTables
         GameLabels.GameOrLiteral("CMOD_PLA_12", "Sprunk"),
     ];
 
-    /// <summary>
-    /// Paint finishes, where the position in the list is the value <c>SetVehicleModColor_1</c>
-    /// wants for its colour type.
-    /// </summary>
+    // The position in the list is the value SetVehicleModColor_1 wants for its colour type.
     public static IReadOnlyList<string> PaintFinishKeys { get; } =
     [
         Loc.VehicleOptions.FinishNormal,
@@ -87,7 +74,7 @@ public static class VehicleOptionTables
         Loc.VehicleOptions.FinishChameleon,
     ];
 
-    /// <summary>The position in a choice list holding this native value, or 0 when it is not there.</summary>
+    // The position in a choice list holding this native value, or 0 when it is not there.
     public static int IndexOfValue(IReadOnlyList<VehicleChoice> choices, int value)
     {
         for (var index = 0; index < choices.Count; index++)

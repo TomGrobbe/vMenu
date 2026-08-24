@@ -1,11 +1,9 @@
 namespace vMenu.Enhanced.PluginContracts;
 
-/// <summary>
-/// One mutation of a live plugin tree. A single flat shape instead of one class per
-/// operation keeps the JSON free of type discriminator machinery, unused fields simply
-/// stay null. Which fields matter depends on <see cref="Op"/>, one of the
-/// <see cref="UpdateOps"/> names. Unknown operations are logged and skipped by vMenu.
-/// </summary>
+/// <summary>One mutation of a live plugin tree. A single flat shape instead of one class per
+/// operation keeps the JSON free of type discriminator machinery: unused fields simply stay null.
+/// Which fields matter depends on <see cref="Op"/>, one of the <see cref="UpdateOps"/> names.
+/// Unknown operations are logged and skipped by vMenu.</summary>
 public class UpdateOp
 {
     public string Op { get; set; } = string.Empty;

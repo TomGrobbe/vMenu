@@ -7,27 +7,26 @@ using vMenu.Enhanced.Ticks;
 
 namespace vMenu.Enhanced.MenuFramework;
 
-/// <summary>Short messages stacked above the minimap, drawn by the NUI page, not the game's feed.</summary>
+// Short messages stacked above the minimap, drawn by the NUI page rather than the game's feed.
 // Nothing here takes focus or waits for an answer, so the page needs no handshake. Where the stack
 // sits depends on the safe zone and the map state, neither of which the page can see, so the client
-// works it out and sends it once per notification. A resize mid-notification leaves that one where
-// it was, which beats a tick running all session to catch it.
+// works it out and sends it once per notification.
 public static class Notifications
 {
-    /// <summary>Long enough to read a sentence without hurrying, short enough not to sit in the way.</summary>
+    // Long enough to read a sentence without hurrying, short enough not to sit in the way.
     public const int DefaultDurationMs = 8500;
 
     public const int SpawnDurationMs = 4000;
 
     private const int VisibilityCheckMs = 500;
 
-    /// <summary>Thirty seconds of waiting for a spawn, after which the message is shown regardless.</summary>
+    // Thirty seconds of waiting for a spawn, after which the message is shown regardless.
     private const int MaxVisibilityChecks = 60;
 
-    /// <summary>What the page hands a frozen message back when the pause menu closes, mirrored here.</summary>
+    // What the page hands a frozen message back when the pause menu closes, mirrored here.
     private const int PauseGraceMs = 2000;
 
-    /// <summary>Covers the fade the page plays after a message's time is up.</summary>
+    // Covers the fade the page plays after a message's time is up.
     private const int ExitGraceMs = 500;
 
     private const long PauseCheckIntervalMs = 100;
@@ -40,7 +39,7 @@ public static class Notifications
 
     private static bool _paused;
 
-    /// <summary>Game time by which every message sent so far has had its say.</summary>
+    // Game time by which every message sent so far has had its say.
     private static long _liveUntil;
 
     private static long _polledAt;
@@ -57,11 +56,9 @@ public static class Notifications
     public static void Error(MenuText text, int durationMs = DefaultDurationMs) =>
         Show(NotificationStyle.Error, text, durationMs);
 
-    /// <summary>Shows once the player can actually see the screen.</summary>
     // For anything raised during startup. The page is not listening that early, and the stack draws
-    // above the minimap, which is behind the loading screen anyway. Returns immediately when the
-    // player is already in, so a caller that runs both at startup and at runtime can use this
-    // unconditionally.
+    // above the minimap, which is behind the loading screen anyway. Returns immediately when the player
+    // is already in, so a caller that runs both at startup and at runtime can use it unconditionally.
     public static async Task ShowWhenVisibleAsync(NotificationStyle style, MenuText text, int durationMs = DefaultDurationMs)
     {
         for (var attempt = 0; attempt < MaxVisibilityChecks; attempt++)
@@ -74,8 +71,8 @@ public static class Notifications
             await API.Delay(VisibilityCheckMs);
         }
 
-        // Shown even if the checks never passed. A player stuck on a black screen has bigger
-        // problems, and a message they might miss beats one that is silently never sent.
+        // Shown even if the checks never passed. A player stuck on a black screen has bigger problems, and a
+        // message they might miss beats one that is silently never sent.
         Show(style, text, durationMs);
     }
 
@@ -92,8 +89,8 @@ public static class Notifications
             return;
         }
 
-        // Read once and sent with the message, so a notification raised during a pause is drawn the
-        // way the ones already on screen are instead of waiting for the next poll to catch up.
+        // Read once and sent with the message, so a notification raised during a pause is drawn the way the
+        // ones already on screen are instead of waiting for the next poll to catch up.
         var paused = Native.IsPauseMenuActive();
 
         Native.SendNuiMessage(BuildMessage(Name(style), message, durationMs, source, paused));
@@ -101,11 +98,9 @@ public static class Notifications
         Watch(durationMs, paused);
     }
 
-    /// <summary>Keeps the pause menu watch alive for as long as this message can still be on screen.</summary>
     // An estimate, never the truth: the page owns the timers, and this side only needs to know when
-    // watching is pointless. It rounds up on a repeat, which restarts the row and this window with
-    // it, and falls short only when messages arrive faster than the page shows them, where the ones
-    // still queued go without their blur and their extra time.
+    // watching is pointless. It rounds up on a repeat, and falls short only when messages arrive faster
+    // than the page shows them, where the ones still queued go without their blur and their extra time.
     private static void Watch(int durationMs, bool paused)
     {
         var until = Native.GetGameTimer() + durationMs + ExitGraceMs;
@@ -115,8 +110,8 @@ public static class Notifications
             _liveUntil = until;
         }
 
-        // Registered on the first message rather than from an Initialize, so a client that never
-        // notifies never lists a loop, and nothing has to be ordered in front of this.
+        // Registered on the first message rather than from an Initialize, so a client that never notifies
+        // never lists a loop, and nothing has to be ordered in front of this.
         _pauseTick ??= TickRegistry.Register(
             "Notifications.Pause",
             PollPause,
@@ -147,7 +142,7 @@ public static class Notifications
         {
             _paused = paused;
 
-            // Mirrors the grace the page hands back, so watching does not end while a message is still living on it.
+            // Mirrors the grace the page hands back, so watching does not end while a message still lives on it.
             if (!paused)
             {
                 _liveUntil += PauseGraceMs;
@@ -195,7 +190,6 @@ public static class Notifications
 
         public string? Footer { get; init; }
 
-        /// <summary>Whether the pause menu is up, which is also the state the page as a whole goes into.</summary>
         public required bool Paused { get; init; }
 
         public required AnchorBox Anchor { get; init; }

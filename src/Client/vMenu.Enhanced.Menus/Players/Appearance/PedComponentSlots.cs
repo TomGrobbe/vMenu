@@ -2,13 +2,9 @@ using vMenu.Enhanced.MenuFramework.Localization;
 
 namespace vMenu.Enhanced.Menus.Players.Appearance;
 
-/// <summary>
-/// The twelve body slots a ped is dressed out of.
-/// </summary>
-/// <remarks>
-/// There is no thirteenth. Legacy walked 0 to 20 when saving a ped and stored nine slots the game
-/// answers zero variations for, then wrote a component variation for each of them on restore.
-/// </remarks>
+// The twelve body slots a ped is dressed out of. There is no thirteenth: legacy walked 0 to 20 when
+// saving a ped and stored nine slots the game answers zero variations for, then wrote a component
+// variation for each of them on restore.
 public static class PedComponentSlots
 {
     public const int Head = 0;
@@ -40,7 +36,7 @@ public static class PedComponentSlots
     public static readonly int[] Clothing =
         [Mask, Torso, Legs, Bags, Shoes, Neck, Undershirt, Armour, Decals, Tops];
 
-    /// <summary>What the menu calls this slot.</summary>
+    // What the menu calls this slot.
     public static string NameKey(int slot) => slot switch
     {
         Head => Loc.PlayerAppearance.ComponentHead,
@@ -57,7 +53,7 @@ public static class PedComponentSlots
         _ => Loc.PlayerAppearance.ComponentTops,
     };
 
-    /// <summary>The same name in plain English, for console output that is never translated.</summary>
+    // The same name in plain English, for console output that is never translated.
     public static string TechnicalName(int slot) => slot switch
     {
         Head => "head",

@@ -3,26 +3,14 @@ using vMenu.Enhanced.Storage;
 
 namespace vMenu.Enhanced.Menus.Players.Saved;
 
-/// <summary>
-/// Where saved peds live: the player's own machine, not the server.
-/// </summary>
-/// <remarks>
-/// Because this is the player's local storage keyed on the resource name, the same collection shows
-/// up on every server running vMenu Enhanced. That is the point, and it is also why the version
-/// check matters: one of those servers may be running an older build than the one that wrote a save.
-/// <see cref="KvpStore"/> already refuses that write, and this only passes the answer along.
-///
-/// <para>
-/// Legacy stored peds under a bare <c>ped_</c> prefix. Keys are namespaced per resource and this one
-/// is not the resource legacy ran as, so those saves are invisible from here. There is no migration
-/// to write and none is possible.
-/// </para>
-/// </remarks>
+// The player's own machine, not the server. Keyed on the resource name, so the same collection shows
+// up on every server running vMenu Enhanced, which is also why the version check matters: one of
+// those servers may be older than the build that wrote a save. Legacy's bare "ped_" keys belonged to
+// a different resource name, so those saves are invisible from here and no migration is possible.
 public static class SavedPedStore
 {
     public const string PedPrefix = "vmenu_ped_";
 
-    /// <summary>Deliberately not a suffix of the ped prefix, so listing one never finds the other.</summary>
     // The underscore placement matters both ways round. Listing "vmenu_ped_" never reaches a category,
     // and a ped somebody named "category_x" stores under "vmenu_ped_category_x", which does not start
     // with "vmenu_pedcategory_".
@@ -30,13 +18,12 @@ public static class SavedPedStore
 
     #region Peds
 
-    /// <summary>Every saved ped, sorted by name.</summary>
     public static List<SavedPedEntry> All()
     {
         var peds = new List<SavedPedEntry>();
 
-        // KvpStore.Keys closes its find handle. Legacy's equivalent leaked one every time the saved
-        // peds menu was opened, while the multiplayer one right below it closed its own.
+        // KvpStore.Keys closes its find handle. Legacy's equivalent leaked one every time the saved peds
+        // menu was opened.
         foreach (var key in KvpStore.Keys(PedPrefix))
         {
             if (Read(key) is { } entry)
@@ -55,10 +42,7 @@ public static class SavedPedStore
 
     public static bool Exists(string name) => Load(name) is not null;
 
-    /// <param name="replacing">
-    /// True when the caller means to overwrite an existing save, which is the difference between
-    /// "replace this one" and "save a new one".
-    /// </param>
+    // replacing is the difference between "replace this one" and "save a new one".
     public static SaveOutcome Save(SavedPed ped, bool replacing)
     {
         var key = PedKey(ped.Name);
@@ -75,11 +59,9 @@ public static class SavedPedStore
 
     public static void Delete(string name) => KvpStore.Delete(PedKey(name));
 
-    /// <summary>Stores a ped under a new name and description, and forgets the old name.</summary>
-    /// <returns>False when the new name is taken, or the save came from a newer build.</returns>
-    // A newer build's save is refused rather than moved. Renaming writes a key that holds nothing
-    // yet, which no version check can guard, and what would be written is only the fields this build
-    // knows about. That is the silent downgrade the whole refusal mechanism exists to prevent.
+    // A newer build's save is refused rather than moved. Renaming writes a key that holds nothing yet,
+    // which no version check can guard, and what would be written is only the fields this build knows
+    // about. That is the silent downgrade the whole refusal mechanism exists to prevent.
     public static bool Edit(SavedPedEntry entry, string newName, string description)
     {
         if (entry.IsFromNewerBuild)
@@ -116,9 +98,8 @@ public static class SavedPedStore
         return true;
     }
 
-    /// <summary>Stores a copy of a ped under another name, leaving the original alone.</summary>
-    // The copy is written at this build's schema version even when the original came from a newer
-    // one. That is honest rather than lossy: it is a new save holding what this build could read.
+    // The copy is written at this build's schema version even when the original came from a newer one.
+    // That is honest rather than lossy: it is a new save holding what this build could read.
     public static SaveOutcome Duplicate(SavedPedEntry entry, string newName) =>
         Save(
             new SavedPed
@@ -131,7 +112,6 @@ public static class SavedPedStore
             },
             replacing: false);
 
-    /// <summary>Moves a ped into another category, or out of all of them when empty.</summary>
     public static bool MoveToCategory(SavedPed ped, string category)
     {
         ped.Category = category;
@@ -184,8 +164,7 @@ public static class SavedPedStore
             out _,
             out _);
 
-    /// <summary>Renames a category and moves everything in it across.</summary>
-    /// <returns>False when the new name is already a category.</returns>
+    // False when the new name is already a category.
     public static bool EditCategory(string oldName, string newName, string description)
     {
         var renaming = !string.Equals(oldName, newName, StringComparison.OrdinalIgnoreCase);
@@ -218,8 +197,8 @@ public static class SavedPedStore
                 continue;
             }
 
-            // A save from a newer build cannot be rewritten, so it keeps naming the old category.
-            // The menu already treats an unknown category as a group of its own.
+            // A save from a newer build cannot be rewritten, so it keeps naming the old category. The menu
+            // already treats an unknown category as a group of its own.
             if (entry.IsFromNewerBuild)
             {
                 continue;
@@ -231,10 +210,8 @@ public static class SavedPedStore
         return true;
     }
 
-    /// <summary>
-    /// Forgets a category. The peds in it are kept and become uncategorised, since losing a group is
-    /// not a reason to lose what was in it.
-    /// </summary>
+    // The peds in it are kept and become uncategorised, since losing a group is not a reason to lose
+    // what was in it.
     public static void DeleteCategory(string name)
     {
         KvpStore.Delete(CategoryPrefix + name);
@@ -257,7 +234,6 @@ public static class SavedPedStore
 
     #endregion
 
-    /// <summary>The raw stored lines, for a dump command.</summary>
     public static IEnumerable<string> Describe() => KvpStore.Describe(PedPrefix);
 
     private static SavedPedEntry? Read(string key)

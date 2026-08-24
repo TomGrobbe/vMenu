@@ -1,7 +1,7 @@
 namespace vMenu.Enhanced.Data.World;
 
-// A plain struct rather than a record: generated record equality routes through
-// EqualityComparer<T>.Default, which the client sandbox refuses to load.
+// A struct rather than a record: generated equality routes through EqualityComparer<T>.Default,
+// which the client sandbox refuses to load.
 public readonly struct CycleEntry(double gameHour, WeatherType type)
 {
     public double GameHour { get; } = gameHour;
@@ -27,13 +27,10 @@ public readonly struct ForecastEntry(WeatherType type, double gameHoursUntilStar
     public double GameHoursLong { get; } = gameHoursLong;
 }
 
-/// <summary>
-/// GTA Online's weather schedule: 55 blocks over 384 in-game hours, anchored to the Unix epoch.
-/// </summary>
-// Taken straight from the game's own weather.xml cycle table, so no part of it is guessed any more.
-// Each entry there carries a TimeMult, which CWeather multiplies by msPerCycle (120 real seconds,
-// exactly one in-game hour) to get the entry's length. Those multipliers are stored here as running
-// start hours instead, which is the same table in the form Resolve wants.
+// GTA Online's weather schedule: 173 blocks over 384 in-game hours, anchored to the Unix epoch. Taken
+// straight from the game's own weather.xml cycle table. Each entry there carries a TimeMult, which
+// CWeather multiplies by msPerCycle (120 real seconds, exactly one in-game hour) to get the entry's
+// length. Those multipliers are stored here as running start hours instead.
 public static class WeatherCycle
 {
     private const double EarliestRainHour = 6.0;
@@ -44,7 +41,7 @@ public static class WeatherCycle
 
     private const double ShortestBlockGameHours = 1.0;
 
-    /// <summary>TimeMult is a byte in the game, but nothing in this table goes above five.</summary>
+    // TimeMult is a byte in the game, but nothing in this table goes above five.
     private const double LongestBlockGameHours = 5.0;
 
     private static readonly CycleEntry[] Entries =
@@ -232,8 +229,8 @@ public static class WeatherCycle
 
         var current = Entries[index].Type;
 
-        // Neighbouring entries often repeat a type, so index + 1 would announce a change that never
-        // happens on screen. Skipping to the next different type spans the whole run instead.
+        // Neighbouring entries often repeat a type, so index + 1 would announce a change that never happens
+        // on screen. Skipping to the next different type spans the whole run instead.
         for (var step = 1; step <= Entries.Length; step++)
         {
             var next = Entries[(index + step) % Entries.Length];
@@ -313,9 +310,9 @@ public static class WeatherCycle
         return Entries.Length - 1;
     }
 
-    /// <summary>Checks the table against every structural property the schedule is known to have.</summary>
-    // Returns messages rather than logging, since this assembly has no runtime to log to. The night
-    // rain check is the sensitive one: a mistyped offset usually drags rain into darkness.
+    // Checks the table against every structural property the schedule is known to have. Returns messages
+    // rather than logging, since this assembly has no runtime to log to. The night rain check is the
+    // sensitive one: a mistyped offset usually drags rain into darkness.
     public static IReadOnlyList<string> Validate()
     {
         var problems = new List<string>();

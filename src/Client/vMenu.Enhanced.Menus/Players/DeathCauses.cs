@@ -4,9 +4,8 @@ using vMenu.Enhanced.MenuFramework.Localization;
 
 namespace vMenu.Enhanced.Menus.Players;
 
-/// <summary>How somebody died, when it was not a weapon that did it.</summary>
-// ByKiller is null where naming somebody would read as nonsense. Walking into barbed wire is not
-// something another player does to you, even if they were the reason you ran.
+// How somebody died, when it was not a weapon that did it. ByKiller is null where naming somebody
+// would read as nonsense: walking into barbed wire is not something another player does to you.
 internal sealed class DeathCause(string solo, string? byKiller)
 {
     public string Solo { get; } = solo;
@@ -14,9 +13,7 @@ internal sealed class DeathCause(string solo, string? byKiller)
     public string? ByKiller { get; } = byKiller;
 }
 
-/// <summary>
-/// The game's pseudo weapons, which are how it reports a death nothing was holding.
-/// </summary>
+// The game's pseudo weapons, which are how it reports a death nothing was holding.
 internal static class DeathCauses
 {
     private static readonly (string SpawnName, DeathCause Cause)[] Table =
@@ -40,7 +37,7 @@ internal static class DeathCauses
 
     private static Dictionary<uint, DeathCause>? _byHash;
 
-    /// <summary>The cause this hash describes, or null when it is an ordinary weapon.</summary>
+    // The cause this hash describes, or null when it is an ordinary weapon.
     internal static DeathCause? Find(uint hash) => Index().GetValueOrDefault(hash);
 
     private static Dictionary<uint, DeathCause> Index()

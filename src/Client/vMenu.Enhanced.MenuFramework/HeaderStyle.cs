@@ -23,7 +23,7 @@ public static class HeaderStyle
 
     private static string? _reportedFont;
 
-    /// <summary>Call after <see cref="ClientConfig.Initialize"/>, before the menus are built.</summary>
+    // Call after ClientConfig.Initialize, before the menus are built.
     public static void Initialize()
     {
         ClientConfig.AddEventListenerFor(

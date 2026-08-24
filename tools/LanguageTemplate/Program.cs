@@ -33,7 +33,6 @@ const string Header = """
 // Comments like these are allowed anywhere in the file.
 // Text in {braces} is substituted at runtime, so keep it exactly as it appears.
 
-
 """;
 
 const string DefaultClientFolder = @"build\intermediate\client";
@@ -65,8 +64,8 @@ try
         WriteIndented = true,
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
 
-        // The least escaping available, matching ClientJson. The default encoder turns every
-        // apostrophe, arrow and accent in here into an escape a translator cannot read.
+        // The least escaping available, matching ClientJson. The default encoder turns every apostrophe,
+        // arrow and accent in here into an escape a translator cannot read.
         Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
     };
 
@@ -321,8 +320,8 @@ static IReadOnlyList<LanguageComparison> Compare(string languageFolder, IEnumera
     var known = new HashSet<string>(keys, StringComparer.Ordinal);
     var rows = new List<LanguageComparison>();
 
-    // Case insensitive and comment tolerant, because every one of these files opens with a comment
-    // and was written with camelCase field names.
+    // Case insensitive and comment tolerant, because every one of these files opens with a comment and
+    // was written with camelCase field names.
     var readOptions = new JsonSerializerOptions
     {
         PropertyNameCaseInsensitive = true,
@@ -367,10 +366,9 @@ static IReadOnlyList<LanguageComparison> Compare(string languageFolder, IEnumera
     return rows;
 }
 
-// How much of the English table each shipped language actually covers. Written to a file as well as
-// logged, so a build that skips this tool because nothing localizable changed can still echo the
-// last known numbers without paying to start a process. A JSON copy goes next to it for CI, which
-// wants the numbers and the key names rather than the sentence.
+// Written to a file as well as logged, so a build that skips this tool because nothing localizable
+// changed can still echo the last known numbers without paying to start a process. A JSON copy goes
+// next to it for CI, which wants the numbers and the key names rather than the sentence.
 static void WriteCoverage(IReadOnlyList<LanguageComparison> rows, int total, string coveragePath)
 {
     var lines = new List<string>();
@@ -381,7 +379,7 @@ static void WriteCoverage(IReadOnlyList<LanguageComparison> rows, int total, str
         WriteIndented = true,
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
 
-        // The least escaping available, so a native name such as Français survives into the report.
+        // The least escaping available, so a native name with accents in it survives into the report.
         Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
     };
 

@@ -6,9 +6,6 @@ using vMenu.Enhanced.Serialization;
 
 namespace vMenu.Enhanced.Menus.Teleport;
 
-/// <summary>
-/// This client's copy of the teleport locations, which the server keeps current.
-/// </summary>
 // Held for the whole session rather than fetched when the menu opens: a fetch per open landed its
 // rows several frames after the menu was already drawn. Handlers are registered imperatively because
 // attribute discovery only scans the assembly named as the client_script, and this one is a
@@ -19,14 +16,14 @@ public static class TeleportSync
 
     public static IReadOnlyList<TeleportCategory> Categories => Cached;
 
-    /// <summary>Raised whenever the server sends a new list, including the first one.</summary>
+    // Raised whenever the server sends a new list, including the first one.
     public static event Action? Changed;
 
-    /// <summary>Call before building menus, so a list arriving during startup is not dropped.</summary>
+    // Call before building menus, so a list arriving during startup is not dropped.
     public static void RegisterEventHandlers() =>
         API.OnNetEvent(TeleportEvents.Set, new Action<string>(OnReceived), false);
 
-    /// <summary>Call once this client has its permissions, which decide whether it gets an answer.</summary>
+    // Call once this client has its permissions, which decide whether it gets an answer.
     public static void Request() => API.EmitServer(TeleportEvents.Request);
 
     private static void OnReceived(string payload)

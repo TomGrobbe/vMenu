@@ -5,13 +5,12 @@ using vMenu.Enhanced.MenuFramework.Localization;
 
 namespace vMenu.Enhanced.Menus.Vehicles.Sections;
 
-/// <summary>Opening, closing and ripping off doors.</summary>
 internal static class DoorsSection
 {
-    /// <summary>Anything past this is standing open rather than merely unlatched.</summary>
+    // Anything past this is standing open rather than merely unlatched.
     private const float OpenAngle = 0.1f;
 
-    /// <summary>The door numbers the game uses, in the order they are shown.</summary>
+    // The door numbers the game uses, in the order they are shown.
     private static readonly (int Index, string TextKey)[] Doors =
     [
         (0, Loc.VehicleOptions.DoorFrontLeft),
@@ -71,15 +70,9 @@ internal static class DoorsSection
         return rows;
     }
 
-    /// <summary>
-    /// The doors this vehicle actually has.
-    /// </summary>
-    /// <remarks>
-    /// Asked of the game rather than assumed, because a vehicle that has no seventh door does not
-    /// simply ignore the seventh slot: some models answer for it with the front left door instead.
-    /// Listing all eight regardless is what produced two rows that moved together and disagreed about
-    /// their own state the next time the menu opened.
-    /// </remarks>
+    // Asked of the game rather than assumed, because a vehicle that has no seventh door does not simply
+    // ignore the seventh slot: some models answer for it with the front left door instead. Listing all
+    // eight regardless produced two rows that moved together and disagreed about their own state.
     private static List<(int Index, string TextKey)> Present(int handle)
     {
         var present = new List<(int Index, string TextKey)>();
@@ -137,8 +130,8 @@ internal static class DoorsSection
         };
     }
 
-    // Resolved through the localizer rather than captured, so the confirmation follows a language
-    // change like every other piece of text.
+    // Resolved through the localizer rather than captured, so the confirmation follows a language change
+    // like every other piece of text.
     private static string NameAt(List<(int Index, string TextKey)> present, int index) =>
         index >= 0 && index < present.Count
             ? Localizer.Current.Get(present[index].TextKey)
@@ -197,8 +190,8 @@ internal static class DoorsSection
             Set(door.Index, open);
         }
 
-        // A tick box only re-reads its state when the menu is refreshed, so without this the rows
-        // above would still show whatever they showed before the button was pressed.
+        // A tick box only re-reads its state when the menu is refreshed, so without this the rows above
+        // would still show whatever they showed before the button was pressed.
         SectionRows.Fill(menu, Rows(menu));
     }
 }

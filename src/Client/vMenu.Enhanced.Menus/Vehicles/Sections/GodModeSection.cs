@@ -3,13 +3,8 @@ using vMenu.Enhanced.MenuFramework.Localization;
 
 namespace vMenu.Enhanced.Menus.Vehicles.Sections;
 
-/// <summary>
-/// Which kinds of damage vehicle god mode turns off.
-/// </summary>
-/// <remarks>
-/// Unlike the other sections these rows are stored preferences rather than facts about a vehicle, so
-/// nothing here refills when the player changes what they are driving.
-/// </remarks>
+// Unlike the other sections these rows are stored preferences rather than facts about a vehicle, so
+// nothing here refills when the player changes what they are driving.
 internal static class GodModeSection
 {
     public static void Build(MenuBuilder menu)

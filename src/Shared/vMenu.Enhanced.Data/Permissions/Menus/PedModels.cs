@@ -1,9 +1,6 @@
 namespace vMenu.Enhanced.Data.Permissions.Menus;
 
-/// <summary>
-/// Permissions for the ped models menu. Per category permissions live one container deeper in
-/// <see cref="PedModelCategories"/>.
-/// </summary>
+// Per category permissions live one container deeper, in PedModelCategories.
 [PermissionCategory]
 public static class PedModels
 {

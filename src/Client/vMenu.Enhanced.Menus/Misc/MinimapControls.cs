@@ -11,11 +11,8 @@ using NoClipState = vMenu.Enhanced.NoClip.NoClip;
 
 namespace vMenu.Enhanced.Menus.Misc;
 
-/// <summary>
-/// Trying to mimic the minimap controls from GTAV SP and MP Freemode 
-/// as much as possible using community research as a base, then tweaked
-/// until I was happy.
-/// </summary>
+// Mimics the minimap controls from GTAV singleplayer and freemode as closely as possible, using
+// community research as a base and then tweaked until it felt right.
 public static class MinimapControls
 {
     public const int Off = 0;
@@ -34,15 +31,12 @@ public static class MinimapControls
 
     private const float NoZoom = 1f;
 
-    /// <summary>The two ends of the zoom slider, as multiples of that reach.</summary>
     // The game's own zoom out is 2.1.
     private const float NearestZoom = 1.5f;
 
     private const float FurthestZoom = 6f;
 
-    /// <summary>
-    /// The ranges the game picks between, from <c>CMiniMap_CameraTunables</c>.
-    /// </summary>
+    // The ranges the game picks between, from CMiniMap_CameraTunables.
     private const float RangeToMetres = 5000f;
 
     private const float FootRange = 83f;
@@ -53,14 +47,13 @@ public static class MinimapControls
 
     private const float VehicleIdleWantedRange = 66f;
 
-    /// <summary>How far a vehicle's range falls, and the floor it stops at.</summary>
     private const float SpeedRangeScalar = 0.8f;
 
     private const float VehicleMovingRange = 48f;
 
     private const float InteriorRange = 500f;
 
-    /// <summary>The extra the game gives a plane or helicopter on top of everything else.</summary>
+    // The extra the game gives a plane or helicopter on top of everything else.
     private const float AircraftWidening = 1.8f;
 
     private static TickHandle? _zoom;
@@ -69,12 +62,11 @@ public static class MinimapControls
 
     private static bool _registered;
 
-    /// <summary>A key press is live and has not run out yet.</summary>
     private static bool _temporary;
 
     private static int _expiresAt;
 
-    /// <summary>Whether the bigmap on screen is one this feature turned on.</summary>
+    // Whether the bigmap on screen is one this feature turned on.
     private static bool _expanded;
 
     private static float _glideFrom = NoZoom;
@@ -83,18 +75,11 @@ public static class MinimapControls
 
     private static int _glideStartedAt;
 
-    /// <summary>
-    /// Whether the minimap is currently blown up to the big square one, whoever did it.
-    /// </summary>
-    /// <remarks>
-    /// Asked of the game rather than reported from <see cref="_expanded"/>, because the player can
-    /// also expand it themselves with the game's own control, and something reacting to the bigmap
-    /// wants to know either way. Player blips use it: distant players are kept off the ordinary
-    /// minimap and come back when it opens out, which is what GTA Online does.
-    /// </remarks>
+    // Asked of the game rather than reported from _expanded, because the player can also expand it with
+    // the game's own control and something reacting to the bigmap wants to know either way. Player blips
+    // use it: distant players come back onto the map when it opens out, as GTA Online does.
     public static bool IsBigmapExpanded => Native.IsBigmapActive();
 
-    /// <summary>What the key does: <see cref="Off"/>, <see cref="Expand"/> or <see cref="Zoom"/>.</summary>
     public static int Action
     {
         get => UserDefaults.DisplayMinimapAction.Value;
@@ -112,7 +97,7 @@ public static class MinimapControls
         }
     }
 
-    /// <summary>A slider position, not a zoom value. <see cref="ZoomValue"/> turns it into one.</summary>
+    // A slider position, not a zoom value. ZoomValue turns it into one.
     public static int ZoomAmount
     {
         get => Math.Clamp(UserDefaults.DisplayMinimapZoom.Value, MinZoom, MaxZoom);
@@ -121,8 +106,8 @@ public static class MinimapControls
         {
             UserDefaults.DisplayMinimapZoom.Value = Math.Clamp(value, MinZoom, MaxZoom);
 
-            // Retargeted rather than reapplied, so moving the slider mid press glides to the new
-            // amount instead of cancelling the ten seconds the player is in the middle of.
+            // Retargeted rather than reapplied, so moving the slider mid press glides to the new amount instead
+            // of cancelling the ten seconds the player is in the middle of.
             if (ZoomWanted)
             {
                 GlideTo(ZoomValue(ZoomAmount));
@@ -130,7 +115,6 @@ public static class MinimapControls
         }
     }
 
-    /// <summary>Whether the chosen action is held on permanently, leaving the key nothing to toggle.</summary>
     public static bool AlwaysOn
     {
         get => UserDefaults.DisplayMinimapAlwaysOn.Value;
@@ -143,7 +127,7 @@ public static class MinimapControls
         }
     }
 
-    /// <summary>Call after <see cref="UserDefaults.Initialize"/>, whose store the ticks read.</summary>
+    // Call after UserDefaults.Initialize, whose store the ticks read.
     public static void Initialize()
     {
         if (_registered)
@@ -168,7 +152,6 @@ public static class MinimapControls
             condition: () => _temporary || ExpandWanted);
     }
 
-    /// <summary>Puts the stored preferences into effect, forgetting any key press in flight.</summary>
     public static void Apply()
     {
         _temporary = false;
@@ -196,8 +179,8 @@ public static class MinimapControls
 
     private static void Toggle()
     {
-        // Silent in every case: this is the player's own choice and their own game state, not
-        // something a server refused them.
+        // Silent in every case: this is the player's own choice and their own game state, not something a
+        // server refused them.
         if (Action == Off || AlwaysOn || !CanToggle())
         {
             return;
@@ -216,7 +199,6 @@ public static class MinimapControls
         ApplyWanted();
     }
 
-    /// <summary>The one place that pushes what is wanted into the game.</summary>
     private static void ApplyWanted()
     {
         if (ExpandWanted)
@@ -238,8 +220,8 @@ public static class MinimapControls
     {
         Native.SetRadarZoomToDistance(DefaultReach() * CurrentZoom());
 
-        // Asked for here rather than by whoever ended the zoom, because this is the frame the glide
-        // home lands on and the earliest one it is safe to stop feeding the native.
+        // Asked for here rather than by whoever ended the zoom, because this is the frame the glide home
+        // lands on and the earliest one it is safe to stop feeding the native.
         if (!ZoomWanted && !IsGliding)
         {
             _zoom?.Reevaluate();
@@ -257,8 +239,8 @@ public static class MinimapControls
             return;
         }
 
-        // The game drops the bigmap on its own after a respawn or a switch, so what was asked for is
-        // asked for again rather than assumed to have stuck.
+        // The game drops the bigmap on its own after a respawn or a switch, so what was asked for is asked
+        // for again rather than assumed to have stuck.
         if (ExpandWanted && !Native.IsRadarHidden() && !Native.IsBigmapActive())
         {
             SetBigmap(true);
@@ -276,16 +258,15 @@ public static class MinimapControls
 
     private static void GlideTo(float zoom)
     {
-        // Nothing to glide to. Worth the check because a pointless one would still run the tick for
-        // its length, and every frame of it overrides the radar and clears whatever zoom another
-        // resource had set.
+        // Nothing to glide to. Worth the check because a pointless one would still run the tick for its
+        // length, and every frame of it overrides the radar and clears whatever zoom another resource set.
         if (!IsGliding && Math.Abs(_glideTo - zoom) < 0.001f)
         {
             return;
         }
 
-        // From where the radar actually is, not from where the last glide was headed, so changing
-        // your mind halfway turns around instead of jumping back to the start.
+        // From where the radar actually is, not from where the last glide was headed, so changing your mind
+        // halfway turns around instead of jumping back to the start.
         _glideFrom = CurrentZoom();
         _glideTo = zoom;
         _glideStartedAt = Native.GetGameTimer();
@@ -306,7 +287,6 @@ public static class MinimapControls
         return _glideFrom + ((_glideTo - _glideFrom) * (t * t * (3f - (2f * t))));
     }
 
-    /// <summary>How far the radar would reach this frame if nothing were touching it, in metres (estimated).</summary>
     private static float DefaultReach()
     {
         var ped = Native.PlayerPedId();

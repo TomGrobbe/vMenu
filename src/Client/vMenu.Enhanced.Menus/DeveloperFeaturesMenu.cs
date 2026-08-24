@@ -8,7 +8,6 @@ using DeveloperFeaturesSetting = vMenu.Enhanced.Data.Configuration.Settings.Deve
 
 namespace vMenu.Enhanced.Menus;
 
-/// <summary>Debugging overlays for people building content on the server.</summary>
 // Gated by a convar, not a permission: an owner turns this on for the server rather than granting it
 // to a person. Hidden rather than locked while off, so a server that never wanted it does not
 // advertise it. The items only write DeveloperFeaturesState, which DeveloperOverlay watches.
@@ -115,8 +114,8 @@ public sealed class DeveloperFeaturesMenu : MenuDefinition
             },
         });
 
-        // Sits in this menu for convenience only. It answers to neither the gate above nor a
-        // permission, so its state is read live: the toggle command can flip it while the menu is open.
+        // Sits in this menu for convenience only. It answers to neither the gate above nor a permission, so
+        // its state is read live: the toggle command can flip it while the menu is open.
         menu.Entries.Add(new CheckboxEntry
         {
             Text = MenuText.Key(Loc.DeveloperFeatures.TicksOverlay),
@@ -125,8 +124,8 @@ public sealed class DeveloperFeaturesMenu : MenuDefinition
             OnChanged = changed => TickOverlay.Set(changed.Checked),
         });
 
-        // Here for convenience too, and read live for the same reason: its own command can flip it
-        // while this menu is open.
+        // Here for convenience too, and read live for the same reason: its own command can flip it while
+        // this menu is open.
         menu.Entries.Add(new CheckboxEntry
         {
             Text = MenuText.Key(Loc.DeveloperFeatures.PointingProbe),

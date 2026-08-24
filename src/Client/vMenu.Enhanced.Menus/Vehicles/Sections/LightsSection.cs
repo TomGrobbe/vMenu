@@ -6,7 +6,6 @@ using vMenu.Enhanced.Menus.Vehicles.Appearance;
 
 namespace vMenu.Enhanced.Menus.Vehicles.Sections;
 
-/// <summary>Xenon headlights, and what colour they shine.</summary>
 internal static class LightsSection
 {
     public static void Build(MenuBuilder menu)
@@ -54,8 +53,8 @@ internal static class LightsSection
 
     private static ListEntry ColorRow()
     {
-        // The headlights the vehicle came with are not one of the thirteen, so they are added at the
-        // end and mapped to the value the game uses for them.
+        // The headlights the vehicle came with are not one of the thirteen, so they are added at the end and
+        // mapped to the value the game uses for them.
         var options = new List<MenuText>(VehicleLightColors.All.Count + 1);
 
         foreach (var color in VehicleLightColors.All)
@@ -97,8 +96,8 @@ internal static class LightsSection
                     return;
                 }
 
-                // A colour mixed by hand sits on top of the index and would hide whatever is picked
-                // here, so it goes first.
+                // A colour mixed by hand sits on top of the index and would hide whatever is picked here, so it
+                // goes first.
                 Native.ClearVehicleXenonLightsCustomColor(handle);
                 Native.SetVehicleHeadlightsColour(handle, changed.NewIndex);
             },
@@ -122,8 +121,8 @@ internal static class LightsSection
             }
             catch (Exception)
             {
-                // The generated wrapper reads all three output slots whether or not the game filled
-                // them, and having no custom colour is the normal case rather than an error.
+                // The generated wrapper reads all three output slots whether or not the game filled them, and having
+                // no custom colour is the normal case rather than an error.
                 return null;
             }
         },

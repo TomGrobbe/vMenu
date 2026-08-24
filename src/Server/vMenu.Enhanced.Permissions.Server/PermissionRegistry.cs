@@ -5,10 +5,6 @@ using vMenu.Enhanced.Logging;
 
 namespace vMenu.Enhanced.Permissions.Server;
 
-/// <summary>
-/// Every known permission: discovered from the data assembly at startup, extended at runtime by
-/// configuration, and shaped into the tree <see cref="ServerPermissions"/> walks.
-/// </summary>
 public static class PermissionRegistry
 {
     private const string DataNamespaceMarker = ".Data.Permissions";
@@ -16,20 +12,16 @@ public static class PermissionRegistry
     private static readonly Dictionary<string, PermissionNode> Nodes = new(StringComparer.OrdinalIgnoreCase);
     private static readonly List<PermissionNode> RootNodes = [];
 
-    /// <summary>
-    /// Caches tree topology, which never changes after startup, and never a permission result, so
-    /// a live ACE change is picked up by the next check.
-    /// </summary>
+    // Caches tree topology, which never changes after startup, and never a permission result, so a live
+    // ACE change is picked up by the next check.
     private static readonly Dictionary<string, string[]> ChainCache = new(StringComparer.OrdinalIgnoreCase);
 
     public static IReadOnlyList<PermissionNode> Roots => RootNodes;
 
     public static int Count => Nodes.Count;
 
-    /// <param name="assembly">
-    /// Passed explicitly rather than scanning loaded assemblies, so discovery does not depend on
-    /// load order.
-    /// </param>
+    // The assembly is passed explicitly rather than scanning loaded ones, so discovery does not depend on
+    // load order.
     public static void Build(Assembly assembly)
     {
         Nodes.Clear();
@@ -55,9 +47,8 @@ public static class PermissionRegistry
         Log.Debug($"[Permissions] Registered {Nodes.Count} permissions across {RootNodes.Count} roots.");
     }
 
-    /// <summary>Registers a permission whose name comes from configuration or a plugin.</summary>
-    /// <param name="source">Where it came from, named in the generated example.</param>
-    /// <param name="staffOnly">Marks it staff only on top of whatever the parent already imposes.</param>
+    // source is what names it in the generated example. staffOnly marks it staff only on top of whatever
+    // the parent already imposes.
     public static bool RegisterDynamic(string permission, string source, bool staffOnly = false)
     {
         if (!PermissionPath.IsValidPermission(permission))
@@ -90,8 +81,8 @@ public static class PermissionRegistry
 
         parent.StructuralChildren.Add(node);
 
-        // Re-sorted because this runs after Build already ordered the tree, and the generated
-        // example would otherwise list these in whatever order the config file happened to use.
+        // Re-sorted because this runs after Build already ordered the tree, and the generated example would
+        // otherwise list these in whatever order the config file happened to use.
         parent.StructuralChildren.Sort(static (left, right) => string.CompareOrdinal(left.Name, right.Name));
 
         Nodes[permission] = node;
@@ -101,13 +92,8 @@ public static class PermissionRegistry
         return true;
     }
 
-    /// <summary>
-    /// Drops a runtime permission and everything registered underneath it, for a plugin that has
-    /// stopped or is about to declare a different set.
-    /// </summary>
-    /// <returns>How many permissions went.</returns>
-    // Only what RegisterDynamic put there. A permission vMenu declares itself has no source, and
-    // that part of the tree is fixed for the lifetime of the resource.
+    // Only what RegisterDynamic put there. A permission vMenu declares itself has no source, and that
+    // part of the tree is fixed for the lifetime of the resource.
     public static int UnregisterDynamic(string permission)
     {
         if (!Nodes.TryGetValue(permission, out var node) || node.Source is null)
@@ -158,11 +144,8 @@ public static class PermissionRegistry
     public static bool TryGet(string permission, out PermissionNode? node) =>
         Nodes.TryGetValue(permission, out node);
 
-    /// <summary>
-    /// Every permission that grants <paramref name="permission"/>, itself included: container
-    /// grants nearest first, then cross-tree parents, then <see cref="Global.Everything"/> last so
-    /// the grant a server owner actually wrote is usually found within a probe or two.
-    /// </summary>
+    // Container grants nearest first, then cross-tree parents, then Global.Everything last, so the grant
+    // a server owner actually wrote is usually found within a probe or two.
     public static string[] GetAncestorChain(string permission)
     {
         if (ChainCache.TryGetValue(permission, out var cached))
@@ -187,10 +170,8 @@ public static class PermissionRegistry
         }
     }
 
-    /// <summary>
-    /// One branch of the tree, the named permission first and depths counted from it rather than
-    /// from the root. For a file that describes one plugin instead of the whole of vMenu.
-    /// </summary>
+    // Depths are counted from the named permission rather than from the root, for a file that describes
+    // one plugin instead of the whole of vMenu.
     public static IEnumerable<(PermissionNode Node, int Depth)> EnumerateSubtree(string permission) =>
         Nodes.TryGetValue(permission, out var node) ? Walk(node, 0) : [];
 
@@ -281,9 +262,9 @@ public static class PermissionRegistry
                 discovered.Add((value, category.AdditionalParents, isStaffOnly));
             }
 
-            // A single-permission category has nothing to group, so no container grant is expected.
-            // Neither does a category sitting straight on the root: there is no container above the
-            // root to name in a grant, and Global.Everything already covers everything there.
+            // A single-permission category has nothing to group, so no container grant is expected. Neither does
+            // a category sitting straight on the root: there is no container above it to name in a grant, and
+            // Global.Everything already covers everything there.
             var isRootCategory = prefix.Equals(PermissionPath.Root, StringComparison.OrdinalIgnoreCase);
 
             if (!hasContainerGrant && declaredInCategory > 1 && !isRootCategory)

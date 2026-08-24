@@ -4,24 +4,18 @@ using vMenu.Enhanced.BrokenNatives;
 
 namespace vMenu.Enhanced.Menus.Vehicles;
 
-/// <summary>
-/// The spawn name of a vehicle model, recovered from its hash.
-/// </summary>
-/// <remarks>
-/// <c>GetDisplayNameFromVehicleModel</c> is not a spawn name. It returns the model's game name field,
-/// which is a fixed size buffer, so a longer name comes back cut short: <c>polgreenwood</c> reads as
-/// <c>polgreenw</c>, and hashing that names a model the game has never heard of. The hash is the only
-/// dependable identity a vehicle has, so anything that needs the name asks for it by hash here.
-/// </remarks>
+// GetDisplayNameFromVehicleModel is not a spawn name. It returns the model's game name field, which
+// is a fixed size buffer, so a longer name comes back cut short: polgreenwood reads as polgreenw, and
+// hashing that names a model the game has never heard of. The hash is the only dependable identity a
+// vehicle has, so anything that needs the name asks for it by hash here.
 public static class VehicleModelNames
 {
     private static Dictionary<uint, string>? _byHash;
 
-    /// <summary>The spawn name for a hash, or <paramref name="fallback"/> when this game has no such model.</summary>
+    // The spawn name for a hash, or the fallback when this game has no such model.
     public static string Resolve(uint hash, string fallback) =>
         Index().TryGetValue(hash, out var name) ? name : fallback;
 
-    /// <inheritdoc cref="Resolve(uint, string)"/>
     public static string Resolve(uint hash) => Resolve(hash, Native.GetDisplayNameFromVehicleModel(hash));
 
     private static Dictionary<uint, string> Index()

@@ -8,13 +8,9 @@ using vMenu.Enhanced.Menus.Vehicles.Appearance;
 
 namespace vMenu.Enhanced.Menus.Vehicles.Sections;
 
-/// <summary>
-/// The optional parts a vehicle was built with: push bars, roof racks, light bars and the like.
-/// </summary>
-/// <remarks>
-/// The game has no name for any of them, only a number, so that is what the rows show. Which part a
-/// number turns out to be is different on every vehicle.
-/// </remarks>
+// The optional parts a vehicle was built with: push bars, roof racks, light bars and the like. The
+// game has no name for any of them, only a number, so that is what the rows show, and which part a
+// number turns out to be is different on every vehicle.
 internal static class ExtrasSection
 {
     public static void Build(MenuBuilder menu)

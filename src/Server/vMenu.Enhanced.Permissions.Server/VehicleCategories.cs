@@ -7,11 +7,9 @@ using vMenu.Enhanced.Logging;
 
 namespace vMenu.Enhanced.Permissions.Server;
 
-/// <summary>
-/// Vehicle categories a server owner defined, which take their models out of the game class they
-/// would otherwise fall in. Each one gets a permission of its own, registered next to the built in
-/// category permissions so it behaves exactly like them.
-/// </summary>
+// Vehicle categories a server owner defined, which take their models out of the game class they
+// would otherwise fall in. Each one gets a permission of its own, registered next to the built in
+// category permissions so it behaves exactly like them.
 public static class VehicleCategories
 {
     private const string ConfigFile = "config/vehicle-categories.json";
@@ -28,10 +26,7 @@ public static class VehicleCategories
     private static string[] _models = [];
     private static string[] _categories = [];
 
-    /// <summary>
-    /// Reads the config file and registers a permission for every category in it. A missing or
-    /// unreadable file just means every vehicle stays in its game class.
-    /// </summary>
+    // A missing or unreadable file just means every vehicle stays in its game class.
     public static void LoadAndRegister()
     {
         CategoryByModel.Clear();
@@ -70,17 +65,16 @@ public static class VehicleCategories
         }
     }
 
-    /// <summary>The category a model was moved into, or null when it is still in its game class.</summary>
+    // The category a model was moved into, or null when it is still in its game class.
     public static string? CategoryOfModel(string modelName) =>
         CategoryByModel.TryGetValue(modelName, out var category) ? category : null;
 
     public static string PermissionOfCategory(string categoryName) =>
         VehicleSpawnerCategories.ForCustom(CategoryName.ToPermissionSegment(categoryName));
 
-    /// <summary>Every categorised model, for sending to clients. Aligned with <see cref="GetCategoryNames"/>.</summary>
+    // Every categorised model, for sending to clients. Aligned with GetCategoryNames.
     public static string[] GetCategorisedModels() => _models;
 
-    /// <summary>The category each model of <see cref="GetCategorisedModels"/> belongs to.</summary>
     public static string[] GetCategoryNames() => _categories;
 
     private static void Register(JsonElement root)

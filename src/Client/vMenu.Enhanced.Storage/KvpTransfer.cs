@@ -30,8 +30,8 @@ public static class KvpTransfer
             entries.Add(new KvpBundleEntry { Key = key, Raw = raw });
         }
 
-        // CreatedAt is left for JS to fill out, because C# has no access to DateTime thanks to the
-        // overly protective sandboxing and in-game Natives return the wrong UTC time :(
+        // CreatedAt is left for JS to fill out, because the sandbox gives C# no access to DateTime and the
+        // in-game natives return the wrong UTC time.
         return new KvpBundle
         {
             Format = KvpBundle.FormatName,

@@ -17,16 +17,13 @@ using MiscSettingsPermissions = vMenu.Enhanced.Data.Permissions.Menus.MiscSettin
 
 namespace vMenu.Enhanced.Actions.Server.Events;
 
-/// <summary>
-/// Tells everybody when somebody arrives on the server or leaves it, and optionally writes a log entry about it to the server console.
-/// </summary>
 public static class JoinLeaveBroadcast
 {
     private const string DroppedEvent = "playerDropped";
 
     private const long TickMs = 1000;
 
-    // Used for not scanning too many players each pass to not cause server hitches
+    // Keeps one pass from scanning so many players that the server hitches.
     private const int ScannedPerPass = 16;
 
     // Long enough for a real kick reason, short enough not to fill the notification stack.
@@ -106,9 +103,8 @@ public static class JoinLeaveBroadcast
             return;
         }
 
-        // A reason belonging to a server id nothing is tracking any more. Nothing will ever come to
-        // collect it, so it goes now rather than waiting around to attach itself to whoever inherits
-        // the server id.
+        // A reason belonging to a server id nothing is tracking any more. Nothing will ever come to collect
+        // it, so it goes now rather than attaching itself to whoever inherits the server id.
         List<int>? stale = null;
 
         foreach (var serverId in Reasons.Keys)
@@ -130,7 +126,6 @@ public static class JoinLeaveBroadcast
         }
     }
 
-    // Somebody is gone.
     private static void Depart(List<ConnectedPlayer> players, int serverId, KnownPlayer known)
     {
         if (known.Arrived)
@@ -156,10 +151,9 @@ public static class JoinLeaveBroadcast
             return;
         }
 
-        // The first pass records who is already here without reporting any of it, so restarting the
-        // resource under a running server does not read as everybody arriving at once. It ignores the
-        // per pass ceiling on purpose: catching up a slice at a time would report the stragglers as
-        // arrivals while it worked through them.
+        // The first pass records who is already here without reporting any of it, so restarting the resource
+        // under a running server does not read as everybody arriving at once. It ignores the per pass ceiling
+        // on purpose: catching up a slice at a time would report the stragglers as arrivals.
         var seeding = !_seeded;
 
         var limit = seeding ? players.Count : Math.Min(ScannedPerPass, players.Count);
@@ -186,8 +180,8 @@ public static class JoinLeaveBroadcast
 
         if (known is null)
         {
-            // Never seen before, or the slot just changed hands. Either way the arrival check decides
-            // whether this is somebody who is here or somebody who is still on their way.
+            // Never seen before, or the slot just changed hands. Either way the arrival check decides whether
+            // this is somebody who is here or somebody who is still on their way.
             Reasons.Remove(player.ServerId);
 
             var arrived = HasArrived(handle);
@@ -230,7 +224,6 @@ public static class JoinLeaveBroadcast
         Record(player.ServerId, player.Name, "joined the server");
     }
 
-
     // Whether this server id still belongs to the person it was recorded for.
     private static bool StillTheSamePerson(
         List<ConnectedPlayer> players,
@@ -246,7 +239,7 @@ public static class JoinLeaveBroadcast
             return true;
         }
 
-        // Identifiers may not be ready yet, just assume it's the same person for now until we can actually verify
+        // Identifiers may not be ready yet, so assume it is the same person until that can be checked.
         if (!real)
         {
             return true;
@@ -271,8 +264,8 @@ public static class JoinLeaveBroadcast
         return false;
     }
 
-
-    // Somebody still on the loading screen holds a server id without having a character yet, that's the difference between connecting and having arrived.
+    // Somebody still on the loading screen holds a server id without having a character yet, which is
+    // the difference between connecting and having arrived.
     private static bool HasArrived(string handle)
     {
         var ped = Native.GetPlayerPed(handle);
@@ -280,7 +273,7 @@ public static class JoinLeaveBroadcast
         return ped != 0 && Native.DoesEntityExist(ped);
     }
 
-    // Server id's are now reused, so we use identifiers to identify unique players
+    // Server ids are reused, so identifiers are what identify a unique player.
     private static string Identify(string handle, ConnectedPlayer player, out bool real)
     {
         var count = Native.GetNumPlayerIdentifiers(handle);
@@ -302,7 +295,6 @@ public static class JoinLeaveBroadcast
         return identity.ToString();
     }
 
-    // server console logging (optional)
     private static void Record(int serverId, string name, string what, string? reason = null)
     {
         if (!ServerConfig.Value(JoinLeaveSettings.LogToConsole))
@@ -348,7 +340,6 @@ public static class JoinLeaveBroadcast
         }
     }
 
-
     private static void OnPlayerDropped([FromSource] int source, string? reason = null)
     {
         if (!_reportedDrop)
@@ -374,18 +365,18 @@ public static class JoinLeaveBroadcast
         Reasons[source] = text.Length > MaxReasonLength ? text[..MaxReasonLength] : text;
     }
 
-    // A plain class rather than a record, matching the rest of this codebase: the generated equality
-    // routes through EqualityComparer<string>.Default, which the sandbox refuses to load.
+    // A class rather than a record: generated equality routes through
+    // EqualityComparer<string>.Default, which the sandbox refuses to load.
     private sealed class KnownPlayer(string identity, string name, bool arrived, bool provisional)
     {
         public string Identity { get; } = identity;
 
         public string Name { get; } = name;
 
-        /// <summary>False while they are still on their way in.</summary>
+        // False while they are still on their way in.
         public bool Arrived { get; } = arrived;
 
-        /// <summary>Whether <see cref="Identity"/> is the name based stand in rather than identifiers.</summary>
+        // Whether Identity is the name based stand in rather than identifiers.
         public bool Provisional { get; } = provisional;
 
         public KnownPlayer NowArrived() => new(Identity, Name, arrived: true, Provisional);

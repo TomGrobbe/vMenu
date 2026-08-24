@@ -4,11 +4,9 @@ using vMenu.Enhanced.Logging;
 
 namespace vMenu.Enhanced.MenuFramework.Localization;
 
-/// <summary>
-/// Reports localization gaps once at startup.
-/// </summary>
-// A Loc constant guarantees the key exists in code, not that any table has text for it. Without this
-// the first sign of a gap is a marker in a menu nobody opened yet.
+// Reports localization gaps once at startup. A Loc constant guarantees the key exists in code, not
+// that any table has text for it, and without this the first sign of a gap is a marker in a menu
+// nobody opened yet.
 public static class LocalizationSelfCheck
 {
     public static void Run()
@@ -29,8 +27,8 @@ public static class LocalizationSelfCheck
                 continue;
             }
 
-            // An entry nobody names is dead weight at best, and a mistyped key at worst — one that
-            // silently never resolves, because the lookup asks for the constant, not this string.
+            // An entry nobody names is dead weight at best, and a mistyped key at worst: one that silently never
+            // resolves, because the lookup asks for the constant, not this string.
             var orphans = table.Keys.Where(key => !keys.Contains(key)).ToArray();
 
             if (orphans.Length > 0)

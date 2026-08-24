@@ -1,6 +1,6 @@
 namespace vMenu.Enhanced.Data.PedModels;
 
-/// <summary>A group of ped models, as the server read them out of the config file.</summary>
+// A group of ped models, as the server read them out of the config file.
 public sealed class PedModelCategory
 {
     public string Name { get; set; } = string.Empty;
@@ -12,6 +12,6 @@ public sealed class PedModelEntry
 {
     public string Model { get; set; } = string.Empty;
 
-    /// <summary>What shows next to the model name in the menu.</summary>
+    // What shows next to the model name in the menu.
     public string Label { get; set; } = string.Empty;
 }

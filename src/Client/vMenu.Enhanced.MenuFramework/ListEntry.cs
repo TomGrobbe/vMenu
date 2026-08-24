@@ -4,16 +4,14 @@ using vMenu.Enhanced.MenuFramework.Localization;
 
 namespace vMenu.Enhanced.MenuFramework;
 
-/// <summary>
-/// A row whose value is chosen from a fixed list.
-/// </summary>
-// Options are MenuText so they translate. Values that are data rather than prose, such as model
-// names, must use MenuText.Literal or a language change reports them as missing keys.
+// A row whose value is chosen from a fixed list. Options are MenuText so they translate. Values that
+// are data rather than prose, such as model names, must use MenuText.Literal or a language change
+// reports them as missing keys.
 public sealed class ListEntry : MenuEntry<MenuListItem>
 {
     public required IReadOnlyList<MenuText> Options { get; init; }
 
-    /// <summary>The starting selection. Ignored when <see cref="ReadSelectedIndex"/> is set.</summary>
+    // The starting selection. Ignored when ReadSelectedIndex is set.
     public int SelectedIndex { get; init; }
 
     public Func<int>? ReadSelectedIndex { get; init; }

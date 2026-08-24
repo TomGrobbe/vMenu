@@ -4,22 +4,15 @@ using vMenu.Enhanced.Menus.Appearance;
 
 namespace vMenu.Enhanced.Menus.Vehicles.Appearance;
 
-/// <summary>
-/// Compares what a vehicle was asked to look like against what it actually looks like.
-/// </summary>
-/// <remarks>
-/// Written out field by field on purpose. Reflection would drift out of step with the model quietly,
-/// and the names in the output are meant to be read by a person rather than to match a property.
-/// </remarks>
+// Compares what a vehicle was asked to look like against what it actually looks like. Written out
+// field by field on purpose: reflection would drift out of step with the model quietly, and the names
+// in the output are meant to be read by a person rather than to match a property.
 public static class VehicleAppearanceDiff
 {
-    /// <summary>Floats the game rounds or clamps, so an exact match is not a fair test.</summary>
+    // Floats the game rounds or clamps, so an exact match is not a fair test.
     private const float FloatTolerance = 0.02f;
 
-    /// <summary>
-    /// The game stores dirt in whole steps up to fifteen, so anything within half a step is the
-    /// same dirt.
-    /// </summary>
+    // The game stores dirt in whole steps up to fifteen, so anything within half a step is the same dirt.
     private const float DirtTolerance = 0.5f;
 
     public static List<AppearanceDifference> Compare(VehicleAppearance expected, VehicleAppearance actual)
@@ -152,8 +145,8 @@ public static class VehicleAppearanceDiff
             }
         }
 
-        // A slot the vehicle has now but nothing was recorded for. Worth saying, since it means the
-        // two vehicles do not have the same set of slots.
+        // A slot the vehicle has now but nothing was recorded for. Worth saying, since it means the two
+        // vehicles do not have the same set of slots.
         foreach (var mod in actual.Mods)
         {
             if (HasSlot(expected.Mods, mod.Slot))

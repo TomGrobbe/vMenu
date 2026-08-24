@@ -1,13 +1,9 @@
-﻿namespace vMenu.Enhanced.MenuFramework.Localization.Languages;
+namespace vMenu.Enhanced.MenuFramework.Localization.Languages;
 
-/// <summary>
-/// The English strings, and the fallback for every other language.
-/// </summary>
-/// <remarks>
-/// Every other language lives in a JSON file under <c>assets/enhanced/language/</c>. If you change a
-/// string here, please update those files too where you can. Machine translation is fine, they are a
-/// best effort and the community is very welcome to improve them.
-/// </remarks>
+/// <summary>The English strings, and the fallback for every other language.</summary>
+/// <remarks>Every other language lives in a JSON file under <c>assets/enhanced/language/</c>. If you
+/// change a string here, please update those files too where you can. Machine translation is fine,
+/// they are a best effort and the community is very welcome to improve them.</remarks>
 // Required to be complete. Anything missing renders as a marker in game and is reported at startup.
 internal static class EnglishStrings
 {

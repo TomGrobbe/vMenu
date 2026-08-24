@@ -11,14 +11,9 @@ using VehicleOptionsSettings = vMenu.Enhanced.Data.Configuration.Settings.Vehicl
 
 namespace vMenu.Enhanced.Menus.Vehicles;
 
-/// <summary>
-/// Nothing hurts the vehicle the player is driving.
-/// </summary>
-/// <remarks>
-/// Almost everything here is a flag the game remembers, so it is written when something moves rather
-/// than held down by a loop. The three that are not flags, restoring engine health, taking decals off
-/// and repairing, are actions, which is what the damage event is for.
-/// </remarks>
+// Almost everything here is a flag the game remembers, so it is written when something moves rather
+// than held down by a loop. The three that are not flags, restoring engine health, taking decals off
+// and repairing, are actions, which is what the damage event is for.
 public static class VehicleGodMode
 {
     private const float FullEngineHealth = 1000f;
@@ -30,7 +25,7 @@ public static class VehicleGodMode
 
     private static bool _watching;
 
-    /// <summary>The vehicle the flags are written on, so leaving it can take them back off.</summary>
+    // The vehicle the flags are written on, so leaving it can take them back off.
     private static int _written;
 
     private static int _tyresRemembered;
@@ -57,7 +52,7 @@ public static class VehicleGodMode
 
     private static bool IsAllowed => ClientPermissions.IsAllowed(VehicleOptionsPermissions.God);
 
-    /// <summary>Call once at startup, after <see cref="ClientConfig.Initialize"/>.</summary>
+    // Call once at startup, after ClientConfig.Initialize.
     public static void Initialize()
     {
         ClientPermissions.PermissionsChanged += Apply;
@@ -90,9 +85,8 @@ public static class VehicleGodMode
 
     public static void SetAutoRepair(bool on) => Set(UserDefaults.VehicleGodAutoRepair, on);
 
-    /// <inheritdoc cref="PlayerGodMode.Reapply"/>
-    // The recorded handle is dropped rather than released, because whatever reset the flags has
-    // already put that vehicle back the way it found it.
+    // The recorded handle is dropped rather than released, because whatever reset the flags has already
+    // put that vehicle back the way it found it.
     public static void Reapply()
     {
         _written = 0;
@@ -145,12 +139,12 @@ public static class VehicleGodMode
 
         _written = vehicle;
 
-        // Not awaited: everything a caller of Apply needs has already happened, and the repair is a
-        // guarded no-op on a vehicle that has gone away by the time its delay is up.
+        // Not awaited: everything a caller of Apply needs has already happened, and the repair is a guarded
+        // no-op on a vehicle that has gone away by the time its delay is up.
         _ = RepairIfWanted(vehicle);
     }
 
-    /// <summary>The one place that touches a vehicle. Off writes the game's defaults, which is the undo.</summary>
+    // The one place that touches a vehicle. Off writes the game's defaults, which is the undo.
     private static void Write(int vehicle, bool on)
     {
         // Handles are recycled, so one recorded before a delete can name something else entirely.
@@ -240,7 +234,7 @@ public static class VehicleGodMode
         Native.SetVehicleTyresCanBurst(vehicle, _tyresCouldBurst);
     }
 
-    /// <summary>Silent, unlike the repair option. A notification per collision would be intolerable.</summary>
+    // Silent, unlike the repair option. A notification per collision would be intolerable.
     private static Task RepairIfWanted(int vehicle)
     {
         if (!AutoRepair || !Native.DoesEntityExist(vehicle) || !Native.IsVehicleDamaged(vehicle))
@@ -272,14 +266,13 @@ public static class VehicleGodMode
         LocalVehicleTicks.VehicleDamagedAsync -= OnDamagedAsync;
     }
 
-    // The combined event rather than three of them: it covers entering, leaving and swapping alike.
-    // A seat change arrives here too, with the same vehicle either side, which Apply reads as nothing
-    // to release and a rewrite of what is already there.
+    // The combined event rather than three of them: it covers entering, leaving and swapping alike. A
+    // seat change arrives here too, with the same vehicle either side, which Apply reads as nothing to
+    // release and a rewrite of what is already there.
     private static void OnChanged(VehicleChanged _) => Apply();
 
     // Rewrites every flag, not just the repairs: ownership changing hands can drop them, and the first
-    // hit that lands is the cheapest place to notice. Async so the repair's second pass is awaited
-    // rather than left to nobody.
+    // hit that lands is the cheapest place to notice. Async so the repair's second pass is awaited.
     private static Task OnDamagedAsync(VehicleDamaged damage)
     {
         if (!Enabled || damage.Vehicle != _written)

@@ -7,15 +7,10 @@ using vMenu.Enhanced.MenuFramework.Localization;
 
 namespace vMenu.Enhanced.Menus.Vehicles;
 
-/// <summary>
-/// The shared way in for options that act on the vehicle the player is driving themselves.
-/// </summary>
 public static class OwnVehicle
 {
-    /// <summary>
-    /// The vehicle the player is driving, or null after telling them why there is not one. The
-    /// refusal is worded per option, so each one names what it was about to do.
-    /// </summary>
+    // The vehicle the player is driving, or null after telling them why there is not one. The refusal is
+    // worded per option, so each one names what it was about to do.
     public static Vehicle? RequireDriven(string noVehicleKey, string notDriverKey)
     {
         var ped = API.Players.Local.Ped;
@@ -45,9 +40,9 @@ public static class OwnVehicle
         return ped.Vehicle;
     }
 
-    /// <summary>The handle of the vehicle the player is driving, or 0. Silent, unlike <see cref="RequireDriven"/>.</summary>
-    // A menu that opens on a row explaining the problem beats one that fires a notification the
-    // moment it appears, and a feature applying itself in the background has nobody to tell at all.
+    // The handle of the vehicle the player is driving, or 0. Silent, unlike RequireDriven: a menu that
+    // opens on a row explaining the problem beats one that fires a notification the moment it appears,
+    // and a feature applying itself in the background has nobody to tell at all.
     public static int Driven()
     {
         var ped = API.Players.Local.Ped;

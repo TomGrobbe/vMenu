@@ -9,9 +9,9 @@ using TimeOptionsSettings = vMenu.Enhanced.Data.Configuration.Settings.TimeOptio
 
 namespace vMenu.Enhanced.Menus.World;
 
-/// <summary>The preset times an owner listed in the convar, shaped as the list a menu row holds.</summary>
-// A live view rather than a snapshot taken while the menu is built: the row is created once at start
-// up, so re-reading the convar here is what lets an owner change the presets without every player
+// The preset times an owner listed in the convar, shaped as the list a menu row holds. A live view
+// rather than a snapshot taken while the menu is built: the row is created once at start up, so
+// re-reading the convar here is what lets an owner change the presets without every player
 // reconnecting.
 internal sealed class TimePresetOptions : IReadOnlyList<MenuText>
 {
@@ -50,7 +50,7 @@ internal sealed class TimePresetOptions : IReadOnlyList<MenuText>
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-    /// <summary>The time behind an option, or null once the list has moved on under the selection.</summary>
+    // The time behind an option, or null once the list has moved on under the selection.
     internal int? SecondOfDay(int index)
     {
         Sync();

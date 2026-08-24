@@ -12,15 +12,13 @@ using vMenu.Enhanced.Ticks;
 
 namespace vMenu.Enhanced.Menus;
 
-/// <summary>Turns stored preferences into applied state, and back when the player changes one.</summary>
-// Sits here rather than in the storage module so that stays a store, knowing how to persist a value
-// but not what it means.
+// Turns stored preferences into applied state, and back when the player changes one. Sits here
+// rather than in the storage module so that stays a store, knowing how to persist a value but not
+// what it means.
 public static class UserPreferences
 {
-    /// <summary>
-    /// Applies everything stored. Call before the menus are built: the language decides what every
-    /// item is labelled.
-    /// </summary>
+    // Applies everything stored. Call before the menus are built: the language decides what every item
+    // is labelled.
     public static void Restore()
     {
         RestoreLanguage();
@@ -42,7 +40,7 @@ public static class UserPreferences
         WeatherForecast.Restore();
     }
 
-    /// <summary>Whether the menu is currently right aligned. The live value, not the stored one.</summary>
+    // The live value, not the stored one.
     public static bool IsRightAligned =>
         MenuController.MenuAlignment == MenuController.MenuAlignmentOption.Right;
 
@@ -64,8 +62,8 @@ public static class UserPreferences
     public static void SetJoinLeaveNotificationsEnabled(bool enabled) =>
         UserDefaults.MiscJoinLeaveNotifications.Value = enabled;
 
-    // Both natives are plain flags the game remembers, so they are set when the value moves rather
-    // than held down by a tick.
+    // Both natives are plain flags the game remembers, so they are set when the value moves rather than
+    // held down by a tick.
     public static void SetIdleCameraDisabled(bool disabled)
     {
         Native.DisableIdleCamera(disabled);
@@ -100,16 +98,16 @@ public static class UserPreferences
 
         Localizer.TrySetLanguage(LanguageId.English);
 
-        // Always resolves in English, since English is what the fallback just selected. Deferred
-        // because this runs before the player has spawned.
+        // Always resolves in English, since English is what the fallback just selected. Deferred because
+        // this runs before the player has spawned.
         _ = Notifications.ShowWhenVisibleAsync(
             NotificationStyle.Warning,
             MenuText.Key(Loc.MiscSettings.LanguageUnavailable, ("language", MenuText.Literal(stored))));
     }
 
-    // MenuAPI declines a right alignment on some aspect ratios, so this checks that it took. A
-    // rejection is written back even when persist is false, so the player does not meet the same
-    // message on every restart.
+    // MenuAPI declines a right alignment on some aspect ratios, so this checks that it took. A rejection
+    // is written back even when persist is false, so the player does not meet the same message on every
+    // restart.
     private static void ApplyRightAligned(bool rightAligned, bool persist)
     {
         MenuController.MenuAlignment = rightAligned
@@ -118,8 +116,8 @@ public static class UserPreferences
 
         if (rightAligned && !IsRightAligned)
         {
-            // Deferred, because this also runs from Restore before the player has spawned. At
-            // runtime the wait is skipped and it shows straight away.
+            // Deferred, because this also runs from Restore before the player has spawned. At runtime the wait
+            // is skipped and it shows straight away.
             _ = Notifications.ShowWhenVisibleAsync(
                 NotificationStyle.Error,
                 MenuText.Key(Loc.MiscSettings.MenuRightAlignmentUnsupported));

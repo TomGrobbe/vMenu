@@ -1,6 +1,6 @@
 namespace vMenu.Enhanced.Menus.Vehicles;
 
-/// <summary>How a vehicle came to be the one the player means.</summary>
+// How a vehicle came to be the one the player means.
 public enum VehicleTargetKind
 {
     None,
@@ -12,10 +12,8 @@ public enum VehicleTargetKind
     InFront,
 }
 
-/// <summary>
-/// The vehicle an option should act on. The kind is reported rather than judged, because seat rules
-/// differ per option.
-/// </summary>
+// The vehicle an option should act on. The kind is reported rather than judged, because seat rules
+// differ per option.
 public readonly record struct VehicleTarget(int Handle, VehicleTargetKind Kind)
 {
     public static VehicleTarget None { get; } = new(0, VehicleTargetKind.None);

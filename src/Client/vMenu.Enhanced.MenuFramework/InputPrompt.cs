@@ -2,8 +2,8 @@ using vMenu.Enhanced.MenuFramework.Localization;
 
 namespace vMenu.Enhanced.MenuFramework;
 
-/// <summary>One question in a <see cref="UserInput.GetTextAsync(InputPrompt[])"/> session.</summary>
-// A class, not a record, for the same reason as InputSuggestion.
+// One question in a UserInput.GetTextAsync session. A class, not a record, for the same reason as
+// InputSuggestion.
 public sealed class InputPrompt(
     MenuText title,
     int maxLength,

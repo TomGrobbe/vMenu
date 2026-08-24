@@ -8,13 +8,8 @@ using VehicleOptionsPermissions = vMenu.Enhanced.Data.Permissions.Menus.VehicleO
 
 namespace vMenu.Enhanced.Menus.Vehicles;
 
-/// <summary>
-/// Keeps the dust off the vehicle the player is driving.
-/// </summary>
-/// <remarks>
-/// Dirt only. Mud, snow and the scrapes a crash leaves are decals, which this does not touch, the
-/// same distinction <see cref="VehicleWash"/> makes.
-/// </remarks>
+// Dirt only. Mud, snow and the scrapes a crash leaves are decals, which this does not touch, the
+// same distinction VehicleWash makes.
 public static class VehicleKeepClean
 {
     private static bool _watching;
@@ -23,7 +18,7 @@ public static class VehicleKeepClean
 
     private static bool IsAllowed => ClientPermissions.IsAllowed(VehicleOptionsPermissions.KeepClean);
 
-    /// <summary>Call once at startup, before permissions have arrived.</summary>
+    // Call once at startup, before permissions have arrived.
     public static void Initialize()
     {
         ClientPermissions.PermissionsChanged += Apply;

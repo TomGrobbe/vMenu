@@ -4,27 +4,20 @@ using vMenu.Enhanced.MenuFramework.Localization;
 
 namespace vMenu.Enhanced.MenuFramework;
 
-/// <summary>
-/// A row that opens a child menu.
-/// </summary>
 // The gate applies to the link item, which is enough to close the door: MenuAPI checks Enabled
 // before consulting its bound submenu table, so a locked link cannot open anything.
 public sealed class SubmenuEntry : MenuEntry<MenuItem>
 {
-    /// <summary>Defaults to <see cref="MenuEntry.Text"/>, so most declarations name the menu once.</summary>
+    // Defaults to Text, so most declarations name the menu once.
     public MenuText MenuTitle { get; init; }
 
     public MenuText MenuSubtitle { get; init; }
 
-    /// <summary>
-    /// A child that is its own menu class. Mutually exclusive with <see cref="Build"/>.
-    /// </summary>
+    // A child that is its own menu class. Mutually exclusive with Build.
     public MenuDefinition? Definition { get; init; }
 
-    /// <summary>
-    /// A child that only exists underneath this entry and is not worth its own class. Mutually
-    /// exclusive with <see cref="Definition"/>.
-    /// </summary>
+    // A child that only exists underneath this entry and is not worth its own class. Mutually exclusive
+    // with Definition.
     public Action<MenuBuilder>? Build { get; init; }
 
     public Action<MenuOpened>? OnOpened { get; init; }
@@ -33,11 +26,11 @@ public sealed class SubmenuEntry : MenuEntry<MenuItem>
 
     public Action<ItemSelected>? OnSelected { get; init; }
 
-    /// <summary>The host built for this row, so dropping the row can drop the menu behind it too.</summary>
+    // The host built for this row, so dropping the row can drop the menu behind it too.
     internal MenuHost? Child { get; set; }
 
-    /// <summary>The row that opens a menu class, taking its text and gate from the definition.</summary>
-    // No Gate here, since EffectiveGate folds the definition's in.
+    // The row that opens a menu class, taking its text and gate from the definition. No Gate here, since
+    // EffectiveGate folds the definition's in.
     public static SubmenuEntry For(MenuDefinition definition) => new()
     {
         Text = definition.LinkText,
@@ -49,10 +42,8 @@ public sealed class SubmenuEntry : MenuEntry<MenuItem>
 
     protected override MenuText DefaultLabel => "→";
 
-    /// <summary>
-    /// Combined with the child definition's own gate, so a menu class that declares a permission
-    /// keeps it even when the entry pointing at it declares none.
-    /// </summary>
+    // Combined with the child definition's own gate, so a menu class that declares a permission keeps it
+    // even when the entry pointing at it declares none.
     internal override MenuGate EffectiveGate => _effectiveGate ??= Definition is { } definition
         ? Gate & definition.Gate
         : Gate;

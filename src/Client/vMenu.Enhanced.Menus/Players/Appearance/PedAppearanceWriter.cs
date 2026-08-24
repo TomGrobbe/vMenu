@@ -5,20 +5,13 @@ using vMenu.Enhanced.Menus.Appearance;
 
 namespace vMenu.Enhanced.Menus.Players.Appearance;
 
-/// <summary>
-/// Puts a saved appearance back onto a ped, and checks that it took.
-/// </summary>
-/// <remarks>
-/// One pass is enough, unlike the vehicle writer's three. Vehicle upgrades have to stream in before
-/// the game will accept them, so applying them is a wait-and-retry affair. Ped components are not
-/// streamed: the game either has the piece or it does not, and asking a second time will not conjure
-/// it. Anything still different after one pass is a piece this client is missing, which is worth
-/// reporting rather than retrying.
-/// </remarks>
+// One pass is enough, unlike the vehicle writer's three. Vehicle upgrades have to stream in before
+// the game will accept them; ped components are not streamed, so the game either has the piece or it
+// does not. Anything still different after one pass is a piece this client is missing, which is
+// worth reporting rather than retrying.
 public static class PedAppearanceWriter
 {
-    /// <summary>Applies an appearance, and reports whatever would not stick.</summary>
-    /// <returns>Empty when the ped now matches exactly.</returns>
+    // Empty when the ped now matches exactly.
     public static async Task<List<AppearanceDifference>> ApplyAsync(int ped, PedAppearance appearance)
     {
         Apply(ped, appearance);
@@ -29,12 +22,12 @@ public static class PedAppearanceWriter
         return PedAppearanceDiff.Compare(appearance, PedAppearanceReader.Read(ped));
     }
 
-    /// <summary>One pass. Every call here is idempotent, so repeating it is safe.</summary>
+    // One pass. Every call here is idempotent, so repeating it is safe.
     public static void Apply(int ped, PedOutfit outfit)
     {
-        // A clean base first, so a slot the save says nothing about comes back as the model's own
-        // default rather than whatever the ped worn before this one left in it. It is also what lets
-        // an absent prop mean "nothing worn" without the save having to spell that out.
+        // A clean base first, so a slot the save says nothing about comes back as the model's own default
+        // rather than whatever the ped worn before this one left in it. It is also what lets an absent prop
+        // mean "nothing worn" without the save having to spell that out.
         Native.SetPedDefaultComponentVariation(ped);
         Native.ClearAllPedProps(ped, false);
 
@@ -132,8 +125,8 @@ public static class PedAppearanceWriter
             return;
         }
 
-        // True attaches the prop, which is what makes it survive the ped being redrawn. False is the
-        // dead check the enhanced natives added, off so a restore works on a ped that is down.
+        // True attaches the prop, which is what makes it survive the ped being redrawn. False is the dead
+        // check the enhanced natives added, off so a restore works on a ped that is down.
         Native.SetPedPropIndex(ped, prop.Slot, prop.Drawable, prop.Texture, true, false);
     }
 

@@ -6,16 +6,11 @@ using vMenu.Enhanced.Logging;
 
 namespace vMenu.Enhanced.Events;
 
-/// <summary>
-/// A throwaway handler per event that prints the event and everything it carried, so a developer can
-/// watch what actually fires before writing anything that depends on it.
-/// </summary>
-/// <remarks>
-/// Switching one on subscribes for real, so the watcher's tick starts up the same way it would for
-/// any other subscriber. Switching every one back off lets those ticks stop again.
-/// </remarks>
-// Every payload is a record struct, so its own ToString names the type and lists every member. That
-// is why one shared logger covers all of them and nothing here needs touching when a payload changes.
+// A throwaway handler per event that prints the event and everything it carried, so a developer can
+// watch what actually fires before writing anything that depends on it. Switching one on subscribes
+// for real, so the watcher's tick starts up as it would for any other subscriber. Every payload is a
+// record struct, so its own ToString names the type and lists every member, which is why one shared
+// logger covers all of them.
 public static class EventDebugCommands
 {
     private const string Command = "vmenu_events";

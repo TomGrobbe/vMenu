@@ -1,12 +1,11 @@
 namespace vMenu.Enhanced.Data.Ticks;
 
-/// <summary>One registered tick, and the only way to start or stop it.</summary>
 // Stopping ends the loop rather than idling it, so a feature switched off costs nothing, not even a
 // per frame branch. That is why gating belongs here instead of inside handlers.
 public sealed class TickHandle : IDisposable
 {
-    // A per frame tick would write sixty error lines a second while broken. Five is enough to prove
-    // it was not a one off.
+    // A per frame tick would write sixty error lines a second while broken. Five is enough to prove it
+    // was not a one off.
     private const int MaxFailures = 5;
 
     private readonly TickEngine _engine;
@@ -14,16 +13,16 @@ public sealed class TickHandle : IDisposable
     private readonly TickRate _rate;
     private readonly Func<bool>? _condition;
 
-    /// <summary>Built once, not per iteration: a per frame tick would otherwise allocate this 60 times a second.</summary>
+    // Built once, not per iteration: a per frame tick would otherwise allocate this 60 times a second.
     private readonly string _scope;
 
-    /// <summary>The loop's exit condition: the state <see cref="Apply"/> committed to, not the state it wants.</summary>
+    // The loop's exit condition: the state Apply committed to, not the state it wants.
     private bool _running;
 
-    /// <summary>Whether a <see cref="Drive"/> call is live, including while suspended at an await.</summary>
+    // Whether a Drive call is live, including while suspended at an await.
     private bool _driverInFlight;
 
-    /// <summary>Only consulted when there is no condition.</summary>
+    // Only consulted when there is no condition.
     private bool _manuallyStarted;
 
     private int _failures;
@@ -52,10 +51,8 @@ public sealed class TickHandle : IDisposable
 
     public bool IsRunning => _running;
 
-    /// <summary>Runs when the tick starts, for setup that must not happen per iteration.</summary>
     public Action? OnStarted { get; init; }
 
-    /// <summary>Runs when the tick stops, for the teardown that pairs with <see cref="OnStarted"/>.</summary>
     public Action? OnStopped { get; init; }
 
     public void Start()
@@ -72,9 +69,8 @@ public sealed class TickHandle : IDisposable
         Apply();
     }
 
-    /// <summary>Re-runs the condition.</summary>
-    // This re-arms a tick stopped by MaxFailures, so a permanently broken handler costs another five
-    // log lines every time it is called.
+    // Re-arms a tick stopped by MaxFailures, so a permanently broken handler costs another five log
+    // lines every time it is called.
     public void Reevaluate() => Apply();
 
     public void Dispose()
@@ -116,8 +112,8 @@ public sealed class TickHandle : IDisposable
 
         Notify(OnStarted);
 
-        // A restart inside one frame leaves the previous driver suspended mid await, and a second
-        // here is the overlap this type exists to prevent.
+        // A restart inside one frame leaves the previous driver suspended mid await, and a second here is
+        // the overlap this type exists to prevent.
         if (!_driverInFlight)
         {
             Drive();
@@ -160,15 +156,14 @@ public sealed class TickHandle : IDisposable
 
         try
         {
-            // So a tick body always runs from the tick pump. What starts a tick is usually a
-            // callback, and a draw loop firing its first frame inside a checkbox handler surprises.
+            // So a tick body always runs from the tick pump. What starts a tick is usually a callback, and a
+            // draw loop firing its first frame inside a checkbox handler surprises.
             await _engine.YieldAsync();
 
             while (_running)
             {
-                // Opened outside the try and closed in the finally, so a handler that throws still
-                // leaves the profiler balanced. An unbalanced scope corrupts every reading after it,
-                // not just this tick's.
+                // Opened outside the try and closed in the finally, so a handler that throws still leaves the
+                // profiler balanced. An unbalanced scope corrupts every reading after it, not just this tick's.
                 _engine.EnterScope(_scope);
 
                 try
@@ -208,8 +203,8 @@ public sealed class TickHandle : IDisposable
         }
     }
 
-    // The lifecycle callbacks are the teardown path, so one throwing must not leave an entity frozen
-    // or a scaleform loaded.
+    // The lifecycle callbacks are the teardown path, so one throwing must not leave an entity frozen or
+    // a scaleform loaded.
     private void Notify(Action? callback)
     {
         try

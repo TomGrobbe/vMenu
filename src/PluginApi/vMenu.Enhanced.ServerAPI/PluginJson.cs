@@ -5,9 +5,9 @@ using System.Text.Unicode;
 
 namespace vMenu.Enhanced.ServerAPI;
 
-/// <summary>JSON for the plugin protocol, kept byte compatible with vMenu's own serializer.</summary>
-// System.Text.Json, matching vMenu's ServerJson: camelCase names, comment and trailing-comma
-// tolerance. Works under the FiveM runtime as of API 0.0.4, no Reflection.Emit involved.
+// JSON for the plugin protocol, kept byte compatible with vMenu's own serializer. System.Text.Json,
+// matching vMenu's ServerJson: camelCase names, comment and trailing-comma tolerance. Works under
+// the FiveM runtime as of API 0.0.4, no Reflection.Emit involved.
 internal static class PluginJson
 {
     private static readonly JsonSerializerOptions Options = CreateOptions();

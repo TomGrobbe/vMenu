@@ -2,16 +2,12 @@ using System.Text;
 
 namespace vMenu.Enhanced.Data.Permissions.Menus;
 
-/// <summary>
-/// Turns a category name a server owner typed into something usable as a permission segment. Used
-/// by the vehicle spawner and the ped models menu alike.
-/// </summary>
+// Turns a category name a server owner typed into something usable as a permission segment. Used by
+// the vehicle spawner and the ped models menu alike.
 public static class CategoryName
 {
-    /// <summary>
-    /// Lowercased, with every run of unusable characters collapsed into one underscore. Empty when
-    /// the name had nothing usable in it at all.
-    /// </summary>
+    // Lowercased, with every run of unusable characters collapsed into one underscore. Empty when the
+    // name had nothing usable in it at all.
     public static string ToPermissionSegment(string name)
     {
         if (string.IsNullOrWhiteSpace(name))

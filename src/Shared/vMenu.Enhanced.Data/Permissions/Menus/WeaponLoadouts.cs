@@ -1,9 +1,7 @@
 namespace vMenu.Enhanced.Data.Permissions.Menus;
 
-/// <summary>
-/// Permissions for the weapon loadouts menu. A loadout is a named snapshot of the weapons a player
-/// is carrying, so equipping one is held apart from merely keeping them.
-/// </summary>
+// A loadout is a named snapshot of the weapons a player is carrying, so equipping one is held apart
+// from merely keeping them.
 [PermissionCategory]
 public static class WeaponLoadouts
 {

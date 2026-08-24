@@ -19,34 +19,21 @@ using VehicleOptionsPermissions = vMenu.Enhanced.Data.Permissions.Menus.VehicleO
 
 namespace vMenu.Enhanced.Actions.Server.Handlers;
 
-/// <summary>
-/// The online players list, and everything the menu can do to somebody on it.
-/// </summary>
-/// <remarks>
-/// The list has to come from here rather than from the client: under OneSync most players are not
-/// streamed in, so a client asking the game who is online only ever sees its own neighbourhood.
-/// </remarks>
+// The list has to come from here rather than from the client: under OneSync most players are not
+// streamed in, so a client asking the game who is online only ever sees its own neighbourhood.
 public static class OnlinePlayerActions
 {
-    /// <summary>Identifiers a client has no business knowing about, matched or not.</summary>
     // vMenu has never let an IP address out of the server and is not about to start.
     private const string HiddenIdentifierPrefix = "ip:";
 
     private const string DefaultKickReason = "You have been kicked.";
 
-    /// <summary>
-    /// How often the connected player set is checked, so the menu can tell a player their list has
-    /// gone stale.
-    /// </summary>
-    // Polled rather than hooked onto a join/leave event, because a second of lag before a subtitle
+    // Polled rather than hooked onto a join or leave event, because a second of lag before a subtitle
     // turns red costs nothing and this cannot miss an event it was not listening for.
     private const long RevisionPollMs = 1000;
 
-    /// <summary>
-    /// How long the sender waits to hear that their message actually landed.
-    /// </summary>
-    // Comfortably inside the client's own ten second timeout on the action, so a message that is
-    // never acknowledged still comes back as a real answer rather than as a timeout.
+    // Comfortably inside the client's own ten second timeout on the action, so a message that is never
+    // acknowledged still comes back as a real answer rather than as a timeout.
     private const int AckTimeoutMs = 5000;
 
     private const int MaxWantedLevel = 5;
@@ -156,14 +143,8 @@ public static class OnlinePlayerActions
             TickRate.Every(RevisionPollMs));
     }
 
-    /// <summary>
-    /// Everybody online, or everybody matching a search.
-    /// </summary>
-    /// <remarks>
-    /// Only a server id and a name go back. Identifiers are matched here and never sent, which is the
-    /// whole reason searching is a server action instead of something the client does to a list it
-    /// already has.
-    /// </remarks>
+    // Only a server id and a name go back. Identifiers are matched here and never sent, which is the
+    // whole reason searching is a server action instead of something the client does to its own list.
     private static ActionResponse GetList(Player source, string[] args)
     {
         var query = (args.Length > 0 ? args[0] : string.Empty).Trim();
@@ -181,15 +162,8 @@ public static class OnlinePlayerActions
         return ActionResponse.Ok([.. rows]);
     }
 
-    /// <summary>
-    /// A player matches on any one of three things: their exact server id, part of their name, or one
-    /// of their identifiers in full.
-    /// </summary>
-    /// <remarks>
-    /// Only the name is a partial match. A server id is a number, so half of one means nothing, and a
-    /// partial identifier match would turn this into a way to go fishing for other people's licenses
-    /// a few characters at a time.
-    /// </remarks>
+    // Only the name is a partial match. A server id is a number, so half of one means nothing, and a
+    // partial identifier match would be a way to go fishing for other people's licenses.
     private static bool Matches(ConnectedPlayer player, string query)
     {
         if (query.Length == 0)
@@ -234,14 +208,8 @@ public static class OnlinePlayerActions
         return false;
     }
 
-    /// <summary>
-    /// Every identifier a player is connected with, bar their IP address.
-    /// </summary>
-    /// <remarks>
-    /// Unlike the list itself, this really does send identifiers to a client, which is why it has its
-    /// own permission. The IP is left out on purpose: it is the one identifier that says where
-    /// somebody lives rather than which account they are, and no menu here has a use for it.
-    /// </remarks>
+    // This really does send identifiers to a client, which is why it has its own permission. The IP is
+    // left out on purpose: it says where somebody lives rather than which account they are.
     private static ActionResponse GetIdentifiers(Player source, string[] args)
     {
         if (!TryResolveTarget(args, out var target))
@@ -271,7 +239,6 @@ public static class OnlinePlayerActions
         return ActionResponse.Ok([.. identifiers]);
     }
 
-    /// <summary>Where a player is right now, for teleporting to them or pointing a waypoint at them.</summary>
     private static ActionResponse GetCoords(Player source, string[] args)
     {
         if (!TryResolveTarget(args, out var target))
@@ -451,14 +418,8 @@ public static class OnlinePlayerActions
         return ActionResponse.Ok();
     }
 
-    /// <summary>
-    /// Brings a player to whoever asked.
-    /// </summary>
-    /// <remarks>
-    /// The coordinates go to the target's own client rather than being written here, so it can wait
-    /// for the world around them to stream in. Moving somebody from the server drops them through an
-    /// unloaded map.
-    /// </remarks>
+    // The coordinates go to the target's own client rather than being written here, so it can wait for
+    // the world to stream in. Moving somebody from the server drops them through an unloaded map.
     private static ActionResponse Summon(Player source, string[] args)
     {
         if (!TryResolveTarget(args, out var target))
@@ -471,8 +432,8 @@ public static class OnlinePlayerActions
             return ActionResponse.Refused();
         }
 
-        // Somebody still on the loading screen has no character to move, and their client is not
-        // listening for this yet either.
+        // Somebody still on the loading screen has no character to move, and their client is not listening
+        // for this yet either.
         if (PedOf(target) is null)
         {
             return ActionResponse.NotReady();
@@ -502,15 +463,8 @@ public static class OnlinePlayerActions
         return ActionResponse.Ok();
     }
 
-    /// <summary>
-    /// Sends a private message, and does not answer the sender until the other player's client says
-    /// it put the message on screen.
-    /// </summary>
-    /// <remarks>
-    /// Answering as soon as the server had passed the message along would tell the sender "sent" even
-    /// when the other end never showed it, which is the one thing somebody sending a message actually
-    /// wants to know.
-    /// </remarks>
+    // The sender is not answered until the other player's client says it put the message on screen.
+    // "Sent" when the other end never showed it is the one thing a sender actually wants to know.
     private static async Task<ActionResponse> SendMessage(Player source, string[] args)
     {
         if (!TryResolveTarget(args, out var target))
@@ -562,11 +516,8 @@ public static class OnlinePlayerActions
         return ActionResponse.Ok();
     }
 
-    /// <summary>The other end confirming a message reached the screen.</summary>
-    /// <remarks>
-    /// A named method rather than a lambda, so the binder finds <see cref="FromSourceAttribute"/> on
-    /// it. Without that the <see cref="Player"/> binds to wire argument 0 and the id shifts by one.
-    /// </remarks>
+    // A named method rather than a lambda, so the binder finds FromSourceAttribute on it. Without that
+    // the Player binds to wire argument 0 and the id shifts by one.
     private static void OnMessageAcknowledged([FromSource] Player source, string messageId)
     {
         if (!int.TryParse(messageId, NumberStyles.Integer, CultureInfo.InvariantCulture, out var id)
@@ -576,8 +527,8 @@ public static class OnlinePlayerActions
             return;
         }
 
-        // Only the player it was sent to can say it arrived, otherwise anyone could confirm delivery
-        // of a message they never received.
+        // Only the player it was sent to can say it arrived, otherwise anyone could confirm delivery of a
+        // message they never received.
         if (pending.Target != source.Handle)
         {
             Log.Warning($"[OnlinePlayers] {source.Name} acknowledged message {id}, which was sent to {Native.GetPlayerName(pending.Target.ToString
@@ -698,11 +649,8 @@ public static class OnlinePlayerActions
         pending.Answered.TrySetResult((playerGod, vehicleGod));
     }
 
-    /// <summary>
-    /// A player's character, or null when they have not got one yet.
-    /// </summary>
-    // Somebody still connecting already holds a server id, so they answer DoesPlayerExist while
-    // having nothing in the world. This is what tells them apart from a player who has left.
+    // Somebody still connecting already holds a server id, so they answer DoesPlayerExist while having
+    // nothing in the world. This is what tells them apart from a player who has left.
     private static int? PedOf(int serverId)
     {
         var ped = Native.GetPlayerPed(serverId.ToString(CultureInfo.InvariantCulture));
@@ -731,7 +679,6 @@ public static class OnlinePlayerActions
         public TaskCompletionSource<(bool Player, bool Vehicle)> Answered { get; } = answered;
     }
 
-    /// <summary>Reads a server id out of the arguments and checks that player is still here.</summary>
     private static bool TryResolveTarget(string[] args, out int serverId)
     {
         serverId = 0;
@@ -744,9 +691,6 @@ public static class OnlinePlayerActions
         return Native.DoesPlayerExist(serverId.ToString(CultureInfo.InvariantCulture));
     }
 
-    /// <summary>
-    /// Bumps the revision convar whenever the set of connected players changes.
-    /// </summary>
     // Compared as a set rather than counted, so one player leaving as another joins still registers.
     private static void TrackConnectedPlayers()
     {

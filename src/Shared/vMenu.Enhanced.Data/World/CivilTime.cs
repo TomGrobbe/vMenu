@@ -1,7 +1,7 @@
 namespace vMenu.Enhanced.Data.World;
 
-/// <summary>Calendar to Unix seconds, for the client fallback that reads the machine's own clock.</summary>
-// Hand rolled because DateTime crashes the client sandbox. Howard Hinnant's days from civil.
+// Calendar to Unix seconds, for the client fallback that reads the machine's own clock. Hand rolled
+// because DateTime crashes the client sandbox. Howard Hinnant's days from civil.
 public static class CivilTime
 {
     public static long ToUnixSeconds(int year, int month, int day, int hour, int minute, int second)
@@ -16,7 +16,7 @@ public static class CivilTime
         return (days * 86400L) + (hour * 3600L) + (minute * 60L) + second;
     }
 
-    /// <summary>The inverse: a day count since 1 January 1970 back to a calendar date.</summary>
+    // The inverse: a day count since 1 January 1970 back to a calendar date.
     public static void FromDays(long days, out int year, out int month, out int day)
     {
         var z = days + 719468L;

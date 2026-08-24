@@ -12,15 +12,8 @@ using PluginPermissions = vMenu.Enhanced.Data.Permissions.Plugins;
 
 namespace vMenu.Enhanced.Plugins.Server;
 
-/// <summary>
-/// Server side of the plugin protocol: takes permission and setting declarations from plugin
-/// resources, feeds them into the permission registry, and keeps the generated example files
-/// current.
-/// </summary>
-/// <remarks>
-/// Handlers are registered imperatively because attribute discovery only scans the assembly named
-/// as the <c>server_script</c>, and this one is a project reference.
-/// </remarks>
+// Handlers are registered imperatively because attribute discovery only scans the assembly named as
+// the server_script, and this one is a project reference.
 public static class PluginRegistry
 {
     private const int RefreshDebounceMs = 500;
@@ -29,10 +22,10 @@ public static class PluginRegistry
 
     private static readonly Dictionary<string, RegisteredServerPlugin> Registered = new(StringComparer.OrdinalIgnoreCase);
 
-    /// <summary>Sanitized id to owning resource, so two resources cannot claim the same names.</summary>
+    // Sanitized id to owning resource, so two resources cannot claim the same names.
     private static readonly Dictionary<string, string> IdOwners = new(StringComparer.OrdinalIgnoreCase);
 
-    /// <summary>Last accepted payload per resource, so a repeated registration costs nothing.</summary>
+    // Last accepted payload per resource, so a repeated registration costs nothing.
     private static readonly Dictionary<string, string> LastAccepted = new(StringComparer.OrdinalIgnoreCase);
 
     private static bool _handlersRegistered;
@@ -55,13 +48,9 @@ public static class PluginRegistry
         API.OnEvent(StopEvent, new Action<string>(OnResourceStop), false);
     }
 
-    /// <summary>
-    /// Forgets a plugin that stopped, so its permissions stop being handed out and its identity is
-    /// free again.
-    /// </summary>
-    // Its templates stay on disk, there being no native that deletes a file. They say on the first
-    // line that they are only written while the plugin runs, which is what tells an owner reading a
-    // stale one that the plugin behind it is gone.
+    // Its templates stay on disk, there being no native that deletes a file. They say on the first line
+    // that they are only written while the plugin runs, which is what tells an owner reading a stale one
+    // that the plugin behind it is gone.
     private static void OnResourceStop(string stopped)
     {
         if (!Registered.Remove(stopped, out var plugin))
@@ -79,7 +68,7 @@ public static class PluginRegistry
         ScheduleRefresh();
     }
 
-    /// <summary>Call once startup is done, so plugins that started first know to register now.</summary>
+    // Call once startup is done, so plugins that started first know to register now.
     public static void AnnounceReady() =>
         NativeFixer.EmitLocal(PluginEvents.ServerReady, PluginProtocol.Version);
 
@@ -183,10 +172,9 @@ public static class PluginRegistry
     {
         var permissions = new List<string>();
 
-        // Dropped first, and before the empty check: a plugin that renamed a permission, changed one
-        // to staff only or took every last one away gets exactly what it declares now. RegisterDynamic
-        // leaves an existing node alone, so without this the tree would keep whatever the previous
-        // registration said and keep handing those out.
+        // Dropped first, and before the empty check: a plugin that renamed a permission, changed one to staff
+        // only or took every last one away gets exactly what it declares now. RegisterDynamic leaves an
+        // existing node alone, so without this the tree would keep handing out the previous registration.
         PermissionRegistry.UnregisterDynamic(PluginPermissions.AllFor(id));
 
         if (declarations is null || declarations.Count == 0)
@@ -267,9 +255,7 @@ public static class PluginRegistry
         return settings;
     }
 
-    /// <summary>
-    /// One resend for a whole burst of boot time registrations instead of one per plugin.
-    /// </summary>
+    // One resend for a whole burst of boot time registrations instead of one per plugin.
     private static void ScheduleRefresh()
     {
         if (_refreshPending)

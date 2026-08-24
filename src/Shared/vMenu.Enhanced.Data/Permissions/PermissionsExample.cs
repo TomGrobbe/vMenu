@@ -2,7 +2,6 @@ using System.Text;
 
 namespace vMenu.Enhanced.Data.Permissions;
 
-/// <summary>One line of the generated permissions example, flattened out of the registry tree.</summary>
 public sealed class PermissionExampleEntry(
     string name,
     int depth,
@@ -14,7 +13,7 @@ public sealed class PermissionExampleEntry(
 
     public int Depth { get; } = depth;
 
-    /// <summary>The config file this permission came from, or null when vMenu declares it itself.</summary>
+    // The config file this permission came from, or null when vMenu declares it itself.
     public string? Source { get; } = source;
 
     public bool IsStaffOnly { get; } = isStaffOnly;
@@ -30,12 +29,12 @@ public static class PermissionsExample
 
     private const string StaffGroup = "group.admin";
 
-    /// <summary>Entries at or above this depth get a blank line before them, so each menu block stands apart.</summary>
+    // Entries at or above this depth get a blank line before them, so each menu block stands apart.
     private const int SpacedDepth = 1;
 
     public static string ResourcePath => $"{ExampleFile.ConfigDirectory}/{CopyName}{ExampleFile.Extension}";
 
-    /// <summary>Where one plugin's own permission template lives.</summary>
+    // Where one plugin's own permission template lives.
     public static string PluginResourcePath(string resource) =>
         $"{ExampleFile.PluginsDirectory}/{ExampleFile.PluginCopyName(resource, CopyName)}{ExampleFile.Extension}";
 
@@ -111,10 +110,7 @@ public static class PermissionsExample
         return file.ToString();
     }
 
-    /// <summary>
-    /// One plugin's permissions on their own, for its <c>&lt;resource&gt;.permissions.cfg.example</c>
-    /// in the one shared plugins folder.
-    /// </summary>
+    // One plugin's permissions on their own, for its own example file in the shared plugins folder.
     public static string RenderForPlugin(string resource, string displayName, IEnumerable<PermissionExampleEntry> entries)
     {
         var ordered = entries.ToList();
@@ -144,8 +140,8 @@ public static class PermissionsExample
             return file.ToString();
         }
 
-        // Only the plugin's own container gets a blank line above it: everything in this file sits
-        // under that one line, so spacing them all apart would be one blank line per permission.
+        // Only the plugin's own container gets a blank line above it: everything in this file sits under
+        // that one line, so spacing them all apart would be one blank line per permission.
         AppendEntries(file, ordered, spacedDepth: 0, annotate: false);
 
         return file.ToString();
@@ -168,8 +164,8 @@ public static class PermissionsExample
                 file.Append('\n');
             }
 
-            // On its own line above rather than trailing the command, so the command is the whole
-            // line and nothing depends on the console treating a mid line # as a comment.
+            // On its own line above rather than trailing the command, so the command is the whole line and
+            // nothing depends on the console treating a mid line # as a comment.
             if (annotate && Annotation(entry) is { Length: > 0 } note)
             {
                 file.Append(' ', entry.Depth * 2).Append("# ").Append(note).Append('\n');
@@ -181,21 +177,16 @@ public static class PermissionsExample
         }
     }
 
-    /// <summary>
-    /// Which lines should be suggested to staff rather than to everybody.
-    /// </summary>
-    // A permission grants everything nested underneath it, so one staff only permission anywhere
-    // below a container makes that container staff only too. Without this the file would hand a
-    // container to everybody and quietly undo the restriction on something inside it, which is
-    // exactly what a reader trusting these suggestions would not expect.
+    // A permission grants everything nested underneath it, so one staff only permission anywhere below a
+    // container makes that container staff only too. Without this the file would hand a container to
+    // everybody and quietly undo the restriction on something inside it.
     private static bool[] ResolveStaffOnly(List<PermissionExampleEntry> ordered)
     {
         var staffOnly = new bool[ordered.Count];
 
-        // The tree arrives flattened in pre-order, so everything nested under an entry sits directly
-        // after it while the depth stays greater. Walked backwards, so by the time an entry is
-        // reached its own children already answer for their whole subtree and one pass is enough
-        // however deep the nesting goes.
+        // The tree arrives flattened in pre-order, so everything nested under an entry sits directly after
+        // it while the depth stays greater. Walked backwards, so by the time an entry is reached its own
+        // children already answer for their whole subtree and one pass is enough however deep it goes.
         for (var index = ordered.Count - 1; index >= 0; index--)
         {
             staffOnly[index] = ordered[index].IsStaffOnly;

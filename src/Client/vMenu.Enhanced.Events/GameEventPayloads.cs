@@ -17,18 +17,15 @@ public readonly record struct VehicleEntered(int Vehicle, int Seat);
 
 public readonly record struct VehicleExited(int Vehicle, int Seat);
 
-/// <summary>Straight from one vehicle into another, (at most 100ms in between old/new vehicle, due to tick handler running once every 100ms).</summary>
+// Straight from one vehicle into another, with at most 100ms in between, the tick running that often.
 public readonly record struct VehicleSwapped(int Vehicle, int Previous, int Seat);
 
 public readonly record struct VehicleSeatChanged(int Vehicle, int Seat, int PreviousSeat);
 
-/// <summary>
-/// Combined event handler for <see cref="VehicleEntered" />, <see cref="VehicleExited" />, <see cref="VehicleSwapped" /> and <see cref="VehicleSeatChanged" />.
-/// Any value can be null, depending on what exactly happened (a new or old vehicle may not exist, same with seat index).
-/// </summary>
-// Printed by hand rather than by the record's own generated ToString. That one reaches a member's
-// ToString through a call the FiveM sandbox resolves at runtime, and resolving it against a null
-// throws, so a payload with a missing vehicle or seat would take down anything that logged it.
+// Combined event for VehicleEntered, VehicleExited, VehicleSwapped and VehicleSeatChanged. Any value
+// can be null, depending on what happened. Printed by hand rather than by the record's own generated
+// ToString: that one reaches a member's ToString through a call the FiveM sandbox resolves at
+// runtime, and resolving it against a null throws.
 public readonly record struct VehicleChanged(int? Vehicle, int? PreviousVehicle, int? Seat, int? PreviousSeat)
 {
     public override string ToString() =>
@@ -49,7 +46,7 @@ public readonly record struct VehicleDamaged(
     float EngineLost,
     float PetrolTankLost);
 
-/// <summary>The vehicle has picked up dust or dirt. The scale runs 0 to 15.</summary>
+// The scale runs 0 to 15.
 public readonly record struct VehicleDirtied(int Vehicle, float DirtLevel, float DirtGained);
 
 #endregion

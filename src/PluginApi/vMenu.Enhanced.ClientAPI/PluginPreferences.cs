@@ -2,11 +2,9 @@ using CitizenFX.FiveM.Client;
 
 namespace vMenu.Enhanced.ClientAPI;
 
-/// <summary>
-/// Persists player preferences in this resource's own key value store, so a persisted checkbox
-/// reopens the way the player left it. The data lives with the plugin resource, never in vMenu,
-/// and disappears with it.
-/// </summary>
+// Persists player preferences in this resource's own key value store, so a persisted checkbox
+// reopens the way the player left it. The data lives with the plugin resource, never in vMenu, and
+// disappears with it.
 internal static class PluginPreferences
 {
     private const string KeyPrefix = "vmenu_plugin_pref_";

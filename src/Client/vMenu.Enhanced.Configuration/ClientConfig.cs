@@ -9,7 +9,6 @@ using vMenu.Enhanced.Logging;
 
 namespace vMenu.Enhanced.Configuration;
 
-/// <summary>Client side of the configuration module.</summary>
 // No handshake with the server, unlike permissions: settings are replicated convars, so an owner
 // changing one reaches every client through the runtime.
 public static class ClientConfig
@@ -18,7 +17,7 @@ public static class ClientConfig
 
     private static readonly ConfigStore Store = new(Native.GetConvar, ForwardLog);
 
-    /// <summary>Call once, before the menus are built, so the first gate pass reads real values.</summary>
+    // Call once, before the menus are built, so the first gate pass reads real values.
     public static void Initialize()
     {
         Store.Prime();
@@ -32,23 +31,20 @@ public static class ClientConfig
         SharedAPI.Commands.RegisterCommand(DumpCommand, false, DebugCommands.Gate(Dump));
     }
 
-    /// <summary>Starts watching convars that are not settings, so listeners can be added for them.</summary>
-    /// <remarks>See <see cref="ConfigStore.Track" /> for why these are not in the catalog.</remarks>
+    // Starts watching convars that are not settings. See ConfigStore.Track for why these are not in the
+    // catalog.
     public static void Track(IReadOnlyList<string> convars) => Listen(Store.Track(convars));
 
-    /// <summary>Calls <paramref name="handler"/> whenever any of these settings changes, and nothing else.</summary>
+    // Calls the handler whenever any of these settings changes, and nothing else.
     public static void AddEventListenerFor(IReadOnlyList<Setting> settings, Action handler) =>
         Store.Watch(settings, handler);
 
-    /// <summary>The same, for convars registered through <see cref="Track" /> rather than catalogued settings.</summary>
+    // The same, for convars registered through Track rather than catalogued settings.
     public static void AddEventListenerFor(IReadOnlyList<string> convars, Action handler) =>
         Store.Watch(convars, handler);
 
-    /// <summary>
-    /// Calls <paramref name="handler"/> whenever any setting other than these changes. For a
-    /// subscriber that really does react to almost anything, where naming the settings it reads
-    /// would mean one added later silently never reaching it.
-    /// </summary>
+    // For a subscriber that really does react to almost anything, where naming the settings it reads
+    // would mean one added later silently never reaching it.
     public static void AddEventListenerExcept(IReadOnlyList<Setting> settings, Action handler) =>
         Store.WatchExcept(settings, handler);
 
@@ -60,7 +56,6 @@ public static class ClientConfig
 
     public static void RemoveEventListenerExcept(Action handler) => Store.UnwatchExcept(handler);
 
-    /// <summary>Prints what this client currently reads for every setting.</summary>
     public static void Dump()
     {
         Log.Info("[Config] Current values:");
@@ -95,8 +90,8 @@ public static class ClientConfig
 
     public static string Value(StringSetting setting) => Store.Value(setting);
 
-    // One listener per convar rather than a wildcard filter, which if it matched nothing would look
-    // like the module quietly not working.
+    // One listener per convar rather than a wildcard filter, which if it matched nothing would look like
+    // the module quietly not working.
     private static void Listen(IReadOnlyList<string> convars)
     {
         foreach (var convar in convars)

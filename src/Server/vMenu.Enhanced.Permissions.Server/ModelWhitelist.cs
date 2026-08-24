@@ -8,9 +8,7 @@ using vMenu.Enhanced.Logging;
 
 namespace vMenu.Enhanced.Permissions.Server;
 
-/// <summary>
-/// Models held back from the class permissions and given their own permission instead.
-/// </summary>
+// Models held back from the class permissions and given their own permission instead.
 public static class ModelWhitelist
 {
     private const string ConfigFile = "config/model-whitelists.json";
@@ -32,10 +30,7 @@ public static class ModelWhitelist
     private static readonly Dictionary<SupplementalModelKind, HashSet<string>> Whitelists = [];
     private static readonly Dictionary<SupplementalModelKind, string[]> Ordered = [];
 
-    /// <summary>
-    /// Reads the config file and registers a permission for every whitelisted model. A missing or
-    /// unreadable file just means nothing is held back.
-    /// </summary>
+    // A missing or unreadable file just means nothing is held back.
     public static void LoadAndRegister()
     {
         Whitelists.Clear();
@@ -82,10 +77,7 @@ public static class ModelWhitelist
     public static bool IsWhitelistedVehicle(string modelName) =>
         IsWhitelisted(SupplementalModelKind.Vehicle, modelName);
 
-    /// <summary>
-    /// The whitelisted models of a kind, for sending to clients so they can tell which models
-    /// their class permissions do not cover.
-    /// </summary>
+    // For sending to clients, so they can tell which models their class permissions do not cover.
     public static string[] GetModels(SupplementalModelKind kind) =>
         Ordered.TryGetValue(kind, out var models) ? models : [];
 
@@ -142,7 +134,7 @@ public static class ModelWhitelist
         return models;
     }
 
-    /// <param name="PermissionFactory">Null when the kind is read but not yet wired to permissions.</param>
+    // PermissionFactory is null when the kind is read but not yet wired to permissions.
     private sealed record KindDescriptor(
         SupplementalModelKind Kind,
         string JsonProperty,

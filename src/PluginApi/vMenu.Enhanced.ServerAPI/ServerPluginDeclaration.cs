@@ -4,12 +4,10 @@ using vMenu.Enhanced.PluginContracts;
 
 namespace vMenu.Enhanced.ServerAPI;
 
-/// <summary>
-/// Everything a plugin's server side declares with vMenu: a display name for the generated
-/// example files, the permission names it wants under its own scope, and the convar settings
-/// vMenu should describe to server owners. Names are short, vMenu composes the full
-/// <c>vMenu.Enhanced.Plugins.&lt;Id&gt;.&lt;Name&gt;</c> form from the resource name.
-/// </summary>
+/// <summary>Everything a plugin's server side declares with vMenu: a display name for the generated
+/// example files, the permission names it wants under its own scope, and the convar settings vMenu
+/// should describe to server owners. Names are short: vMenu composes the full
+/// <c>vMenu.Enhanced.Plugins.&lt;Id&gt;.&lt;Name&gt;</c> form from the resource name.</summary>
 public sealed class ServerPluginDeclaration
 {
     private readonly List<PermissionDeclaration> _permissions = new();

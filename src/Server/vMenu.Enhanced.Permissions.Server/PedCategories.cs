@@ -11,11 +11,9 @@ using vMenu.Enhanced.Serialization.Server;
 
 namespace vMenu.Enhanced.Permissions.Server;
 
-/// <summary>
-/// The ped models players can turn into, owned here and mirrored to every client. Unlike vehicles
-/// there is no native that lists them, so the whole list comes out of the config file. Each category
-/// gets a permission of its own, registered the same way the vehicle spawner's custom categories are.
-/// </summary>
+// Unlike vehicles there is no native that lists ped models, so the whole list comes out of the config
+// file. Each category gets a permission of its own, registered the same way the vehicle spawner's
+// custom categories are.
 public static class PedCategories
 {
     private const string ConfigFile = "config/ped-models.json";
@@ -29,13 +27,10 @@ public static class PedCategories
 
     private static readonly List<PedModelCategory> Categories = [];
 
-    /// <summary>The list as the clients receive it, built once when the file is read.</summary>
+    // The list as the clients receive it, built once when the file is read.
     private static string _payload = "[]";
 
-    /// <summary>
-    /// Reads the config file and registers a permission for every category in it. A missing or
-    /// unreadable file just means the menu has nothing in it.
-    /// </summary>
+    // A missing or unreadable file just means the menu has nothing in it.
     public static void LoadAndRegister()
     {
         Categories.Clear();
@@ -75,14 +70,11 @@ public static class PedCategories
         _payload = ServerJson.Serialize(Categories);
     }
 
-    /// <summary>Call once the permission registry is ready.</summary>
+    // Call once the permission registry is ready.
     public static void RegisterEventHandlers() =>
         API.OnNetEvent(PedModelEvents.Request, new Action<Player>(OnRequested), false);
 
-    /// <summary>
-    /// A named method, not a lambda: the binder reads <see cref="FromSourceAttribute"/> off the
-    /// delegate's <c>MethodInfo</c>.
-    /// </summary>
+    // A named method, not a lambda: the binder reads FromSourceAttribute off the delegate's MethodInfo.
     private static void OnRequested([FromSource] Player source) =>
         API.EmitClient(source.Handle, PedModelEvents.Set, _payload);
 

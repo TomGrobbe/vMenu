@@ -2,17 +2,14 @@ using CitizenFX.FiveM.Client;
 
 namespace vMenu.Enhanced.Menus.Vehicles.Appearance;
 
-/// <summary>What each modification slot is, and which menu is responsible for it.</summary>
 public static class VehicleModSlots
 {
-    /// <summary>Every slot, so a caller can ask the game about all of them.</summary>
+    // Every slot, so a caller can ask the game about all of them.
     public static IReadOnlyList<VehicleModSlot> All { get; } =
         [.. Enum.GetValues<VehicleModSlot>()];
 
-    /// <summary>
-    /// Slots that are switched on or off rather than chosen from a list. The game reports zero
-    /// options for these, so they never turn up in the generic upgrade list.
-    /// </summary>
+    // Slots that are switched on or off rather than chosen from a list. The game reports zero options
+    // for these, so they never turn up in the generic upgrade list.
     public static IReadOnlyList<VehicleModSlot> Toggles { get; } =
     [
         VehicleModSlot.Nitrous,
@@ -23,7 +20,7 @@ public static class VehicleModSlots
         VehicleModSlot.XenonLights,
     ];
 
-    /// <summary>Slots the wheels and tyres menu owns, so the generic upgrade list leaves them alone.</summary>
+    // Slots the wheels and tyres menu owns, so the generic upgrade list leaves them alone.
     public static IReadOnlyList<VehicleModSlot> WheelSlots { get; } =
     [
         VehicleModSlot.Wheels,
@@ -41,7 +38,6 @@ public static class VehicleModSlots
     public static bool IsWheelSlot(VehicleModSlot slot) =>
         slot is VehicleModSlot.Wheels or VehicleModSlot.RearWheels;
 
-    /// <summary>Slots this vehicle actually has upgrades for, ready to be listed.</summary>
     // Call SetVehicleModKit first, or the game answers zero for everything.
     public static List<VehicleModSlot> Available(int handle, bool includeWheelSlots)
     {
@@ -68,12 +64,9 @@ public static class VehicleModSlots
         return slots;
     }
 
-    /// <summary>
-    /// The name to show when the game has no label for a slot, which happens on add-on vehicles
-    /// whose authors did not fill one in.
-    /// </summary>
-    // Deliberately not translated. It names a technical slot, and a player who ever sees one of
-    // these is better served by the game's own word for it than by a guess in their language.
+    // The name to show when the game has no label for a slot, which happens on add-on vehicles whose
+    // authors did not fill one in. Deliberately not translated: it names a technical slot, and a player
+    // who sees one is better served by the game's own word than by a guess in their language.
     public static string TechnicalName(VehicleModSlot slot) => slot switch
     {
         VehicleModSlot.FrontBumper => "Front Bumper",

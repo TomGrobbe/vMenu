@@ -5,7 +5,7 @@ using vMenu.Enhanced.Storage;
 
 namespace vMenu.Enhanced.Menus;
 
-/// <summary>Everything saved on this machine, as one code the player can copy and paste back.</summary>
+// Everything saved on this machine, as one code the player can copy and paste back.
 [VMenu(
     TitleKey = Loc.DataTransfer.Title,
     SubtitleKey = Loc.DataTransfer.Subtitle,
@@ -47,14 +47,13 @@ public sealed class DataTransferMenu : MenuDefinition
             OnConfirmedAsync = _ => DataTransfer.ImportAsync(KvpImportMode.Replace),
         });
 
-        // The row above is only written when the menu is relabelled, and opening it is not one of
-        // those moments, so without this it would still be showing whatever was true when the menu
-        // was first built. Also what makes the counts right straight after an import.
+        // The row above is only written when the menu is relabelled, and opening it is not one of those
+        // moments. Also what makes the counts right straight after an import.
         menu.OnOpened = _ => MenuRegistry.Refresh(menu.Menu);
     }
 
-    // Counted every time the row is resolved. That only reads the key names, never a stored value,
-    // so it costs a key listing rather than anything that has to be deserialized.
+    // Counted every time the row is resolved. That only reads the key names, never a stored value, so it
+    // costs a key listing rather than anything that has to be deserialized.
     private static string Describe()
     {
         var inventory = KvpTransfer.Measure();

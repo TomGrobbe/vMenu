@@ -19,17 +19,17 @@ namespace vMenu.Enhanced.Actions.Server.Events;
 
 public static class PlayerPresenceBroadcast
 {
-    /// <summary>How often this runs. Every interval below is a multiple of it.</summary>
+    // How often this runs. Every interval below is a multiple of it.
     private const long TickMs = 250;
 
-    /// <summary>Distances, squared, so nothing here needs a square root.</summary>
+    // Distances, squared, so nothing here needs a square root.
     private const float NearRangeSquared = 500f * 500f;
 
     private const float MidRangeSquared = 1500f * 1500f;
 
     private const float FarRangeSquared = 5000f * 5000f;
 
-    /// <summary>How many ticks apart each tier's updates are.</summary>
+    // How many ticks apart each tier's updates are.
     private const int NearEveryTicks = 2;      // 500ms
 
     private const int MidEveryTicks = 4;       // 1s
@@ -38,16 +38,13 @@ public static class PlayerPresenceBroadcast
 
     private const int VeryFarEveryTicks = 20;  // 5s
 
-    /// <summary>Slower Far tier used once the server is busy enough to notice.</summary>
+    // Slower Far tier used once the server is busy enough to notice.
     private const int CrowdedFarEveryTicks = 16; // 4s
 
-    /// <summary>Above this many players, the far tiers start being cut back.</summary>
+    // Above this many players, the far tiers start being cut back.
     private const int CrowdedThreshold = 256;
 
-    /// <summary>
-    /// Above this many players, nothing is sent at all and clients blip only what OneSync streams
-    /// them.
-    /// </summary>
+    // Above this many players, nothing is sent at all and clients blip only what OneSync streams them.
     private const int GiveUpThreshold = 512;
 
     private static readonly HashSet<int> Subscribers = [];
@@ -91,8 +88,8 @@ public static class PlayerPresenceBroadcast
     {
         _tick++;
 
-        // Nothing subscribed and nobody noclipping means there is nothing to send and nothing to
-        // forget, which is the state a server with this feature switched off sits in permanently.
+        // Nothing subscribed and nobody noclipping means there is nothing to send and nothing to forget,
+        // which is the state a server with this feature switched off sits in permanently.
         if (Subscribers.Count == 0 && !PlayerNoClipState.HasAny)
         {
             return;
@@ -127,9 +124,6 @@ public static class PlayerPresenceBroadcast
         }
     }
 
-    /// <summary>
-    /// Forgets anybody who has left, everywhere the server was remembering them.
-    /// </summary>
     private static void Prune(List<ConnectedPlayer> players)
     {
         var connected = new HashSet<int>(players.Count);
@@ -144,7 +138,7 @@ public static class PlayerPresenceBroadcast
         PlayerNoClipState.Prune(connected);
     }
 
-    /// <summary>Reads every connected player once, so the per viewer pass costs no natives at all.</summary>
+    // Reads every connected player once, so the per viewer pass costs no natives at all.
     private static void BuildSnapshot(List<ConnectedPlayer> players)
     {
         Snapshot.Clear();
@@ -180,11 +174,10 @@ public static class PlayerPresenceBroadcast
                 flags |= PresenceRow.FlagInVehicle;
             }
 
-            // Asked here rather than read from the player's state bag, because a bag only reaches
-            // clients that have this player in scope and the whole point of this message is the
-            // players who are not. Two ace lookups per player per tick, on top of the handful of
-            // natives above, and it costs nothing else: the answer is not cached anywhere, so an
-            // add_ace shows up on somebody's blip within a tick instead of on their next reconnect.
+            // Asked here rather than read from the player's state bag, because a bag only reaches clients that
+            // have this player in scope and the whole point of this message is the players who are not. The
+            // answer is not cached anywhere, so an add_ace shows up on somebody's blip within a tick instead of
+            // on their next reconnect.
             if (ServerPermissions.IsPlayerAllowed(handle, Global.Staff))
             {
                 flags |= PresenceRow.FlagStaff;
@@ -220,9 +213,8 @@ public static class PlayerPresenceBroadcast
                 continue;
             }
 
-            // The server id is folded in so different players land on different ticks. Without it
-            // every player in a tier would be due on the same tick and the payload would arrive in
-            // one lump instead of spread across the interval.
+            // The server id is folded in so different players land on different ticks. Without it every player
+            // in a tier would be due on the same tick and the payload would arrive in one lump.
             if ((_tick + target.ServerId) % interval != 0)
             {
                 continue;
@@ -248,7 +240,7 @@ public static class PlayerPresenceBroadcast
         API.EmitClient(viewer.ServerId, PresenceEvents.Snapshot, Payload.ToString());
     }
 
-    /// <summary>How many ticks apart this target's updates should be, or zero for "do not send".</summary>
+    // How many ticks apart this target's updates should be, or zero for "do not send".
     private static int IntervalFor(float distanceSquared, bool crowded)
     {
         if (distanceSquared < NearRangeSquared)
@@ -269,8 +261,8 @@ public static class PlayerPresenceBroadcast
         return crowded ? 0 : VeryFarEveryTicks;
     }
 
-    // A plain class rather than a record, matching the rest of this codebase: the generated equality
-    // routes through EqualityComparer<string>.Default, which the sandbox refuses to load.
+    // A class rather than a record: generated equality routes through
+    // EqualityComparer<string>.Default, which the sandbox refuses to load.
     private sealed class Presence(int serverId, Vector3 position, int heading, uint vehicleModel, int flags, int routingBucket, string name)
     {
         public int ServerId { get; } = serverId;
@@ -285,7 +277,7 @@ public static class PlayerPresenceBroadcast
 
         public int Flags { get; } = flags;
 
-        /// <summary>Buckets are separate worlds, so players in one never appear on another's map.</summary>
+        // Buckets are separate worlds, so players in one never appear on another's map.
         public int RoutingBucket { get; } = routingBucket;
     }
 }

@@ -8,11 +8,9 @@ using vMenu.Enhanced.Logging;
 
 namespace vMenu.Enhanced.Serialization;
 
-/// <summary>JSON on the client. System.Text.Json, which works under the sandbox as of API 0.0.4.</summary>
-// The old Newtonsoft off-emit dance is gone. This runtime reports dynamic code unsupported, so STJ
-// uses its plain reflection accessor and never reaches for Reflection.Emit, which is the thing the
-// sandbox refuses. camelCase names, and a reader that tolerates the comments and trailing commas a
-// person leaves in a file, carry over from the old settings. Deserialize into a type as before.
+// JSON on the client. System.Text.Json, which works under the sandbox as of API 0.0.4: this runtime
+// reports dynamic code unsupported, so STJ uses its plain reflection accessor and never reaches for
+// Reflection.Emit, which is the thing the sandbox refuses.
 public static class ClientJson
 {
     // Declared before Options: ApplyReadableEncoder writes it from that field's initializer.
@@ -25,7 +23,7 @@ public static class ClientJson
         WriteIndented = true,
     };
 
-    /// <summary>Why the client cannot serialize, or <see langword="null"/> when it can.</summary>
+    // Why the client cannot serialize, or null when it can.
     private static readonly string? Failure = SelfTest();
 
     public static string Serialize(object? value) => JsonSerializer.Serialize(value, Options);
@@ -34,7 +32,7 @@ public static class ClientJson
 
     public static T? Deserialize<T>(string json) => JsonSerializer.Deserialize<T>(json, Options);
 
-    /// <summary>For JSON from somewhere that can send nonsense, such as a saved file or the page.</summary>
+    // For JSON from somewhere that can send nonsense, such as a saved file or the page.
     public static bool TryDeserialize<T>(string json, out T? value)
     {
         try
@@ -51,7 +49,6 @@ public static class ClientJson
         }
     }
 
-    /// <summary>Says on the startup path whether JSON works at all.</summary>
     public static void Verify()
     {
         if (Failure is null)
@@ -78,8 +75,8 @@ public static class ClientJson
             ReadCommentHandling = JsonCommentHandling.Skip,
             AllowTrailingCommas = true,
 
-            // Newtonsoft wrote a NaN or an infinity as a bare token; this throws on one instead, which
-            // would take a whole save down rather than write one bad number.
+            // Newtonsoft wrote a NaN or an infinity as a bare token; this throws on one instead, which would
+            // take a whole save down rather than write one bad number.
             NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals,
         };
 
@@ -130,7 +127,7 @@ public static class ClientJson
         {
             var current = json[index];
 
-            // Copied whole, so a literal \\ cannot turn the u behind it into an escape.
+            // Copied whole, so a literal backslash cannot turn the u behind it into an escape.
             if (current == '\\' && index + 1 < json.Length && json[index + 1] != 'u')
             {
                 builder.Append(current);

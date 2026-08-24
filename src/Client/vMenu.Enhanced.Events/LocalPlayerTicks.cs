@@ -9,16 +9,14 @@ namespace vMenu.Enhanced.Events;
 
 public static class LocalPlayerTicks
 {
-    /// <summary>A ped only changes on a respawn or a model swap, both of which take about a second.</summary>
+    // A ped only changes on a respawn or a model swap, both of which take about a second.
     private const long IdentityIntervalMs = 250;
 
-    /// <summary>
-    /// Fast enough that two shots from an automatic weapon land in separate polls. Anything closer
-    /// than this arrives as one <see cref="PlayerPedDamaged"/> carrying the sum.
-    /// </summary>
+    // Fast enough that two shots from an automatic weapon land in separate polls. Anything closer than
+    // this arrives as one PlayerPedDamaged carrying the sum.
     private const long HealthIntervalMs = 100;
 
-    /// <summary>Past this the player did not walk there, so something put them there.</summary>
+    // Past this the player did not walk there, so something put them there.
     private const float RespawnDistance = 25f;
 
     private static TickHandle? _identityTick;
@@ -46,7 +44,6 @@ public static class LocalPlayerTicks
     private static int _diedAsPed;
     private static Vector3 _diedAt;
 
-    /// <summary>The player's ped handle is not the one it was: a respawn, or a script swapped the ped.</summary>
     public static event Action<PlayerPedIdChanged>? PlayerPedIdChanged
     {
         add
@@ -64,7 +61,6 @@ public static class LocalPlayerTicks
         }
     }
 
-    /// <summary>As <see cref="PlayerPedIdChanged"/>, for a handler that needs to await something.</summary>
     public static event Func<PlayerPedIdChanged, Task>? PlayerPedIdChangedAsync
     {
         add
@@ -81,7 +77,6 @@ public static class LocalPlayerTicks
         }
     }
 
-    /// <summary>The player is wearing a different model than they were.</summary>
     public static event Action<PlayerPedModelChanged>? PlayerPedModelChanged
     {
         add
@@ -98,7 +93,6 @@ public static class LocalPlayerTicks
         }
     }
 
-    /// <summary>As <see cref="PlayerPedModelChanged"/>, for a handler that needs to await something.</summary>
     public static event Func<PlayerPedModelChanged, Task>? PlayerPedModelChangedAsync
     {
         add
@@ -115,7 +109,6 @@ public static class LocalPlayerTicks
         }
     }
 
-    /// <summary>The player lost health, armour, or both.</summary>
     public static event Action<PlayerPedDamaged>? PlayerPedDamaged
     {
         add
@@ -132,7 +125,6 @@ public static class LocalPlayerTicks
         }
     }
 
-    /// <summary>As <see cref="PlayerPedDamaged"/>, for a handler that needs to await something.</summary>
     public static event Func<PlayerPedDamaged, Task>? PlayerPedDamagedAsync
     {
         add
@@ -149,7 +141,6 @@ public static class LocalPlayerTicks
         }
     }
 
-    /// <summary>The player went from alive to dead.</summary>
     public static event Action<PlayerPedDied>? PlayerPedDied
     {
         add
@@ -166,7 +157,6 @@ public static class LocalPlayerTicks
         }
     }
 
-    /// <summary>As <see cref="PlayerPedDied"/>, for a handler that needs to await something.</summary>
     public static event Func<PlayerPedDied, Task>? PlayerPedDiedAsync
     {
         add
@@ -183,7 +173,6 @@ public static class LocalPlayerTicks
         }
     }
 
-    /// <summary>The player went from dead to alive, however that happened.</summary>
     public static event Action<PlayerPedRevived>? PlayerPedRevived
     {
         add
@@ -200,7 +189,6 @@ public static class LocalPlayerTicks
         }
     }
 
-    /// <summary>As <see cref="PlayerPedRevived"/>, for a handler that needs to await something.</summary>
     public static event Func<PlayerPedRevived, Task>? PlayerPedRevivedAsync
     {
         add
@@ -234,8 +222,8 @@ public static class LocalPlayerTicks
             SeedHealth);
     }
 
-    // The delegate fields rather than a subscriber count: a count drifts the first time somebody
-    // removes a handler that was never added, and a delegate cannot.
+    // The delegate fields rather than a subscriber count: a count drifts the first time somebody removes
+    // a handler that was never added, and a delegate cannot.
     private static bool IdentityWanted() =>
         _pedChanged is not null || _pedChangedAsync is not null
         || _modelChanged is not null || _modelChangedAsync is not null;
@@ -245,9 +233,8 @@ public static class LocalPlayerTicks
         || _died is not null || _diedAsync is not null
         || _revived is not null || _revivedAsync is not null;
 
-    /// <summary>The state the first poll compares against, so subscribing is never itself an event.</summary>
-    // TickHandle runs this before it starts driving the loop, which is what removes the need for a
-    // "have I run once yet" flag inside the poll.
+    // The state the first poll compares against, so subscribing is never itself an event. TickHandle
+    // runs this before it starts driving the loop, which removes the need for a "have I run yet" flag.
     private static void SeedIdentity()
     {
         var ped = Native.PlayerPedId();
@@ -292,8 +279,8 @@ public static class LocalPlayerTicks
         {
             var previous = _ped;
 
-            // Written before the dispatch, never after: a subscriber that throws, or one that calls
-            // back in here, must not be able to make the same change fire twice.
+            // Written before the dispatch, never after: a subscriber that throws, or one that calls back in
+            // here, must not be able to make the same change fire twice.
             _ped = ped;
 
             var change = new PlayerPedIdChanged(ped, previous);
@@ -330,8 +317,8 @@ public static class LocalPlayerTicks
         var armour = Native.GetPedArmour(ped);
         var dead = Native.IsEntityDead(ped, false);
 
-        // A new ped is a new set of numbers rather than damage: max health travels with the model,
-        // so a swap from a two hundred point ped to a hundred point one would read as a big hit.
+        // A new ped is a new set of numbers rather than damage: max health travels with the model, so a swap
+        // from a two hundred point ped to a hundred point one would read as a big hit.
         if (ped != _healthPed)
         {
             var wasDead = _dead;
@@ -374,8 +361,8 @@ public static class LocalPlayerTicks
         _health = health;
         _armour = armour;
 
-        // Downwards only. Health climbs on its own from the game's regen and armour climbs from a
-        // pickup, and neither of those is something happening to the player.
+        // Downwards only. Health climbs on its own from the game's regen and armour climbs from a pickup,
+        // and neither of those is something happening to the player.
         if (dead || (healthLost <= 0 && armourLost <= 0))
         {
             return;
@@ -400,10 +387,9 @@ public static class LocalPlayerTicks
 
     private static void RaiseRevived(int ped, int health)
     {
-        // Neither the game nor the runtime says which of the two happened, so this is inferred. A new
-        // ped, or the same one a long way from where it fell, is somebody's spawn point; anything
-        // else is the same body picked up where it lay. A watcher that started while the player was
-        // already down has nothing to compare against and calls it a respawn.
+        // Neither the game nor the runtime says which of the two happened, so this is inferred. A new ped, or
+        // the same one a long way from where it fell, is somebody's spawn point; anything else is the same
+        // body picked up where it lay. A watcher that started while the player was down calls it a respawn.
         var respawned = ped != _diedAsPed
             || Vector3.DistanceSquared(Native.GetEntityCoords(ped, true), _diedAt) > RespawnDistance * RespawnDistance;
 
@@ -415,11 +401,7 @@ public static class LocalPlayerTicks
         Dispatch.RaiseAsync(_revivedAsync, revive, nameof(PlayerPedRevived));
     }
 
-    /// <summary>
-    /// Between a model swap and the loading screen letting go, PlayerPedId answers with a handle
-    /// nothing exists behind.
-    /// </summary>
-    // Skipping the poll rather than recording the gap keeps that from arriving as two changes, out
-    // and straight back again.
+    // Between a model swap and the loading screen letting go, PlayerPedId answers with a handle nothing
+    // exists behind. Skipping the poll keeps that from arriving as two changes, out and straight back.
     private static bool Exists(int ped) => ped != 0 && Native.DoesEntityExist(ped);
 }

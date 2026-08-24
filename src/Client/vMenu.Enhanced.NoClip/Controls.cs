@@ -1,13 +1,11 @@
 namespace vMenu.Enhanced.NoClip;
 
-/// <summary>
-/// Game controls noclip has to suppress while it is active, see
-/// https://docs.fivem.net/docs/game-references/controls/. Noclip's own keys are FiveM key mappings,
-/// see <see cref="NoClipKeyBindings"/>; these are the game's reactions to the same keys.
-/// </summary>
+// Game controls noclip has to suppress while it is active, see
+// https://docs.fivem.net/docs/game-references/controls/. Noclip's own keys are FiveM key mappings,
+// see NoClipKeyBindings; these are the game's reactions to the same keys.
 internal static class Controls
 {
-    /// <summary>Standard control group, used for every control below.</summary>
+    // Standard control group, used for every control below.
     internal const int Group = 0;
 
     internal const int MoveDown = 20;          // Control.MultiplayerInfo (Z)
@@ -25,6 +23,6 @@ internal static class Controls
     internal const int RadioWheel = 85;        // Move up
     internal const int MultiplayerInfo = 244;  // Move Down
 
-    /// <summary>Disabled by the game whenever the F8 console has focus, so it doubles as a console check.</summary>
+    // Disabled by the game whenever the F8 console has focus, so it doubles as a console check.
     internal const int ConsoleProbe = 360;
 }

@@ -10,14 +10,11 @@ using vMenu.Enhanced.Serialization.Server;
 
 namespace vMenu.Enhanced.Permissions.Server;
 
-/// <summary>
-/// Live ACE checks, and computing the minimal set of permissions to hand a client.
-/// </summary>
 public static class ServerPermissions
 {
     public static bool IsReady { get; private set; }
 
-    /// <summary>Call once, first, from the server entry point.</summary>
+    // Call once, first, from the server entry point.
     public static void Initialize()
     {
         IsReady = false;
@@ -31,10 +28,8 @@ public static class ServerPermissions
         IsReady = true;
     }
 
-    /// <summary>
-    /// Inheritance is applied here, so callers never name a parent themselves. Nothing about the
-    /// result is cached, so an <c>add_ace</c> takes effect on the next call.
-    /// </summary>
+    // Inheritance is applied here, so callers never name a parent themselves. Nothing about the result
+    // is cached, so an add_ace takes effect on the next call.
     public static bool IsPlayerAllowed(string source, string permission)
     {
         if (string.IsNullOrEmpty(source) || !Native.DoesPlayerExist(source))
@@ -53,15 +48,12 @@ public static class ServerPermissions
         return false;
     }
 
-    /// <inheritdoc cref="IsPlayerAllowed(string, string)"/>
     public static bool IsPlayerAllowed(Player player, string permission) =>
         IsPlayerAllowed(ToSource(player), permission);
 
-    /// <summary>
-    /// The smallest set describing what a player may do. The walk stops descending the moment a
-    /// node is granted, because a granted parent is absolute: nothing below it can take the grant
-    /// away. That is also why the client can rebuild the same answers from names alone.
-    /// </summary>
+    // The smallest set describing what a player may do. The walk stops descending the moment a node is
+    // granted, because a granted parent is absolute: nothing below it can take the grant away. That is
+    // also why the client can rebuild the same answers from names alone.
     public static string[] GetGrantedPermissions(string source)
     {
         if (string.IsNullOrEmpty(source) || !Native.DoesPlayerExist(source))
@@ -86,15 +78,13 @@ public static class ServerPermissions
         return [.. granted];
     }
 
-    /// <inheritdoc cref="GetGrantedPermissions(string)"/>
     public static string[] GetGrantedPermissions(Player player) =>
         GetGrantedPermissions(ToSource(player));
 
-    /// <summary>Must run on the main thread; the underlying emit asserts it.</summary>
+    // Must run on the main thread; the underlying emit asserts it.
     public static void SendPermissions(Player player, int latentBytesPerSecond = 0) =>
         SendPermissions(player.Handle, latentBytesPerSecond);
 
-    /// <inheritdoc cref="SendPermissions(Player, int)"/>
     public static void SendPermissions(int handle, int latentBytesPerSecond = 0)
     {
         var source = handle.ToString(CultureInfo.InvariantCulture);
@@ -158,11 +148,9 @@ public static class ServerPermissions
         }
     }
 
-    /// <summary>
-    /// Tests the whole chain, not just this node, because a cross-tree parent may itself be held
-    /// only through its own container, which the walk has not descended into. Ancestors already
-    /// found denied cost nothing to re-test, being in <paramref name="probed"/>.
-    /// </summary>
+    // Tests the whole chain, not just this node, because a cross-tree parent may itself be held only
+    // through its own container, which the walk has not descended into. Ancestors already found denied
+    // cost nothing to re-test, being in probed.
     private static bool IsGranted(string source, string permission, Dictionary<string, bool> probed)
     {
         foreach (var ace in PermissionRegistry.GetAncestorChain(permission))

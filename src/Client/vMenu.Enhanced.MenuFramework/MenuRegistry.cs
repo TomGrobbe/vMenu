@@ -11,20 +11,16 @@ using LocalizationSettings = vMenu.Enhanced.Data.Configuration.Settings.Localiza
 
 namespace vMenu.Enhanced.MenuFramework;
 
-/// <summary>Builds the menu tree and keeps it in step with permissions, configuration and language.</summary>
 // Subscribes to the three change events once and fans out from here rather than one subscription per
 // menu, for one place to unsubscribe and a deterministic order.
 public static class MenuRegistry
 {
-    /// <summary>
-    /// The settings that provably cannot change what any menu shows, so a refresh pass over every
-    /// gate and every label is not worth running for them.
-    /// </summary>
+    // Settings that provably cannot change what any menu shows, so a refresh pass over every gate and
+    // every label is not worth running for them.
     private static readonly Setting[] Ignored =
     [
-        // Read once by LanguageLoader before the menus are built.
-        // Can't be updated at runtime because the translation files would not be
-        // streamed to the client if changed without a resource restart.
+        // Read once by LanguageLoader before the menus are built. The translation files would not be streamed
+        // to the client if changed without a resource restart.
         LocalizationSettings.Languages,
 
         // Keybinds get registered with the game at startup, so changing one takes a restart either way.
@@ -41,12 +37,10 @@ public static class MenuRegistry
 
     private static bool _built;
 
-    /// <summary>The main menu, once built.</summary>
     public static Menu? MainMenu => _root?.Menu;
 
-    /// <summary>Builds the main menu and everything under it, in the order given. Not repeatable.</summary>
-    // MenuController has no way to remove a menu, its tables being static and append only, so a
-    // second call would leave the first tree in place and duplicate every row.
+    // MenuController has no way to remove a menu, its tables being static and append only, so a second
+    // call would leave the first tree in place and duplicate every row.
     public static async Task BuildAsync(IReadOnlyList<MenuDefinition> definitions)
     {
         if (_built)
@@ -77,8 +71,8 @@ public static class MenuRegistry
                 Log.Error($"[Menu] {definition.GetType().Name} has no title: add a [VMenu(TitleKey = ...)] attribute or override Title.");
             }
 
-            // A submenu entry so the link, its gate and its child menu go through the same path as
-            // every nested submenu.
+            // A submenu entry so the link, its gate and its child menu go through the same path as every nested
+            // submenu.
             _root.Builder.Entries.Add(SubmenuEntry.For(definition));
         }
 
@@ -88,14 +82,13 @@ public static class MenuRegistry
         ClientConfig.AddEventListenerExcept(Ignored, RefreshAll);
         Localizer.Changed += RefreshAll;
 
-        // Items are created enabled, so without this everything looks unlocked until the first
-        // permission set lands.
+        // Items are created enabled, so without this everything looks unlocked until the first permission set
+        // lands.
         RefreshAll();
 
         Log.Debug($"[Menu] Built {Hosts.Count} menu(s).");
     }
 
-    /// <summary>Re-evaluates every gate and rewrites every label.</summary>
     public static void RefreshAll()
     {
         var localizer = Localizer.Current;
@@ -116,7 +109,6 @@ public static class MenuRegistry
         }
     }
 
-    /// <summary>Detaches every subscription. Call when the resource is shutting down or reloading.</summary>
     public static void Dispose()
     {
         if (!_built)
@@ -136,15 +128,13 @@ public static class MenuRegistry
         Hosts.Clear();
         HostsByMenu.Clear();
 
-        // Leaves MenuAPI holding nothing either, so a rebuild starts from an empty menu list rather
-        // than one that still has every menu from before it in.
+        // Leaves MenuAPI holding nothing either, so a rebuild starts from an empty menu list.
         MenuController.RemoveAllMenus();
 
         _root = null;
         _built = false;
     }
 
-    /// <summary>Materialises an entry added after its menu was already built.</summary>
     internal static void MaterialiseLate(MenuHost host, MenuEntry entry)
     {
         MaterialiseOne(host, entry, Localizer.Current);
@@ -153,9 +143,8 @@ public static class MenuRegistry
         RefreshAll();
     }
 
-    /// <summary>Materialises a batch of late entries, gating the tree once at the end.</summary>
-    // RefreshAll walks every menu in the resource, so doing it per row turns adding a thousand rows
-    // into a thousand full tree passes.
+    // RefreshAll walks every menu in the resource, so doing it per row turns adding a thousand rows into
+    // a thousand full tree passes.
     internal static void MaterialiseLateBatch(MenuHost host, IEnumerable<MenuEntry> entries)
     {
         var localizer = Localizer.Current;
@@ -170,9 +159,6 @@ public static class MenuRegistry
         host.RefreshFilter();
     }
 
-    /// <summary>
-    /// Creates a child menu that no row points at, opened from code through the returned handle.
-    /// </summary>
     internal static DetachedMenu CreateDetached(
         MenuHost parent,
         MenuText title,
@@ -247,8 +233,8 @@ public static class MenuRegistry
 
     private static async Task MaterialiseAsync(MenuHost host, ILocalizer localizer)
     {
-        // Indexed, because a definition's Build may append to its own list while the child menus
-        // underneath it are still being created.
+        // Indexed, because a definition's Build may append to its own list while the child menus underneath
+        // it are still being created.
         for (var index = 0; index < host.Builder.Entries.Count; index++)
         {
             var entry = host.Builder.Entries[index];
@@ -312,8 +298,8 @@ public static class MenuRegistry
             submenu.Build!.Invoke(child.Builder);
         }
 
-        // Combined rather than assigned, so declaring OnOpened on the entry does not silently
-        // replace whatever the menu itself set during Build.
+        // Combined rather than assigned, so declaring OnOpened on the entry does not silently replace
+        // whatever the menu itself set during Build.
         child.Builder.OnOpened += submenu.OnOpened;
         child.Builder.OnOpenedAsync += submenu.OnOpenedAsync;
 
@@ -322,11 +308,8 @@ public static class MenuRegistry
         return child;
     }
 
-    /// <summary>
-    /// Forgets a host and everything below it, for a menu MenuAPI has taken back out.
-    /// </summary>
-    // MenuAPI removes the menu behind a row when that row is dropped, so without this the framework
-    // would keep walking a host whose menu no longer exists on every gate refresh.
+    // MenuAPI removes the menu behind a row when that row is dropped, so without this the framework would
+    // keep walking a host whose menu no longer exists on every gate refresh.
     internal static void Untrack(MenuHost host)
     {
         if (host.Parent is { } parent)
@@ -348,8 +331,8 @@ public static class MenuRegistry
         host.Children.Clear();
         host.Dispose();
 
-        // A detached child has no row pointing at it, so MenuAPI cannot work out on its own that it
-        // went with its parent. Harmless for a bound one, which MenuAPI has already dropped.
+        // A detached child has no row pointing at it, so MenuAPI cannot work out on its own that it went
+        // with its parent. Harmless for a bound one, which MenuAPI has already dropped.
         MenuController.RemoveMenu(host.Menu);
 
         RemoveByReference(Hosts, host);
@@ -371,10 +354,8 @@ public static class MenuRegistry
         }
     }
 
-    /// <summary>Returns the player to the nearest menu they can still reach.</summary>
-    // Walks the framework's own parent links, not Menu.ParentMenu: MenuAPI re-parents a child to
-    // whatever menu was open when its link was selected, so that chain describes how the player got
-    // here, not where the menu belongs.
+    // Walks the framework's own parent links, not Menu.ParentMenu: MenuAPI re-parents a child to whatever
+    // menu was open when its link was selected, so that chain describes how the player got here.
     private static void BackOutOfUnreachableMenu()
     {
         if (MenuController.GetCurrentMenu() is not { } open

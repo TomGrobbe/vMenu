@@ -10,17 +10,14 @@ using WeaponOptionsPermissions = vMenu.Enhanced.Data.Permissions.Menus.WeaponOpt
 
 namespace vMenu.Enhanced.Menus.Weapons;
 
-/// <summary>
-/// Parachutes, their colours, and the two loops that keep them topped up.
-/// </summary>
 public static class ParachuteOptions
 {
     internal const string ParachuteModel = "gadget_parachute";
 
-    /// <summary>Neither loop is doing anything most of the time, so neither needs a frame.</summary>
+    // Neither loop is doing anything most of the time, so neither needs a frame.
     private const int CheckMs = 500;
 
-    /// <summary>How long the game takes to change the smoke colour, during which it cannot be used.</summary>
+    // How long the game takes to change the smoke colour, during which it cannot be used.
     private const int SmokeChangeMs = 4000;
 
     private static TickHandle? _autoEquip;
@@ -28,10 +25,8 @@ public static class ParachuteOptions
 
     private static bool _changingSmoke;
 
-    /// <summary>
-    /// The chute styles, in the order the game numbers them. The last six are the canopy styles,
-    /// which the game accepts but does not draw in FiveM.
-    /// </summary>
+    // In the order the game numbers them. The last six are the canopy styles, which the game accepts but
+    // does not draw in FiveM.
     private static readonly string[] StyleLabels =
     [
         "PM_TINT0", "PM_TINT1", "PM_TINT2", "PM_TINT3", "PM_TINT4", "PM_TINT5", "PM_TINT6", "PM_TINT7",
@@ -43,7 +38,7 @@ public static class ParachuteOptions
         "PM_TINT8", "PM_TINT9", "PM_TINT10", "PM_TINT11", "PM_TINT12", "PM_TINT13",
     ];
 
-    /// <summary>Index aligned with <see cref="SmokeLabels"/>. The first is "no smoke".</summary>
+    // Index aligned with SmokeLabels. The first is "no smoke".
     private static readonly (int R, int G, int B)[] SmokeColours =
     [
         (255, 255, 255),
@@ -56,20 +51,17 @@ public static class ParachuteOptions
 
     public static bool IsAllowed => ClientPermissions.IsAllowed(WeaponOptionsPermissions.Parachute);
 
-    /// <summary>What the player asked for and what the server allows, which together are the only answer.</summary>
     public static bool AutoEquipEnabled => UserDefaults.WeaponsAutoEquipParachute.Value && IsAllowed;
 
-    /// <inheritdoc cref="AutoEquipEnabled"/>
     public static bool UnlimitedEnabled => UserDefaults.WeaponsUnlimitedParachutes.Value && IsAllowed;
 
     public static int StyleCount => StyleLabels.Length;
 
     public static int SmokeCount => SmokeLabels.Length;
 
-    /// <summary>Call once at startup, before permissions have arrived.</summary>
-    // Both conditions include the permission, so revoking it stops the loops on their own. vMenu
-    // used to check only the player's own toggle here, which let a saved preference keep working on
-    // a server that had taken the permission away.
+    // Both conditions include the permission, so revoking it stops the loops on their own. vMenu used to
+    // check only the player's own toggle here, which let a saved preference keep working on a server that
+    // had taken the permission away.
     public static void Initialize()
     {
         _autoEquip = TickRegistry.Register(
@@ -106,7 +98,7 @@ public static class ParachuteOptions
     public static bool HasPrimary() =>
         Native.HasPedGotWeapon(Native.PlayerPedId(), API.Hash(ParachuteModel), 0);
 
-    /// <summary>Gives the parachute, or takes it back. True when the player now has one.</summary>
+    // True when the player now has one.
     public static bool TogglePrimary()
     {
         var ped = Native.PlayerPedId();
@@ -124,7 +116,7 @@ public static class ParachuteOptions
         return true;
     }
 
-    /// <summary>One way only. The game offers no way to take a reserve chute back off.</summary>
+    // One way only. The game offers no way to take a reserve chute back off.
     public static void EnableReserve() => Native.SetPlayerHasReserveParachute(Native.PlayerId());
 
     public static MenuText StyleName(int index) =>
@@ -133,10 +125,8 @@ public static class ParachuteOptions
     public static MenuText SmokeName(int index) =>
         MenuText.From(() => WeaponNames.Resolve(SmokeLabels[index], string.Empty));
 
-    /// <summary>
-    /// The game's own description of a chute style. The canopy ones say plainly that they do not
-    /// work, rather than leaving the player wondering why nothing changed.
-    /// </summary>
+    // The canopy styles say plainly that they do not work, rather than leaving the player wondering why
+    // nothing changed.
     public static MenuText StyleDescription(int index) =>
         MenuText.From(() =>
         {
@@ -163,10 +153,8 @@ public static class ParachuteOptions
         }
     }
 
-    /// <summary>
-    /// Changing the colour means turning the trail off, waiting, and turning it back on, so a second
-    /// change while one is running is dropped rather than queued.
-    /// </summary>
+    // Changing the colour means turning the trail off, waiting, and turning it back on, so a second
+    // change while one is running is dropped rather than queued.
     public static async Task SetSmokeColourAsync(int index)
     {
         if (!IsAllowed || _changingSmoke || index < 0 || index >= SmokeColours.Length)

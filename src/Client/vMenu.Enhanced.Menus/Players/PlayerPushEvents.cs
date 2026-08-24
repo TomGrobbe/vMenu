@@ -11,20 +11,13 @@ using vMenu.Enhanced.Menus.Vehicles;
 
 namespace vMenu.Enhanced.Menus.Players;
 
-/// <summary>
-/// What the server tells this client to do because somebody else asked for it.
-/// </summary>
-/// <remarks>
-/// The action layer only ever answers whoever asked, so being killed, summoned or messaged arrives on
-/// its own events. Registered imperatively, because attribute discovery only scans the assembly named
-/// as the <c>client_script</c> and this one is a project reference.
-/// </remarks>
+// The action layer only ever answers whoever asked, so being killed, summoned or messaged arrives on
+// its own events. Registered imperatively, because attribute discovery only scans the assembly named
+// as the client_script and this one is a project reference.
 public static class PlayerPushEvents
 {
-    /// <summary>
-    /// Nearly twice the usual, because a message from another player is something to read rather than
-    /// something to glance at.
-    /// </summary>
+    // Nearly twice the usual, because a message from another player is something to read rather than
+    // something to glance at.
     public const int MessageDurationMs = 15000;
 
     private static bool _registered;

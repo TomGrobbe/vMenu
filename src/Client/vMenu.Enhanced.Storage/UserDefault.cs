@@ -2,7 +2,7 @@ using System.Globalization;
 
 namespace vMenu.Enhanced.Storage;
 
-/// <summary>One preference belonging to the player, declared once and persisted on change.</summary>
+// One preference belonging to the player, declared once and persisted on change.
 public abstract class UserDefault(string name)
 {
     public const string KeyPrefix = "vmenu_default_";
@@ -17,7 +17,7 @@ public abstract class UserDefault(string name)
 
     public abstract string CurrentText { get; }
 
-    /// <summary>Forgets the stored value, so the declared default applies again.</summary>
+    // Forgets the stored value, so the declared default applies again.
     public abstract void Reset();
 }
 
@@ -28,14 +28,11 @@ public abstract class UserDefault<T>(string name) : UserDefault(name)
 {
     public required T Default { get; init; }
 
-    /// <summary>Raised when the stored value moves. Never on a read.</summary>
+    // Raised when the stored value moves. Never on a read.
     public event Action? Changed;
 
-    /// <summary>
-    /// Reading a preference that was never set writes the declared default, so a dump lists
-    /// everything vMenu knows about. A default improved later will not reach anyone who has already
-    /// read it.
-    /// </summary>
+    // Reading a preference that was never set writes the declared default, so a dump lists everything
+    // vMenu knows about. A default improved later will not reach anyone who has already read it.
     public T Value
     {
         get

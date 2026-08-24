@@ -3,25 +3,18 @@ using vMenu.Enhanced.Storage;
 
 namespace vMenu.Enhanced.Menus.Vehicles.Saved;
 
-/// <summary>
-/// Where saved vehicles live: the player's own machine, not the server.
-/// </summary>
-/// <remarks>
-/// Because this is the player's local storage keyed on the resource name, the same collection shows
-/// up on every server running vMenu Enhanced. That is the point, and it is also why the version
-/// check matters: one of those servers may be running an older build than the one that wrote a save.
-/// <see cref="KvpStore"/> already refuses that write, and this only passes the answer along.
-/// </remarks>
+// The player's own machine, not the server. Keyed on the resource name, so the same collection shows
+// up on every server running vMenu Enhanced, which is also why the version check matters: one of
+// those servers may be older than the build that wrote a save.
 public static class SavedVehicleStore
 {
     public const string VehiclePrefix = "vmenu_vehicle_";
 
-    /// <summary>Deliberately not a suffix of the vehicle prefix, so listing one never finds the other.</summary>
+    // Deliberately not a suffix of the vehicle prefix, so listing one never finds the other.
     public const string CategoryPrefix = "vmenu_vehcategory_";
 
     #region Vehicles
 
-    /// <summary>Every saved vehicle, in the order the store hands them over.</summary>
     public static List<SavedVehicleEntry> All()
     {
         var vehicles = new List<SavedVehicleEntry>();
@@ -44,10 +37,7 @@ public static class SavedVehicleStore
 
     public static bool Exists(string name) => Load(name) is not null;
 
-    /// <param name="replacing">
-    /// True when the caller means to overwrite an existing save, which is the difference between
-    /// "replace this one" and "save a new one".
-    /// </param>
+    // replacing is the difference between "replace this one" and "save a new one".
     public static SaveOutcome Save(SavedVehicle vehicle, bool replacing)
     {
         var key = VehicleKey(vehicle.Name);
@@ -64,11 +54,9 @@ public static class SavedVehicleStore
 
     public static void Delete(string name) => KvpStore.Delete(VehicleKey(name));
 
-    /// <summary>Stores a vehicle under a new name and description, and forgets the old name.</summary>
-    /// <returns>False when the new name is taken, or the save came from a newer build.</returns>
-    // A newer build's save is refused rather than moved. Renaming writes a key that holds nothing
-    // yet, which no version check can guard, and what would be written is only the fields this build
-    // knows about. That is the silent downgrade the whole refusal mechanism exists to prevent.
+    // A newer build's save is refused rather than moved. Renaming writes a key that holds nothing yet,
+    // which no version check can guard, and what would be written is only the fields this build knows
+    // about. That is the silent downgrade the whole refusal mechanism exists to prevent.
     public static bool Edit(SavedVehicleEntry entry, string newName, string description)
     {
         if (entry.IsFromNewerBuild)
@@ -105,9 +93,8 @@ public static class SavedVehicleStore
         return true;
     }
 
-    /// <summary>Stores a copy of a vehicle under another name, leaving the original alone.</summary>
-    // The copy is written at this build's schema version even when the original came from a newer
-    // one. That is honest rather than lossy: it is a new save holding what this build could read.
+    // The copy is written at this build's schema version even when the original came from a newer one.
+    // That is honest rather than lossy: it is a new save holding what this build could read.
     public static SaveOutcome Duplicate(SavedVehicleEntry entry, string newName) =>
         Save(
             new SavedVehicle
@@ -119,7 +106,6 @@ public static class SavedVehicleStore
             },
             replacing: false);
 
-    /// <summary>Moves a vehicle into another category, or out of all of them when empty.</summary>
     public static bool MoveToCategory(SavedVehicle vehicle, string category)
     {
         vehicle.Category = category;
@@ -172,8 +158,7 @@ public static class SavedVehicleStore
             out _,
             out _);
 
-    /// <summary>Renames a category and moves everything in it across.</summary>
-    /// <returns>False when the new name is already a category.</returns>
+    // False when the new name is already a category.
     public static bool EditCategory(string oldName, string newName, string description)
     {
         var renaming = !string.Equals(oldName, newName, StringComparison.OrdinalIgnoreCase);
@@ -206,8 +191,8 @@ public static class SavedVehicleStore
                 continue;
             }
 
-            // A save from a newer build cannot be rewritten, so it keeps naming the old category.
-            // The menu already treats an unknown category as a group of its own.
+            // A save from a newer build cannot be rewritten, so it keeps naming the old category. The menu
+            // already treats an unknown category as a group of its own.
             if (entry.IsFromNewerBuild)
             {
                 continue;
@@ -219,10 +204,8 @@ public static class SavedVehicleStore
         return true;
     }
 
-    /// <summary>
-    /// Forgets a category. The vehicles in it are kept and become uncategorised, since losing a
-    /// group is not a reason to lose what was in it.
-    /// </summary>
+    // The vehicles in it are kept and become uncategorised, since losing a group is not a reason to lose
+    // what was in it.
     public static void DeleteCategory(string name)
     {
         KvpStore.Delete(CategoryPrefix + name);
@@ -234,8 +217,8 @@ public static class SavedVehicleStore
                 continue;
             }
 
-            // A save from a newer build cannot be rewritten, so it keeps naming a category that is
-            // gone. The menu already treats an unknown category as uncategorised.
+            // A save from a newer build cannot be rewritten, so it keeps naming a category that is gone. The
+            // menu already treats an unknown category as uncategorised.
             if (entry.IsFromNewerBuild)
             {
                 continue;
@@ -247,7 +230,6 @@ public static class SavedVehicleStore
 
     #endregion
 
-    /// <summary>The raw stored lines, for a dump command.</summary>
     public static IEnumerable<string> Describe() => KvpStore.Describe(VehiclePrefix);
 
     private static SavedVehicleEntry? Read(string key)

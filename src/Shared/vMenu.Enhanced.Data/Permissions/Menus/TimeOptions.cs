@@ -5,7 +5,7 @@ public static class TimeOptions
 {
     public const string All = "vMenu.Enhanced.Menus.TimeOptions.All";
 
-    /// <summary>Not <c>[StaffOnly]</c>: reading the clock changes nothing.</summary>
+    // Not [StaffOnly]: reading the clock changes nothing.
     public const string Menu = "vMenu.Enhanced.Menus.TimeOptions.Menu";
 
     [StaffOnly]

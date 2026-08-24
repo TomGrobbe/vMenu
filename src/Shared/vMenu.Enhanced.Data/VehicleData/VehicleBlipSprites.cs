@@ -1,27 +1,13 @@
 namespace vMenu.Enhanced.Data.VehicleData;
 
-/// <summary>
-/// Which blip sprite a vehicle gets, for the vehicles that have one of their own.
-/// </summary>
-/// <remarks>
-/// Ported from Rockstar's <c>GET_CORRECT_PED_BLIP_SPRITE_FOR_VEHICLE_MODEL</c>, so a player driving
-/// a tank shows up as a tank exactly as they do in GTA Online.
-///
-/// <para>
-/// Most vehicles are <em>not</em> in here, and that is correct rather than an omission. In GTA
-/// Online somebody in an ordinary car is still a plain dot on the map; only the vehicles Rockstar
-/// gave their own artwork to look different. Legacy vMenu fell back to a generic car sprite for
-/// everything, which is why its blips never quite looked like the real game's.
-/// </para>
-///
-/// <para>
-/// The classes that are not model specific, planes and helicopters and boats, are not decided here.
-/// Those need natives, so they live on the client alongside the code that calls this.
-/// </para>
-/// </remarks>
+// Ported from Rockstar's GET_CORRECT_PED_BLIP_SPRITE_FOR_VEHICLE_MODEL, so a player driving a tank
+// shows up as a tank exactly as they do in GTA Online. Most vehicles are not in here, and that is
+// correct: in GTA Online an ordinary car is still a plain dot, which is what legacy vMenu got wrong
+// by falling back to a generic car sprite. Planes, helicopters and boats need natives, so those are
+// decided on the client instead.
 public static class VehicleBlipSprites
 {
-    /// <summary>The plain player dot, which is what anything not listed here stays as.</summary>
+    // The plain player dot, which is what anything not listed here stays as.
     public const int StandardSprite = 1;
 
     public const int PlaneSprite = 423;
@@ -34,23 +20,16 @@ public static class VehicleBlipSprites
 
     public const int PersonalVehicleBikeSprite = 226;
 
-    /// <summary>The two sprites the game already turns to face the right way by itself.</summary>
-    // Setting a rotation on these fights the engine and makes them jitter.
+    // The two sprites the game already turns to face the right way by itself. Setting a rotation on
+    // these fights the engine and makes them jitter.
     public const int SubmarineSprite = 760;
 
     private static readonly Dictionary<uint, int> ByModel = Build();
 
-    /// <summary>The sprite for this model, or null when it has none of its own.</summary>
     public static int? ForModel(uint model) => ByModel.TryGetValue(model, out var sprite) ? sprite : null;
 
-    /// <summary>
-    /// The hash the game knows a model by.
-    /// </summary>
-    /// <remarks>
-    /// Written out here rather than taken from <c>GetHashKey</c> so this whole file stays free of
-    /// natives and can live in the shared assembly, which deliberately references no CitizenFX
-    /// package. It is the same "joaat" the game uses, lowercased first.
-    /// </remarks>
+    // Written out here rather than taken from GetHashKey so this whole file stays free of natives and
+    // can live in the shared assembly. It is the same "joaat" the game uses, lowercased first.
     public static uint Hash(string model)
     {
         var hash = 0u;
@@ -83,8 +62,8 @@ public static class VehicleBlipSprites
             }
         }
 
-        // Fighter jets. Listed rather than asked of the game, because the native Rockstar uses for
-        // this is not one FiveM exposes.
+        // Fighter jets. Listed rather than asked of the game, because the native Rockstar uses for this is
+        // not one FiveM exposes.
         Add(424, "lazer", "besra", "hydra");
 
         // Vehicles with a gun turret somebody else can sit behind.
@@ -193,8 +172,8 @@ public static class VehicleBlipSprites
         Add(759, "annihilator2");
         Add(SubmarineSprite, "kosatka");
 
-        // The two motorbikes with artwork of their own. Every other bike stays a plain dot, which is
-        // what GTA Online does and what legacy got wrong by giving all of them the gang bike sprite.
+        // The two motorbikes with artwork of their own. Every other bike stays a plain dot, which is what
+        // GTA Online does and what legacy got wrong by giving all of them the gang bike sprite.
         Add(348, "manchez2", "rrocket");
 
         // The Criminal Enterprises and beyond.
@@ -205,8 +184,8 @@ public static class VehicleBlipSprites
         Add(824, "champion");
         Add(825, "buffalo4");
 
-        // Not one of Rockstar's, carried over from legacy vMenu because people liked it. Legacy used
-        // sprite 56, which is the police car, so this is the same idea with the right artwork.
+        // Not one of Rockstar's, carried over from legacy vMenu because people liked it. Legacy used sprite
+        // 56, which is the police car, so this is the same idea with the right artwork.
         Add(198, "taxi");
 
         return sprites;

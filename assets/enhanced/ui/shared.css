@@ -29,22 +29,16 @@ body {
     color: var(--text);
 }
 
-/*
-   The page is rendered at the game's own resolution, so a rem fixed at 16px shrinks to nothing on a
-   4K screen and everything sized in rem shrinks with it. Tying the root to viewport height instead
-   makes every size below a fraction of the screen, which is also how the game scales its own HUD —
-   width is left out of it so an ultrawide monitor does not inflate the text.
-*/
+/* The page is rendered at the game's own resolution, so a rem fixed at 16px shrinks to nothing on a
+   4K screen. Tying the root to viewport height is how the game scales its own HUD too, and width is
+   left out of it so an ultrawide monitor does not inflate the text. */
 html {
     font-size: clamp(13px, 1.6vh, 40px);
 }
 
 #hud-left {
-    /*
-       Every one of these is overwritten by the client, which is the only side that can see where the
-       minimap starts and ends. The values here are the 16:9 defaults, in case a message ever arrives
-       without an anchor.
-    */
+    /* Every one of these is overwritten by the client, the only side that can see where the minimap
+       starts and ends. These are the 16:9 defaults, for a message that arrives without an anchor. */
     position: fixed;
     left: 2%;
     bottom: 20%;

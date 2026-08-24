@@ -9,14 +9,10 @@ using vMenu.Enhanced.Storage;
 
 namespace vMenu.Enhanced.Ticks;
 
-/// <summary>
-/// <see cref="TickRegistry.Dump"/> as a panel on screen, redrawn whenever a tick starts or stops.
-/// MenuAPI runs its own copy of this scheduler and exposes it read only, so its loops are listed here
-/// too rather than needing a panel of their own.
-/// </summary>
-// Redraws run on a tick of its own rather than off TickRegistry.Changed, because one Reevaluate pass
-// raises that event once per tick it flips, so a convar edit would post a message per affected loop.
-// The flag collapses a burst into one snapshot, and the tick stops with the panel.
+// TickRegistry.Dump as a panel on screen. MenuAPI runs its own copy of this scheduler and exposes it
+// read only, so its loops are listed here too rather than needing a panel of their own. Redraws run
+// on a tick of their own rather than off TickRegistry.Changed, because one Reevaluate pass raises
+// that event once per tick it flips, so a convar edit would post a message per affected loop.
 public static class TickOverlay
 {
     private const string ToggleCommand = "vmenu_ticks_overlay";
@@ -35,14 +31,14 @@ public static class TickOverlay
 
     private static bool _paused;
 
-    /// <summary>Whether the panel is on screen. The live state, not the stored preference.</summary>
+    // The live state, not the stored preference.
     public static bool Visible => _visible;
 
     internal static void Initialize()
     {
-        // Ungated on purpose, unlike every other command in here. This one is the way back out of an
-        // overlay a player left switched on, so it has to work on a server that offers neither the
-        // developer features menu nor the client debugging convar.
+        // Ungated on purpose, unlike every other command in here. This one is the way back out of an overlay
+        // a player left switched on, so it has to work on a server that offers neither the developer features
+        // menu nor the client debugging convar.
         SharedAPI.Commands.RegisterCommand(ToggleCommand, false, new Action(Toggle));
 
         TickRegistry.Changed += MarkDirty;
@@ -55,7 +51,6 @@ public static class TickOverlay
             () => _visible);
     }
 
-    /// <summary>Puts the panel back the way the player left it. Call once at startup.</summary>
     // Not read by the tick condition directly, because that runs while the resource is still starting
     // and the page would miss the first snapshot.
     public static void Restore() => Apply(UserDefaults.TicksOverlay.Value, persist: false);
@@ -78,8 +73,8 @@ public static class TickOverlay
 
         _visible = visible;
 
-        // Nothing else re-runs the condition, and hiding stops the tick before it could post the
-        // message that empties the panel, so that one is sent from here.
+        // Nothing else re-runs the condition, and hiding stops the tick before it could post the message
+        // that empties the panel, so that one is sent from here.
         _tick?.Reevaluate();
 
         if (_visible)
@@ -105,8 +100,8 @@ public static class TickOverlay
             _dirty = true;
         }
 
-        // Polled for the same reason. The game blurs the world behind the pause menu and the panel
-        // is meant to look like it belongs to that world, so it blurs with it.
+        // Polled for the same reason. The game blurs the world behind the pause menu and the panel is meant
+        // to look like it belongs to that world, so it blurs with it.
         var paused = Native.IsPauseMenuActive();
 
         if (paused != _paused)
@@ -144,8 +139,8 @@ public static class TickOverlay
             };
         }
 
-        // Same shape, different assembly: MenuTickHandle and TickHandle share no base type, so this
-        // is a second loop rather than one over a common interface.
+        // Same shape, different assembly: MenuTickHandle and TickHandle share no base type, so this is a
+        // second loop rather than one over a common interface.
         foreach (var handle in theirs)
         {
             rows[index++] = new TickRow
@@ -173,7 +168,7 @@ public static class TickOverlay
 
         public required string Side { get; init; }
 
-        /// <summary>Whether the pause menu is up, so the panel can blur along with the world.</summary>
+        // So the panel can blur along with the world.
         public required bool Paused { get; init; }
 
         public required IReadOnlyList<TickRow> Ticks { get; init; }
@@ -181,7 +176,7 @@ public static class TickOverlay
 
     private sealed class TickRow
     {
-        /// <summary>Which scheduler the tick belongs to, so the panel can group them.</summary>
+        // Which scheduler the tick belongs to, so the panel can group them.
         public required string Source { get; init; }
 
         public required string Name { get; init; }

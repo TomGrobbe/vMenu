@@ -18,10 +18,8 @@ public class PromptNode
     public List<SuggestionNode>? Suggestions { get; set; }
 }
 
-/// <summary>
-/// Asks vMenu to open its text input for the player. The request id correlates the
-/// answer, chosen by the plugin side and echoed back in the result.
-/// </summary>
+/// <summary>Asks vMenu to open its text input for the player. The request id correlates the answer,
+/// chosen by the plugin side and echoed back in the result.</summary>
 public class PromptRequest
 {
     public int RequestId { get; set; }

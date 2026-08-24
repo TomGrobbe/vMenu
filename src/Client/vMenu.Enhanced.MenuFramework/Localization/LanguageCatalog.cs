@@ -4,12 +4,11 @@ using vMenu.Enhanced.MenuFramework.Localization.Languages;
 
 namespace vMenu.Enhanced.MenuFramework.Localization;
 
-/// <summary>Every language vMenu can display.</summary>
 // English is compiled in and every other language is a file, loaded by LanguageLoader. That split is
 // deliberate: English is the fallback for every key another language leaves out, so it has to be
-// complete and present before anything can render, which a file on disk cannot guarantee.
-// Keyed with an explicit comparer, so no lookup reaches EqualityComparer<T>.Default, whose internal
-// string comparer the sandbox blocks.
+// complete and present before anything can render, which a file on disk cannot guarantee. Keyed with
+// an explicit comparer, so no lookup reaches EqualityComparer<T>.Default, whose internal string
+// comparer the sandbox blocks.
 public static class LanguageCatalog
 {
     private static readonly Dictionary<string, LanguageTable> Tables = new(StringComparer.Ordinal);
@@ -24,10 +23,10 @@ public static class LanguageCatalog
         Register(English);
     }
 
-    /// <summary>Always present, and the fallback for every key another language has not translated.</summary>
+    // Always present, and the fallback for every key another language has not translated.
     public static LanguageTable English { get; }
 
-    /// <summary>In registration order, English first, which is the order the language picker shows.</summary>
+    // In registration order, English first, which is the order the language picker shows.
     public static IReadOnlyList<LanguageId> Available => Order;
 
     public static void Register(LanguageTable table)

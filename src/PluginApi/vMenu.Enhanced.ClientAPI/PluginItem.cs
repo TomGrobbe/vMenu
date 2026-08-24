@@ -2,10 +2,8 @@ using vMenu.Enhanced.PluginContracts;
 
 namespace vMenu.Enhanced.ClientAPI;
 
-/// <summary>
-/// One row in your plugin's menus. Setting a property updates the row live once the plugin is
-/// connected, and everything set before connecting simply rides along with the registration.
-/// </summary>
+/// <summary>One row in your plugin's menus. Setting a property updates the row live once the plugin
+/// is connected, and everything set before connecting rides along with the registration.</summary>
 public abstract class PluginItem
 {
     private Text _text;

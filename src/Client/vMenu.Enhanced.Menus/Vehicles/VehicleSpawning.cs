@@ -15,13 +15,8 @@ using VehicleSpawnerSettings = vMenu.Enhanced.Data.Configuration.Settings.Vehicl
 
 namespace vMenu.Enhanced.Menus.Vehicles;
 
-/// <summary>
-/// Putting a vehicle into the world, shared by the spawner and the saved vehicles menu.
-/// </summary>
-/// <remarks>
-/// Neither caller checks permissions here. Each one has its own wording for a refusal, so the check
-/// stays with them and this only does the work.
-/// </remarks>
+// Neither caller checks permissions here. Each one has its own wording for a refusal, so the check
+// stays with them and this only does the work.
 public static class VehicleSpawning
 {
     private const int DriverSeat = -1;
@@ -30,14 +25,12 @@ public static class VehicleSpawning
 
     private static int _previousVehicle;
 
-    /// <inheritdoc cref="SpawnAsync(uint)"/>
     public static Task<Vehicle?> SpawnAsync(string modelName) => SpawnAsync(API.Hash(modelName));
-
 
     public static async Task<Vehicle?> SpawnAsync(uint hash)
     {
-        // Checked and requested by hand because API.Vehicles.RequestAndCreate uses DateTime, which
-        // is currently broken and crashes the game.
+        // Checked and requested by hand because API.Vehicles.RequestAndCreate uses DateTime, which is
+        // currently broken and crashes the game.
         // https://github.com/citizenfx/rfc/discussions/328
         if (!Native.IsModelValid(hash))
         {
