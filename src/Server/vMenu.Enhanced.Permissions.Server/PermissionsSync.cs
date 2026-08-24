@@ -8,19 +8,13 @@ using vMenu.Enhanced.Logging;
 
 namespace vMenu.Enhanced.Permissions.Server;
 
-/// <summary>
-/// Server side of the permission handshake.
-/// </summary>
-/// <remarks>
-/// Handlers are registered imperatively rather than with <c>[OnNetEvent]</c> because attribute
-/// discovery only scans the assembly named as the <c>server_script</c>, and this one is a project
-/// reference.
-/// </remarks>
+// Handlers are registered imperatively rather than with [OnNetEvent] because attribute discovery
+// only scans the assembly named as the server_script, and this one is a project reference.
 public static class PermissionsSync
 {
     private const string RefreshCommand = "vmenu_refresh_permissions";
 
-    /// <summary>Call after <see cref="ServerPermissions.Initialize"/>.</summary>
+    // Call after ServerPermissions.Initialize.
     public static void RegisterEventHandlers()
     {
         API.OnNetEvent(PermissionEvents.Request, new Action<Player>(OnPermissionsRequested), false);
@@ -28,10 +22,8 @@ public static class PermissionsSync
         SharedAPI.Commands.RegisterCommand(RefreshCommand, true, new Action(RefreshAll));
     }
 
-    /// <summary>
-    /// Recomputes and re-sends permissions to every connected player, so ACL edits apply without a
-    /// restart.
-    /// </summary>
+    // Recomputes and re-sends permissions to every connected player, so ACL edits apply without a
+    // restart.
     public static void RefreshAll()
     {
         if (!ServerPermissions.IsReady)

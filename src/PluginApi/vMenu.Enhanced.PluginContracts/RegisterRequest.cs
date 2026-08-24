@@ -1,10 +1,8 @@
 namespace vMenu.Enhanced.PluginContracts;
 
-/// <summary>
-/// The client side registration payload: the plugin's whole menu tree plus everything
-/// needed to present it. Registration is idempotent, a re-register replaces the plugin's
-/// previous tree entirely.
-/// </summary>
+/// <summary>The client side registration payload: the plugin's whole menu tree plus everything
+/// needed to present it. Registration is idempotent: a re-register replaces the plugin's previous
+/// tree entirely.</summary>
 public class RegisterRequest
 {
     public int ProtocolVersion { get; set; } = PluginProtocol.Version;

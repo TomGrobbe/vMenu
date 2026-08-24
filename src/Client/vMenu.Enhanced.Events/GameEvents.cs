@@ -1,8 +1,7 @@
 namespace vMenu.Enhanced.Events;
 
-/// <summary>
-/// Player and vehicle state changes as C# events, this eliminates the need for many (duplicate) tick functions constantly checking for changes.
-/// </summary>
+// Player and vehicle state changes as C# events, which saves every feature running its own tick to
+// watch for the same thing.
 public static class GameEvents
 {
     private static bool _initialized;

@@ -7,15 +7,15 @@ public static class TeleportMenu
 
     public const string Menu = "vMenu.Enhanced.Menus.TeleportMenu.Menu";
 
-    /// <summary>Teleporting to the waypoint the player put on their map.</summary>
+    // Teleporting to the waypoint the player put on their map.
     public const string Waypoint = "vMenu.Enhanced.Menus.TeleportMenu.Waypoint";
 
-    /// <summary>Teleporting to coordinates the player types in by hand.</summary>
+    // Teleporting to coordinates the player types in by hand.
     public const string Coords = "vMenu.Enhanced.Menus.TeleportMenu.Coords";
 
-    /// <summary>Receiving the locations a server owner set up, and teleporting to them.</summary>
+    // Receiving the locations a server owner set up, and teleporting to them.
     public const string Category = "vMenu.Enhanced.Menus.TeleportMenu.Category";
 
-    /// <summary>Adding or removing a category or a location, which writes the config file for everybody.</summary>
+    // Adding or removing a category or a location, which writes the config file for everybody.
     public const string Manage = "vMenu.Enhanced.Menus.TeleportMenu.Manage";
 }

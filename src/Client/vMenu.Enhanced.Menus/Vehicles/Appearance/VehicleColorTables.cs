@@ -2,22 +2,20 @@ using vMenu.Enhanced.MenuFramework.Localization;
 
 namespace vMenu.Enhanced.Menus.Vehicles.Appearance;
 
-/// <summary>One paintable colour: the id the natives want, and the game's name for it.</summary>
-// A plain class rather than a record, since the generated equality would route through
-// EqualityComparer<string>.Default and the client sandbox refuses to load it.
+// A class rather than a record: generated equality routes through
+// EqualityComparer<string>.Default, which the client sandbox refuses to load.
 public sealed class VehicleColorOption(int id, string gxtKey)
 {
     public int Id { get; } = id;
 
     public string GxtKey { get; } = gxtKey;
 
-    /// <summary>The game's name for this colour, or a readable form of the key when it has none.</summary>
+    // The game's name for this colour, or a readable form of the key when it has none.
     public MenuText Text => GameLabels.GameOrLiteral(GxtKey, Fallback);
 
     private string Fallback => VehicleColorTables.FallbackName(GxtKey);
 }
 
-/// <summary>One group of colours as the game's paint shop presents them.</summary>
 public sealed class VehicleColorGroup(string nameKey, IReadOnlyList<VehicleColorOption> colors)
 {
     public string NameKey { get; } = nameKey;
@@ -38,17 +36,11 @@ public sealed class VehicleColorGroup(string nameKey, IReadOnlyList<VehicleColor
     }
 }
 
-/// <summary>
-/// Every colour the game's paint shop offers, grouped the way it groups them.
-/// </summary>
-/// <remarks>
-/// The paint finish is a separate setting rather than part of these groups, because the game treats
-/// it that way: the same colour id looks completely different depending on the finish applied over
-/// it. That is why there is no separate "metallic" table here. Metallic is a finish, not a colour.
-/// </remarks>
+// The paint finish is a separate setting rather than part of these groups, because the game treats
+// it that way: the same colour id looks completely different depending on the finish applied over
+// it. That is why there is no separate "metallic" table. Metallic is a finish, not a colour.
 public static class VehicleColorTables
 {
-    /// <summary>The keys the game ships no text for, and what to call them instead.</summary>
     // These three are the only holes in the table. Everything else resolves on a stock install.
     private static readonly Dictionary<string, string> Fallbacks = new(StringComparer.Ordinal)
     {
@@ -57,7 +49,7 @@ public static class VehicleColorTables
         ["VERY_DARK_BLUE"] = "Very Dark Blue",
     };
 
-    /// <summary>The main table. Also what pearlescent, dashboard, interior and wheel colours pick from.</summary>
+    // The main table. Also what pearlescent, dashboard, interior and wheel colours pick from.
     public static IReadOnlyList<VehicleColorOption> Classic { get; } =
     [
         new(0, "BLACK"), new(1, "GRAPHITE"), new(2, "BLACK_STEEL"), new(3, "DARK_SILVER"),
@@ -148,7 +140,7 @@ public static class VehicleColorTables
         new(133, "OLIVE_GREEN"),
     ];
 
-    /// <summary>The paints that shift colour with the viewing angle, added in a later game build.</summary>
+    // The paints that shift colour with the viewing angle, added in a later game build.
     public static IReadOnlyList<VehicleColorOption> Chameleon { get; } =
     [
         new(223, "G9_PAINT01"), new(224, "G9_PAINT02"), new(225, "G9_PAINT03"), new(226, "G9_PAINT04"),
@@ -157,18 +149,13 @@ public static class VehicleColorTables
         new(235, "G9_PAINT13"), new(236, "G9_PAINT14"), new(237, "G9_PAINT15"), new(238, "G9_PAINT16"),
     ];
 
-    /// <summary>
-    /// Whether this game build has the chameleon paints. Asked of the game rather than of a build
-    /// number, so it also answers correctly on a server that added the text itself.
-    /// </summary>
+    // Asked of the game rather than of a build number, so it also answers correctly on a server that
+    // added the text itself.
     public static bool HasChameleonPaints => GameLabels.Exists("G9_PAINT01");
 
-    /// <summary>
-    /// The groups an ordinary body colour can be picked from, in the order they are shown.
-    /// </summary>
-    // Chameleon is not among them. It is a paint finish as much as a colour, and mixing it in with
-    // the rest meant picking one changed the colour without changing the finish, which looked like
-    // the menu doing something different in each direction. It has a row of its own instead.
+    // Chameleon is not among them. It is a paint finish as much as a colour, and mixing it in with the
+    // rest meant picking one changed the colour without changing the finish, which looked like the menu
+    // doing something different in each direction. It has a row of its own instead.
     public static IReadOnlyList<VehicleColorGroup> BodyGroups { get; } =
     [
         new(Loc.VehicleOptions.ColorGroupClassic, Classic),
@@ -178,7 +165,6 @@ public static class VehicleColorTables
         new(Loc.VehicleOptions.ColorGroupWorn, Worn),
     ];
 
-    /// <summary>Every colour vMenu knows a name for, for turning a stored id back into one.</summary>
     public static VehicleColorOption? Find(int colorId)
     {
         foreach (var group in BodyGroups)
@@ -203,7 +189,7 @@ public static class VehicleColorTables
         return null;
     }
 
-    /// <summary>Where a colour sits in a table, or -1 when it is not in it.</summary>
+    // Minus one when the colour is not in the table.
     public static int IndexOf(IReadOnlyList<VehicleColorOption> colors, int colorId)
     {
         for (var index = 0; index < colors.Count; index++)

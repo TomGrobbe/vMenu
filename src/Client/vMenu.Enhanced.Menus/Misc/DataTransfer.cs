@@ -10,10 +10,9 @@ using vMenu.Enhanced.Storage;
 
 namespace vMenu.Enhanced.Menus.Misc;
 
-/// <summary>Makes a transfer code, reads one back, and puts what it held into effect.</summary>
 public static class DataTransfer
 {
-    /// <summary>How much of an unreadable code goes in the log before it is cut off.</summary>
+    // How much of an unreadable code goes in the log before it is cut off.
     private const int LogSample = 200;
 
     public static async Task ExportAsync()
@@ -27,8 +26,8 @@ public static class DataTransfer
             return;
         }
 
-        // Serialized a frame later, so the hitch a large profile costs on System.Text.Json's
-        // reflection path lands while the screen is coming up rather than while the menu is still being drawn.
+        // Serialized a frame later, so the hitch a large profile costs on System.Text.Json's reflection path
+        // lands while the screen is coming up rather than while the menu is still being drawn.
         await API.Delay(0);
 
         await DataTransferScreen.ShowAsync(Prompt(exporting: true, replacing: false), ClientJson.Serialize(bundle));
@@ -66,7 +65,7 @@ public static class DataTransfer
         Report(result, replacing);
     }
 
-    /// <returns><see langword="null"/> when the code is unusable. The player has already been told.</returns>
+    // Null when the code is unusable. The player has already been told.
     private static KvpBundle? Read(string pasted)
     {
         if (!ClientJson.TryDeserialize<KvpBundle>(pasted, out var bundle) || bundle is null)
@@ -106,7 +105,7 @@ public static class DataTransfer
         return bundle;
     }
 
-    /// <summary>Puts what was imported into effect, so nobody has to reconnect to see it.</summary>
+    // Puts what was imported into effect, so nobody has to reconnect to see it.
     private static void Reapply()
     {
         UserPreferences.Restore();
@@ -129,8 +128,8 @@ public static class DataTransfer
                 ("removed", Number(result.Deleted)))
             : MenuText.Key(Loc.DataTransfer.Imported, ("count", Number(result.Applied))));
 
-        // Its own message rather than an aside on the one above: nothing here went wrong, and
-        // burying the good news under a warning would read as though something had.
+        // Its own message rather than an aside on the one above: nothing here went wrong, and burying the
+        // good news under a warning would read as though something had.
         if (result.SkippedNewer > 0)
         {
             Notifications.Warning(MenuText.Key(Loc.DataTransfer.SkippedNewer, ("count", Number(result.SkippedNewer))));

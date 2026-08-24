@@ -1,13 +1,11 @@
 namespace vMenu.Enhanced.MenuFramework.Localization;
 
-/// <summary>
-/// Every translation key, as constants.
-/// </summary>
-// Constants rather than inline strings, so a typo is a compile error and renaming is a safe
-// refactor. Partial across one file per area, so keep each area's keys next to their English text.
+// Every translation key, as constants rather than inline strings, so a typo is a compile error and
+// renaming is a safe refactor. Partial across one file per area, so each area's keys sit next to
+// their English text.
 public static partial class Loc
 {
-    /// <summary>Keys the menu framework itself resolves, rather than any particular menu.</summary>
+    // Keys the menu framework itself resolves, rather than any particular menu.
     public static class Framework
     {
         public const string RestrictedDescription = "framework.restricted";

@@ -19,30 +19,22 @@ using OnlinePlayersPermissions = vMenu.Enhanced.Data.Permissions.Menus.OnlinePla
 
 namespace vMenu.Enhanced.Menus;
 
-/// <summary>
-/// Everybody on the server, a page at a time, and what you can do to them.
-/// </summary>
-/// <remarks>
-/// The list is a snapshot the server hands over when the menu opens. It deliberately does not keep
-/// itself up to date: rows arriving or disappearing under the cursor would shuffle an alphabetical
-/// list around while somebody is reading it. Instead the subtitle turns red when the snapshot has
-/// gone stale, and closing and reopening the menu takes a fresh one.
-/// </remarks>
+// The list is a snapshot the server hands over when the menu opens. It deliberately does not keep
+// itself up to date: rows arriving or disappearing under the cursor would shuffle an alphabetical
+// list around while somebody is reading it. The subtitle turns red instead, and closing and
+// reopening the menu takes a fresh one.
 [VMenu(
     TitleKey = Loc.OnlinePlayers.Title,
     DescriptionKey = Loc.OnlinePlayers.LinkDescription,
     Permission = OnlinePlayersPermissions.Menu)]
 public sealed class OnlinePlayersMenu : MenuDefinition
 {
-    /// <summary>How many players one page holds.</summary>
-    // Just over twice what fits on screen, so a page is a short scroll rather than a long one, and
-    // paging stays the quicker way to cross a busy server.
+    // Just over twice what fits on screen, so paging stays the quicker way to cross a busy server.
     private const int PlayersPerPage = 24;
 
-    /// <summary>Long enough for the longest identifier anybody actually has.</summary>
+    // Long enough for the longest identifier anybody actually has.
     private const int SearchMaxLength = 64;
 
-    /// <summary>How much of the search term the subtitle repeats back.</summary>
     private const int QueryDisplayLength = 16;
 
     private const string DeletedVehicle = "1";
@@ -63,7 +55,6 @@ public sealed class OnlinePlayersMenu : MenuDefinition
 
     private OnlinePlayer? _selected;
 
-    /// <summary>Whether the list is on screen, since the staleness notice only makes sense there.</summary>
     private bool _open;
 
     private string _query = string.Empty;
@@ -72,16 +63,14 @@ public sealed class OnlinePlayersMenu : MenuDefinition
 
     private bool _outdated;
 
-    /// <summary>Whether a list has ever come back, so there is a revision worth comparing against.</summary>
     private bool _hasSnapshot;
 
     private bool _busy;
 
-    /// <summary>When the actions menu last closed, so coming straight back is not a refresh.</summary>
-    // Opening the actions menu closes this one, and closing and reopening is what refreshes, so
-    // without this backing out of a player would refetch the list and lose their place. Going back
-    // closes the child and reopens the parent in one call, so the two land on the same frame, which
-    // is what tells them apart from the player closing the menu and opening it again later.
+    // Opening the actions menu closes this one, and closing and reopening is what refreshes, so without
+    // this backing out of a player would refetch the list and lose their place. Going back closes the
+    // child and reopens the parent in one call, so the two land on the same frame, which is what tells
+    // them apart from the player closing the menu and opening it again later.
     private int _leftForActions = -1;
 
     public override MenuText Subtitle => MenuText.From(BuildSubtitle);
@@ -94,9 +83,8 @@ public sealed class OnlinePlayersMenu : MenuDefinition
         menu.Menu.WrapPages = true;
         menu.Menu.OnPageChange += OnPageChanged;
 
-        // Space opens the search. MenuAPI runs these from its draw loop, so it only fires while this
-        // menu is the one on screen, and disabling the control stops the player jumping at the same
-        // time.
+        // Space opens the search. MenuAPI runs these from its draw loop, so it only fires while this menu is
+        // the one on screen, and disabling the control stops the player jumping at the same time.
         menu.Menu.ButtonPressHandlers.Add(new Menu.ButtonPressHandler(
             Control.Jump,
             Menu.ControlPressCheckType.JUST_PRESSED,
@@ -129,8 +117,8 @@ public sealed class OnlinePlayersMenu : MenuDefinition
 
         _open = true;
 
-        // Rewritten here rather than declared once, so they follow a language change like everything
-        // else does. MenuAPI's button hints hold a plain string, not a translation key.
+        // Rewritten here rather than declared once, so they follow a language change like everything else
+        // does. MenuAPI's button hints hold a plain string, not a translation key.
         var localizer = Localizer.Current;
 
         menu.Menu.InstructionalButtons[Control.Jump] = localizer.Get(Loc.OnlinePlayers.SearchButton);
@@ -139,8 +127,8 @@ public sealed class OnlinePlayersMenu : MenuDefinition
 
         if (_leftForActions == Native.GetGameTimer())
         {
-            // Opening the actions menu closed this one, so anything the list missed while it was
-            // down never reached the listener. This is the one path that keeps the old snapshot.
+            // Opening the actions menu closed this one, so anything the list missed while it was down never
+            // reached the listener. This is the one path that keeps the old snapshot.
             CheckStaleness();
 
             UpdateSubtitle();
@@ -151,7 +139,6 @@ public sealed class OnlinePlayersMenu : MenuDefinition
         _ = RefreshAsync(_query);
     }
 
-    /// <summary>Asks the server who is online, and rebuilds the rows from the answer.</summary>
     private async Task RefreshAsync(string query)
     {
         if (_menu is not { } menu || _busy)
@@ -184,8 +171,8 @@ public sealed class OnlinePlayersMenu : MenuDefinition
                 }
             }
 
-            // By name, because that is the order somebody reading a page expects. Ties broken by
-            // server id so two players called the same thing do not swap places between refreshes.
+            // By name, because that is the order somebody reading a page expects. Ties broken by server id so
+            // two players called the same thing do not swap places between refreshes.
             _players.Sort((left, right) =>
             {
                 var byName = string.Compare(left.Name, right.Name, StringComparison.OrdinalIgnoreCase);
@@ -213,8 +200,8 @@ public sealed class OnlinePlayersMenu : MenuDefinition
 
         if (_players.Count == 0)
         {
-            // A row rather than an empty menu: MenuAPI ignores every direction key while a menu has no
-            // items, which would leave the player unable to page or to search again.
+            // A row rather than an empty menu: MenuAPI ignores every direction key while a menu has no items,
+            // which would leave the player unable to page or to search again.
             menu.AddRange([
                 new ButtonEntry
                 {
@@ -345,8 +332,8 @@ public sealed class OnlinePlayersMenu : MenuDefinition
             OnSelectedAsync = _ => SetWaypointAsync(),
         });
 
-        // Its own menu rather than a notification: there are usually five or six of these and every
-        // one is far too long to read in a corner of the screen.
+        // Its own menu rather than a notification: there are usually five or six of these and every one is
+        // far too long to read in a corner of the screen.
         _identifiers = actions.AddDetachedMenu(
             MenuText.From(() => _selected?.Name ?? string.Empty),
             MenuText.Key(Loc.OnlinePlayers.IdentifiersSubtitle),
@@ -505,8 +492,8 @@ public sealed class OnlinePlayersMenu : MenuDefinition
 
             rows.Add(new ButtonEntry
             {
-                // The kind on the row, the whole thing in the description box, which is the only part
-                // of a menu wide enough to show fifty characters.
+                // The kind on the row, the whole thing in the description box, which is the only part of a menu wide
+                // enough to show fifty characters.
                 Text = MenuText.Literal(separator > 0 ? identifier[..separator] : identifier),
                 Description = MenuText.Key(
                     Loc.OnlinePlayers.IdentifierDescription,
@@ -698,7 +685,6 @@ public sealed class OnlinePlayersMenu : MenuDefinition
         Notifications.Success(MenuText.Key(Loc.OnlinePlayers.WaypointDone, ("player", MenuText.Literal(found.Player.Name))));
     }
 
-    /// <summary>Where the selected player is right now, or null once the failure has been reported.</summary>
     private async Task<(OnlinePlayer Player, Vector3 Coords)?> CoordsAsync(string action)
     {
         if (Target() is not { } player)
@@ -734,8 +720,8 @@ public sealed class OnlinePlayersMenu : MenuDefinition
 
         var name = MenuText.Literal(player.Name);
 
-        // Filled by hand rather than with a collection expression: spreading an array into one makes
-        // the compiler reach for ReadOnlySpan, which the client's IL verifier refuses to load.
+        // Filled by hand rather than with a collection expression: spreading an array into one makes the
+        // compiler reach for ReadOnlySpan, which the client's IL verifier refuses to load.
         var arguments = new string[extraArguments.Length + 1];
 
         arguments[0] = Id(player);
@@ -754,12 +740,8 @@ public sealed class OnlinePlayersMenu : MenuDefinition
         Notifications.Success(MenuText.Key(successKey, ("player", name)));
     }
 
-    /// <summary>
-    /// The selected player, refusing the person doing the selecting unless the action allows them.
-    /// </summary>
-    // Summon and teleporting into somebody's vehicle are the two the server still refuses on yourself,
-    // so for those this only turns a generic refusal into a sentence that says what actually happened.
-    // Everything else passes allowSelf and is not refused on either side.
+    // Summon and teleporting into somebody's vehicle are the two the server still refuses on yourself, so
+    // for those this only turns a generic refusal into a sentence that says what actually happened.
     private OnlinePlayer? Target(bool allowSelf = false)
     {
         if (_selected is not { } player)
@@ -797,8 +779,7 @@ public sealed class OnlinePlayersMenu : MenuDefinition
 
         var query = typed.Trim();
 
-        // A search is a fresh fetch either way, so it doubles as the refresh and clears the stale
-        // marker with it.
+        // A search is a fresh fetch either way, so it doubles as the refresh and clears the stale marker.
         await RefreshAsync(query);
 
         Notifications.Info(query.Length == 0
@@ -809,10 +790,8 @@ public sealed class OnlinePlayersMenu : MenuDefinition
                 ("query", MenuText.Literal(query))));
     }
 
-    /// <summary>
-    /// Names only. Identifiers never reach the client, which is the whole reason the search runs on
-    /// the server, so there is nothing to suggest for them.
-    /// </summary>
+    // Names only. Identifiers never reach the client, which is the whole reason the search runs on the
+    // server, so there is nothing to suggest for them.
     private IReadOnlyList<InputSuggestion> NameSuggestions() =>
         [.. _players.Select(player => new InputSuggestion
         {
@@ -838,9 +817,9 @@ public sealed class OnlinePlayersMenu : MenuDefinition
 
     private void CheckStaleness()
     {
-        // There is nothing to be out of date with until a list has actually arrived, and nothing to
-        // say about it while the list is not on screen: the notice asks the player to reopen the
-        // menu, which reads as nonsense to somebody who does not have it open.
+        // There is nothing to be out of date with until a list has actually arrived, and nothing to say
+        // about it while the list is not on screen: the notice asks the player to reopen the menu, which
+        // reads as nonsense to somebody who does not have it open.
         if (!_open || !_hasSnapshot || _busy)
         {
             return;
@@ -855,8 +834,8 @@ public sealed class OnlinePlayersMenu : MenuDefinition
 
         UpdateSubtitle();
 
-        // The subtitle bar only has room to say *that* the list is stale, not what to do about it, so
-        // the instruction goes where there is space for a sentence. Fires once, on the way stale.
+        // The subtitle bar only has room to say that the list is stale, not what to do about it, so the
+        // instruction goes where there is space for a sentence. Fires once, on the way stale.
         Notifications.Warning(MenuText.Key(Loc.OnlinePlayers.OutdatedNotice));
     }
 
@@ -870,9 +849,6 @@ public sealed class OnlinePlayersMenu : MenuDefinition
         }
     }
 
-    /// <summary>
-    /// The page, how many players are on it, and whether the list can still be trusted.
-    /// </summary>
     // Also what the framework resolves on a language or permission refresh, so both paths produce the
     // same line and neither can leave a stale one behind.
     private string BuildSubtitle()
@@ -896,12 +872,10 @@ public sealed class OnlinePlayersMenu : MenuDefinition
             return text;
         }
 
-        // Only the marker is red, the page and the count keep reading normally. The blue is spelled
-        // out because MenuAPI stops applying it once the string carries a colour code of its own.
-        //
-        // HUD_COLOUR_RED rather than the shorter ~r~, because MenuAPI draws the subtitle in capitals
-        // and uppercasing ~r~ produces a token the game does not know. The HUD colour names are
-        // already uppercase, so they come through whatever it does to the string.
+        // Only the marker is red, the page and the count keep reading normally. The blue is spelled out
+        // because MenuAPI stops applying it once the string carries a colour code of its own, and
+        // HUD_COLOUR_RED rather than ~r~ because MenuAPI draws the subtitle in capitals and an uppercased
+        // ~r~ is a token the game does not know.
         return $"~HUD_COLOUR_FREEMODE~{text} ~HUD_COLOUR_RED~{localizer.Get(Loc.OnlinePlayers.SubtitleOutdated)}";
     }
 
@@ -933,9 +907,7 @@ public sealed class OnlinePlayersMenu : MenuDefinition
         Notifications.Error(MenuText.Key(key, ("player", player)));
     }
 
-    /// <summary>Keeps a searched identifier from running the subtitle off the side of the menu.</summary>
-    // A licence is around fifty characters, which is several times what the bar can show next to the
-    // page and the count.
+    // A licence is around fifty characters, several times what the bar can show next to the page count.
     private static string Shorten(string value) =>
         value.Length <= QueryDisplayLength ? value : value[..(QueryDisplayLength - 1)] + "…";
 
@@ -948,8 +920,7 @@ public sealed class OnlinePlayersMenu : MenuDefinition
     private static bool TryParse(string value, out float result) =>
         float.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out result);
 
-    /// <summary>One player, as far as this client is concerned.</summary>
-    // A plain class rather than a record: the generated equality would route through
+    // A class rather than a record: generated equality routes through
     // EqualityComparer<string>.Default, which the sandbox refuses to load.
     private sealed class OnlinePlayer(int serverId, string name)
     {

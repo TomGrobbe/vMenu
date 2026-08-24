@@ -5,12 +5,10 @@ using vMenu.Enhanced.PluginContracts;
 
 namespace vMenu.Enhanced.Plugins;
 
-/// <summary>
-/// Named <c>{placeholder}</c> substitution for plugin texts, following the same rules as the
-/// framework's own: <c>{{</c> and <c>}}</c> escape braces, an unknown name renders loudly and an
-/// unbalanced template still renders. Reimplemented here because the framework's walker is
-/// internal and resolves framework arguments rather than payload ones.
-/// </summary>
+// Named {placeholder} substitution for plugin texts, following the same rules as the framework's
+// own: {{ and }} escape braces, an unknown name renders loudly and an unbalanced template still
+// renders. Reimplemented here because the framework's walker is internal and resolves framework
+// arguments rather than payload ones.
 internal static class PluginPlaceholders
 {
     internal static string Substitute(string template, Dictionary<string, TextRef>? arguments, PluginState plugin)

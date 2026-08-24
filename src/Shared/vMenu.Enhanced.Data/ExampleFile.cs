@@ -2,21 +2,18 @@ using System.Text;
 
 namespace vMenu.Enhanced.Data;
 
-/// <summary>
-/// The warning header shared by every generated <c>.example</c> file.
-/// </summary>
 public static class ExampleFile
 {
     public const string Extension = ".example";
 
     public const string ConfigDirectory = "config";
 
-    /// <summary>Every plugin's templates live here, each one named after the resource it came from.</summary>
-    // One shipped folder rather than a folder per plugin: SaveResourceFile writes files and never
-    // folders, and no native makes one, so a folder named after a plugin could never be created.
+    // Every plugin's templates live here, each named after the resource it came from. One shipped folder
+    // rather than a folder per plugin: SaveResourceFile writes files and never folders, and no native
+    // makes one, so a folder named after a plugin could never be created.
     public const string PluginsDirectory = ConfigDirectory + "/plugins";
 
-    /// <summary>What a plugin's copy of one of these templates should be called.</summary>
+    // What a plugin's copy of one of these templates should be called.
     public static string PluginCopyName(string resource, string copyName) => resource + "." + copyName;
 
     private const string Rule = "###############################################################################";
@@ -24,7 +21,7 @@ public static class ExampleFile
     public static string Banner(string copyName, params string[] extraNotes) =>
         BannerIn(ConfigDirectory, copyName, extraNotes);
 
-    /// <summary>The same banner, for a file that does not sit directly in the config directory.</summary>
+    // The same banner, for a file that does not sit directly in the config directory.
     public static string BannerIn(string directory, string copyName, params string[] extraNotes)
     {
         var banner = new StringBuilder();
@@ -34,8 +31,8 @@ public static class ExampleFile
         banner.Append("#  ANY CHANGES YOU MAKE TO IT WILL BE LOST.\n");
         banner.Append("#\n");
         banner.Append("#  To use it:\n");
-        // Concatenated rather than interpolated: the FiveM sandbox refuses StringBuilder's
-        // interpolated string handler, so an interpolated argument here fails to load the assembly.
+        // Concatenated rather than interpolated: the FiveM sandbox refuses StringBuilder's interpolated
+        // string handler, so an interpolated argument here fails to load the assembly.
         banner.Append("#    1. Copy this file and name the copy '" + copyName + "'.\n");
         banner.Append("#    2. Edit that copy, never this one.\n");
         banner.Append("#    3. Exec it from your server.cfg ABOVE the line that starts vMenu:\n");
@@ -53,7 +50,7 @@ public static class ExampleFile
         return banner.ToString();
     }
 
-    /// <summary>Wraps prose into <c>#</c> comment lines.</summary>
+    // Wraps prose into # comment lines.
     public static string Comment(string text, string prefix = "#", int width = 78)
     {
         var comment = new StringBuilder();

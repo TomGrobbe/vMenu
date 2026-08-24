@@ -8,14 +8,11 @@ public static class ConfigurationExample
 
     public static string ResourcePath => $"{ExampleFile.ConfigDirectory}/{CopyName}{ExampleFile.Extension}";
 
-    /// <summary>Where one plugin's own settings template lives.</summary>
+    // Where one plugin's own settings template lives.
     public static string PluginResourcePath(string resource) =>
         $"{ExampleFile.PluginsDirectory}/{ExampleFile.PluginCopyName(resource, CopyName)}{ExampleFile.Extension}";
 
-    /// <summary>
-    /// One plugin's settings on their own, for its <c>&lt;resource&gt;.configuration.cfg.example</c>
-    /// in the one shared plugins folder.
-    /// </summary>
+    // One plugin's settings on their own, for its own example file in the shared plugins folder.
     public static string RenderForPlugin(string resource, string displayName, IEnumerable<Setting> settings)
     {
         var declared = settings.ToList();

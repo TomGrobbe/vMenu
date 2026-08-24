@@ -1,16 +1,14 @@
 namespace vMenu.Enhanced.Data.Configuration;
 
-/// <summary>
-/// Rules of the dotted setting naming scheme. Names are convars, so both sides read them with the
-/// exact string declared here and nothing composes a prefix at runtime.
-/// </summary>
+// Rules of the dotted setting naming scheme. Names are convars, so both sides read them with the
+// exact string declared here and nothing composes a prefix at runtime.
 public static class ConfigPath
 {
     public const string Root = "vMenu.Enhanced";
 
     public const char Separator = '.';
 
-    /// <summary>Whether a segment survives a convar lookup. Anything else could never be set.</summary>
+    // Whether a segment survives a convar lookup. Anything else could never be set.
     public static bool IsValidSegment(string segment)
     {
         if (string.IsNullOrEmpty(segment))

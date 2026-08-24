@@ -126,10 +126,8 @@
     transition: opacity 200ms ease-in, transform 200ms ease-in;
 }
 
-/*
-   The stack grows upwards, so the newest row also has to push the older ones up. Clipping its own
-   height open does that; the cap only has to clear the tallest row a message can produce.
-*/
+/* The stack grows upwards, so the newest row also has to push the older ones up. Clipping its own
+   height open does that; the cap only has to clear the tallest row a message can produce. */
 @keyframes toast-in {
     from {
         opacity: 0;

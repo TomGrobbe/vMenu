@@ -6,17 +6,15 @@ using vMenu.Enhanced.PluginContracts;
 
 namespace vMenu.Enhanced.Plugins;
 
-/// <summary>
-/// Applies an update batch to a plugin's live tree. Most operations are a node mutation followed
-/// by one shared refresh at the end. Structural operations rebuild the owning menu on the spot,
-/// which already refreshes the whole tree.
-/// </summary>
+// Applies an update batch to a plugin's live tree. Most operations are a node mutation followed by
+// one shared refresh at the end. Structural operations rebuild the owning menu on the spot, which
+// already refreshes the whole tree.
 internal static class PluginUpdateOps
 {
     internal static void Apply(PluginState state, UpdateBatch batch)
     {
-        // Set by a presentation op and cleared by a structural one, which refreshes the whole tree
-        // as it materialises. Tracked in op order, so a rename after an insert still lands.
+        // Set by a presentation op and cleared by a structural one, which refreshes the whole tree as it
+        // materialises. Tracked in op order, so a rename after an insert still lands.
         var dirty = false;
         var filtersDirty = false;
         var playerActionsChanged = false;
@@ -198,9 +196,8 @@ internal static class PluginUpdateOps
                         var report = new RegisterResult();
                         var entries = new List<MenuEntry>();
 
-                        // A menu the plugin declared while empty has no row and so no live menu
-                        // behind it yet. Its nodes are still indexed, so the rows land on the node
-                        // now and the whole tree is materialised once at the end instead.
+                        // A menu the plugin declared while empty has no row and so no live menu behind it yet. Its nodes are
+                        // still indexed, so the rows land on the node now and the whole tree is materialised once at the end.
                         var live = state.Builders.TryGetValue(menuNode.Id, out var target);
 
                         foreach (var added in op.Items)
@@ -471,7 +468,7 @@ internal static class PluginUpdateOps
         return false;
     }
 
-    /// <summary>The declared menu alone, for an op that works whether or not it is on screen yet.</summary>
+    // The declared menu alone, for an op that works whether or not it is on screen yet.
     private static bool TryMenuNode(PluginState state, UpdateOp op, out MenuNode menu)
     {
         if (op.MenuId is { Length: > 0 } id && state.MenusById.TryGetValue(id, out var foundMenu))

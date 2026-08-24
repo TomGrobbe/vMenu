@@ -14,7 +14,6 @@ using MiscSettingsPermissions = vMenu.Enhanced.Data.Permissions.Menus.MiscSettin
 
 namespace vMenu.Enhanced.Menus.Misc;
 
-/// <summary>Everything the blips and the name tags need to know about one player this pass.</summary>
 public sealed class PresenceView(
     int serverId,
     int slot,
@@ -29,55 +28,40 @@ public sealed class PresenceView(
 {
     public int ServerId { get; } = serverId;
 
-    /// <summary>Only needed for players the game has not got, whose name it cannot look up itself.</summary>
+    // Only needed for players the game has not got, whose name it cannot look up itself.
     public string Name { get; } = name;
 
-    /// <summary>The local player index, or -1 when this player is not streamed in.</summary>
     public int Slot { get; } = slot;
 
-    /// <summary>Their character, or zero when they are not streamed in.</summary>
     public int Ped { get; } = ped;
 
     public Vector3 Position { get; } = position;
 
     public int Heading { get; } = heading;
 
-    /// <summary>What they are driving, or zero on foot.</summary>
     public uint VehicleModel { get; } = vehicleModel;
 
     public bool NoClip { get; } = noClip;
 
     public bool Dead { get; } = dead;
 
-    /// <summary>Whether this player is staff, which is what marks their name and blip out in orange.</summary>
     public bool IsStaff { get; } = staff;
 
-    /// <summary>Whether the game has this player loaded, which decides almost everything else.</summary>
     public bool IsStreamed => Ped != 0;
 
-    /// <summary>Whether they should be shown at all.</summary>
-    // Noclip is what hides somebody, and the permission below is what lifts that for the person
-    // looking. Asked per player rather than worked out once a pass because the answer is a dictionary
-    // lookup behind a cache, and a pass only ever looks at a slice of the server.
+    // Noclip is what hides somebody, and the permission is what lifts that for the person looking.
     public bool IsHidden => NoClip && !PlayerPresence.SeesHiddenPlayers;
 }
 
-/// <summary>
-/// The one loop behind player blips and overhead names, and the store of where everybody is.
-/// </summary>
 public static class PlayerPresence
 {
-    /// <summary>How often the loop runs.</summary>
     private const long TickMs = 250;
 
-    /// <summary>How much of the tracked set one pass gets through.</summary>
     // Four passes to cover everybody, so a player's blip is never more than a second out of date.
     private const int PassesPerSweep = 4;
 
-    /// <summary>The fewest players a pass will take on, so a quiet server still keeps up.</summary>
     private const int MinimumSlice = 8;
 
-    /// <summary>How long a server update is trusted for before the player is treated as gone.</summary>
     // A time to live rather than a "player left" message, because it heals itself. A dropped message
     // cannot leave a blip stuck on the map forever, which is exactly the failure worth designing out.
     private const int StaleMs = 15_000;
@@ -86,7 +70,6 @@ public static class PlayerPresence
 
     private static readonly Dictionary<int, int> ReceivedAt = [];
 
-    /// <summary>Every player either feature might have something on screen for.</summary>
     private static readonly List<int> Tracked = [];
 
     private static readonly List<PresenceView> Slice = [];
@@ -97,7 +80,6 @@ public static class PlayerPresence
 
     private static bool _subscribed;
 
-    /// <summary>Whether the server is currently sending us anybody's position.</summary>
     public static bool IsSubscribed => _subscribed;
 
     public static void Initialize()
@@ -110,12 +92,11 @@ public static class PlayerPresence
 
         ClientPermissions.PermissionsChanged += Reevaluate;
 
-        // Blips and name tags outlive the code that made them, so stopping the resource without
-        // this leaves them on screen with nothing left running to ever take them off again.
+        // Blips and name tags outlive the code that made them, so stopping the resource without this leaves
+        // them on screen with nothing left running to ever take them off again.
         ResourceShutdown.Stopping += Teardown;
     }
 
-    /// <summary>Starts or stops the loop, and tells the server whether to keep sending positions.</summary>
     public static void Reevaluate()
     {
         _tick?.Reevaluate();
@@ -123,15 +104,12 @@ public static class PlayerPresence
         UpdateSubscription();
     }
 
-    /// <summary>Where a player was last reported to be, for anything that needs it off the loop.</summary>
     public static bool TryGetRemote(int serverId, out PresenceEntry entry) => Remote.TryGetValue(serverId, out entry!);
 
-    /// <summary>Takes a snapshot as if the server had sent it, for <see cref="PlayerBlipsDebugCommands"/>.</summary>
-    // The test command goes in through the front door on purpose: anything that let it skip the
-    // parsing or the staleness rules would be testing a shorter version of the code than ships.
+    // The test command goes in through the front door on purpose: anything that let it skip the parsing
+    // or the staleness rules would be testing a shorter version of the code than ships.
     internal static void InjectSnapshot(string snapshot) => OnSnapshot(snapshot);
 
-    /// <summary>Forgets one player immediately, rather than waiting out the time to live.</summary>
     internal static void DropRemote(int serverId)
     {
         Remote.Remove(serverId);
@@ -146,18 +124,13 @@ public static class PlayerPresence
     private static bool NamesWanted =>
         UserDefaults.MiscShowOverheadNames.Value && ClientPermissions.IsAllowed(MiscSettingsPermissions.OverheadNames);
 
-    /// <summary>Whether people who are noclipping should be shown to this player rather than hidden.</summary>
-    // Reads like the two above, but it decides nothing about whether either feature runs. Both loops
-    // start and stop on their own preferences alone, and this only changes who they draw once they
-    // are running, which is why Wanted below does not consult it.
+    // This decides nothing about whether either feature runs. Both loops start and stop on their own
+    // preferences alone, and this only changes who they draw once they are running.
     internal static bool SeesHiddenPlayers =>
         UserDefaults.MiscSeeNoClipPlayers.Value && ClientPermissions.IsAllowed(MiscSettingsPermissions.SeeNoClipPlayers);
 
-    /// <summary>
-    /// Asks the server for other players' positions, or tells it to stop.
-    /// </summary>
-    // Opt in, so a server where nobody has blips switched on sends nothing at all. Only the blips
-    // want it: name tags are drawn on peds, and a ped you have not got is a ped you cannot label.
+    // Opt in, so a server where nobody has blips switched on sends nothing at all. Only the blips want
+    // it: name tags are drawn on peds, and a ped you have not got is a ped you cannot label.
     private static void UpdateSubscription()
     {
         var wanted = BlipsWanted;
@@ -197,13 +170,12 @@ public static class PlayerPresence
 
         BuildSlice();
 
-        // Called even with nobody left to look at, because both of these also clear up after
-        // players who have gone, and an empty server is exactly when there is most to clear up.
+        // Called even with nobody left to look at, because both of these also clear up after players who
+        // have gone, and an empty server is exactly when there is most to clear up.
         PlayerBlips.Apply(Slice, BlipsWanted);
         OverheadNames.Apply(Slice, NamesWanted);
     }
 
-    /// <summary>Everybody worth looking at: streamed in, or recently reported by the server.</summary>
     private static void RebuildTracked()
     {
         Tracked.Clear();
@@ -221,16 +193,16 @@ public static class PlayerPresence
 
         foreach (var serverId in Remote.Keys)
         {
-            // Streamed players are already in, from the roster, where the numbers are live rather
-            // than however old the last server update happens to be.
+            // Streamed players are already in, from the roster, where the numbers are live rather than however
+            // old the last server update happens to be.
             if (serverId == self || PlayerRoster.IsStreamed(serverId))
             {
                 continue;
             }
 
-            // Looked up rather than defaulted. Defaulting to a value far in the past and subtracting
-            // it from the game clock overflows into a negative number, which reads as "heard from
-            // them a moment ago" and would keep a player nobody has reported on the map for good.
+            // Looked up rather than defaulted. Defaulting to a value far in the past and subtracting it from the
+            // game clock overflows into a negative number, which reads as "heard from them a moment ago" and
+            // would keep a player nobody has reported on the map for good.
             if (ReceivedAt.TryGetValue(serverId, out var receivedAt) && now - receivedAt < StaleMs)
             {
                 Tracked.Add(serverId);
@@ -240,7 +212,6 @@ public static class PlayerPresence
         Forget(now);
     }
 
-    /// <summary>Drops server updates nobody is going to trust again.</summary>
     private static void Forget(int now)
     {
         if (Remote.Count == 0)
@@ -270,7 +241,6 @@ public static class PlayerPresence
         }
     }
 
-    /// <summary>Reads the live state of this pass's share of the tracked players.</summary>
     private static void BuildSlice()
     {
         Slice.Clear();
@@ -299,11 +269,8 @@ public static class PlayerPresence
         _cursor = (_cursor + size) % Tracked.Count;
     }
 
-    /// <summary>
-    /// What we know about one player, preferring the game over the server whenever it has an answer.
-    /// </summary>
-    // A streamed player is read live: the ped is right there and its position is exact, where a
-    // server update is by definition a snapshot of a moment that has already passed.
+    // A streamed player is read live: the ped is right there and its position is exact, where a server
+    // update is by definition a snapshot of a moment that has already passed.
     private static PresenceView View(int serverId)
     {
         if (PlayerRoster.TryGet(serverId, out var streamed))
@@ -321,8 +288,8 @@ public static class PlayerPresence
                 Native.IsPlayerDead(streamed.Slot),
                 StateBags.GetPlayer<bool>(serverId, PlayerStateKeys.Staff),
 
-                // Empty on purpose. The game knows who owns a streamed player's slot, so anything
-                // that wants their name asks it rather than trusting a copy that could be stale.
+                // Empty on purpose. The game knows who owns a streamed player's slot, so anything that wants their
+                // name asks it rather than trusting a copy that could be stale.
                 string.Empty);
         }
 
@@ -338,10 +305,9 @@ public static class PlayerPresence
             entry.IsNoClipping,
             entry.IsDead,
 
-            // From the row rather than the bag, unlike the streamed branch above. The game only
-            // replicates a player's state bag to clients that have them in scope, so for somebody
-            // this far away the staff key is simply not here to read: it disappears the moment they
-            // leave OneSync range and takes the marking on their blip with it.
+            // From the row rather than the bag, unlike the streamed branch above. The game only replicates a
+            // player's state bag to clients that have them in scope, so for somebody this far away the staff key
+            // is simply not here to read.
             entry.IsStaff,
             entry.Name);
     }

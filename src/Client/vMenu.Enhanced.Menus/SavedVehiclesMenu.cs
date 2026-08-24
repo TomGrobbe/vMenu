@@ -14,20 +14,10 @@ using SavedVehiclesPermissions = vMenu.Enhanced.Data.Permissions.Menus.SavedVehi
 
 namespace vMenu.Enhanced.Menus;
 
-/// <summary>
-/// Vehicles the player put away, kept on their own machine.
-/// </summary>
-/// <remarks>
-/// Three levels: the categories, the vehicles in one of them, and what can be done to one vehicle.
-/// Categories are made, renamed and deleted from the top level only, because managing a category
-/// from inside it is how you end up deleting the page you are standing on.
-///
-/// <para>
-/// Laid out like the teleport menu: one shared child menu per level rather than a menu per row. The
-/// rows are runtime data and there could be a great many of them, and MenuAPI cannot take a menu back
-/// out once it has been added.
-/// </para>
-/// </remarks>
+// Three levels: the categories, the vehicles in one of them, and what can be done to one vehicle.
+// Categories are managed from the top level only, because managing a category from inside it is how
+// you end up deleting the page you are standing on. One shared child menu per level rather than a
+// menu per row: the rows are runtime data, and MenuAPI cannot take a menu back out once added.
 [VMenu(
     TitleKey = Loc.SavedVehicles.Title,
     SubtitleKey = Loc.SavedVehicles.Subtitle,
@@ -45,7 +35,7 @@ public sealed class SavedVehiclesMenu : MenuDefinition
 
     private DetachedMenu? _detailMenu;
 
-    /// <summary>Empty is the uncategorised group, which is a real place rather than a missing one.</summary>
+    // Empty is the uncategorised group, which is a real place rather than a missing one.
     private string _category = string.Empty;
 
     private SavedVehicleEntry? _selected;
@@ -74,8 +64,8 @@ public sealed class SavedVehiclesMenu : MenuDefinition
 
         menu.AddRange(RootRows());
 
-        // The store changes from inside this menu, so the rows are rebuilt whenever the player comes
-        // back up to this level.
+        // The store changes from inside this menu, so the rows are rebuilt whenever the player comes back up
+        // to this level.
         menu.OnOpened = _ => Refill(menu, RootRows());
     }
 
@@ -86,8 +76,8 @@ public sealed class SavedVehiclesMenu : MenuDefinition
         var vehicles = SavedVehicleStore.All();
         var groups = GroupNames(vehicles);
 
-        // Every category the player can see, whether they made it with Create Category or a saved car
-        // simply names one, so all of them can be renamed and deleted, not only the declared ones.
+        // Every category the player can see, whether they made it with Create Category or a saved car simply
+        // names one, so all of them can be renamed and deleted, not only the declared ones.
         var categories = ManageableCategories(groups);
 
         var rows = new List<MenuEntry>
@@ -108,8 +98,7 @@ public sealed class SavedVehiclesMenu : MenuDefinition
             },
         };
 
-        // Nothing to pick from until a category exists, and a list row with no options is a row that
-        // cannot do anything.
+        // Nothing to pick from until a category exists, and a list row with no options cannot do anything.
         if (categories.Count > 0)
         {
             rows.Add(EditCategoryRow(categories));
@@ -149,7 +138,6 @@ public sealed class SavedVehiclesMenu : MenuDefinition
         return rows;
     }
 
-    /// <summary>What the owner wrote about the group, or a count when they wrote nothing.</summary>
     private static MenuText CategoryDescription(List<SavedVehicleCategory> categories, string group, int count)
     {
         foreach (var category in categories)
@@ -278,11 +266,7 @@ public sealed class SavedVehiclesMenu : MenuDefinition
         };
     }
 
-    /// <summary>
-    /// What the player wrote about this one, falling back to the model when they wrote nothing.
-    /// </summary>
-    // Their own words win over ours: a description is only there because somebody typed it, so it is
-    // the more useful of the two.
+    // Their own words win over ours: a description is only there because somebody typed it.
     private static MenuText Describe(SavedVehicleEntry entry, bool available, MenuText model)
     {
         if (entry.IsFromNewerBuild)
@@ -336,8 +320,8 @@ public sealed class SavedVehiclesMenu : MenuDefinition
             },
         };
 
-        // Overwriting a save this build cannot fully read would silently drop whatever the newer
-        // version put in it, so the row becomes an offer to save alongside it instead.
+        // Overwriting a save this build cannot fully read would silently drop whatever the newer version put
+        // in it, so the row becomes an offer to save alongside it instead.
         if (entry.IsFromNewerBuild)
         {
             rows.Add(new ButtonEntry
@@ -372,7 +356,6 @@ public sealed class SavedVehiclesMenu : MenuDefinition
         return rows;
     }
 
-    /// <summary>Renaming and re-describing. Locked for a save this build cannot fully read.</summary>
     // Editing rewrites the whole save, so a newer build's extra fields would be dropped on the way
     // through. Locked rather than hidden, so the reason is on screen.
     private ButtonEntry EditRow(SavedVehicleEntry entry) => entry.IsFromNewerBuild
@@ -409,8 +392,8 @@ public sealed class SavedVehiclesMenu : MenuDefinition
             Gate = SavedVehiclesPermissions.Manage,
             ReadSelectedIndex = () => Math.Max(0, IndexOf(groups, GroupOf(entry))),
 
-            // On enter rather than on scroll, because every step past a category would otherwise be
-            // a write to disk and a rebuild of the menu the player is standing in.
+            // On enter rather than on scroll, because every step past a category would otherwise be a write to
+            // disk and a rebuild of the menu the player is standing in.
             OnSelected = selected =>
             {
                 if (selected.SelectedIndex < 0 || selected.SelectedIndex >= groups.Count)
@@ -434,8 +417,8 @@ public sealed class SavedVehiclesMenu : MenuDefinition
             return;
         }
 
-        // Read before the prompt as well as after it, so a player who drives off mid-prompt saves
-        // nothing rather than saving the wrong car.
+        // Read before the prompt as well as after it, so a player who drives off mid-prompt saves nothing
+        // rather than saving the wrong car.
         var appearance = VehicleAppearanceReader.Read(vehicle);
 
         if (await UserInput.GetTextAsync(
@@ -510,8 +493,8 @@ public sealed class SavedVehiclesMenu : MenuDefinition
 
         var vehicleClass = Native.GetVehicleClassFromName(appearance.ModelHash);
 
-        // The saved vehicles menu is not a way around a restricted vehicle list, so the spawner's
-        // own rules still apply.
+        // The saved vehicles menu is not a way around a restricted vehicle list, so the spawner's own rules
+        // still apply.
         if (!ClientVehiclePermissions.CanSpawnVehicle(modelName, vehicleClass))
         {
             Notifications.Warning(MenuText.Key(Loc.SavedVehicles.SpawnDenied, ("model", model)));
@@ -640,12 +623,10 @@ public sealed class SavedVehiclesMenu : MenuDefinition
         RebuildEverything();
 
         // The vehicle this page was about is gone, so its detail menu now has nothing and no title.
-        // Step back to the list it came from rather than leave the player on an empty page.
         _detailMenu?.Menu.GoBack();
 
-        // If that was the last vehicle in the category, the list behind this one is now empty. Step
-        // back once more rather than drop the player onto a blank page. An undeclared category has
-        // also just disappeared from the root menu, so there would be nothing to come back to.
+        // If that was the last vehicle in the category, the list behind this one is now empty, and an
+        // undeclared category has also just disappeared from the root menu.
         if (Count(SavedVehicleStore.All(), _category) == 0)
         {
             _vehicleMenu?.Menu.GoBack();
@@ -713,8 +694,8 @@ public sealed class SavedVehiclesMenu : MenuDefinition
             return;
         }
 
-        // The player may be standing in a category that just changed its name, and the vehicle menu
-        // filters on that name.
+        // The player may be standing in a category that just changed its name, and the vehicle menu filters
+        // on that name.
         if (string.Equals(_category, category.Name, StringComparison.OrdinalIgnoreCase))
         {
             _category = name;
@@ -773,8 +754,8 @@ public sealed class SavedVehiclesMenu : MenuDefinition
         Refill(detached.Builder, rows);
     }
 
-    // Rebuilding drops every item and MenuAPI puts the highlight back on the first one, which moves
-    // the player's selection out from under them.
+    // Rebuilding drops every item and MenuAPI puts the highlight back on the first one, which moves the
+    // player's selection out from under them.
     private static void Refill(MenuBuilder builder, IReadOnlyList<MenuEntry> rows)
     {
         var was = builder.Menu.CurrentIndex;
@@ -812,12 +793,8 @@ public sealed class SavedVehiclesMenu : MenuDefinition
         return rows;
     }
 
-    /// <summary>
-    /// Every named category the player can act on, from the same groups the menu shows. A declared
-    /// one keeps its description; a category a saved car merely names gets an empty one, and editing
-    /// or deleting it works all the same, since neither reads a stored category to do its job.
-    /// </summary>
-    // Uncategorised is left out: it is the absence of a category, not one to rename or remove.
+    // Uncategorised is left out: it is the absence of a category, not one to rename or remove. A category
+    // a saved car merely names gets an empty description, and editing or deleting it works all the same.
     private static List<SavedVehicleCategory> ManageableCategories(List<string> groups)
     {
         var declared = SavedVehicleStore.Categories();
@@ -848,10 +825,7 @@ public sealed class SavedVehiclesMenu : MenuDefinition
         return result;
     }
 
-    /// <summary>
-    /// Every group with something in it, plus every category that was declared, so a vehicle naming
-    /// a category nobody made is still reachable.
-    /// </summary>
+    // Declared categories are included too, so a vehicle naming a category nobody made is still reachable.
     private static List<string> GroupNames(List<SavedVehicleEntry> vehicles)
     {
         var names = new List<string>();
@@ -886,8 +860,8 @@ public sealed class SavedVehiclesMenu : MenuDefinition
         }
     }
 
-    // By hand rather than List.IndexOf or Contains, which reach for EqualityComparer<string>.Default
-    // and the client sandbox refuses to load it.
+    // By hand rather than List.IndexOf or Contains, which reach for EqualityComparer<string>.Default and
+    // the client sandbox refuses to load it.
     private static int IndexOf(List<string> names, string name)
     {
         for (var index = 0; index < names.Count; index++)
@@ -901,7 +875,6 @@ public sealed class SavedVehiclesMenu : MenuDefinition
         return -1;
     }
 
-    /// <summary>A vehicle's category, with a name nobody declared treated as its own group.</summary>
     private static string GroupOf(SavedVehicleEntry entry) => entry.Vehicle.Category.Trim();
 
     private static int Count(List<SavedVehicleEntry> vehicles, string group)

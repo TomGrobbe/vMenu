@@ -1,12 +1,9 @@
 namespace vMenu.Enhanced.Data.Diagnostics;
 
-/// <summary>The gate every vMenu dump command sits behind.</summary>
-/// <remarks>
-/// Handed its setting at startup rather than reading one itself, because the tick registries
-/// register commands and cannot reference the configuration modules: on the server that module
-/// already references the tick one, so reading the setting there would be a reference cycle.
-/// Both entry points call <see cref="Source"/>, and until one does every gated command stays shut.
-/// </remarks>
+// The gate every vMenu dump command sits behind. Handed its setting at startup rather than reading
+// one itself, because the tick registries register commands and cannot reference the configuration
+// modules: on the server that module already references the tick one, so reading the setting there
+// would be a reference cycle. Until Source is called, every gated command stays shut.
 public static class DebugCommands
 {
     private static Func<bool> _enabled = static () => false;
@@ -22,7 +19,6 @@ public static class DebugCommands
         _write = write;
     }
 
-    /// <summary>Wraps a dump so a shut command says what to switch on instead of doing nothing.</summary>
     // Read when the command runs rather than when it is registered, so an owner flipping the convar
     // takes effect immediately and registration order stops mattering.
     public static Action Gate(Action dump) => () =>
@@ -37,8 +33,6 @@ public static class DebugCommands
         dump();
     };
 
-    /// <inheritdoc cref="Gate(Action)"/>
-    /// <typeparam name="T">The single argument the command takes.</typeparam>
     public static Action<T> Gate<T>(Action<T> dump) => argument =>
     {
         if (!_enabled())

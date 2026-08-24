@@ -5,9 +5,8 @@ using vMenu.Enhanced.Permissions;
 
 namespace vMenu.Enhanced.MenuFramework;
 
-/// <summary>Decides whether one entry is available to the player.</summary>
-// Not a bare Func<bool> so the permission form can be written as a declaration
-// (Gate = SomePermission.Name) rather than a lambda.
+// Decides whether one entry is available to the player. Not a bare Func<bool>, so the permission
+// form can be written as a declaration (Gate = SomePermission.Name) rather than a lambda.
 public sealed class MenuGate
 {
     private readonly Func<bool> _evaluate;
@@ -21,7 +20,7 @@ public sealed class MenuGate
     public static MenuGate Permission(string permission) =>
         new(() => ClientPermissions.IsAllowed(permission));
 
-    /// <summary>A gate the server owner controls through a convar rather than through ACEs.</summary>
+    // A gate the server owner controls through a convar rather than through ACEs.
     public static MenuGate Setting(BoolSetting setting) =>
         new(() => ClientConfig.Value(setting));
 
@@ -37,8 +36,8 @@ public sealed class MenuGate
     public static MenuGate operator |(MenuGate left, MenuGate right) =>
         new(() => left.Evaluate() || right.Evaluate());
 
-    /// <summary>Fails closed.</summary>
-    // A refresh pass walks every entry in every menu, so one throwing predicate must not abort it.
+    // Fails closed: a refresh pass walks every entry in every menu, so one throwing predicate must not
+    // abort it.
     public bool Evaluate()
     {
         try

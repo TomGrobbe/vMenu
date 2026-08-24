@@ -8,24 +8,20 @@ using PlayerOptionsPermissions = vMenu.Enhanced.Data.Permissions.Menus.PlayerOpt
 
 namespace vMenu.Enhanced.Menus.Players;
 
-/// <summary>
-/// The player sprints on foot as fast as the game will let them.
-/// </summary>
 public static class PlayerFastRun
 {
-    /// <summary>The game clamps anything above this back down, so it is the real ceiling.</summary>
+    // The game clamps anything above this back down, so it is the real ceiling.
     private const float Fast = 1.49f;
 
     private const float Normal = 1f;
 
     private static bool _watching;
 
-    /// <summary>What the player asked for and what the server allows, which together are the only answer.</summary>
     public static bool Enabled => UserDefaults.PlayerFastRun.Value && IsAllowed;
 
     private static bool IsAllowed => ClientPermissions.IsAllowed(PlayerOptionsPermissions.FastRun);
 
-    /// <summary>Call once at startup, before permissions have arrived.</summary>
+    // Call once at startup, before permissions have arrived.
     public static void Initialize()
     {
         ClientPermissions.PermissionsChanged += Apply;
@@ -74,7 +70,7 @@ public static class PlayerFastRun
         LocalPlayerTicks.PlayerPedIdChanged -= OnPedChanged;
     }
 
-    // The multiplier travels with the ped's movement data rather than with the player, so a respawn
-    // or a model swap hands back one running at normal speed.
+    // The multiplier travels with the ped's movement data rather than with the player, so a respawn or a
+    // model swap hands back one running at normal speed.
     private static void OnPedChanged(PlayerPedIdChanged _) => Apply();
 }

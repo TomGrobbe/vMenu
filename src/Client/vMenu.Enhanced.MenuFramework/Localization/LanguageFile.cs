@@ -2,7 +2,7 @@ using System.Text.Json.Serialization;
 
 namespace vMenu.Enhanced.MenuFramework.Localization;
 
-/// <summary>The shape of a <c>language/&lt;code&gt;.json</c> file.</summary>
+// The shape of a language/<code>.json file.
 internal sealed class LanguageFile
 {
     public string NativeName { get; init; } = string.Empty;

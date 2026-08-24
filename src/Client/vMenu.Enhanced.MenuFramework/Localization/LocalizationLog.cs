@@ -2,11 +2,8 @@ using vMenu.Enhanced.Logging;
 
 namespace vMenu.Enhanced.MenuFramework.Localization;
 
-/// <summary>
-/// Deduplicated reporting for localization gaps.
-/// </summary>
-// Every relabel pass walks every entry, so an unguarded log would repeat the same line on every
-// permission resync and language switch.
+// Deduplicated reporting for localization gaps. Every relabel pass walks every entry, so an
+// unguarded log would repeat the same line on every permission resync and language switch.
 internal static class LocalizationLog
 {
     private static readonly HashSet<string> Reported = new(StringComparer.Ordinal);
@@ -27,6 +24,6 @@ internal static class LocalizationLog
         }
     }
 
-    /// <summary>Lets a reload surface the same gaps again.</summary>
+    // Lets a reload surface the same gaps again.
     internal static void Reset() => Reported.Clear();
 }

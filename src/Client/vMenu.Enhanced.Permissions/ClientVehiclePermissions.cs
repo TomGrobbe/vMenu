@@ -3,18 +3,16 @@ using vMenu.Enhanced.Data.Permissions.SupplementalPermissions;
 
 namespace vMenu.Enhanced.Permissions;
 
-/// <summary>
-/// Vehicle spawn checks for the menus, mirroring what the server will decide. The whitelist and the
-/// server's own categories are needed here too, otherwise a class grant would light up models the
-/// server holds back or moved somewhere else.
-/// </summary>
+// Vehicle spawn checks for the menus, mirroring what the server will decide. The whitelist and the
+// server's own categories are needed here too, otherwise a class grant would light up models the
+// server holds back or moved somewhere else.
 public static class ClientVehiclePermissions
 {
     private static readonly HashSet<string> WhitelistedVehicles = new(StringComparer.OrdinalIgnoreCase);
 
     private static readonly Dictionary<string, string> CategoryByModel = new(StringComparer.OrdinalIgnoreCase);
 
-    /// <summary>Apply before the matching permission set.</summary>
+    // Apply before the matching permission set.
     public static void ApplyWhitelistedVehicleModels(string[] models)
     {
         WhitelistedVehicles.Clear();
@@ -25,10 +23,7 @@ public static class ClientVehiclePermissions
         }
     }
 
-    /// <summary>
-    /// The categories a server owner defined, as two index aligned arrays. Apply before the
-    /// matching permission set.
-    /// </summary>
+    // Two index aligned arrays. Apply before the matching permission set.
     public static void ApplyCustomCategories(string[] models, string[] categories)
     {
         CategoryByModel.Clear();
@@ -42,7 +37,7 @@ public static class ClientVehiclePermissions
     public static bool IsWhitelisted(string modelName) =>
         WhitelistedVehicles.Contains(modelName);
 
-    /// <summary>The category a model was moved into, or null when it is still in its game class.</summary>
+    // The category a model was moved into, or null when it is still in its game class.
     public static string? CategoryOfModel(string modelName) =>
         CategoryByModel.TryGetValue(modelName, out var category) ? category : null;
 
@@ -58,14 +53,11 @@ public static class ClientVehiclePermissions
             : ClientPermissions.IsAllowed(VehicleSpawnerCategories.FromClassId(vehicleClass));
     }
 
-    /// <summary>
-    /// Whether a whole game class submenu should open. Whitelisted models inside an allowed class
-    /// still have to pass <see cref="CanSpawnVehicle(string, int)"/>.
-    /// </summary>
+    // Whether a whole game class submenu should open. Whitelisted models inside an allowed class still
+    // have to pass CanSpawnVehicle.
     public static bool CanSpawnVehicleClass(int vehicleClass) =>
         ClientPermissions.IsAllowed(VehicleSpawnerCategories.FromClassId(vehicleClass));
 
-    /// <inheritdoc cref="CanSpawnVehicleClass(int)"/>
     public static bool CanSpawnCustomCategory(string categoryName) =>
         ClientPermissions.IsAllowed(
             VehicleSpawnerCategories.ForCustom(CategoryName.ToPermissionSegment(categoryName)));

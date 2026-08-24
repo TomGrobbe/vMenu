@@ -7,16 +7,11 @@ using vMenu.Enhanced.MenuFramework.Localization;
 
 namespace vMenu.Enhanced.Menus.Vehicles.Sections;
 
-/// <summary>
-/// How dirty the vehicle looks.
-/// </summary>
-/// <remarks>
-/// One row rather than a menu of its own, since there is only ever one thing to say about it. Not
-/// the same as washing the vehicle, which also takes the scrapes and bullet holes off the paint.
-/// </remarks>
+// One row rather than a menu of its own, since there is only ever one thing to say about it. Not the
+// same as washing the vehicle, which also takes the scrapes and bullet holes off the paint.
 internal static class DirtSection
 {
-    /// <summary>The game's scale runs from clean to this.</summary>
+    // The game's scale runs from clean to this.
     private const int MaxDirt = 15;
 
     public static MenuEntry Row(MenuGate gate)

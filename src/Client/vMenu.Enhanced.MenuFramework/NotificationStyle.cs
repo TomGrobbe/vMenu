@@ -1,19 +1,17 @@
 namespace vMenu.Enhanced.MenuFramework;
 
-/// <summary>
-/// What a notification is telling the player, which is all that decides how it looks.
-/// </summary>
+// What a notification is telling the player, which is all that decides how it looks.
 public enum NotificationStyle
 {
-    /// <summary>Something happened. No judgement attached.</summary>
+    // Something happened. No judgement attached.
     Info,
 
-    /// <summary>What was asked for was done.</summary>
+    // What was asked for was done.
     Success,
 
-    /// <summary>It went through, but not the way it was asked for.</summary>
+    // It went through, but not the way it was asked for.
     Warning,
 
-    /// <summary>It did not happen.</summary>
+    // It did not happen.
     Error,
 }

@@ -1,16 +1,13 @@
 namespace vMenu.Enhanced.Data.Permissions;
 
-/// <summary>
-/// Container for permissions plugins bring at runtime. Each registered plugin gets its own
-/// <c>vMenu.Enhanced.Plugins.&lt;Id&gt;.All</c> container under this one, with its declared
-/// permissions below that.
-/// </summary>
+// Container for permissions plugins bring at runtime. Each registered plugin gets its own
+// vMenu.Enhanced.Plugins.<Id>.All container under this one, with its declared permissions below that.
 [PermissionCategory(Prefix = Prefix)]
 public static class Plugins
 {
     public const string Prefix = "vMenu.Enhanced.Plugins";
 
-    /// <summary>Grants every permission of every plugin.</summary>
+    // Grants every permission of every plugin.
     public const string All = Prefix + PermissionPath.AllSuffix;
 
     public static string AllFor(string pluginId) =>

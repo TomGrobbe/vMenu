@@ -9,7 +9,6 @@ using WeatherOptionsSettings = vMenu.Enhanced.Data.Configuration.Settings.Weathe
 
 namespace vMenu.Enhanced.Menus.World;
 
-/// <summary>Drives the weather from the schedule, or from whatever the server has forced.</summary>
 // SetWeatherTypeTransition sets an absolute interpolation rather than starting an animation, so
 // re-asserting it every tick is the point: two players who joined hours apart land on the same
 // value, and anything else nudging the weather is corrected within a tick.
@@ -19,7 +18,7 @@ public static class WorldWeather
     // The other job, correcting anything else that nudges the weather, is well inside a quarter second.
     private const int IntervalMs = 250;
 
-    /// <summary>How long before a scheduled change the sky starts moving, in in-game hours.</summary>
+    // How long before a scheduled change the sky starts moving, in in-game hours.
     private const double BoundaryWindowGameHours = 0.5;
 
     private static readonly uint[] Hashes = BuildHashes();
@@ -31,10 +30,9 @@ public static class WorldWeather
     private static bool _settled;
     private static bool _wasForced;
 
-    /// <summary>Whether the server wants a shared sky at all.</summary>
     // The convar and nothing else. Not a MenuGate, and never a permission: the weather is one value
-    // shared by everyone connected, so a player who may not change it still has to see the same sky
-    // as the player who can. Permissions belong on the menu entries that ask the server to change it.
+    // shared by everyone connected, so a player who may not change it still has to see the same sky as
+    // the player who can.
     private static bool IsEnabled() => ClientConfig.Value(WeatherOptionsSettings.Enabled);
 
     public static void Initialize()
@@ -48,8 +46,8 @@ public static class WorldWeather
             {
                 _started = false;
 
-                // Without this the network keeps ownership and overwrites every weather call we make,
-                // so the whole tick runs and changes nothing at all.
+                // Without this the network keeps ownership and overwrites every weather call we make, so the whole
+                // tick runs and changes nothing at all.
                 Native.SetWeatherOwnedByNetwork(false);
 
                 Native.ClearOverrideWeather();
@@ -70,7 +68,7 @@ public static class WorldWeather
         WorldState.Changed += TickRegistry.Reevaluate;
     }
 
-    /// <summary>What the game itself reports, which is the only proof the weather calls are landing.</summary>
+    // What the game itself reports, which is the only proof the weather calls are landing.
     public static string Describe()
     {
         Native.GetWeatherTypeTransition(out var prev, out var next, out var percent);
@@ -114,8 +112,8 @@ public static class WorldWeather
         }
         else if (desired != _to)
         {
-            // A scheduled change has already been blended to by the boundary window below, so
-            // restarting a source blend for it would visibly rewind the sky.
+            // A scheduled change has already been blended to by the boundary window below, so restarting a
+            // source blend for it would visibly rewind the sky.
             _settled = forced is null && !_wasForced;
             _from = _to;
             _to = desired;
@@ -167,8 +165,8 @@ public static class WorldWeather
     private static float TransitionSeconds() =>
         Math.Max(0, WorldState.WeatherTransitionSeconds);
 
-    // Swaps at the moment the sky starts moving rather than when the schedule flips, so the clouds
-    // and the weather arrive together instead of the clouds lagging a boundary window behind.
+    // Swaps at the moment the sky starts moving rather than when the schedule flips, so the clouds and
+    // the weather arrive together instead of the clouds lagging a boundary window behind.
     private static WeatherType CloudTarget(WeatherType? forced, CycleResolution schedule) =>
         forced ?? (schedule.GameHoursUntilNext < BoundaryWindowGameHours ? schedule.Next : schedule.Current);
 

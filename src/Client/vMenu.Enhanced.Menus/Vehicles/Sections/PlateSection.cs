@@ -6,10 +6,9 @@ using vMenu.Enhanced.Menus.Vehicles.Appearance;
 
 namespace vMenu.Enhanced.Menus.Vehicles.Sections;
 
-/// <summary>What the licence plate says, and which design it carries.</summary>
 internal static class PlateSection
 {
-    /// <summary>The game truncates anything longer, so there is no point letting more be typed.</summary>
+    // The game truncates anything longer, so there is no point letting more be typed.
     private const int MaxPlateLength = 8;
 
     public static void Build(MenuBuilder menu)
@@ -33,8 +32,7 @@ internal static class PlateSection
                 Text = MenuText.Key(Loc.VehicleOptions.PlateText),
                 Description = MenuText.Key(Loc.VehicleOptions.PlateTextDescription),
 
-                // The plate itself on the right, so the row shows what it currently says without
-                // having to open anything.
+                // The plate itself on the right, so the row shows what it currently says without opening anything.
                 Label = MenuText.From(() => SectionRows.Driven() is { } current
                     ? Native.GetVehicleNumberPlateText(current) ?? string.Empty
                     : string.Empty),

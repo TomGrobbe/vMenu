@@ -8,12 +8,11 @@ public enum TickLog
     Error,
 }
 
-/// <summary>Every named loop on one side, so each one can be named, gated and stopped.</summary>
-// Neither runtime has a tick registration that awaits its handler. ScheduleRepeated takes an Action,
-// so an async Task handler re-arms the timer at its first await and the next invocation starts while
-// the previous is still suspended. That leaves driving the loop by hand, which TickHandle does.
-// Both sides own an instance and supply their own waiting, logging and profiler scopes. Conditions
-// are a bare Func<bool> so this stays free of the configuration and permission modules.
+// Every named loop on one side, so each one can be named, gated and stopped. Neither runtime has a
+// tick registration that awaits its handler: ScheduleRepeated takes an Action, so an async Task
+// handler re-arms the timer at its first await and the next invocation starts while the previous is
+// still suspended. That leaves driving the loop by hand, which TickHandle does. Both sides own an
+// instance and supply their own waiting, logging and profiler scopes.
 public sealed class TickEngine(
     Func<long, Task> delay,
     Func<Task> yield,
@@ -25,16 +24,12 @@ public sealed class TickEngine(
 
     public IReadOnlyList<TickHandle> Handles => _registered;
 
-    /// <summary>Raised when a tick starts, stops, joins or leaves the engine.</summary>
-    // A single Reevaluate pass raises it once per tick it flips, so a subscriber doing real work
+    // A single Reevaluate pass raises this once per tick it flips, so a subscriber doing real work
     // should coalesce.
     public event Action? Changed;
 
-    /// <param name="condition">
-    /// Re-run by <see cref="Reevaluate"/>. When null the tick answers to <see cref="TickHandle.Start"/>
-    /// and <see cref="TickHandle.Stop"/> instead.
-    /// </param>
-    /// <param name="autoStart">Ignored when <paramref name="condition"/> is set.</param>
+    // The condition is re-run by Reevaluate. When it is null the tick answers to TickHandle.Start and
+    // TickHandle.Stop instead, and autoStart is ignored whenever a condition is set.
     public TickHandle Register(
         string name,
         Func<Task> handler,
@@ -59,7 +54,7 @@ public sealed class TickEngine(
         return handle;
     }
 
-    /// <summary>Wrapped once here rather than once per iteration.</summary>
+    // Wrapped once here rather than once per iteration.
     public TickHandle Register(
         string name,
         Action handler,
@@ -84,11 +79,10 @@ public sealed class TickEngine(
             autoStart);
     }
 
-    /// <summary>Re-runs every condition.</summary>
     public void Reevaluate()
     {
-        // Indexed, because a condition is caller code and one that registers or disposes a tick
-        // would invalidate the enumerator mid pass.
+        // Indexed, because a condition is caller code and one that registers or disposes a tick would
+        // invalidate the enumerator mid pass.
         for (var i = 0; i < _registered.Count; i++)
         {
             _registered[i].Apply();
@@ -109,12 +103,10 @@ public sealed class TickEngine(
 
     internal void Log(TickLog level, string message) => write(level, message);
 
-    /// <summary>Opens a profiler scope around one iteration, so a slow tick is named in the trace.</summary>
     // Injected like the rest, because the profiler natives live in each side's own binding and this
     // assembly deliberately references neither.
     internal void EnterScope(string scope) => enterScope(scope);
 
-    /// <inheritdoc cref="EnterScope"/>
     internal void ExitScope() => exitScope();
 
     internal void Unregister(TickHandle handle)
@@ -125,7 +117,7 @@ public sealed class TickEngine(
         }
     }
 
-    /// <summary>A throwing subscriber must not abort the state change that raised the event.</summary>
+    // A throwing subscriber must not abort the state change that raised the event.
     internal void NotifyChanged()
     {
         try

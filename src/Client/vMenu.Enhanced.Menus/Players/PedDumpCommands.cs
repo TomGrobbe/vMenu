@@ -9,14 +9,9 @@ using vMenu.Enhanced.Serialization;
 
 namespace vMenu.Enhanced.Menus.Players;
 
-/// <summary>
-/// Console commands that report on the ped the player is wearing.
-/// </summary>
-/// <remarks>
-/// Both of these re-read the ped through <see cref="PedAppearanceReader"/>, which asks the game
-/// rather than remembering what vMenu set. That is the point of them: a report built from vMenu's
-/// own memory would agree with itself no matter what the game actually did.
-/// </remarks>
+// Both of these re-read the ped through PedAppearanceReader, which asks the game rather than
+// remembering what vMenu set. That is the point of them: a report built from vMenu's own memory
+// would agree with itself no matter what the game actually did.
 public static class PedDumpCommands
 {
     private const string DumpCommand = "vmenu_ped";
@@ -45,10 +40,8 @@ public static class PedDumpCommands
         Log.Info(ClientJson.SerializeIndented(appearance));
     }
 
-    /// <summary>
-    /// Says how the ped being worn differs from a saved one, which is what proves a restore was
-    /// faithful rather than merely plausible.
-    /// </summary>
+    // Says how the ped being worn differs from a saved one, which is what proves a restore was faithful
+    // rather than merely plausible.
     private static void Diff(string? name)
     {
         if (string.IsNullOrWhiteSpace(name))

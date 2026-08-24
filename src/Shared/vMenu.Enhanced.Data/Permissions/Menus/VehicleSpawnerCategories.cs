@@ -1,16 +1,13 @@
 namespace vMenu.Enhanced.Data.Permissions.Menus;
 
-/// <summary>
-/// Per vehicle category spawn permissions. A category is either one of the game's own vehicle
-/// classes, declared here, or one a server owner defined in <c>config/vehicle-categories.json</c>,
-/// registered at runtime under the same container. A category permission covers every vehicle in
-/// it except models on the server whitelist, which answer to
-/// <see cref="SupplementalPermissions.VehicleModels"/> instead.
-/// </summary>
+// A category is either one of the game's own vehicle classes, declared here, or one a server owner
+// defined in config/vehicle-categories.json, registered at runtime under the same container. A
+// category permission covers every vehicle in it except models on the server whitelist, which answer
+// to SupplementalPermissions.VehicleModels instead.
 [PermissionCategory(Prefix = Prefix)]
 public static class VehicleSpawnerCategories
 {
-    /// <summary>Not a permission itself; it is not deeper than the category prefix.</summary>
+    // Not a permission itself; it is not deeper than the category prefix.
     public const string Prefix = "vMenu.Enhanced.Menus.VehicleSpawner.Categories";
 
     public const string All = "vMenu.Enhanced.Menus.VehicleSpawner.Categories.All";
@@ -89,14 +86,11 @@ public static class VehicleSpawnerCategories
         OpenWheel,
     ];
 
-    /// <summary>Falls back to <see cref="All"/> for an unknown class id.</summary>
+    // Falls back to All for an unknown class id.
     public static string FromClassId(int vehicleClass) =>
         (uint)vehicleClass < (uint)ByClassId.Length ? ByClassId[vehicleClass] : All;
 
-    /// <summary>
-    /// The permission for a category a server owner defined. Feed it a segment from
-    /// <see cref="CategoryName.ToPermissionSegment"/>, never a raw name.
-    /// </summary>
+    // Feed it a segment from CategoryName.ToPermissionSegment, never a raw name.
     public static string ForCustom(string segment) =>
         $"{Prefix}{PermissionPath.Separator}{segment}";
 }

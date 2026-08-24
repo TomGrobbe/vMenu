@@ -7,7 +7,7 @@ using vMenu.Enhanced.Logging;
 
 namespace vMenu.Enhanced.Ticks;
 
-/// <summary>Every per frame loop in the client, so each one can be named, gated and stopped.</summary>
+// Every per frame loop in the client, so each one can be named, gated and stopped.
 public static class TickRegistry
 {
     private const string DumpCommand = "vmenu_ticks";

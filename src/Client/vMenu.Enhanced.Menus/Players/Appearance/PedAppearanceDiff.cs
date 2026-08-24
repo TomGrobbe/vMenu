@@ -5,13 +5,9 @@ using vMenu.Enhanced.Menus.Appearance;
 
 namespace vMenu.Enhanced.Menus.Players.Appearance;
 
-/// <summary>
-/// Compares what a ped was asked to wear against what it actually has on.
-/// </summary>
-/// <remarks>
-/// Written out slot by slot on purpose. Reflection would drift out of step with the model quietly,
-/// and the names in the output are meant to be read by a person rather than to match a property.
-/// </remarks>
+// Compares what a ped was asked to wear against what it actually has on. Written out slot by slot on
+// purpose: reflection would drift out of step with the model quietly, and the names in the output are
+// meant to be read by a person rather than to match a property.
 public static class PedAppearanceDiff
 {
     public static List<AppearanceDifference> Compare(PedAppearance expected, PedAppearance actual)
@@ -25,8 +21,8 @@ public static class PedAppearanceDiff
                 Named(expected.ModelName, expected.ModelHash),
                 Named(actual.ModelName, actual.ModelHash)));
 
-            // Two different peds have two different wardrobes, so comparing slot against slot below
-            // would list every one of them and say nothing the line above has not already said.
+            // Two different peds have two different wardrobes, so comparing slot against slot below would list
+            // every one of them and say nothing the line above has not already said.
             return differences;
         }
 
@@ -59,8 +55,8 @@ public static class PedAppearanceDiff
             }
         }
 
-        // A slot this ped has but the save said nothing about. Worth saying, since it means the two
-        // peds do not have the same set of slots.
+        // A slot this ped has but the save said nothing about. Worth saying, since it means the two peds do
+        // not have the same set of slots.
         foreach (var component in actual.Components)
         {
             if (expected.ComponentAt(component.Slot) is null)

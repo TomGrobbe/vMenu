@@ -1,8 +1,6 @@
 namespace vMenu.Enhanced.Data.Permissions.Menus;
 
-/// <summary>
-/// Permissions for the player options menu: things done to the player's own ped.
-/// </summary>
+// Things done to the player's own ped.
 [PermissionCategory]
 public static class PlayerOptions
 {

@@ -1,8 +1,6 @@
 namespace vMenu.Enhanced.Data.Permissions.Menus;
 
-/// <summary>
-/// Permissions for the online players menu and the things you can do to a player from it.
-/// </summary>
+// The online players menu and the things you can do to a player from it.
 [PermissionCategory]
 public static class OnlinePlayers
 {

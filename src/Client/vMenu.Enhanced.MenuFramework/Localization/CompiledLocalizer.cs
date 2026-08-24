@@ -1,8 +1,5 @@
 namespace vMenu.Enhanced.MenuFramework.Localization;
 
-/// <summary>
-/// Resolves keys against the compiled tables in <see cref="LanguageCatalog"/>.
-/// </summary>
 public sealed class CompiledLocalizer : ILocalizer
 {
     private LanguageTable _current = LanguageCatalog.English;

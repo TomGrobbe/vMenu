@@ -1,10 +1,7 @@
 namespace vMenu.Enhanced.Data.Permissions.Menus;
 
-/// <summary>
-/// Permissions for the weapon options menu. Per category permissions live one container deeper in
-/// <see cref="WeaponCategories"/>, and individual whitelisted weapons answer to
-/// <see cref="SupplementalPermissions.Weapons"/>.
-/// </summary>
+// Per category permissions live one container deeper in WeaponCategories, and individual whitelisted
+// weapons answer to SupplementalPermissions.Weapons.
 [PermissionCategory]
 public static class WeaponOptions
 {

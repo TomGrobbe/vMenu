@@ -1,11 +1,8 @@
 namespace vMenu.Enhanced.ClientAPI;
 
-/// <summary>
-/// Your plugin's translation tables: language code to key to text. An English table under
-/// <c>"en"</c> is required as soon as any of your texts use keys, it is the fallback whenever
-/// the selected language has no entry. vMenu resolves your keys against these tables, following
-/// its currently selected language live.
-/// </summary>
+/// <summary>Your plugin's translation tables: language code to key to text. An English table under
+/// <c>"en"</c> is required as soon as any of your texts use keys, and it is the fallback whenever the
+/// selected language has no entry. vMenu follows its currently selected language live.</summary>
 public sealed class PluginTranslations
 {
     private readonly Dictionary<string, Dictionary<string, string>> _tables = new(StringComparer.OrdinalIgnoreCase);

@@ -4,14 +4,9 @@ using CitizenFX.FiveM.Client;
 
 namespace vMenu.Enhanced.Menus.Players.Appearance;
 
-/// <summary>
-/// Turns an appearance into lines a person can read in the console.
-/// </summary>
-/// <remarks>
-/// Every line carries the raw ids, because those are what one player sends another when they want
-/// the same outfit. The counts beside them come from the live ped rather than the appearance, so a
-/// drawable that is out of range on this model shows up as such.
-/// </remarks>
+// Every line carries the raw ids, because those are what one player sends another when they want the
+// same outfit. The counts beside them come from the live ped rather than the appearance, so a
+// drawable that is out of range on this model shows up as such.
 public static class PedAppearanceReport
 {
     public static IEnumerable<string> Describe(PedAppearance appearance, int ped)

@@ -5,21 +5,14 @@ using vMenu.Enhanced.Menus.Appearance;
 
 namespace vMenu.Enhanced.Menus.Vehicles.Appearance;
 
-/// <summary>
-/// Puts a saved appearance back onto a vehicle, and checks that it took.
-/// </summary>
-/// <remarks>
-/// Applying is not reliable on the first go. Upgrades have to stream in before the game will accept
-/// them, and a few settings quietly reset others. Rather than legacy's "apply twice and hope", this
-/// applies, waits for the upgrades to load, reads the vehicle back through
-/// <see cref="VehicleAppearanceReader"/> and applies again while anything still disagrees. Whatever
-/// is still wrong after the last pass is handed back to the caller instead of being swallowed.
-/// </remarks>
+// Applying is not reliable on the first go. Upgrades have to stream in before the game will accept
+// them, and a few settings quietly reset others. Rather than legacy's "apply twice and hope", this
+// applies, waits for the upgrades to load, reads the vehicle back and applies again while anything
+// still disagrees. Whatever is still wrong after the last pass is handed back to the caller.
 public static class VehicleAppearanceWriter
 {
     private const int MaxPasses = 3;
 
-    /// <summary>How long to wait for upgrades to stream in before applying again, in frames.</summary>
     // Frames rather than milliseconds: the wait exists so the game gets a chance to do work, and a
     // player on a slow machine needs more real time for the same amount of it.
     private const int StreamWaitFrames = 60;
@@ -34,12 +27,10 @@ public static class VehicleAppearanceWriter
 
     private const int NeonBack = 3;
 
-    /// <summary>Applies an appearance, and reports whatever would not stick.</summary>
-    /// <returns>Empty when the vehicle now matches exactly.</returns>
+    // Empty when the vehicle now matches exactly.
     public static async Task<List<AppearanceDifference>> ApplyAsync(Vehicle vehicle, VehicleAppearance appearance) =>
         await ApplyAsync(vehicle.Handle, appearance);
 
-    /// <inheritdoc cref="ApplyAsync(Vehicle, VehicleAppearance)"/>
     public static async Task<List<AppearanceDifference>> ApplyAsync(int handle, VehicleAppearance appearance)
     {
         var differences = new List<AppearanceDifference>();
@@ -66,7 +57,7 @@ public static class VehicleAppearanceWriter
         return differences;
     }
 
-    /// <summary>One pass. Every call here is idempotent, so repeating it is safe.</summary>
+    // One pass. Every call here is idempotent, so repeating it is safe.
     public static void Apply(int handle, VehicleAppearance appearance)
     {
         // Nothing below this line works without it, including reading back what it did.
@@ -91,8 +82,8 @@ public static class VehicleAppearanceWriter
                 continue;
             }
 
-            // The flag says whether to turn the extra off, not on. Getting this backwards is the
-            // classic way to have every extra come back inverted.
+            // The flag says whether to turn the extra off, not on. Getting this backwards is the classic way to
+            // have every extra come back inverted.
             Native.SetVehicleExtra(handle, extra.Id, !extra.On);
         }
     }
@@ -125,8 +116,8 @@ public static class VehicleAppearanceWriter
     {
         Native.ToggleVehicleMod(handle, (int)VehicleModSlot.Turbo, appearance.Turbo);
 
-        // Colour before the toggle: fitting the kit with the wrong colour on it shows the wrong
-        // colour until something else changes.
+        // Colour before the toggle: fitting the kit with the wrong colour on it shows the wrong colour until
+        // something else changes.
         Native.SetVehicleTyreSmokeColor(
             handle,
             appearance.TyreSmokeRed,
@@ -135,8 +126,8 @@ public static class VehicleAppearanceWriter
 
         Native.ToggleVehicleMod(handle, (int)VehicleModSlot.TyreSmoke, appearance.TyreSmoke);
 
-        // Toggling the kit off on its own leaves the smoke showing. The game only lets go of it once
-        // the mod is removed as well.
+        // Toggling the kit off on its own leaves the smoke showing. The game only lets go of it once the mod
+        // is removed as well.
         if (!appearance.TyreSmoke)
         {
             Native.RemoveVehicleMod(handle, (int)VehicleModSlot.TyreSmoke);
@@ -160,8 +151,8 @@ public static class VehicleAppearanceWriter
 
     private static void ApplyPaint(int handle, VehicleAppearance appearance)
     {
-        // The mod colour form carries the finish as well as the colour, so it goes first and the
-        // plain colour call after it settles any disagreement about the ids themselves.
+        // The mod colour form carries the finish as well as the colour, so it goes first and the plain
+        // colour call after it settles any disagreement about the ids themselves.
         Native.SetVehicleModColor_1(
             handle,
             appearance.PrimaryPaintType,
@@ -172,8 +163,7 @@ public static class VehicleAppearanceWriter
 
         Native.SetVehicleColours(handle, appearance.PrimaryColor, appearance.SecondaryColor);
 
-        // Last of the group: setting a mod colour resets these, so writing them earlier would be
-        // undone by the calls above.
+        // Last of the group: setting a mod colour resets these, so writing them earlier would be undone.
         Native.SetVehicleExtraColours(handle, appearance.PearlescentColor, appearance.WheelColor);
 
         Native.SetVehicleInteriorColour(handle, appearance.InteriorColor);
@@ -256,7 +246,6 @@ public static class VehicleAppearanceWriter
         }
     }
 
-    /// <summary>Gives the game a chance to stream the upgrades in before they are checked.</summary>
     private static async Task WaitForModsAsync(int handle)
     {
         for (var frame = 0; frame < StreamWaitFrames; frame++)

@@ -6,7 +6,6 @@ using vMenu.Enhanced.Menus.Vehicles.Appearance;
 
 namespace vMenu.Enhanced.Menus.Vehicles.Sections;
 
-/// <summary>Underglow: which tubes are lit, and what colour they glow.</summary>
 internal static class NeonSection
 {
     private const int Left = 0;
@@ -69,12 +68,9 @@ internal static class NeonSection
         },
     };
 
-    /// <summary>
-    /// Makes the colour on the vehicle agree with the colour the list is showing.
-    /// </summary>
     // A vehicle that has never had neon fitted reports a magenta the palette does not contain, so the
-    // list rests on its first entry and says white while the tubes light up magenta. Rather than let
-    // the row lie, the colour it is showing is applied before the first tube comes on.
+    // list rests on its first entry and says white while the tubes light up magenta. Rather than let the
+    // row lie, the colour it is showing is applied before the first tube comes on.
     private static void SettleColor(int handle)
     {
         Native.GetVehicleNeonLightsColour(handle, out var red, out var green, out var blue);
@@ -128,8 +124,7 @@ internal static class NeonSection
         };
     }
 
-    // No Clear: the tubes always have some colour, so there is no "not set" for the picker to
-    // return them to.
+    // No Clear: the tubes always have some colour, so there is no "not set" to return them to.
     private static RgbTarget Target() => new()
     {
         Read = () =>

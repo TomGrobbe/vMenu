@@ -1,9 +1,7 @@
 namespace vMenu.Enhanced.Data.Permissions.Menus;
 
-/// <summary>
-/// Permissions for the saved peds menu. The saves themselves live on the player's own machine, so
-/// these decide what this server lets them do with that collection, not who owns it.
-/// </summary>
+// The saves themselves live on the player's own machine, so these decide what this server lets them
+// do with that collection, not who owns it.
 [PermissionCategory]
 public static class SavedPeds
 {

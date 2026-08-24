@@ -2,24 +2,14 @@ using CitizenFX.FiveM.Client;
 
 namespace vMenu.Enhanced.Menus.Vehicles.Appearance;
 
-/// <summary>
-/// The game's names for horns, which it does not hand out the way it does every other part.
-/// </summary>
-/// <remarks>
-/// <c>GetModTextLabel</c> answers nothing for the horn slot. The mod shop instead reads the horn's
-/// identifier hash, which is the name of the sound it plays, and looks the display name up from
-/// that. This is the shop's own table, flattened: the game goes hash to an internal horn enum and
-/// the enum to a text key, and since nothing else uses that enum the two steps are collapsed into
-/// one here.
-///
-/// <para>
-/// The Luxe entries really are crossed over in the game's data, with <c>LUXE_HORN_2</c> naming the
-/// first one. That is copied rather than corrected, so vMenu says what the mod shop says.
-/// </para>
-/// </remarks>
+// GetModTextLabel answers nothing for the horn slot. The mod shop instead reads the horn's
+// identifier hash, which is the name of the sound it plays, and looks the display name up from that.
+// This is the shop's own table, flattened. The Luxe entries really are crossed over in the game's
+// data, with LUXE_HORN_2 naming the first one, and that is copied rather than corrected so vMenu
+// says what the mod shop says.
 public static class VehicleHornLabels
 {
-    /// <summary>What the shop calls the horn a vehicle was built with.</summary>
+    // What the shop calls the horn a vehicle was built with.
     public const string StockKey = "CMOD_HRN_0";
 
     private static readonly (string Sound, string TextKey)[] Names =
@@ -80,12 +70,12 @@ public static class VehicleHornLabels
         ("DLC_AW_AIRHORN_03", "CMOD_AIRHORN_03"),
     ];
 
-    // Hashed once, on first use rather than at type load, so nothing runs before the game is ready
-    // to answer. A flat array walked in order rather than a dictionary, which would want an equality
+    // Hashed once, on first use rather than at type load, so nothing runs before the game is ready to
+    // answer. A flat array walked in order rather than a dictionary, which would want an equality
     // comparer the client sandbox will not hand out, and forty three entries is nothing to walk.
     private static (uint Hash, string TextKey)[]? _hashed;
 
-    /// <summary>The game's text key for the horn in a slot, or null when it is not one vMenu knows.</summary>
+    // The game's text key for the horn in a slot, or null when it is not one vMenu knows.
     public static string? TextKey(int handle, int index)
     {
         var sound = (uint)Native.GetVehicleModIdentifierHash(handle, (int)VehicleModSlot.Horn, index);

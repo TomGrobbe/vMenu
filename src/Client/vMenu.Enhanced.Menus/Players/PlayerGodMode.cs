@@ -9,9 +9,6 @@ using PlayerOptionsPermissions = vMenu.Enhanced.Data.Permissions.Menus.PlayerOpt
 
 namespace vMenu.Enhanced.Menus.Players;
 
-/// <summary>
-/// Nothing hurts the player.
-/// </summary>
 public static class PlayerGodMode
 {
     private const PedProtections Protections =
@@ -23,12 +20,11 @@ public static class PlayerGodMode
 
     private static TickHandle? _tick;
 
-    /// <summary>What the player asked for and what the server allows, which together are the only answer.</summary>
     public static bool Enabled => UserDefaults.PlayerGodMode.Value && IsAllowed;
 
     private static bool IsAllowed => ClientPermissions.IsAllowed(PlayerOptionsPermissions.Godmode);
 
-    /// <summary>Call once at startup, before permissions have arrived.</summary>
+    // Call once at startup, before permissions have arrived.
     public static void Initialize()
     {
         ClientPermissions.PermissionsChanged += Apply;
@@ -52,7 +48,7 @@ public static class PlayerGodMode
         Apply();
     }
 
-    /// <summary>Writes the flag out again, for anything that has reset it behind vMenu's back.</summary>
+    // Writes the flag out again, for anything that has reset it behind vMenu's back.
     public static void Reapply()
     {
         Apply();
@@ -78,10 +74,8 @@ public static class PlayerGodMode
 
     private static void Hold() => Write(true);
 
-
     private static void Write(bool on) =>
         Native.SetPlayerInvincibleKeepRagdollEnabled(Native.PlayerId(), on);
-
 
     private static void ClearPedInvincibility()
     {

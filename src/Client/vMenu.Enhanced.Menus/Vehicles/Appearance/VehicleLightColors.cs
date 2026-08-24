@@ -1,9 +1,8 @@
 namespace vMenu.Enhanced.Menus.Vehicles.Appearance;
 
-/// <summary>One of the game's thirteen light colours, and what it is in red, green and blue.</summary>
 public sealed class VehicleLightColor(int index, string gxtKey, int red, int green, int blue)
 {
-    /// <summary>What <c>SetVehicleHeadlightsColour</c> wants, and the position in the neon list.</summary>
+    // What SetVehicleHeadlightsColour wants, and the position in the neon list.
     public int Index { get; } = index;
 
     public string GxtKey { get; } = gxtKey;
@@ -15,14 +14,9 @@ public sealed class VehicleLightColor(int index, string gxtKey, int red, int gre
     public int Blue { get; } = blue;
 }
 
-/// <summary>
-/// The thirteen colours the game's mod shop offers for neon tubes and xenon headlights.
-/// </summary>
-/// <remarks>
-/// Headlights are set by index and neon tubes by red, green and blue, so both are carried here. The
-/// tyre smoke list uses the same palette, since the game names these colours and does not name a
-/// separate set for smoke.
-/// </remarks>
+// Headlights are set by index and neon tubes by red, green and blue, so both are carried here. The
+// tyre smoke list uses the same palette, since the game names these colours and does not name a
+// separate set for smoke.
 public static class VehicleLightColors
 {
     public static IReadOnlyList<VehicleLightColor> All { get; } =
@@ -42,10 +36,10 @@ public static class VehicleLightColors
         new(12, "CMOD_NEONCOL_12", 15, 3, 255),
     ];
 
-    /// <summary>What <c>SetVehicleHeadlightsColour</c> wants for the headlights the vehicle came with.</summary>
+    // What SetVehicleHeadlightsColour wants for the headlights the vehicle came with.
     public const int DefaultHeadlightColor = 255;
 
-    /// <summary>The colour whose red, green and blue match exactly, or -1 for a mix of its own.</summary>
+    // The colour whose red, green and blue match exactly, or -1 for a mix of its own.
     public static int IndexOfRgb(int red, int green, int blue)
     {
         foreach (var color in All)

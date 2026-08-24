@@ -1,9 +1,6 @@
 namespace vMenu.Enhanced.Data.Permissions.Menus;
 
-/// <summary>
-/// Permissions for the vehicle spawner menu. Per category permissions live one container deeper in
-/// <see cref="VehicleSpawnerCategories"/>.
-/// </summary>
+// Per category permissions live one container deeper, in VehicleSpawnerCategories.
 [PermissionCategory]
 public static class VehicleSpawner
 {

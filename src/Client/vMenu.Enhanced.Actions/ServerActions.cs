@@ -5,10 +5,10 @@ using vMenu.Enhanced.Logging;
 
 namespace vMenu.Enhanced.Actions;
 
-/// <summary>Asks the server to do something, and waits for its answer.</summary>
-// The runtime has no request/response primitive, so a reply is matched to its request by an id this
-// side chose. Handlers are registered imperatively because attribute discovery only scans the
-// assembly named as the client_script, and this one is a project reference.
+// Asks the server to do something and waits for its answer. The runtime has no request/response
+// primitive, so a reply is matched to its request by an id this side chose. Handlers are registered
+// imperatively because attribute discovery only scans the client_script assembly, and this one is a
+// project reference.
 public static class ServerActions
 {
     private const int TimeoutMs = 10000;
@@ -19,7 +19,7 @@ public static class ServerActions
 
     private static bool _registered;
 
-    /// <summary>Call before building menus.</summary>
+    // Call before building menus.
     public static void RegisterEventHandlers()
     {
         if (_registered)
@@ -32,10 +32,8 @@ public static class ServerActions
         API.OnNetEvent(ActionEvents.Result, new Action<int, int, string[]>(OnResult), false);
     }
 
-    /// <summary>
-    /// Runs an action on the server. Never throws for a refusal: everything that can go wrong,
-    /// including no reply at all, comes back as an <see cref="ActionStatus"/>.
-    /// </summary>
+    // Never throws for a refusal: everything that can go wrong, including no reply at all, comes back as
+    // an ActionStatus.
     public static async Task<ActionResult> InvokeAsync(string actionId, params string[] args)
     {
         if (!_registered)

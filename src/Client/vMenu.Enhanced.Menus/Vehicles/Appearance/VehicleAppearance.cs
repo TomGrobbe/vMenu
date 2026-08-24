@@ -1,17 +1,15 @@
 namespace vMenu.Enhanced.Menus.Vehicles.Appearance;
 
-/// <summary>One upgrade slot and what is fitted in it.</summary>
 // A list of these rather than a dictionary keyed on the slot: a dictionary needs an equality
 // comparer the client sandbox will not hand out, and an array serialises in a stable order.
 public sealed class VehicleModValue
 {
     public int Slot { get; set; }
 
-    /// <summary>The upgrade index, where -1 means the part the vehicle left the factory with.</summary>
+    // Minus one means the part the vehicle left the factory with.
     public int Value { get; set; } = -1;
 }
 
-/// <summary>One of a vehicle's optional parts, and whether it is fitted.</summary>
 public sealed class VehicleExtraState
 {
     public int Id { get; set; }
@@ -19,20 +17,12 @@ public sealed class VehicleExtraState
     public bool On { get; set; }
 }
 
-/// <summary>
-/// Everything about a vehicle that a player can change and vMenu can put back.
-/// </summary>
-/// <remarks>
-/// This is the shape written into a saved vehicle, so adding or removing anything here is a change
-/// to the stored format and needs <c>SavedVehicle.SchemaVersion</c> raised with it.
-///
-/// <para>
-/// Deliberately left out: anything that is momentary rather than part of how the vehicle looks, such
-/// as which doors happen to be open, which windows are down and how much fuel is in it.
-/// </para>
-/// </remarks>
-// A plain class with settable properties. Not a record, because the generated equality reaches for
-// EqualityComparer<T>.Default and the client sandbox refuses to load it.
+// The shape written into a saved vehicle, so adding or removing anything here is a change to the
+// stored format and needs SavedVehicle.SchemaVersion raised with it. Deliberately left out is
+// anything momentary rather than part of how the vehicle looks: open doors, windows, fuel.
+//
+// A class with settable properties rather than a record: generated equality reaches for
+// EqualityComparer<T>.Default, which the client sandbox refuses to load.
 public sealed class VehicleAppearance
 {
     #region Identity
@@ -47,7 +37,7 @@ public sealed class VehicleAppearance
 
     public List<VehicleModValue> Mods { get; set; } = [];
 
-    /// <summary>The low profile tyres that come with a set of rims.</summary>
+    // The low profile tyres that come with a set of rims.
     public bool CustomTyres { get; set; }
 
     public int WheelType { get; set; }
@@ -66,7 +56,7 @@ public sealed class VehicleAppearance
 
     #region Paint
 
-    /// <summary>The finish over the primary colour: normal, metallic, matte and so on.</summary>
+    // The finish over the primary colour: normal, metallic, matte and so on.
     public int PrimaryPaintType { get; set; }
 
     public int PrimaryColor { get; set; }
@@ -83,7 +73,6 @@ public sealed class VehicleAppearance
 
     public int InteriorColor { get; set; }
 
-    /// <summary>Null when the vehicle uses a colour from the game's lists rather than a mixed one.</summary>
     // Nullable rather than -1, so a custom colour with a zero channel is not mistaken for no custom
     // colour at all. Legacy used -1 and > 0 guards, and quietly lost any colour containing a zero.
     public int? CustomPrimaryRed { get; set; }
@@ -98,14 +87,14 @@ public sealed class VehicleAppearance
 
     public int? CustomSecondaryBlue { get; set; }
 
-    /// <summary>How sun bleached the paint looks, from 0 for factory fresh to 1 for badly faded.</summary>
+    // How sun bleached the paint looks, from 0 for factory fresh to 1 for badly faded.
     public float PaintFade { get; set; }
 
     #endregion
 
     #region Lights
 
-    /// <summary>The game's headlight colour index, or 255 for the ones it came with.</summary>
+    // The game's headlight colour index, or 255 for the ones it came with.
     public int HeadlightColor { get; set; } = VehicleLightColors.DefaultHeadlightColor;
 
     public int? CustomXenonRed { get; set; }
@@ -154,7 +143,7 @@ public sealed class VehicleAppearance
 
     #endregion
 
-    /// <summary>What is fitted in a slot, or -1 when this vehicle has nothing recorded for it.</summary>
+    // Minus one when this vehicle has nothing recorded for the slot.
     public int ModAt(VehicleModSlot slot)
     {
         foreach (var mod in Mods)
@@ -168,7 +157,7 @@ public sealed class VehicleAppearance
         return -1;
     }
 
-    /// <summary>Whether an extra is fitted, or <see langword="null"/> when it was not recorded.</summary>
+    // Null when the extra was not recorded.
     public bool? ExtraAt(int id)
     {
         foreach (var extra in Extras)

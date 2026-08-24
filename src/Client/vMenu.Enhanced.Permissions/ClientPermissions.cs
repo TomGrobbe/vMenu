@@ -2,15 +2,15 @@ using vMenu.Enhanced.Data.Permissions;
 
 namespace vMenu.Enhanced.Permissions;
 
-/// <summary>The client's cached view of what the local player may do. Advisory only.</summary>
-// The server sends the smallest set describing the player, so a permission ending in .All is stored
-// as a subtree and questions inside it are answered by walking up the asked for name. The server
-// re-checks anything that matters.
+// The client's cached view of what the local player may do. Advisory only: the server sends the
+// smallest set describing the player, so a permission ending in .All is stored as a subtree and
+// questions inside it are answered by walking up the asked for name. The server re-checks anything
+// that matters.
 public static class ClientPermissions
 {
     private static readonly HashSet<string> GrantedExact = new(StringComparer.OrdinalIgnoreCase);
 
-    /// <summary>Container paths granted in full, stored without their trailing <c>.All</c>.</summary>
+    // Container paths granted in full, stored without their trailing .All.
     private static readonly HashSet<string> GrantedSubtrees = new(StringComparer.OrdinalIgnoreCase);
 
     // So the prefix walk runs once per distinct permission rather than every frame a menu asks.
@@ -18,13 +18,13 @@ public static class ClientPermissions
 
     private static bool _grantsEverything;
 
-    /// <summary>Until a set arrives every check fails, so menus start locked rather than briefly open.</summary>
+    // Until a set arrives every check fails, so menus start locked rather than briefly open.
     public static bool HasReceivedPermissions { get; private set; }
 
     public static bool HasAnyPermission =>
         HasReceivedPermissions && (_grantsEverything || GrantedExact.Count > 0 || GrantedSubtrees.Count > 0);
 
-    /// <summary>Menus should build once and re-evaluate here.</summary>
+    // Menus should build once and re-evaluate here.
     public static event Action? PermissionsChanged;
 
     public static void ApplyPermissions(string[] permissions)
@@ -56,7 +56,7 @@ public static class ClientPermissions
         PermissionsChanged?.Invoke();
     }
 
-    /// <summary>Inheritance is applied here, so callers never name a parent themselves.</summary>
+    // Inheritance is applied here, so callers never name a parent themselves.
     public static bool IsAllowed(string permission)
     {
         if (_grantsEverything)
@@ -80,10 +80,10 @@ public static class ClientPermissions
         return allowed;
     }
 
-    // Called whenever a kvp import is triggered to refresh permission checks after settings are restored
+    // Called after a kvp import, to refresh permission checks once settings are restored.
     public static void Reevaluate() => PermissionsChanged?.Invoke();
 
-    /// <summary>Puts the client back into its pre-sync state.</summary>
+    // Puts the client back into its pre-sync state.
     public static void Clear()
     {
         GrantedExact.Clear();

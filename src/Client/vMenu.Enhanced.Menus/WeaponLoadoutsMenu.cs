@@ -12,9 +12,6 @@ using WeaponLoadoutsPermissions = vMenu.Enhanced.Data.Permissions.Menus.WeaponLo
 
 namespace vMenu.Enhanced.Menus;
 
-/// <summary>
-/// Saves the weapons a player is carrying under a name, and gives them back later.
-/// </summary>
 [VMenu(
     TitleKey = Loc.WeaponLoadouts.Title,
     SubtitleKey = Loc.WeaponLoadouts.Subtitle,
@@ -116,8 +113,8 @@ public sealed class WeaponLoadoutsMenu : MenuDefinition
                 Label = MenuText.Key(
                     Loc.WeaponLoadouts.WeaponCount,
                     ("count", MenuText.Literal(current.Weapons.Count.ToString(CultureInfo.InvariantCulture)))),
-                // The one the player picked to come back with, marked so they can see which it is
-                // without opening each one.
+                // The one the player picked to come back with, marked so they can see which it is without opening
+                // each one.
                 ReadLeftIcon = () => WeaponLoadoutStore.IsDefault(current.Name)
                     ? MenuItem.Icon.TICK
                     : MenuItem.Icon.NONE,
@@ -180,8 +177,8 @@ public sealed class WeaponLoadoutsMenu : MenuDefinition
             },
         });
 
-        // Two press rows. The framework clears a primed confirmation on open, on close and when the
-        // player moves to another row, so none of them can be left armed the way vMenu's Replace was.
+        // Two press rows. The framework clears a primed confirmation on open, on close and when the player
+        // moves to another row, so none of them can be left armed the way vMenu's Replace was.
         detailMenu.Entries.Add(new ConfirmButtonEntry
         {
             Text = MenuText.Key(Loc.WeaponLoadouts.Replace),
@@ -230,8 +227,8 @@ public sealed class WeaponLoadoutsMenu : MenuDefinition
 
         var report = await WeaponLoadoutApply.ApplyAsync(loadout, append: false, ignorePermissions: false);
 
-        // Said once at the end rather than per weapon, so a loadout full of things this server does
-        // not allow does not bury the player in messages.
+        // Said once at the end rather than per weapon, so a loadout full of things this server does not
+        // allow does not bury the player in messages.
         if (report.Skipped > 0)
         {
             Notifications.Warning(
@@ -341,8 +338,8 @@ public sealed class WeaponLoadoutsMenu : MenuDefinition
 
         _selected = null;
 
-        // Straight back to the list, which rebuilds itself, rather than leaving the player looking at
-        // the options for something that is no longer there.
+        // Straight back to the list, which rebuilds itself, rather than leaving the player looking at the
+        // options for something that is no longer there.
         _listMenu?.Open();
     }
 

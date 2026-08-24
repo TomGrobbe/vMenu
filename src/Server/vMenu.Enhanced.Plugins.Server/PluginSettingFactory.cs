@@ -5,11 +5,11 @@ using vMenu.Enhanced.PluginContracts;
 
 namespace vMenu.Enhanced.Plugins.Server;
 
-/// <summary>Turns declared <see cref="SettingNode"/>s into vMenu <see cref="Setting"/> objects.</summary>
+// Turns declared SettingNodes into vMenu Setting objects.
 public static class PluginSettingFactory
 {
-    /// <param name="fullName">The composed convar name, already validated.</param>
-    /// <param name="problem">Why the node was unusable, or <see langword="null"/> when it converted.</param>
+    // fullName is the composed convar name, already validated. problem says why the node was unusable,
+    // or null when it converted.
     public static Setting? Create(SettingNode node, string fullName, out string? problem)
     {
         var description = string.IsNullOrWhiteSpace(node.Description)

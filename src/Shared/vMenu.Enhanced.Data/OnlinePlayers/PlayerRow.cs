@@ -1,27 +1,17 @@
 namespace vMenu.Enhanced.Data.OnlinePlayers;
 
-/// <summary>
-/// One player in the list the server sends back, as it travels over the wire.
-/// </summary>
-/// <remarks>
-/// An action answers with a <c>string[]</c>, so a player has to fit in one string. Both halves of the
-/// conversation live here so they cannot drift apart.
-/// <para>
-/// Deliberately only a server id and a name. Identifiers stay on the server, which is also why the
-/// search runs there.
-/// </para>
-/// </remarks>
+// An action answers with a string[], so a player has to fit in one string. Both halves of the
+// conversation live here so they cannot drift apart. Deliberately only a server id and a name:
+// identifiers stay on the server, which is also why the search runs there.
 public static class PlayerRow
 {
-    /// <summary>
-    /// ASCII 31, "unit separator". Chosen because a player name cannot contain it, so no amount of
-    /// creative naming can break the split.
-    /// </summary>
+    // ASCII 31, "unit separator". Chosen because a player name cannot contain it, so no amount of
+    // creative naming can break the split.
     public const char Separator = '\u001F';
 
     public static string Format(int serverId, string name) => $"{serverId}{Separator}{name}";
 
-    /// <summary>Reads a row back. Returns false for anything malformed rather than throwing.</summary>
+    // Returns false for anything malformed rather than throwing.
     public static bool TryParse(string? row, out int serverId, out string name)
     {
         serverId = 0;

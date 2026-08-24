@@ -2,13 +2,11 @@ using vMenu.Enhanced.PluginContracts;
 
 namespace vMenu.Enhanced.ClientAPI;
 
-/// <summary>
-/// A piece of display text, either a literal or a key into your plugin's translation tables.
-/// A bare string converts to a literal, so translating is always the deliberate act. Keys are
-/// resolved by vMenu against the tables you registered, following its selected language with
-/// your English table as the fallback.
-/// </summary>
-// A plain struct rather than a record: generated equality routes through
+/// <summary>A piece of display text, either a literal or a key into your plugin's translation
+/// tables. A bare string converts to a literal, so translating is always the deliberate act. Keys
+/// are resolved by vMenu against the tables you registered, following its selected language with
+/// your English table as the fallback.</summary>
+// A struct rather than a record: generated equality routes through
 // EqualityComparer<string>.Default, which the FiveM sandbox refuses to load.
 public readonly struct Text
 {
@@ -34,10 +32,8 @@ public readonly struct Text
 
     public static Text Key(string key) => new(key, true, null);
 
-    /// <summary>
-    /// A key with named placeholder values. In the translated string, <c>{name}</c> is replaced
-    /// with the matching value, which can itself be a literal or another key.
-    /// </summary>
+    /// <summary>A key with named placeholder values. In the translated string, <c>{name}</c> is replaced
+    /// with the matching value, which can itself be a literal or another key.</summary>
     public static Text Key(string key, params (string Name, Text Value)[] arguments) =>
         new(key, true, arguments);
 

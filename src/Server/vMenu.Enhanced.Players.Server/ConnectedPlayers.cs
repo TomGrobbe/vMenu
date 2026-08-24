@@ -4,9 +4,8 @@ using CitizenFX.FiveM.Server;
 
 namespace vMenu.Enhanced.Players.Server;
 
-/// <summary>One connected player, as the server sees them.</summary>
-// A plain class rather than a record, matching the rest of this codebase: the generated equality
-// routes through EqualityComparer<string>.Default, which the sandbox refuses to load.
+// A class rather than a record: generated equality routes through
+// EqualityComparer<string>.Default, which the sandbox refuses to load.
 public sealed class ConnectedPlayer(int serverId, string name)
 {
     public int ServerId { get; } = serverId;
@@ -16,15 +15,9 @@ public sealed class ConnectedPlayer(int serverId, string name)
 
 public static class ConnectedPlayers
 {
-    /// <summary>
-    /// Everybody actually connected right now.
-    /// </summary>
-    /// <remarks>
-    /// Read straight from the game rather than from <c>API.Players.All</c>. That is a cache the
-    /// runtime fills on demand and never prunes, so it keeps handing back players who have already
-    /// left: they come through with an empty name, they fail every action, and nothing ever notices
-    /// they are gone.
-    /// </remarks>
+    // Read straight from the game rather than from API.Players.All. That is a cache the runtime fills on
+    // demand and never prunes, so it keeps handing back players who have already left: they come through
+    // with an empty name, they fail every action, and nothing ever notices they are gone.
     public static List<ConnectedPlayer> All()
     {
         var count = Native.GetNumPlayerIndices();
@@ -43,8 +36,8 @@ public static class ConnectedPlayers
 
             var name = Native.GetPlayerName(handle);
 
-            // Falls back to the server id so a row is never blank. Somebody you cannot see is
-            // somebody you cannot pick.
+            // Falls back to the server id so a row is never blank. Somebody you cannot see is somebody you
+            // cannot pick.
             players.Add(new ConnectedPlayer(
                 serverId,
                 string.IsNullOrWhiteSpace(name) ? $"#{serverId}" : name));
@@ -53,10 +46,8 @@ public static class ConnectedPlayers
         return players;
     }
 
-    /// <summary>Whoever this ped belongs to, or null when it belongs to nobody.</summary>
-    // A scan rather than NetworkGetEntityOwner, which answers which client is simulating the entity.
-    // For a player's own ped that is usually the same player, but it moves around, and the question
-    // here is whose character this is rather than whose machine is running it.
+    // A scan rather than NetworkGetEntityOwner, which answers which client is simulating the entity. The
+    // question here is whose character this is rather than whose machine is running it.
     public static ConnectedPlayer? Owning(IReadOnlyList<ConnectedPlayer> players, int entity)
     {
         if (entity == 0)

@@ -8,14 +8,10 @@ using Microsoft.CodeAnalysis.Text;
 
 namespace vMenu.Enhanced.NativeHooks.Generator;
 
-/// <summary>
-/// Emits an internal <em>vMenu.Enhanced.Native</em> class that forwards to the real
-/// <em>CitizenFX.FiveM.Client.Native</em> with <em>NativeHook</em> calls wrapped around it.
-///
-/// Call sites need no change because C# resolves a bare type name against the enclosing
-/// namespaces before it looks at the using directives, and every client file sits inside
-/// vMenu.Enhanced. The generated class therefore wins over the one the using pulls in.
-/// </summary>
+// Emits an internal vMenu.Enhanced.Native class that forwards to the real
+// CitizenFX.FiveM.Client.Native with NativeHook calls wrapped around it. Call sites need no change
+// because C# resolves a bare type name against the enclosing namespaces before it looks at the using
+// directives, and every client file sits inside vMenu.Enhanced, so the generated class wins.
 [Generator(LanguageNames.CSharp)]
 public sealed class NativeForwarderGenerator : IIncrementalGenerator
 {
@@ -112,8 +108,8 @@ public sealed class NativeForwarderGenerator : IIncrementalGenerator
 
         builder.AppendLine("}");
 
-        // AppendLine writes the platform newline while the raw strings carry whatever
-        // this file is saved with, so without this the output ends up mixing the two.
+        // AppendLine writes the platform newline while the raw strings carry whatever this file is saved
+        // with, so without this the output ends up mixing the two.
         return builder.Replace("\r\n", "\n").ToString();
     }
 

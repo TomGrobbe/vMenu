@@ -5,19 +5,18 @@ using vMenu.Enhanced.MenuFramework.Localization;
 
 namespace vMenu.Enhanced.Menus.Vehicles.Sections;
 
-/// <summary>What a colour picker reads from and writes to.</summary>
 internal sealed class RgbTarget
 {
-    /// <summary>The colour now, or null when this target has no colour of its own set.</summary>
+    // The colour now, or null when this target has no colour of its own set.
     public required Func<RgbValue?> Read { get; init; }
 
     public required Action<int, int, int> Write { get; init; }
 
-    /// <summary>Puts the target back to a colour from the game's lists. Null when it has no such state.</summary>
+    // Puts the target back to a colour from the game's lists. Null when it has no such state.
     public Action? Clear { get; init; }
 }
 
-/// <summary>Three channels, so the picker can hand one value around instead of three.</summary>
+// Three channels, so the picker can hand one value around instead of three.
 internal sealed class RgbValue(int red, int green, int blue)
 {
     public int Red { get; set; } = red;
@@ -27,14 +26,8 @@ internal sealed class RgbValue(int red, int green, int blue)
     public int Blue { get; set; } = blue;
 }
 
-/// <summary>
-/// A colour mixed by hand: a hex code and three sliders.
-/// </summary>
-/// <remarks>
-/// The same shape appears for the primary paint, the secondary paint, the neon tubes, the xenon
-/// headlights and the tyre smoke, so it is declared once and pointed at whichever of those the
-/// caller means.
-/// </remarks>
+// The same shape appears for the primary paint, the secondary paint, the neon tubes, the xenon
+// headlights and the tyre smoke, so it is declared once and pointed at whichever the caller means.
 internal static class RgbPicker
 {
     private const int MaxChannel = 255;
@@ -43,8 +36,8 @@ internal static class RgbPicker
 
     public static void Build(MenuBuilder menu, RgbTarget target)
     {
-        // Seeded from the target and then carried in this closure, because a slider only ever hears
-        // about its own channel and the write needs all three.
+        // Seeded from the target and then carried in this closure, because a slider only ever hears about
+        // its own channel and the write needs all three.
         var current = target.Read() ?? new RgbValue(MaxChannel, MaxChannel, MaxChannel);
 
         menu.Entries.Add(new ButtonEntry

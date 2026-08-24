@@ -5,7 +5,7 @@ public static class WeatherOptions
 {
     public const string All = "vMenu.Enhanced.Menus.WeatherOptions.All";
 
-    /// <summary>Not <c>[StaffOnly]</c>: reading the forecast changes nothing.</summary>
+    // Not [StaffOnly]: reading the forecast changes nothing.
     public const string Menu = "vMenu.Enhanced.Menus.WeatherOptions.Menu";
 
     [StaffOnly]

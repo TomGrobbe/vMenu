@@ -3,17 +3,15 @@ using System.Text;
 
 namespace vMenu.Enhanced.Data.PlayerState;
 
-/// <summary>What the server last knew about one player, as it travels over the wire.</summary>
-// A plain class rather than a record, matching the rest of this codebase: the generated equality
-// routes through EqualityComparer<string>.Default, which the sandbox refuses to load.
+// A class rather than a record: generated equality routes through
+// EqualityComparer<string>.Default, which the sandbox refuses to load.
 public sealed class PresenceEntry(int serverId, float x, float y, float z, int heading, uint vehicleModel, int flags, string name)
 {
     public int ServerId { get; } = serverId;
 
-    /// <summary>Their name, so a blip drawn for somebody you cannot see is not an anonymous dot.</summary>
-    // Sent every time rather than once and cached. Caching it would mean the server remembering
-    // which of its clients it had already told about which player, which is a table the size of the
-    // player count squared, to save a dozen bytes on a message that is already being sent.
+    // Sent every time rather than once and cached. Caching it would mean the server remembering which of
+    // its clients it had already told about which player, a table the size of the player count squared,
+    // to save a dozen bytes on a message that is already being sent.
     public string Name { get; } = name;
 
     public float X { get; } = x;
@@ -22,13 +20,12 @@ public sealed class PresenceEntry(int serverId, float x, float y, float z, int h
 
     public float Z { get; } = z;
 
-    /// <summary>Whole degrees, which is all a blip's rotation can show anyway.</summary>
+    // Whole degrees, which is all a blip's rotation can show anyway.
     public int Heading { get; } = heading;
 
-    /// <summary>The model they are sitting in, or zero on foot.</summary>
     // A model rather than a blip sprite, because working out the sprite needs IsThisModelAPlane and
-    // friends, which are client natives the server does not have. Sending the model means the client
-    // runs the same lookup for a streamed player and a remote one, so the two cannot disagree.
+    // friends, which are client natives the server does not have. Sending the model means the client runs
+    // the same lookup for a streamed player and a remote one, so the two cannot disagree.
     public uint VehicleModel { get; } = vehicleModel;
 
     public int Flags { get; } = flags;
@@ -37,30 +34,21 @@ public sealed class PresenceEntry(int serverId, float x, float y, float z, int h
 
     public bool IsDead => (Flags & PresenceRow.FlagDead) != 0;
 
-    /// <summary>Whether this player holds the staff permission.</summary>
-    // Sent in the row rather than left to the player's state bag, which was the original design and
-    // did not survive contact with OneSync. The game only replicates a player's bag to clients that
-    // have that player in scope, so the moment somebody walked out of streaming range their staff
-    // key disappeared from everybody else's copy and the marking came off their blip. This is a
-    // snapshot of players you cannot see, so the one thing it must never depend on is being able to
-    // see them.
+    // Sent in the row rather than left to the player's state bag, which was the original design and did
+    // not survive contact with OneSync. The game only replicates a bag to clients that have that player
+    // in scope, so the marking came off their blip the moment they left streaming range. This is a
+    // snapshot of players you cannot see, so it must never depend on being able to see them.
     public bool IsStaff => (Flags & PresenceRow.FlagStaff) != 0;
 }
 
-/// <summary>
-/// Packing for the presence snapshot, so both ends agree on the format.
-/// </summary>
-/// <remarks>
-/// One string carries the whole snapshot rather than a string per player, because the payload is
-/// sent to every subscribed client several times a second and the per-message overhead would
-/// dominate it.
-/// </remarks>
+// One string carries the whole snapshot rather than a string per player, because the payload is sent
+// to every subscribed client several times a second and the per-message overhead would dominate it.
 public static class PresenceRow
 {
-    /// <summary>ASCII 31, "unit separator", between the fields of one player.</summary>
+    // ASCII 31, "unit separator", between the fields of one player.
     public const char FieldSeparator = (char)31;
 
-    /// <summary>ASCII 30, "record separator", between players.</summary>
+    // ASCII 30, "record separator", between players.
     public const char RecordSeparator = (char)30;
 
     public const int FlagNoClip = 1;
@@ -73,14 +61,8 @@ public static class PresenceRow
 
     private const int FieldCount = 8;
 
-    /// <summary>
-    /// Appends one player to a snapshot being built.
-    /// </summary>
-    /// <remarks>
-    /// Coordinates are rounded to whole metres. A blip is a dot on a map that is thousands of metres
-    /// across, so a metre is already far more precision than anybody can see, and dropping the
-    /// decimals roughly halves what goes over the wire.
-    /// </remarks>
+    // Coordinates are rounded to whole metres. A blip is a dot on a map thousands of metres across, so a
+    // metre is already more precision than anybody can see, and dropping the decimals halves the payload.
     public static void Append(
         StringBuilder snapshot,
         int serverId,
@@ -105,12 +87,11 @@ public static class PresenceRow
             .Append(vehicleModel.ToString(CultureInfo.InvariantCulture)).Append(FieldSeparator)
             .Append(flags.ToString(CultureInfo.InvariantCulture)).Append(FieldSeparator)
 
-            // Last, and stripped of both separators first. Everything before it is a number, so this
-            // is the one field that could otherwise carry a character that breaks the split.
+            // Last, and stripped of both separators first. Everything before it is a number, so this is the one
+            // field that could otherwise carry a character that breaks the split.
             .Append(Clean(name));
     }
 
-    /// <summary>Reads a whole snapshot back, skipping anything malformed rather than throwing.</summary>
     public static List<PresenceEntry> Parse(string? snapshot)
     {
         var entries = new List<PresenceEntry>();

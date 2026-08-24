@@ -2,10 +2,8 @@ using vMenu.Enhanced.PluginContracts;
 
 namespace vMenu.Enhanced.Plugins;
 
-/// <summary>
-/// Checks a declared tree before anything is materialised. Structural problems refuse the
-/// registration, per item problems skip the item with a warning so the rest still shows.
-/// </summary>
+// Checks a declared tree before anything is materialised. Structural problems refuse the
+// registration, per item problems skip the item with a warning so the rest still shows.
 internal static class PluginValidation
 {
     internal const int MaxItems = 2000;
@@ -23,7 +21,6 @@ internal static class PluginValidation
     internal static bool IndexMenuTree(PluginState state, MenuNode menu, RegisterResult result) =>
         IndexMenu(state, menu, 1, result);
 
-    /// <summary>Whether the plugin's live tree is already as big as it may get.</summary>
     // Read off the live index rather than counted per call, so items added after registration count
     // towards the same ceiling as the ones declared with it.
     private static bool AtCapacity(PluginState state) => state.ItemsById.Count >= MaxItems;
@@ -44,13 +41,13 @@ internal static class PluginValidation
 
         menu.Items ??= new List<ItemNode>();
 
-        // Recorded so an item added to this menu later knows how deep it already sits, the late path
-        // having no walk down from the root to count with.
+        // Recorded so an item added to this menu later knows how deep it already sits, the late path having
+        // no walk down from the root to count with.
         state.MenuDepths[menu.Id] = depth;
 
-        // Forwards, and the index only moves on for an item that survived. Walking backwards would
-        // be simpler to remove from, but then the last of two rows sharing an id would be the one
-        // indexed and the first would be dropped, which is the opposite of what the warning says.
+        // Forwards, and the index only moves on for an item that survived. Walking backwards would be
+        // simpler to remove from, but then the last of two rows sharing an id would be the one indexed and
+        // the first would be dropped, which is the opposite of what the warning says.
         for (var index = 0; index < menu.Items.Count;)
         {
             var node = menu.Items[index];
@@ -89,7 +86,7 @@ internal static class PluginValidation
         return true;
     }
 
-    /// <summary>Validates one item and records it. Answers whether it may stay.</summary>
+    // Answers whether the item may stay.
     internal static bool IndexItem(PluginState state, ItemNode node, string menuId, RegisterResult result)
     {
         if (string.IsNullOrEmpty(node.Id))
@@ -178,10 +175,8 @@ internal static class PluginValidation
         return true;
     }
 
-    /// <summary>
-    /// Validates and records an item added after registration, including a submenu's whole
-    /// subtree. Answers whether it may stay.
-    /// </summary>
+    // For an item added after registration, including a submenu's whole subtree. Answers whether it may
+    // stay.
     internal static bool IndexLateItem(PluginState state, ItemNode node, string menuId, RegisterResult result)
     {
         if (AtCapacity(state))
@@ -220,7 +215,7 @@ internal static class PluginValidation
         return false;
     }
 
-    /// <summary>Forgets an item and, for a submenu, everything below it.</summary>
+    // Forgets an item and, for a submenu, everything below it.
     internal static void Unindex(PluginState state, ItemNode node)
     {
         state.ItemsById.Remove(node.Id);

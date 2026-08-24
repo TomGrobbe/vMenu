@@ -1,8 +1,6 @@
 namespace vMenu.Enhanced.Data.Permissions;
 
-/// <summary>
-/// Network events used to sync permissions from the server to a client.
-/// </summary>
+// Network events used to sync permissions from the server to a client.
 public static class PermissionEvents
 {
 

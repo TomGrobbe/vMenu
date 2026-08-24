@@ -5,21 +5,14 @@ using vMenu.Enhanced.MenuFramework.Localization;
 
 namespace vMenu.Enhanced.Menus.Vehicles;
 
-/// <summary>
-/// Undoes the damage on the vehicle the player is driving.
-/// </summary>
 public static class VehicleRepair
 {
-    /// <summary>
-    /// Long enough for the game to finish applying damage it had already decided on, short enough
-    /// that nobody sees the vehicle flicker.
-    /// </summary>
+    // Long enough for the game to finish applying damage it had already decided on, short enough that
+    // nobody sees the vehicle flicker.
     private const int SecondPassDelayMs = 100;
 
-    /// <summary>
-    /// Stays client side, unlike deleting. This only ever touches the vehicle the player is already
-    /// sitting in, so there is no reach to police and nothing a server check could add.
-    /// </summary>
+    // Stays client side, unlike deleting. This only ever touches the vehicle the player is already
+    // sitting in, so there is no reach to police and nothing a server check could add.
     public static async Task RepairCurrentAsync()
     {
         var vehicle = OwnVehicle.RequireDriven(Loc.VehicleOptions.RepairNoVehicle, Loc.VehicleOptions.RepairNotDriver);
@@ -34,9 +27,6 @@ public static class VehicleRepair
         Notifications.Success(MenuText.Key(Loc.VehicleOptions.Repaired));
     }
 
-    /// <summary>
-    /// Repairs a vehicle by handle, silently, for callers that have already found one of their own.
-    /// </summary>
     // Twice, because the game applies some damage a moment after it is dealt: a single pass leaves
     // windows that were already on their way to breaking bursting again just after the repair lands.
     internal static async Task ApplyAsync(int vehicle)

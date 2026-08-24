@@ -8,24 +8,18 @@ using vMenu.Enhanced.Menus.Vehicles.Appearance;
 
 namespace vMenu.Enhanced.Menus.Vehicles.Sections;
 
-/// <summary>
-/// Paint, inside and out.
-/// </summary>
-/// <remarks>
-/// The game keeps the colour and the finish apart: the same id looks completely different as
-/// metallic, matte or chrome. That is why the finish is its own row rather than a set of duplicate
-/// colour groups, which is how legacy vMenu ended up listing "classic" and "metallic" over the same
-/// table of colours.
-/// </remarks>
+// The game keeps the colour and the finish apart: the same id looks completely different as metallic,
+// matte or chrome. That is why the finish is its own row rather than a set of duplicate colour
+// groups, which is how legacy ended up listing "classic" and "metallic" over the same table.
 internal static class ColorsSection
 {
-    /// <summary>How many steps the paint fade slider has. The native wants zero to one.</summary>
+    // How many steps the paint fade slider has. The native wants zero to one.
     private const int FadeSteps = 20;
 
-    /// <summary>What the game wants for wheels painted the colour they came in.</summary>
+    // What the game wants for wheels painted the colour they came in.
     private const int DefaultAlloy = 156;
 
-    /// <summary>The paint finish that makes a colour shift with the viewing angle.</summary>
+    // The paint finish that makes a colour shift with the viewing angle.
     private const int ChameleonFinish = 6;
 
     private const int NormalFinish = 0;
@@ -85,8 +79,8 @@ internal static class ColorsSection
                 color => Apply(current => Native.SetVehicleInteriorColour(current, color))),
         };
 
-        // Its own row rather than a sixth colour group, so it is findable and so picking one sets the
-        // finish along with the colour.
+        // Its own row rather than a sixth colour group, so it is findable and so picking one sets the finish
+        // along with the colour.
         if (VehicleColorTables.HasChameleonPaints)
         {
             rows.Add(ChameleonRow());
@@ -192,23 +186,16 @@ internal static class ColorsSection
             Description = MenuText.Key(Loc.VehicleOptions.PaintFinishDescription),
             Options = options,
 
-            // Not clamped. A finish the game reports that this list does not have is a value vMenu
-            // does not understand, and clamping it landed on the last entry, which is how every
-            // vehicle came up reading as chameleon.
+            // Not clamped. A finish the game reports that this list does not have is a value vMenu does not
+            // understand, and clamping it landed on the last entry, which is how every vehicle read as chameleon.
             ReadSelectedIndex = () => read() is var finish && finish >= 0 && finish < options.Count ? finish : 0,
 
             OnIndexChanged = changed => write(changed.NewIndex),
         };
     }
 
-    /// <summary>
-    /// The paints that shift colour with the angle you look at them from.
-    /// </summary>
-    /// <remarks>
-    /// Both body colours and the finish move together, because that is what the game means by a
-    /// chameleon paint. Picking an ordinary colour afterwards puts the finish back, which is what
-    /// makes the two directions behave the same way.
-    /// </remarks>
+    // Both body colours and the finish move together, because that is what the game means by a chameleon
+    // paint. Picking an ordinary colour afterwards puts the finish back.
     private static ListEntry ChameleonRow()
     {
         var colors = VehicleColorTables.Chameleon;
@@ -294,8 +281,8 @@ internal static class ColorsSection
             Description = MenuText.Key(descriptionKey),
             Options = options,
 
-            // A colour from another group, or one mixed by hand, is in none of these lists, so the
-            // row rests on its first entry rather than jumping somewhere that means nothing.
+            // A colour from another group, or one mixed by hand, is in none of these lists, so the row rests on
+            // its first entry rather than jumping somewhere that means nothing.
             ReadSelectedIndex = () => Math.Max(0, VehicleColorTables.IndexOf(colors, readCurrent())),
             OnIndexChanged = changed =>
             {
@@ -395,8 +382,8 @@ internal static class ColorsSection
         }
         catch (Exception)
         {
-            // The generated wrapper reads every output slot whether or not the game filled it, and
-            // the runtime throws rather than handing back a zero when it did not.
+            // The generated wrapper reads every output slot whether or not the game filled it, and the runtime
+            // throws rather than handing back a zero when it did not.
             return 0;
         }
     }
@@ -473,10 +460,9 @@ internal static class ColorsSection
         return interior;
     }
 
-    // A custom colour sits on top of the id, so picking from a list without dropping it would look
-    // like the row did nothing at all. A chameleon finish goes the same way: leaving it on while
-    // painting the car an ordinary colour is what made coming back out of chameleon behave
-    // differently from going into it.
+    // A custom colour sits on top of the id, so picking from a list without dropping it would look like
+    // the row did nothing at all. A chameleon finish goes the same way: leaving it on while painting the
+    // car an ordinary colour is what made coming out of chameleon behave differently from going in.
     private static void SetPrimary(int color) => Apply(handle =>
     {
         Native.ClearVehicleCustomPrimaryColour(handle);
@@ -487,7 +473,6 @@ internal static class ColorsSection
         Native.SetVehicleColours(handle, color, secondary);
     });
 
-    /// <inheritdoc cref="SetPrimary"/>
     private static void SetSecondary(int color) => Apply(handle =>
     {
         Native.ClearVehicleCustomSecondaryColour(handle);
@@ -497,7 +482,7 @@ internal static class ColorsSection
         Native.SetVehicleColours(handle, primary, color);
     });
 
-    /// <summary>A chameleon paint covers the whole car, so both colours and both finishes move.</summary>
+    // A chameleon paint covers the whole car, so both colours and both finishes move.
     private static void SetChameleon(int color) => Apply(handle =>
     {
         Native.ClearVehicleCustomPrimaryColour(handle);
@@ -510,7 +495,7 @@ internal static class ColorsSection
         Native.SetVehicleColours(handle, color, color);
     });
 
-    /// <summary>The finish to keep when painting an ordinary colour, which chameleon never is.</summary>
+    // The finish to keep when painting an ordinary colour, which chameleon never is.
     private static int Ordinary(int finish) => finish == ChameleonFinish ? NormalFinish : finish;
 
     private static void SetPearlescent(int color) => Apply(handle =>

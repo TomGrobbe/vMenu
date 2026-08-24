@@ -1,6 +1,6 @@
 namespace vMenu.Enhanced.Data.World;
 
-/// <summary>Every weather type the game accepts, in the order the menu lists them.</summary>
+// Every weather type the game accepts, in the order the menu lists them.
 public enum WeatherType
 {
     Clear,

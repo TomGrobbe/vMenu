@@ -13,7 +13,6 @@ using DeveloperFeaturesSetting = vMenu.Enhanced.Data.Configuration.Settings.Deve
 
 namespace vMenu.Enhanced.Menus.Developer;
 
-/// <summary>Draws the outlines and labels the developer features menu switches on.</summary>
 // Split across two ticks by cost. Walking a game pool is far too expensive per frame but barely
 // matters four times a second, while drawing must happen every frame or it flickers. Both are gated
 // on the same condition, so with the feature off no loop runs at all.
@@ -57,7 +56,7 @@ public static class DeveloperOverlay
         },
     ];
 
-    /// <summary>Constant per model, and otherwise rebuilt for every entity on every frame.</summary>
+    // Constant per model, and otherwise rebuilt for every entity on every frame.
     private static readonly Dictionary<uint, string> ModelLabels = [];
 
     private static readonly StringBuilder LabelBuilder = new();
@@ -70,7 +69,7 @@ public static class DeveloperOverlay
 
     private static TickHandle? _draw;
 
-    /// <summary>Call after <see cref="Configuration.ClientConfig.Initialize"/>.</summary>
+    // Call after ClientConfig.Initialize.
     public static void Initialize()
     {
         _scan = TickRegistry.Register(
@@ -97,8 +96,8 @@ public static class DeveloperOverlay
         _draw?.Reevaluate();
     }
 
-    // Dropped when the overlay stops. A session long cache of every model the player drove past is
-    // not worth holding for a debugging aid.
+    // Dropped when the overlay stops. A session long cache of every model the player drove past is not
+    // worth holding for a debugging aid.
     private static void Reset()
     {
         foreach (var pool in Pools)
@@ -154,8 +153,8 @@ public static class DeveloperOverlay
                 withOwners ? OwnerLabel(handle) : null));
         }
 
-        // Nothing is awaited between filling the staging list and publishing it, so the draw tick
-        // can only ever see a complete one.
+        // Nothing is awaited between filling the staging list and publishing it, so the draw tick can only
+        // ever see a complete one.
         pool.Publish();
     }
 
@@ -163,8 +162,8 @@ public static class DeveloperOverlay
     {
         var owner = Native.NetworkGetEntityOwner(entity);
 
-        // Nobody owns it, as every map prop answers. Handing that index to the player natives below
-        // makes the game log "Player ID -1 is invalid!" for each one, every scan.
+        // Nobody owns it, as every map prop answers. Handing that index to the player natives below makes
+        // the game log "Player ID -1 is invalid!" for each one, every scan.
         if (owner < 0)
         {
             return null;
@@ -172,8 +171,8 @@ public static class DeveloperOverlay
 
         var serverId = Native.GetPlayerServerId(owner);
 
-        // Covers a stale owner index. Checking the local index instead would not, index zero being a
-        // real player.
+        // Covers a stale owner index. Checking the local index instead would not, index zero being a real
+        // player.
         return serverId == 0 ? null : $"Owner ID {serverId} ({Native.GetPlayerName(owner)})";
     }
 
@@ -184,8 +183,8 @@ public static class DeveloperOverlay
         var showOwners = DeveloperFeaturesState.ShowNetworkOwners;
         var fillAlpha = DeveloperFeaturesState.BoxFillAlpha;
 
-        // The outlines still draw over a hidden HUD, as they did in legacy. Only the labels go, so
-        // the string building behind them is skipped rather than thrown away by the text call.
+        // The outlines still draw over a hidden HUD, as they did in legacy. Only the labels go, so the
+        // string building behind them is skipped rather than thrown away by the text call.
         var anyLabel = (showHandles || showModels || showOwners) && Hud.CanDraw;
 
         foreach (var pool in Pools)
@@ -285,7 +284,7 @@ public static class DeveloperOverlay
         public string? OwnerLabel { get; } = ownerLabel;
     }
 
-    /// <summary>One entity type's tracked entities, double buffered against a partly filled read.</summary>
+    // One entity type's tracked entities, double buffered against a partly filled read.
     private sealed class OutlinePool
     {
         private List<TrackedEntity> _visible = [];

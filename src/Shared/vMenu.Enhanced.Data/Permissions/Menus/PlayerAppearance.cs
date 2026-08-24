@@ -1,9 +1,7 @@
 namespace vMenu.Enhanced.Data.Permissions.Menus;
 
-/// <summary>
-/// Permissions for the player appearance menu: changing the clothes and props on the ped the player
-/// is already wearing. Changing which ped that is lives in <see cref="PedModels"/>.
-/// </summary>
+// Changing the clothes and props on the ped the player is already wearing. Changing which ped that
+// is lives in PedModels.
 [PermissionCategory]
 public static class PlayerAppearance
 {

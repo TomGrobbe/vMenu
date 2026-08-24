@@ -12,7 +12,7 @@ namespace vMenu.Enhanced.Menus;
     )]
 public sealed class RecordingMenu : MenuDefinition
 {
-    /// <summary>Hash of the game's "Upload To Social Club" gallery label.</summary>
+    // Hash of the game's "Upload To Social Club" gallery label.
     private const uint UploadLabelHash = 0x86F10CE6;
 
     private const string UploadWarningEntry = "ERROR_UPLOAD";

@@ -8,10 +8,7 @@ using PedModelsPermissions = vMenu.Enhanced.Data.Permissions.Menus.PedModels;
 
 namespace vMenu.Enhanced.Menus;
 
-/// <summary>
-/// Turns the player into a different ped, grouped the way the server owner grouped them in
-/// <c>config/ped-models.json</c>.
-/// </summary>
+// Grouped the way the server owner grouped them in config/ped-models.json.
 [VMenu(
     TitleKey = Loc.PedModels.Title,
     SubtitleKey = Loc.PedModels.Subtitle,
@@ -19,16 +16,12 @@ namespace vMenu.Enhanced.Menus;
     Permission = PedModelsPermissions.Menu)]
 public sealed class PedModelsMenu : MenuDefinition
 {
-    /// <summary>
-    /// Roughly how many characters fit on one row before the model name on the left and the display
-    /// name on the right run into each other.
-    /// </summary>
-    // MenuAPI draws one from each edge and never measures either, so nothing stops them meeting in
-    // the middle. Counting characters is an approximation, the font not being fixed width, so this
-    // sits a little under what actually fits.
+    // Roughly how many characters fit on one row before the model name on the left and the display name
+    // on the right run into each other. MenuAPI draws one from each edge and never measures either, and
+    // counting characters is an approximation, so this sits a little under what actually fits.
     private const int RowCharacters = 38;
 
-    /// <summary>Below this there is too little display name left to be worth reading.</summary>
+    // Below this there is too little display name left to be worth reading.
     private const int ShortestLabel = 6;
 
     private PedModelCategory[] _categories = [];
@@ -50,8 +43,8 @@ public sealed class PedModelsMenu : MenuDefinition
             OnSelectedAsync = _ => SpawnByNameAsync(),
         });
 
-        // Never sorted. The order in the config file is the order here, so an owner can put their own
-        // peds wherever they want them.
+        // Never sorted. The order in the config file is the order here, so an owner can put their own peds
+        // wherever they want them.
         foreach (var category in _categories)
         {
             // Copied out of the loop variable so each entry's callbacks capture its own category.
@@ -74,8 +67,8 @@ public sealed class PedModelsMenu : MenuDefinition
 
         if (_categories.Length == 0)
         {
-            // A row rather than an empty menu, so the reason is on screen instead of leaving the
-            // player wondering whether something is broken.
+            // A row rather than an empty menu, so the reason is on screen instead of leaving the player
+            // wondering whether something is broken.
             menu.Entries.Add(new ButtonEntry
             {
                 Text = MenuText.Key(Loc.PedModels.Empty),
@@ -98,8 +91,8 @@ public sealed class PedModelsMenu : MenuDefinition
 
             categoryMenu.Entries.Add(new ButtonEntry
             {
-                // The model name reads better than the name the list gives it, so it leads and the
-                // other one sits on the right, giving way when there is no room for both.
+                // The model name reads better than the name the list gives it, so it leads and the other one sits on
+                // the right, giving way when there is no room for both.
                 Text = MenuText.Literal(model),
                 Label = RowLabel(model, label),
                 Description = MenuText.Key(
@@ -113,10 +106,8 @@ public sealed class PedModelsMenu : MenuDefinition
         }
     }
 
-    /// <summary>
-    /// The display name, shortened to whatever the model name left behind, or dropped when that is
-    /// nothing worth reading. Both names are in the description either way, so nothing is lost.
-    /// </summary>
+    // The display name, shortened to whatever the model name left behind, or dropped when that is
+    // nothing worth reading. Both names are in the description either way, so nothing is lost.
     private static MenuText RowLabel(string model, string label)
     {
         var room = RowCharacters - model.Length;
@@ -151,8 +142,8 @@ public sealed class PedModelsMenu : MenuDefinition
             return;
         }
 
-        // A ped that is in the list answers to its category, and one that is not is only reachable
-        // through this row, which has already been gated.
+        // A ped that is in the list answers to its category, and one that is not is only reachable through
+        // this row, which has already been gated.
         var known = PedModelSync.Find(model);
 
         if (known is { } found && !ClientPedPermissions.CanSpawnPed(found.Model, found.Category))
@@ -164,7 +155,7 @@ public sealed class PedModelsMenu : MenuDefinition
         await SpawnAsync(model, known?.Label ?? model, known?.Category ?? string.Empty);
     }
 
-    /// <summary>Built per opening: a permission refresh in between changes what belongs in it.</summary>
+    // Built per opening: a permission refresh in between changes what belongs in it.
     private IReadOnlyList<InputSuggestion> SpawnableSuggestions() =>
         [.. _categories
             .SelectMany(category => category.Peds.Select(ped => (ped.Model, ped.Label, category.Name)))
@@ -178,8 +169,8 @@ public sealed class PedModelsMenu : MenuDefinition
 
     private static async Task SpawnAsync(string model, string label, string categoryName)
     {
-        // Re-checked because a permission refresh can land between drawing and selecting. An empty
-        // category means the ped came from the by name row, which has its own check.
+        // Re-checked because a permission refresh can land between drawing and selecting. An empty category
+        // means the ped came from the by name row, which has its own check.
         if (categoryName.Length > 0 && !ClientPedPermissions.CanSpawnPed(model, categoryName))
         {
             return;

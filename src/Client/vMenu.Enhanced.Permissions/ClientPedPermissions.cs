@@ -3,15 +3,13 @@ using vMenu.Enhanced.Data.Permissions.SupplementalPermissions;
 
 namespace vMenu.Enhanced.Permissions;
 
-/// <summary>
-/// Ped spawn checks for the menus. The whitelist is needed here too, otherwise a category grant
-/// would light up models the server holds back.
-/// </summary>
+// Ped spawn checks for the menus. The whitelist is needed here too, otherwise a category grant would
+// light up models the server holds back.
 public static class ClientPedPermissions
 {
     private static readonly HashSet<string> WhitelistedPeds = new(StringComparer.OrdinalIgnoreCase);
 
-    /// <summary>Apply before the matching permission set.</summary>
+    // Apply before the matching permission set.
     public static void ApplyWhitelistedPedModels(string[] models)
     {
         WhitelistedPeds.Clear();
@@ -25,10 +23,8 @@ public static class ClientPedPermissions
     public static bool IsWhitelisted(string modelName) =>
         WhitelistedPeds.Contains(modelName);
 
-    /// <summary>
-    /// Whether a whole category submenu should open. Whitelisted models inside an allowed category
-    /// still have to pass <see cref="CanSpawnPed(string, string)"/>.
-    /// </summary>
+    // Whether a whole category submenu should open. Whitelisted models inside an allowed category still
+    // have to pass CanSpawnPed.
     public static bool CanSpawnCategory(string categoryName) =>
         ClientPermissions.IsAllowed(
             PedModelCategories.ForCategory(CategoryName.ToPermissionSegment(categoryName)));

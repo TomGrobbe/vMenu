@@ -9,14 +9,9 @@ using vMenu.Enhanced.Serialization;
 
 namespace vMenu.Enhanced.Menus.Vehicles;
 
-/// <summary>
-/// Console commands that report on the vehicle the player is in.
-/// </summary>
-/// <remarks>
-/// Both of these re-read the vehicle through <see cref="VehicleAppearanceReader"/>, which asks the
-/// game rather than remembering what vMenu set. That is the point of them: a report built from
-/// vMenu's own memory would agree with itself no matter what the game actually did.
-/// </remarks>
+// Both of these re-read the vehicle through VehicleAppearanceReader, which asks the game rather than
+// remembering what vMenu set. That is the point of them: a report built from vMenu's own memory
+// would agree with itself no matter what the game actually did.
 public static class VehicleDumpCommands
 {
     private const string DumpCommand = "vmenu_vehicle";
@@ -32,7 +27,7 @@ public static class VehicleDumpCommands
         SharedAPI.Commands.RegisterCommand(LabelsCommand, false, DebugCommands.Gate(Labels));
     }
 
-    /// <summary>The vehicle the player is sitting in, driving or not, or null after saying so.</summary>
+    // The vehicle the player is sitting in, driving or not, or null after saying so.
     internal static int? CurrentVehicle()
     {
         var ped = API.Players.Local.Ped;
@@ -74,7 +69,6 @@ public static class VehicleDumpCommands
         Log.Info(ClientJson.SerializeIndented(appearance));
     }
 
-
     private static void Labels()
     {
         if (CurrentVehicle() is not { } handle)
@@ -107,9 +101,9 @@ public static class VehicleDumpCommands
                 var raw = Native.GetModTextLabel(handle, (int)slot, index);
                 var used = VehicleModLabels.NameKey(handle, slot, index, count);
 
-                // The identifier hash is what names a horn, and is the only handle a developer has on
-                // a part whose artist supplied no label at all.
-                // Unsigned, so it reads the same way round as the hashes VehicleHornLabels matches on.
+                // The identifier hash is what names a horn, and is the only handle a developer has on a part whose
+                // artist supplied no label at all. Unsigned, so it reads the same way round as the hashes
+                // VehicleHornLabels matches on.
                 var identifier = (uint)Native.GetVehicleModIdentifierHash(handle, (int)slot, index);
 
                 Log.Debug(
@@ -122,10 +116,8 @@ public static class VehicleDumpCommands
     private static string Reports(string key) =>
         GameLabels.Exists(key) ? $"-> \"{GameLabels.Text(key, string.Empty)}\"" : "-> no text";
 
-    /// <summary>
-    /// Says how the vehicle being driven differs from a saved one, which is what proves a restore
-    /// was faithful rather than merely plausible.
-    /// </summary>
+    // Says how the vehicle being driven differs from a saved one, which is what proves a restore was
+    // faithful rather than merely plausible.
     private static void Diff(string? name)
     {
         if (string.IsNullOrWhiteSpace(name))

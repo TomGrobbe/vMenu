@@ -6,11 +6,9 @@ using vMenu.Enhanced.PluginContracts;
 
 namespace vMenu.Enhanced.ClientAPI;
 
-/// <summary>
-/// One of your plugin's convar settings. The full convar name is
-/// <c>vMenu.Enhanced.Plugins.&lt;Id&gt;.&lt;Name&gt;</c>, set by the server owner with
-/// <c>setr</c>, and readable here because replicated convars reach every resource.
-/// </summary>
+/// <summary>One of your plugin's convar settings. The full convar name is
+/// <c>vMenu.Enhanced.Plugins.&lt;Id&gt;.&lt;Name&gt;</c>, set by the server owner with <c>setr</c>,
+/// and readable here because replicated convars reach every resource.</summary>
 public abstract class PluginSetting
 {
     private protected PluginSetting(string name, string fullName)
@@ -82,12 +80,9 @@ public sealed class PluginStringSetting : PluginSetting
     }
 }
 
-/// <summary>
-/// Your plugin's settings. Declaring one here lets your menu gate on it and lets vMenu track it
-/// for live refresh. Declare the same settings in your server script through the ServerAPI too,
-/// so they appear in the template vMenu writes for the server owner, in
-/// <c>config/plugins/&lt;your resource&gt;.configuration.cfg.example</c>.
-/// </summary>
+/// <summary>Your plugin's settings. Declaring one here lets your menu gate on it and lets vMenu
+/// track it for live refresh. Declare the same settings in your server script through the ServerAPI
+/// too, so they appear in the template vMenu writes for the server owner.</summary>
 public sealed class PluginSettings
 {
     private readonly string _prefix;

@@ -5,7 +5,6 @@ using vMenu.Enhanced.Logging;
 
 namespace vMenu.Enhanced.Storage;
 
-/// <summary>Every preference vMenu remembers for the player.</summary>
 public static class UserDefaults
 {
     private const string DumpCommand = "vmenu_defaults";
@@ -87,9 +86,9 @@ public static class UserDefaults
     #endregion
 
     #region Player Options
-    // Stored whether or not the server grants the matching permission, for the reason on UserDefault:
-    // a player who set this on one server still has their choice on the next. Whoever applies it
-    // checks the permission.
+    // Stored whether or not the server grants the matching permission, for the reason on UserDefault: a
+    // player who set this on one server still has their choice on the next. Whoever applies it checks
+    // the permission.
 
     public static BoolDefault PlayerGodMode { get; } = new("playerGodMode") { Default = false };
 
@@ -127,13 +126,12 @@ public static class UserDefaults
 
     public static BoolDefault PlayerNeverWanted { get; } = new("playerNeverWanted") { Default = false };
 
-    /// <summary>The movement clip set the player picked, or empty for the ped's own walk.</summary>
-    // Stored rather than read back off the ped, because the game offers no way to ask which clip set
-    // a ped is using. It is also why this survives a model change: nothing else remembers.
+    // Stored rather than read back off the ped, because the game offers no way to ask which clip set a
+    // ped is using. It is also why this survives a model change: nothing else remembers.
     public static StringDefault PlayerWalkingStyle { get; } =
         new("playerWalkingStyle") { Default = string.Empty };
 
-    /// <summary>How the player's glowing clothes behave: 0 off, 1 solid, 2 fade, 3 flash.</summary>
+    // 0 off, 1 solid, 2 fade, 3 flash.
     public static IntDefault PlayerClothingGlow { get; } = new("playerClothingGlow") { Default = 0 };
 
     #endregion
@@ -156,7 +154,7 @@ public static class UserDefaults
 
     public static BoolDefault VehicleGodRamp { get; } = new("vehicleGodRamp") { Default = true };
 
-    /// <summary>The exception: it fixes the car out from under the player, so it is opt in.</summary>
+    // The exception: it fixes the car out from under the player, so it is opt in.
     public static BoolDefault VehicleGodAutoRepair { get; } = new("vehicleGodAutoRepair") { Default = false };
 
     public static BoolDefault VehicleKeepClean { get; } = new("vehicleKeepClean") { Default = false };
@@ -197,18 +195,16 @@ public static class UserDefaults
 
     #region Teleport
 
-    /// <summary>What the teleport key does: 0 nothing, 1 to the waypoint, 2 to typed coordinates.</summary>
-    // Stored whether or not the server grants the matching permission, so a player who sets this on
-    // one server still has their choice on the next. The key checks the permission when it is pressed.
+    // 0 nothing, 1 to the waypoint, 2 to typed coordinates. Stored whether or not the server grants the
+    // matching permission, and the key checks that when it is pressed.
     public static IntDefault TeleportKeyAction { get; } = new("teleportKeyAction") { Default = 0 };
 
     #endregion
 
     #region Developer Features
 
-    // Stored regardless of the DeveloperFeatures.Enabled convar. The overlay's tick condition
-    // carries that gate, so a server turning the feature off makes these inert rather than erasing
-    // what the player had switched on.
+    // Stored regardless of the DeveloperFeatures.Enabled convar. The overlay's tick condition carries
+    // that gate, so a server turning the feature off makes these inert rather than erasing the choice.
     public static BoolDefault DevVehicleDimensions { get; } = new("devVehicleDimensions") { Default = false };
 
     public static BoolDefault DevPropDimensions { get; } = new("devPropDimensions") { Default = false };
@@ -221,31 +217,26 @@ public static class UserDefaults
 
     public static BoolDefault DevNetworkOwners { get; } = new("devNetworkOwners") { Default = false };
 
-    /// <summary>Slider positions, not metres or percentages.</summary>
-    // The bounds live on DeveloperFeaturesState, above this assembly, so these are its maxima
-    // written out. That state clamps on read in case they ever disagree.
+    // Slider positions, not metres or percentages. The bounds live on DeveloperFeaturesState, above this
+    // assembly, so these are its maxima written out. That state clamps on read in case they disagree.
     public static IntDefault DevDrawRadius { get; } = new("devDrawRadius") { Default = 20 };
 
-    /// <inheritdoc cref="DevDrawRadius"/>
     public static IntDefault DevBoxOpacity { get; } = new("devBoxOpacity") { Default = 10 };
 
     #endregion
 
     #region Ticks Overlay
 
-    /// <summary>Deliberately outside the Developer Features region, being gated by neither its convar nor a permission.</summary>
-    // The panel only names vMenu's own loops, and its toggle command is open to everyone, so a player
-    // who left it on gets it back wherever they play and can always switch it off again.
+    // Deliberately outside the Developer Features region, gated by neither its convar nor a permission:
+    // the panel only names vMenu's own loops, and its toggle command is open to everyone.
     public static BoolDefault TicksOverlay { get; } = new("ticksOverlay") { Default = false };
 
     #endregion
 
     #region Pointing Debug
 
-    /// <summary>Outside the Developer Features region for the same reason <see cref="TicksOverlay"/> is.</summary>
-    // It draws where pointing thinks the player's shoulder is and whether the arm is blocked. Its
-    // toggle command is open to everyone, so a player who left it on gets it back wherever they play
-    // and can always switch it off again.
+    // Outside the Developer Features region for the same reason TicksOverlay is. Its toggle command is
+    // open to everyone, so a player who left it on gets it back wherever they play.
     public static BoolDefault PointingDebug { get; } = new("pointingDebug") { Default = false };
 
     #endregion
@@ -262,14 +253,12 @@ public static class UserDefaults
 
     public static BoolDefault WeaponLoadoutOnRespawn { get; } = new("weaponLoadoutOnRespawn") { Default = false };
 
-    /// <summary>Whether the weapons already held are carried through a change of ped.</summary>
     // The only preference here that starts on. Changing ped has always kept the player's weapons, so
     // defaulting this off would take something away from everybody who upgrades.
     public static BoolDefault WeaponsKeepOnPedChange { get; } = new("weaponsKeepOnPedChange") { Default = true };
 
-    /// <summary>The name of the loadout to hand back on respawn, or empty for none.</summary>
-    // A name rather than the loadout itself, so renaming or replacing one keeps the choice pointing
-    // at the right thing.
+    // A name rather than the loadout itself, so renaming or replacing one keeps the choice pointing at
+    // the right thing.
     public static StringDefault WeaponLoadoutDefaultName { get; } =
         new("weaponLoadoutDefaultName") { Default = string.Empty };
 
@@ -381,7 +370,7 @@ public static class UserDefaults
         PointingDebug,
     ];
 
-    /// <summary>Call once, after <c>ClientJson.Verify</c>.</summary>
+    // Call once, after ClientJson.Verify.
     public static void Initialize()
     {
         SharedAPI.Commands.RegisterCommand(DumpCommand, false, DebugCommands.Gate(Dump));
@@ -405,7 +394,7 @@ public static class UserDefaults
         }
     }
 
-    /// <summary>Forgets every declared preference, and anything under the prefix no longer declared.</summary>
+    // Forgets every declared preference, and anything under the prefix no longer declared.
     public static void ResetAll()
     {
         foreach (var preference in All)

@@ -12,14 +12,10 @@ using PluginPermissions = vMenu.Enhanced.Data.Permissions.Plugins;
 
 namespace vMenu.Enhanced.Plugins.Server;
 
-/// <summary>
-/// Writes the two templates a registered plugin gets, into <c>config/plugins/</c> under names
-/// starting with the plugin's resource name. Rewritten on every registration, so what an owner
-/// reads is always what the running plugin declared.
-/// </summary>
-// Their own files rather than lines appended to vMenu's own permissions.cfg and configuration.cfg:
-// those two describe vMenu, and a server owner who drops a plugin should be able to drop everything
-// that came with it in one go.
+// Writes the two templates a registered plugin gets, into config/plugins/ under names starting with
+// the plugin's resource name. Rewritten on every registration, so what an owner reads is always what
+// the running plugin declared. Their own files rather than lines appended to vMenu's own configs,
+// because a server owner who drops a plugin should be able to drop everything that came with it.
 public static class PluginTemplates
 {
     public static void Write(RegisteredServerPlugin plugin)
@@ -29,8 +25,8 @@ public static class PluginTemplates
     }
 
     // Written even when the plugin declares nothing, so a plugin that took its last permission or
-    // setting away leaves an empty template behind rather than the previous one, which an owner
-    // would otherwise read as still current.
+    // setting away leaves an empty template behind rather than the previous one, which an owner would
+    // otherwise read as still current.
     private static void WritePermissions(RegisteredServerPlugin plugin)
     {
         var entries = PermissionRegistry.EnumerateSubtree(PluginPermissions.AllFor(plugin.Id))

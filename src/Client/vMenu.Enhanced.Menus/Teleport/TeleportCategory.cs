@@ -1,8 +1,7 @@
 namespace vMenu.Enhanced.Menus.Teleport;
 
-/// <summary>A group of teleport locations, as the server read them out of the config file.</summary>
-// Classes rather than records: the generated equality routes through EqualityComparer<T>.Default,
-// which the sandbox refuses to load.
+// A group of teleport locations, as the server read them out of the config file. Classes rather than
+// records: generated equality routes through EqualityComparer<T>.Default, which the sandbox refuses.
 public sealed class TeleportCategory
 {
     public string Name { get; set; } = string.Empty;
@@ -20,7 +19,7 @@ public sealed class TeleportLocation
 
     public TeleportPosition Position { get; set; } = new();
 
-    /// <summary>Which way to face on arrival. Null keeps whichever way the player already faces.</summary>
+    // Which way to face on arrival. Null keeps whichever way the player already faces.
     public float? Heading { get; set; }
 }
 

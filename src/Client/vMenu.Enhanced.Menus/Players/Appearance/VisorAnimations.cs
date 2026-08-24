@@ -2,14 +2,9 @@ using CitizenFX.FiveM.Client;
 
 namespace vMenu.Enhanced.Menus.Players.Appearance;
 
-/// <summary>
-/// Which animation the player plays when they flip a visor, and where it is loaded from.
-/// </summary>
-/// <remarks>
-/// The game has a different animation for every riding posture, and no native that says which one a
-/// bike uses, so the answer is a list of model names. The tables below are legacy's, moved out of the
-/// handler that used them: it built six lists and hashed forty model names on every single press.
-/// </remarks>
+// The game has a different animation for every riding posture, and no native that says which one a
+// bike uses, so the answer is a list of model names. The tables below are legacy's, moved out of the
+// handler that used them: it built six lists and hashed forty model names on every single press.
 public static class VisorAnimations
 {
     public const string OnFoot = "anim@mp_helmets@on_foot";
@@ -49,23 +44,18 @@ public static class VisorAnimations
         "avarus", "chimera", "policeb", "sovereign", "hexer", "innovation", "nightblade", "ratbike",
         "daemon", "daemon2", "diablous", "gargoyle", "thrust", "vindicator", "wolfsbane");
 
-    /// <summary>
-    /// The two freemode models with the up and down animations the other way round for these hats.
-    /// </summary>
-    // Not a mistake in the game so much as a handful of helmets whose two versions were authored in
-    // the opposite order from all the others.
+    // A handful of helmets whose two versions were authored in the opposite order from all the others.
     private static readonly int[] InvertedFemale = [66, 81];
 
     private static readonly int[] InvertedMale = [67, 82];
 
-    /// <summary>Headgear the game animates as goggles being pushed up rather than a visor.</summary>
+    // Headgear the game animates as goggles being pushed up rather than a visor.
     private static readonly int[] GogglesFemale = [115, 116, 117, 118];
 
     private static readonly int[] GogglesMale = [116, 117, 118, 119];
 
     private static readonly uint FreemodeFemale = API.Hash("mp_f_freemode_01");
 
-    /// <summary>Where the animation for flipping a visor while in this vehicle lives.</summary>
     // Anything that is not something you sit astride uses the on foot animation, which looks close
     // enough sitting in a car and is what legacy settled on too.
     public static string ForVehicle(int vehicle)
@@ -81,11 +71,9 @@ public static class VisorAnimations
         };
     }
 
-    /// <summary>Whether this hat's two versions are the other way round from all the others.</summary>
     public static bool IsInverted(uint pedModel, int drawable) =>
         Contains(pedModel == FreemodeFemale ? InvertedFemale : InvertedMale, drawable);
 
-    /// <summary>Whether the game animates this one as goggles rather than a visor.</summary>
     public static bool IsGoggles(uint pedModel, int drawable) =>
         Contains(pedModel == FreemodeFemale ? GogglesFemale : GogglesMale, drawable);
 
@@ -99,8 +87,8 @@ public static class VisorAnimations
 
         if (Contains(Scooters, model)) { return OnScooter; }
 
-        // Sports is the fallback as well as a list of its own, because it is the most upright of the
-        // riding postures and looks least wrong on a bike nobody thought to categorise.
+        // Sports is the fallback as well as a list of its own, because it is the most upright of the riding
+        // postures and looks least wrong on a bike nobody thought to categorise.
         return OnSportsBike;
     }
 
@@ -116,8 +104,8 @@ public static class VisorAnimations
         return hashes;
     }
 
-    // By hand rather than Array.IndexOf or Contains, which reach for EqualityComparer<T>.Default and
-    // the client sandbox refuses to load it.
+    // By hand rather than Array.IndexOf or Contains, which reach for EqualityComparer<T>.Default and the
+    // client sandbox refuses to load it.
     private static bool Contains(uint[] values, uint value)
     {
         foreach (var candidate in values)

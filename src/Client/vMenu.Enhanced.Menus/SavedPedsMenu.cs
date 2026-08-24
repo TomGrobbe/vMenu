@@ -13,14 +13,8 @@ using SavedPedsPermissions = vMenu.Enhanced.Data.Permissions.Menus.SavedPeds;
 
 namespace vMenu.Enhanced.Menus;
 
-/// <summary>
-/// Peds the player put away, kept on their own machine.
-/// </summary>
-/// <remarks>
-/// Laid out exactly like the saved vehicles menu, because they are the same idea applied to a
-/// different thing and a player who has learned one should not have to learn the other. Three
-/// levels, one shared child menu each, and category management only at the top.
-/// </remarks>
+// Laid out exactly like the saved vehicles menu, because they are the same idea applied to a
+// different thing and a player who has learned one should not have to learn the other.
 [VMenu(
     TitleKey = Loc.SavedPeds.Title,
     SubtitleKey = Loc.SavedPeds.Subtitle,
@@ -38,7 +32,7 @@ public sealed class SavedPedsMenu : MenuDefinition
 
     private DetachedMenu? _detailMenu;
 
-    /// <summary>Empty is the uncategorised group, which is a real place rather than a missing one.</summary>
+    // Empty is the uncategorised group, which is a real place rather than a missing one.
     private string _category = string.Empty;
 
     private SavedPedEntry? _selected;
@@ -63,8 +57,8 @@ public sealed class SavedPedsMenu : MenuDefinition
 
         menu.AddRange(RootRows());
 
-        // The store changes from inside this menu, so the rows are rebuilt whenever the player comes
-        // back up to this level.
+        // The store changes from inside this menu, so the rows are rebuilt whenever the player comes back up
+        // to this level.
         menu.OnOpened = _ => Refill(menu, RootRows());
     }
 
@@ -92,8 +86,7 @@ public sealed class SavedPedsMenu : MenuDefinition
             },
         };
 
-        // Nothing to pick from until a category exists, and a list row with no options is a row that
-        // cannot do anything.
+        // Nothing to pick from until a category exists, and a list row with no options cannot do anything.
         if (categories.Count > 0)
         {
             rows.Add(EditCategoryRow(categories));
@@ -136,7 +129,6 @@ public sealed class SavedPedsMenu : MenuDefinition
         return rows;
     }
 
-    /// <summary>What the owner wrote about the group, or a count when they wrote nothing.</summary>
     private static MenuText CategoryDescription(List<SavedPedCategory> categories, string group, int count)
     {
         foreach (var category in categories)
@@ -258,11 +250,7 @@ public sealed class SavedPedsMenu : MenuDefinition
         };
     }
 
-    /// <summary>
-    /// What the player wrote about this one, falling back to the model when they wrote nothing.
-    /// </summary>
-    // Their own words win over ours: a description is only there because somebody typed it, so it is
-    // the more useful of the two.
+    // Their own words win over ours: a description is only there because somebody typed it.
     private static MenuText Describe(SavedPedEntry entry, bool available)
     {
         if (entry.IsFromNewerBuild)
@@ -282,12 +270,9 @@ public sealed class SavedPedsMenu : MenuDefinition
             : MenuText.Key(Loc.SavedPeds.PedRowDescription, ("model", model));
     }
 
-    /// <summary>
-    /// The model's name, or a stand-in when this client has no name for it.
-    /// </summary>
-    // The game has no reverse lookup for a ped model, so a ped saved on a server that listed the
-    // model and then opened on one that did not has only its hash left. Late bound, because the
-    // ped list can arrive after the menu was built.
+    // The game has no reverse lookup for a ped model, so a ped saved on a server that listed the model
+    // and then opened on one that did not has only its hash left. Late bound, because the ped list can
+    // arrive after the menu was built.
     private static MenuText ModelName(PedAppearance appearance) => MenuText.From(() =>
     {
         var resolved = PedModelNames.Resolve(appearance.ModelHash, appearance.ModelName);
@@ -333,8 +318,8 @@ public sealed class SavedPedsMenu : MenuDefinition
             },
         };
 
-        // Overwriting a save this build cannot fully read would silently drop whatever the newer
-        // version put in it, so the row becomes an offer to save alongside it instead.
+        // Overwriting a save this build cannot fully read would silently drop whatever the newer version put
+        // in it, so the row becomes an offer to save alongside it instead.
         if (entry.IsFromNewerBuild)
         {
             rows.Add(new ButtonEntry
@@ -369,7 +354,6 @@ public sealed class SavedPedsMenu : MenuDefinition
         return rows;
     }
 
-    /// <summary>Renaming and re-describing. Locked for a save this build cannot fully read.</summary>
     // Editing rewrites the whole save, so a newer build's extra fields would be dropped on the way
     // through. Locked rather than hidden, so the reason is on screen.
     private ButtonEntry EditRow(SavedPedEntry entry) => entry.IsFromNewerBuild
@@ -406,8 +390,8 @@ public sealed class SavedPedsMenu : MenuDefinition
             Gate = SavedPedsPermissions.Manage,
             ReadSelectedIndex = () => Math.Max(0, IndexOf(groups, GroupOf(entry))),
 
-            // On enter rather than on scroll, because every step past a category would otherwise be
-            // a write to disk and a rebuild of the menu the player is standing in.
+            // On enter rather than on scroll, because every step past a category would otherwise be a write to
+            // disk and a rebuild of the menu the player is standing in.
             OnSelected = selected =>
             {
                 if (selected.SelectedIndex < 0 || selected.SelectedIndex >= groups.Count)
@@ -431,8 +415,8 @@ public sealed class SavedPedsMenu : MenuDefinition
             return;
         }
 
-        // Read before the prompt as well as after it, so a player who changes ped mid-prompt saves
-        // nothing rather than saving the wrong one.
+        // Read before the prompt as well as after it, so a player who changes ped mid-prompt saves nothing
+        // rather than saving the wrong one.
         var appearance = PedAppearanceReader.Read(Native.PlayerPedId());
 
         if (await UserInput.GetTextAsync(
@@ -473,11 +457,8 @@ public sealed class SavedPedsMenu : MenuDefinition
             name);
     }
 
-    /// <summary>
-    /// Turns away a freemode ped, because only its clothes would be stored.
-    /// </summary>
-    // Its face, hair colour, overlays and tattoos all live in the character creator, which is not
-    // ported yet. Saving one now would look like it worked and come back grey and blank later.
+    // Its face, hair colour, overlays and tattoos all live in the character creator, which is not ported
+    // yet. Saving one now would look like it worked and come back grey and blank later.
     private static bool RefuseFreemode()
     {
         if (!PedSpawning.IsWearingFreemode())
@@ -529,8 +510,8 @@ public sealed class SavedPedsMenu : MenuDefinition
             return;
         }
 
-        // Re-checked here as well as on the row's gate, because a permission refresh can land between
-        // the two, and because the saved peds menu is not a way around a restricted ped list.
+        // Re-checked here as well as on the row's gate, because a permission refresh can land between the
+        // two, and because the saved peds menu is not a way around a restricted ped list.
         if (!PedSpawning.IsPermitted(modelName))
         {
             Notifications.Warning(MenuText.Key(Loc.SavedPeds.SpawnDenied, ("model", model)));
@@ -538,8 +519,8 @@ public sealed class SavedPedsMenu : MenuDefinition
             return;
         }
 
-        // By hash rather than by name, because a model the server owner never listed has no name this
-        // client could turn back into one.
+        // By hash rather than by name, because a model the server owner never listed has no name this client
+        // could turn back into one.
         if (!await PedSpawning.SetPlayerModelAsync(appearance.ModelHash))
         {
             Notifications.Error(MenuText.Key(Loc.SavedPeds.SpawnModelMissing, ("model", model)));
@@ -550,8 +531,8 @@ public sealed class SavedPedsMenu : MenuDefinition
         var name = MenuText.Literal(entry.Ped.Name);
         var differences = await PedAppearanceWriter.ApplyAsync(Native.PlayerPedId(), appearance);
 
-        // After the clothes, and after the model swap put the remembered walk back, so the one this
-        // ped was saved with is the one that ends up on it.
+        // After the clothes, and after the model swap put the remembered walk back, so the one this ped was
+        // saved with is the one that ends up on it.
         await PedWalkingStyle.ApplyAsync(entry.Ped.MovementClipset);
 
         if (differences.Count == 0)
@@ -721,8 +702,8 @@ public sealed class SavedPedsMenu : MenuDefinition
             return;
         }
 
-        // The player may be standing in a category that just changed its name, and the ped menu
-        // filters on that name.
+        // The player may be standing in a category that just changed its name, and the ped menu filters on
+        // that name.
         if (string.Equals(_category, category.Name, StringComparison.OrdinalIgnoreCase))
         {
             _category = name;
@@ -781,8 +762,8 @@ public sealed class SavedPedsMenu : MenuDefinition
         Refill(detached.Builder, rows);
     }
 
-    // Rebuilding drops every item and MenuAPI puts the highlight back on the first one, which moves
-    // the player's selection out from under them.
+    // Rebuilding drops every item and MenuAPI puts the highlight back on the first one, which moves the
+    // player's selection out from under them.
     private static void Refill(MenuBuilder builder, IReadOnlyList<MenuEntry> rows)
     {
         var was = builder.Menu.CurrentIndex;
@@ -836,10 +817,7 @@ public sealed class SavedPedsMenu : MenuDefinition
         return string.Empty;
     }
 
-    /// <summary>
-    /// Every group with something in it, plus every category that was declared, so a ped naming a
-    /// category nobody made is still reachable.
-    /// </summary>
+    // Declared categories are included too, so a ped naming a category nobody made is still reachable.
     private static List<string> GroupNames(List<SavedPedEntry> peds)
     {
         var names = new List<string>();
@@ -874,8 +852,8 @@ public sealed class SavedPedsMenu : MenuDefinition
         }
     }
 
-    // By hand rather than List.IndexOf or Contains, which reach for EqualityComparer<string>.Default
-    // and the client sandbox refuses to load it.
+    // By hand rather than List.IndexOf or Contains, which reach for EqualityComparer<string>.Default and
+    // the client sandbox refuses to load it.
     private static int IndexOf(List<string> names, string name)
     {
         for (var index = 0; index < names.Count; index++)
@@ -889,7 +867,6 @@ public sealed class SavedPedsMenu : MenuDefinition
         return -1;
     }
 
-    /// <summary>A ped's category, with a name nobody declared treated as its own group.</summary>
     private static string GroupOf(SavedPedEntry entry) => entry.Ped.Category.Trim();
 
     private static int Count(List<SavedPedEntry> peds, string group)

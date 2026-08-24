@@ -11,11 +11,9 @@ public class PermissionDeclaration
     public bool StaffOnly { get; set; }
 }
 
-/// <summary>
-/// The server side registration payload: the permission names and convar settings a
-/// plugin brings. Sent once at plugin startup, and again whenever vMenu announces it
-/// restarted. Registration is idempotent.
-/// </summary>
+/// <summary>The server side registration payload: the permission names and convar settings a plugin
+/// brings. Sent once at plugin startup, and again whenever vMenu announces it restarted.
+/// Registration is idempotent.</summary>
 public class ServerRegisterRequest
 {
     public int ProtocolVersion { get; set; } = PluginProtocol.Version;

@@ -2,8 +2,7 @@ using System.Globalization;
 
 namespace vMenu.Enhanced.Data.Updates;
 
-/// <summary>A version, and the semver 2.0.0 ordering over it.</summary>
-// A plain class rather than a record, matching the rest of this codebase: the generated equality
+// A version, and the semver 2.0.0 ordering over it. A class rather than a record: generated equality
 // routes through EqualityComparer<string>.Default, which the sandbox refuses to load.
 public sealed class SemanticVersion
 {
@@ -24,10 +23,10 @@ public sealed class SemanticVersion
 
     public int Patch { get; }
 
-    /// <summary>True for 0.0.1-alpha.67, false for 1.0.0. What the stable channel filters on.</summary>
+    // True for 0.0.1-alpha.67, false for 1.0.0. What the stable channel filters on.
     public bool IsPrerelease => _prerelease.Length > 0;
 
-    /// <summary>As it was written, minus a leading v. What gets shown to people.</summary>
+    // As it was written, minus a leading v. What gets shown to people.
     public string Text { get; }
 
     public static bool TryParse(string? text, out SemanticVersion? version)
@@ -91,7 +90,7 @@ public sealed class SemanticVersion
         return true;
     }
 
-    /// <summary>Negative when <paramref name="left"/> sorts below <paramref name="right"/>.</summary>
+    // Negative when left sorts below right.
     public static int Compare(SemanticVersion left, SemanticVersion right)
     {
         var core = left.Major.CompareTo(right.Major);
@@ -176,8 +175,8 @@ public sealed class SemanticVersion
     private static bool IsNumeric(string value, out long number) =>
         long.TryParse(value, NumberStyles.None, CultureInfo.InvariantCulture, out number);
 
-    // NumberStyles.None so a leading sign, a decimal point or surrounding whitespace is refused
-    // rather than quietly accepted into a version number.
+    // NumberStyles.None so a leading sign, a decimal point or surrounding whitespace is refused rather
+    // than quietly accepted into a version number.
     private static bool Number(string[] parts, int index, out int value)
     {
         if (index >= parts.Length)

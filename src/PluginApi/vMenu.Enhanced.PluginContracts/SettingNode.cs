@@ -8,11 +8,9 @@ public static class SettingTypes
     public const string String = "string";
 }
 
-/// <summary>
-/// A convar setting the plugin declares. vMenu materialises it as
-/// <c>vMenu.Enhanced.Plugins.&lt;Id&gt;.&lt;Name&gt;</c> and tracks it for live menu refresh.
-/// The default travels as a string in the convar's own text form.
-/// </summary>
+/// <summary>A convar setting the plugin declares. vMenu materialises it as
+/// <c>vMenu.Enhanced.Plugins.&lt;Id&gt;.&lt;Name&gt;</c> and tracks it for live menu refresh. The
+/// default travels as a string in the convar's own text form.</summary>
 public class SettingNode
 {
     public string Name { get; set; } = string.Empty;

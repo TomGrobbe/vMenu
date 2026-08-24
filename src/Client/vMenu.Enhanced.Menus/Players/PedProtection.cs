@@ -4,7 +4,7 @@ using vMenu.Enhanced.Events;
 
 namespace vMenu.Enhanced.Menus.Players;
 
-/// <summary>Which of the three "leave me alone in a vehicle" flags a feature wants held down.</summary>
+// Which of the three "leave me alone in a vehicle" flags a feature wants held down.
 [Flags]
 public enum PedProtections
 {
@@ -14,17 +14,12 @@ public enum PedProtections
     NotKnockedOffBike = 4,
 }
 
-/// <summary>
-/// The three ped flags more than one feature wants at once, resolved in one place.
-/// </summary>
-/// <remarks>
-/// Each native behind these takes one answer rather than a list of reasons, so two features writing
-/// them directly would undo each other. A feature registers a claim and says what it wants instead,
-/// and the union of every claim is what reaches the ped.
-/// </remarks>
+// Each native behind these takes one answer rather than a list of reasons, so two features writing
+// them directly would undo each other. A feature registers a claim and says what it wants instead,
+// and the union of every claim is what reaches the ped.
 public static class PedProtection
 {
-    /// <summary>The game's answer for being knocked off: 0 the default, 1 never, 2 always.</summary>
+    // The game's answer for being knocked off: 0 the default, 1 never, 2 always.
     private const int KnockOffDefault = 0;
 
     private const int KnockOffNever = 1;
@@ -33,12 +28,12 @@ public static class PedProtection
 
     private static PedProtections _applied = PedProtections.None;
 
-    /// <summary>The ped <see cref="_applied"/> was written to. A new one starts on the game's defaults.</summary>
+    // The ped the flags were written to. A new one starts on the game's defaults.
     private static int _appliedTo;
 
     private static bool _watching;
 
-    /// <summary>One feature's say in the three flags. Hold it in a static field and update it.</summary>
+    // One feature's say in the three flags. Hold it in a static field and update it.
     public static Claim Register()
     {
         var claim = new Claim();
@@ -48,7 +43,7 @@ public static class PedProtection
         return claim;
     }
 
-    /// <summary>Writes the flags out again, for anything that has reset them behind vMenu's back.</summary>
+    // Writes the flags out again, for anything that has reset them behind vMenu's back.
     public static void Reapply()
     {
         _appliedTo = 0;
@@ -133,7 +128,7 @@ public static class PedProtection
             Apply();
         }
 
-        /// <summary>The common shape: a fixed set while the feature is on, and nothing while it is off.</summary>
+        // The common shape: a fixed set while the feature is on, and nothing while it is off.
         public void Set(bool on, PedProtections wanted) => Set(on ? wanted : PedProtections.None);
     }
 }

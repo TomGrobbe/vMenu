@@ -10,14 +10,9 @@ using vMenu.Enhanced.Serialization.Server;
 
 namespace vMenu.Enhanced.Permissions.Server;
 
-/// <summary>
-/// The ways of walking players can pick from, owned here and mirrored to every client.
-/// </summary>
-/// <remarks>
-/// A config file rather than a list baked into vMenu, because a server streaming its own clip sets
-/// can offer those too. Legacy had nine hardcoded styles, each one a branch in an if chain, and two
-/// of them silently did nothing depending on which freemode ped you happened to be wearing.
-/// </remarks>
+// A config file rather than a list baked into vMenu, because a server streaming its own clip sets
+// can offer those too. Legacy had nine hardcoded styles, each one a branch in an if chain, and two
+// of them silently did nothing depending on which freemode ped you happened to be wearing.
 public static class WalkingStyles
 {
     private const string ConfigFile = "config/walking-styles.json";
@@ -31,13 +26,11 @@ public static class WalkingStyles
 
     private static readonly List<WalkingStyle> Styles = [];
 
-    /// <summary>The list as the clients receive it, built once when the file is read.</summary>
+    // The list as the clients receive it, built once when the file is read.
     private static string _payload = "[]";
 
-    /// <summary>
-    /// Reads the config file. A missing or unreadable one just means players are left with the walk
-    /// their ped came with, which is a working state rather than a broken one.
-    /// </summary>
+    // A missing or unreadable file just means players are left with the walk their ped came with, which
+    // is a working state rather than a broken one.
     public static void Load()
     {
         Styles.Clear();
@@ -79,14 +72,11 @@ public static class WalkingStyles
         Log.Debug($"[Config] {Styles.Count} walking style(s) loaded from {ConfigFile}.");
     }
 
-    /// <summary>Call once the config has been read.</summary>
+    // Call once the config has been read.
     public static void RegisterEventHandlers() =>
         API.OnNetEvent(WalkingStyleEvents.Request, new Action<Player>(OnRequested), false);
 
-    /// <summary>
-    /// A named method, not a lambda: the binder reads <see cref="FromSourceAttribute"/> off the
-    /// delegate's <c>MethodInfo</c>.
-    /// </summary>
+    // A named method, not a lambda: the binder reads FromSourceAttribute off the delegate's MethodInfo.
     private static void OnRequested([FromSource] Player source) =>
         API.EmitClient(source.Handle, WalkingStyleEvents.Set, _payload);
 

@@ -50,15 +50,15 @@ public sealed class TeleportMenu : MenuDefinition
             OnSelectedAsync = _ => TeleportTargets.ToTypedCoordsAsync(),
         });
 
-        // One menu shared by every category row rather than one per row, so nothing is registered
-        // per refresh. The row records which category it was before opening it.
+        // One menu shared by every category row rather than one per row, so nothing is registered per
+        // refresh. The row records which category it was before opening it.
         _locationMenu = menu.AddDetachedMenu(
             MenuText.From(() => _selected?.Name ?? string.Empty),
             MenuText.From(() => _selected?.Description ?? string.Empty),
             _ => { });
 
-        // Only when the player picked a different category. Reopening the same one leaves the rows
-        // alone, so the highlight stays where they left it.
+        // Only when the player picked a different category. Reopening the same one leaves the rows alone,
+        // so the highlight stays where they left it.
         _locationMenu.Builder.OnOpened = _ =>
         {
             if (ReferenceEquals(_builtFor, _selected))
@@ -71,8 +71,8 @@ public sealed class TeleportMenu : MenuDefinition
             RebuildLocations(keepIndex: false);
         };
 
-        // The row's description is a sentence and runs off the side of the subtitle bar, so the bar
-        // repeats the short title instead, like every menu declared through VMenu does.
+        // The row's description is a sentence and runs off the side of the subtitle bar, so the bar repeats
+        // the short title instead, like every menu declared through VMenu does.
         _categoryMenu = menu.AddDetachedMenu(
             MenuText.Key(Loc.TeleportMenu.TeleportCategories),
             MenuText.Key(Loc.TeleportMenu.TeleportCategories),
@@ -88,14 +88,14 @@ public sealed class TeleportMenu : MenuDefinition
         {
             Text = MenuText.Key(Loc.TeleportMenu.TeleportCategories),
             Description = MenuText.Key(Loc.TeleportMenu.TeleportCategoriesDescription),
-            // Without this the row opens for anybody, and a player the server withholds the list
-            // from just finds an empty menu instead of a locked row.
+            // Without this the row opens for anybody, and a player the server withholds the list from just
+            // finds an empty menu instead of a locked row.
             Gate = TeleportMenuPermissions.Category,
             OnSelected = _ => _categoryMenu?.Open(),
         });
 
-        // Ungated, and always all three, because this only says what the key should try. Whether the
-        // player is allowed to do it is the key's business, when they press it.
+        // Ungated, and always all three, because this only says what the key should try. Whether the player
+        // is allowed to do it is the key's business, when they press it.
         menu.Entries.Add(new ListEntry
         {
             Text = MenuText.Key(Loc.TeleportMenu.KeyAction),
@@ -108,14 +108,14 @@ public sealed class TeleportMenu : MenuDefinition
             ],
             ReadSelectedIndex = () => UserDefaults.TeleportKeyAction.Value,
 
-            // On scroll rather than on select: it is three cheap options and nothing has to be
-            // applied, so asking for a confirming press would only be a step to forget.
+            // On scroll rather than on select: it is three cheap options and nothing has to be applied, so
+            // asking for a confirming press would only be a step to forget.
             OnIndexChanged = changed => UserDefaults.TeleportKeyAction.Value = changed.NewIndex,
         });
     }
 
-    // The list is replaced wholesale, so whatever the player had picked is a stale object now and has
-    // to be looked up again by name.
+    // The list is replaced wholesale, so whatever the player had picked is a stale object now and has to
+    // be looked up again by name.
     private void OnCategoriesChanged()
     {
         _selected = _selected is { } previous ? Find(previous.Name) : null;
@@ -186,8 +186,8 @@ public sealed class TeleportMenu : MenuDefinition
 
     private static ConfirmListEntry DeleteCategoryRow()
     {
-        // A snapshot, because the row lives until the next rebuild and the shared list is replaced
-        // wholesale every time the server sends a new one.
+        // A snapshot, because the row lives until the next rebuild and the shared list is replaced wholesale
+        // every time the server sends a new one.
         var categories = TeleportSync.Categories.ToList();
 
         var options = new List<MenuText>(categories.Count);
@@ -289,8 +289,8 @@ public sealed class TeleportMenu : MenuDefinition
     private static string NameAt(List<TeleportLocation> locations, int index) =>
         index >= 0 && index < locations.Count ? locations[index].Name : string.Empty;
 
-    // Rebuilding drops every item, and MenuAPI puts the highlight back on the first one, so a rebuild
-    // under a menu the player is already looking at moves their selection out from under them.
+    // Rebuilding drops every item, and MenuAPI puts the highlight back on the first one, which moves the
+    // player's selection out from under them.
     private static void Fill(DetachedMenu menu, IReadOnlyList<MenuEntry> rows, bool keepIndex)
     {
         var was = menu.Menu.CurrentIndex;
@@ -301,8 +301,8 @@ public sealed class TeleportMenu : MenuDefinition
 
         var keep = keepIndex && was < menu.Menu.GetMenuItems().Count;
 
-        // The offset as well as the index, or a player partway down a long list keeps their row but
-        // has the list itself scrolled back to the top under them.
+        // The offset as well as the index, or a player partway down a long list keeps their row but has the
+        // list itself scrolled back to the top under them.
         menu.Menu.RefreshIndex(keep ? was : 0, keep ? offset : 0);
     }
 
@@ -339,8 +339,7 @@ public sealed class TeleportMenu : MenuDefinition
 
         var position = API.Players.Local.Position;
 
-        // Off the ped rather than the vehicle: a ped sitting in one already reports the vehicle's
-        // heading, so this is right either way.
+        // Off the ped rather than the vehicle: a ped sitting in one already reports the vehicle's heading.
         var heading = API.Players.Local.Ped is { } ped ? Native.GetEntityHeading(ped.Handle) : 0f;
 
         Report(await ServerActions.InvokeAsync(

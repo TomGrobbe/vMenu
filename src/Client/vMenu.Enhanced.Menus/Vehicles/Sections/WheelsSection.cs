@@ -6,10 +6,9 @@ using vMenu.Enhanced.Menus.Vehicles.Appearance;
 
 namespace vMenu.Enhanced.Menus.Vehicles.Sections;
 
-/// <summary>Wheel family, rims, and what the tyres are made of.</summary>
 internal static class WheelsSection
 {
-    /// <summary>Low grip tyres arrived in this game build.</summary>
+    // Low grip tyres arrived in this game build.
     private const int DriftTyresBuild = 2372;
 
     private static bool GodModeHoldsTyres => VehicleGodMode.Enabled && VehicleGodMode.BulletproofTyres;
@@ -33,10 +32,10 @@ internal static class WheelsSection
 
         if (HasChangeableWheels(model))
         {
-            // Declared before the rows above it, which have to be able to put it straight after
-            // changing something that takes the custom tyres off with it. Assigned in two steps so
-            // its own handler can reach it, since a set of rims with no custom tyre to go with them
-            // refuses the change and the tick has to answer to the vehicle rather than to the press.
+            // Declared before the rows above it, which have to be able to put it straight after changing
+            // something that takes the custom tyres off with it. Assigned in two steps so its own handler can
+            // reach it, since a set of rims with no custom tyre refuses the change and the tick has to answer to
+            // the vehicle rather than to the press.
             CheckboxEntry? customTyres = null;
 
             customTyres = new CheckboxEntry
@@ -113,8 +112,8 @@ internal static class WheelsSection
                 ? Math.Clamp(Native.GetVehicleWheelType(handle), 0, options.Count - 1)
                 : 0,
 
-            // Applied as it is scrolled, like every other list in these menus. The rim row below is a
-            // dynamic list precisely so it can follow this without the section being rebuilt.
+            // Applied as it is scrolled, like every other list in these menus. The rim row below is a dynamic
+            // list precisely so it can follow this without the section being rebuilt.
             OnIndexChanged = changed => SetWheelType(changed.NewIndex, customTyres),
         };
     }
@@ -141,12 +140,9 @@ internal static class WheelsSection
         Sync(customTyres);
     }
 
-    /// <summary>
-    /// Puts the custom tyres tick back in step with the vehicle.
-    /// </summary>
     // Not every set of rims has a custom tyre to go with it, so fitting one can take the tyres off
-    // whatever was asked for. A tick box only re-reads itself when the menu is refreshed, and the rim
-    // row deliberately does not refresh anything, so it is told directly instead.
+    // whatever was asked for. A tick box only re-reads itself when the menu is refreshed, and the rim row
+    // deliberately does not refresh anything, so it is told directly instead.
     private static void Sync(CheckboxEntry customTyres)
     {
         if (customTyres.Typed is { } item)
@@ -155,15 +151,9 @@ internal static class WheelsSection
         }
     }
 
-    /// <summary>
-    /// The rims, as a value worked out on demand rather than a fixed list.
-    /// </summary>
-    /// <remarks>
-    /// A plain list would have to be thrown away and rebuilt every time the wheel family changed,
-    /// because each family offers a different number of rims. This asks the game for the count each
-    /// time it moves instead, so the row is always right without the menu being rebuilt underneath
-    /// the player.
-    /// </remarks>
+    // A plain list would have to be thrown away and rebuilt every time the wheel family changed, because
+    // each family offers a different number of rims. This asks the game for the count each time it moves
+    // instead, so the row is always right without the menu being rebuilt underneath the player.
     private static DynamicListEntry RimRow(int handle, VehicleModSlot slot, CheckboxEntry customTyres)
     {
         var description = VehicleModLabels.SlotDescription(
@@ -181,8 +171,8 @@ internal static class WheelsSection
             {
                 var value = Shift(slot, changing.Left, customTyres);
 
-                // The description carries which rim of how many is on, and a description is only
-                // rewritten on a refresh, so scrolling would leave it a step behind.
+                // The description carries which rim of how many is on, and a description is only rewritten on a
+                // refresh, so scrolling would leave it a step behind.
                 changing.Item.Description = description.Resolve(Localizer.Current);
 
                 return value;
@@ -239,7 +229,7 @@ internal static class WheelsSection
             ? VehicleModLabels.Position(handle, slot)
             : string.Empty;
 
-    /// <summary>Anything without rims to change: boats, aircraft, trains and pushbikes.</summary>
+    // Anything without rims to change: boats, aircraft, trains and pushbikes.
     private static bool HasChangeableWheels(uint model) =>
         !Native.IsThisModelABoat(model)
         && !Native.IsThisModelAHeli(model)
@@ -276,8 +266,8 @@ internal static class WheelsSection
         }
     }
 
-    // Only vehicles built for them will take drift tyres, and the game says nothing when one will
-    // not. Asking it afterwards is the only way to tell the player rather than leave them wondering.
+    // Only vehicles built for them will take drift tyres, and the game says nothing when one will not.
+    // Asking it afterwards is the only way to tell the player rather than leave them wondering.
     private static void SetDriftTyres(bool enabled)
     {
         if (SectionRows.DrivenWithModKit() is not { } handle)

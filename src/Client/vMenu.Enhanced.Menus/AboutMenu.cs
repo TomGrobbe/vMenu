@@ -76,10 +76,10 @@ public sealed class AboutMenu : MenuDefinition
             Label = value,
         };
 
-    /// <summary>A manifest value, or a marker when the key is absent.</summary>
+    // A manifest value, or a marker when the key is absent.
     private static Func<string> Metadata(string key) => () => Read(key) ?? "Unknown";
 
-    /// <summary>A flag as words rather than as true or false.</summary>
+    // A flag as words rather than as true or false.
     private static Func<string> State(BoolSetting setting) =>
         () => ClientConfig.Value(setting) ? "Enabled" : "Disabled";
 

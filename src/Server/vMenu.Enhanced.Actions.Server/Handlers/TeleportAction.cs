@@ -17,9 +17,6 @@ using TeleportMenuPermissions = vMenu.Enhanced.Data.Permissions.Menus.TeleportMe
 
 namespace vMenu.Enhanced.Actions.Server.Handlers;
 
-/// <summary>
-/// The teleport locations, owned here and mirrored to every client that may see them.
-/// </summary>
 // Clients are told rather than asked: they hold the list from the moment they have their permissions
 // and never fetch it again, so opening the menu costs nothing. Anything that changes the list here
 // goes back out to everybody, which is what keeps their copies from drifting.
@@ -29,7 +26,7 @@ public static class TeleportActions
 
     private static readonly List<Category> Categories = [];
 
-    /// <summary>The list as the clients receive it, rebuilt only when it changes.</summary>
+    // The list as the clients receive it, rebuilt only when it changes.
     private static string _payload = "[]";
 
     public static void Register()
@@ -59,10 +56,7 @@ public static class TeleportActions
         API.OnNetEvent(TeleportEvents.Request, new Action<Player>(OnRequested), false);
     }
 
-    /// <summary>
-    /// A named method, not a lambda: the binder reads <see cref="FromSourceAttribute"/> off the
-    /// delegate's <c>MethodInfo</c>.
-    /// </summary>
+    // A named method, not a lambda: the binder reads FromSourceAttribute off the delegate's MethodInfo.
     private static void OnRequested([FromSource] Player source) => SendTo(source);
 
     private static ActionResponse AddCategory(Player source, string[] args)
@@ -122,8 +116,8 @@ public static class TeleportActions
             Description = args[2].Trim(),
             Position = new Position { X = x, Y = y, Z = z },
 
-            // Optional, so anything unreadable is left unset rather than refused: without one the
-            // player simply keeps whichever way they are already facing.
+            // Optional, so anything unreadable is left unset rather than refused: without one the player simply
+            // keeps whichever way they are already facing.
             Heading = args.Length > 6 && TryParse(args[6], out var heading) ? heading : null,
         };
 
@@ -186,10 +180,8 @@ public static class TeleportActions
             () => locations.Insert(at, removed));
     }
 
-    /// <summary>
-    /// Writes the file, then republishes the list. Puts the change back if the write failed, so what
-    /// the clients hold always matches what is on disk.
-    /// </summary>
+    // Writes the file, then republishes the list. Puts the change back if the write failed, so what the
+    // clients hold always matches what is on disk.
     private static ActionResponse Commit(Player source, string what, Action undo)
     {
         if (!Write(ServerJson.SerializeIndented(Categories)))
@@ -223,9 +215,8 @@ public static class TeleportActions
         }
         catch (Exception exception)
         {
-            // Answered as a failed write rather than left to the dispatcher, so the caller still
-            // undoes what it added. A throw that escaped here would leave the list holding something
-            // that is not on disk and that nobody was told about.
+            // Answered as a failed write rather than left to the dispatcher, so the caller still undoes what it
+            // added. A throw that escaped here would leave the list holding something that is not on disk.
             Log.Error($"[Teleport] Writing {ConfigFile} threw, so nothing was added: {exception}");
         }
 
@@ -294,10 +285,8 @@ public static class TeleportActions
     private static bool TryParse(string value, out float parsed) =>
         float.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out parsed);
 
-    /// <summary>
-    /// Reads the file once, drops anything malformed in it and keeps the result. A missing or
-    /// unreadable file just means the category menu starts empty.
-    /// </summary>
+    // Read once, dropping anything malformed. A missing or unreadable file just means the category menu
+    // starts empty.
     private static void Load()
     {
         var contents = Native.LoadResourceFile(Native.GetCurrentResourceName(), ConfigFile);
@@ -382,7 +371,7 @@ public static class TeleportActions
 
         public Position? Position { get; set; }
 
-        /// <summary>Optional. Left out of the file entirely when nobody set one.</summary>
+        // Optional. Left out of the file entirely when nobody set one.
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public float? Heading { get; set; }
     }

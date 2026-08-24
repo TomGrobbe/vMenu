@@ -2,11 +2,9 @@ using vMenu.Enhanced.MenuFramework.Localization;
 
 namespace vMenu.Enhanced.Menus.Weapons;
 
-/// <summary>
-/// The colours a weapon can be painted. Ordinary weapons have eight, Mk II weapons have their own
-/// set of thirty two, and which of the two a weapon uses is asked of the game rather than guessed
-/// from its name.
-/// </summary>
+// The colours a weapon can be painted. Ordinary weapons have eight, Mk II weapons have their own set
+// of thirty two, and which of the two a weapon uses is asked of the game rather than guessed from
+// its name.
 internal static class WeaponTints
 {
     private static readonly string[] Standard =
@@ -57,10 +55,8 @@ internal static class WeaponTints
         Loc.WeaponOptions.TintMetallicRedYellow,
     ];
 
-    /// <summary>
-    /// One option per tint the weapon actually has. A weapon reporting a count we have no names for
-    /// still gets a full list, the extras numbered, so nothing is silently unreachable.
-    /// </summary>
+    // One option per tint the weapon actually has. A weapon reporting a count we have no names for still
+    // gets a full list, the extras numbered, so nothing is silently unreachable.
     internal static IReadOnlyList<MenuText> Options(int count)
     {
         var names = count > Standard.Length ? MkII : Standard;

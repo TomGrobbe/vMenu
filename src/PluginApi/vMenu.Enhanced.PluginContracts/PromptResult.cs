@@ -1,9 +1,7 @@
 namespace vMenu.Enhanced.PluginContracts;
 
-/// <summary>
-/// The answer to a <see cref="PromptRequest"/>. Busy means another input was already
-/// open and the request was refused, cancelled means the player backed out.
-/// </summary>
+/// <summary>The answer to a <see cref="PromptRequest"/>. Busy means another input was already open
+/// and the request was refused, cancelled means the player backed out.</summary>
 public class PromptResult
 {
     public int RequestId { get; set; }

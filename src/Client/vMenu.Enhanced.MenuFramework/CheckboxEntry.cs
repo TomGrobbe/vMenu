@@ -4,16 +4,13 @@ using vMenu.Enhanced.MenuFramework.Localization;
 
 namespace vMenu.Enhanced.MenuFramework;
 
-/// <summary>A row that toggles between two states.</summary>
 public sealed class CheckboxEntry : MenuEntry<MenuCheckboxItem>
 {
-    /// <summary>The starting state. Ignored when <see cref="ReadState"/> is set.</summary>
+    // The starting state. Ignored when ReadState is set.
     public bool Checked { get; init; }
 
-    /// <summary>
-    /// A live source for the state, re-read on every refresh. Use it when something other than this
-    /// checkbox can change the value, so the tick cannot drift out of sync with reality.
-    /// </summary>
+    // A live source for the state, re-read on every refresh. Use it when something other than this
+    // checkbox can change the value, so the tick cannot drift out of sync with reality.
     public Func<bool>? ReadState { get; init; }
 
     public MenuCheckboxItem.CheckboxStyle Style { get; init; } = MenuCheckboxItem.CheckboxStyle.Tick;

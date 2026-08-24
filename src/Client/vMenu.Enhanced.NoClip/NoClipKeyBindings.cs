@@ -51,16 +51,14 @@ internal static class NoClipKeyBindings
 
     private static bool _registered;
 
-    /// <summary>Never null once <see cref="Register"/> has run, which is the only time keys exist.</summary>
+    // Never null once Register has run, which is the only time keys exist.
     private static Func<bool> _isActive = static () => false;
 
-    /// <param name="isActive">
-    /// Asked before every key that changes something. A FiveM key mapping is a normal binding that
-    /// fires whenever the key is pressed, noclip or not, and these sit on keys the player uses
-    /// constantly: without this, sprinting would quietly wind the noclip speed up while you walk
-    /// around. The toggle is exempt for the obvious reason, and the movement keys are exempt because
-    /// they only record which way you are holding, which nothing reads until noclip is running.
-    /// </param>
+    // isActive is asked before every key that changes something. A FiveM key mapping is a normal binding
+    // that fires whenever the key is pressed, noclip or not, and these sit on keys the player uses
+    // constantly: without this, sprinting would quietly wind the noclip speed up while you walk around.
+    // The toggle is exempt for the obvious reason, and the movement keys because they only record which
+    // way you are holding, which nothing reads until noclip is running.
     internal static void Register(Func<bool> isActive, Action onToggle, Action onSpeedUp, Action onSpeedDown, Action onFollowCam)
     {
         if (_registered)
@@ -104,11 +102,8 @@ internal static class NoClipKeyBindings
         Native.RegisterKeyMapping(command, description, "keyboard", defaultKey);
     }
 
-    /// <summary>
-    /// Deliberately not gated on noclip being active. These track the key itself, so a player who is
-    /// already holding W when they switch noclip on carries straight on moving instead of having to
-    /// let go and press it again.
-    /// </summary>
+    // Deliberately not gated on noclip being active. These track the key itself, so a player already
+    // holding W when they switch noclip on carries straight on moving.
     private static void RegisterHold(string command, string description, string defaultKey, Action<bool> setHeld)
     {
         SharedAPI.Commands.RegisterCommand($"+{command}", false, new Action(() => setHeld(true)));

@@ -1,12 +1,10 @@
 namespace vMenu.Enhanced.MenuFramework.Localization;
 
-/// <summary>
-/// A piece of display text that is resolved late rather than baked in at declaration time.
-/// </summary>
-// Declared instead of a string so every label can be re-resolved on a language switch. Rebuilding is
-// not an option, MenuController having no way to remove a menu once added, so text must be written
-// back onto the existing items.
-// A plain struct, not a record: the generated equality would route through
+// A piece of display text resolved late rather than baked in at declaration time, so every label can
+// be re-resolved on a language switch. Rebuilding is not an option, MenuController having no way to
+// remove a menu once added, so text must be written back onto the existing items.
+//
+// A struct rather than a record: generated equality routes through
 // EqualityComparer<string>.Default, which the sandbox refuses to load.
 public readonly struct MenuText
 {
@@ -31,32 +29,27 @@ public readonly struct MenuText
         _arguments = arguments;
     }
 
-    /// <summary>Resolves to an empty string, which MenuAPI treats the same as no text at all.</summary>
+    // Resolves to an empty string, which MenuAPI treats the same as no text at all.
     public static MenuText Empty => default;
 
     public bool IsEmpty => _kind is Kind.Empty;
 
-    /// <summary>Text that must not be translated, such as a vehicle model name.</summary>
+    // Text that must not be translated, such as a vehicle model name.
     public static MenuText Literal(string text) => new(Kind.Literal, text, null, null);
 
     public static MenuText Key(string key) => new(Kind.Key, key, null, null);
 
-    /// <summary>
-    /// Arguments are <see cref="MenuText"/> rather than strings on purpose: an argument that is
-    /// itself a key or a game label stays late bound and re-resolves with everything else, instead
-    /// of freezing whatever it happened to say when the menu was built.
-    /// </summary>
+    // Arguments are MenuText rather than strings on purpose: an argument that is itself a key or a game
+    // label stays late bound and re-resolves with everything else, instead of freezing whatever it
+    // happened to say when the menu was built.
     public static MenuText Key(string key, params (string Name, MenuText Value)[] arguments) =>
         new(Kind.Key, key, null, arguments);
 
-    /// <summary>
-    /// Text produced on demand. This is how GTA's own labels fit — <c>GetLabelText</c> already
-    /// returns them in the game's language, so they need no vMenu translation and re-resolve for
-    /// free on every relabel pass.
-    /// </summary>
+    // Text produced on demand. This is how GTA's own labels fit: GetLabelText already returns them in
+    // the game's language, so they need no vMenu translation and re-resolve on every relabel pass.
     public static MenuText From(Func<string> factory) => new(Kind.Deferred, null, factory, null);
 
-    /// <summary>A bare string is a literal. Translating is the deliberate act, never the accident.</summary>
+    // A bare string is a literal. Translating is the deliberate act, never the accident.
     public static implicit operator MenuText(string literal) => Literal(literal);
 
     public string Resolve(ILocalizer localizer) => _kind switch

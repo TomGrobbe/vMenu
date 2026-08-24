@@ -41,12 +41,8 @@
     let shown = 0;
     let paused = false;
 
-    /*
-       Translates GTA's text tokens to markup. The strings these come from are also drawn by MenuAPI
-       as item descriptions, where the game renders the tokens itself, so they stay in the strings and
-       are dealt with here instead. Anything not understood — a HUD colour name, a game placeholder —
-       is dropped rather than printed as-is.
-    */
+    /* Translates GTA's text tokens to markup. The same strings are also drawn by MenuAPI, where the
+       game renders the tokens itself, so anything not understood here is dropped rather than printed. */
     function markup(text) {
         const token = /~([a-z_0-9]*)~/gi;
         const fragment = document.createDocumentFragment();
@@ -131,12 +127,8 @@
         replay(entry.badge);
     }
 
-    /*
-       Starts, or restarts, a row's countdown with `remaining` of its duration left to run. The bar's
-       keyframe always spans the whole duration and is wound forward with a negative delay, so a row
-       coming back from a pause picks up at the width its remaining time deserves rather than
-       snapping back to full.
-    */
+    /* The bar's keyframe always spans the whole duration and is wound forward with a negative delay,
+       so a row coming back from a pause picks up at the width its remaining time deserves. */
     function run(entry, remaining) {
         clearTimeout(entry.timer);
 

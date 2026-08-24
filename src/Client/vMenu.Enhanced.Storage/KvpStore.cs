@@ -7,7 +7,6 @@ using vMenu.Enhanced.Serialization;
 
 namespace vMenu.Enhanced.Storage;
 
-/// <summary>The only thing in vMenu that touches FiveM's key/value store.</summary>
 // Always a JSON envelope, never the typed natives: legacy used those and both its float and int
 // paths made an unset value indistinguishable from a zero one.
 public static class KvpStore
@@ -20,15 +19,12 @@ public static class KvpStore
 
     private static readonly HashSet<string> Reported = new(StringComparer.Ordinal);
 
-    /// <param name="storedVersion">
-    /// May exceed <paramref name="knownVersion"/> when a newer vMenu wrote it, in which case
-    /// <see cref="TryWrite"/> will refuse.
-    /// </param>
-    /// <returns><see langword="false"/> when the key is absent, unreadable, or holds another type.</returns>
+    // storedVersion may exceed knownVersion when a newer vMenu wrote it, in which case TryWrite refuses.
+    // False when the key is absent, unreadable, or holds another type.
     public static bool TryRead<T>(string key, string expectedType, int knownVersion, out T? value, out int storedVersion)
     {
-        // A cached value of another type means two callers disagree about this key. Re-read rather
-        // than reporting a miss, so the store stays self healing.
+        // A cached value of another type means two callers disagree about this key. Re-read rather than
+        // reporting a miss, so the store stays self healing.
         if (Cache.TryGetValue(key, out var cached) && cached.Value is T hit)
         {
             storedVersion = cached.Version;
@@ -81,19 +77,14 @@ public static class KvpStore
         return true;
     }
 
-    /// <summary>Writes a value, unless doing so would destroy data this build cannot read.</summary>
-    /// <param name="version">
-    /// What this build knows the payload's shape to be. A stored version above this means a newer
-    /// vMenu wrote fields that are not on <typeparamref name="T"/>.
-    /// </param>
-    /// <returns><see langword="false"/> when the write was refused. Nothing was changed.</returns>
+    // Refuses rather than destroying data this build cannot read: a stored version above the one passed
+    // in means a newer vMenu wrote fields that are not on T. Nothing is changed when it refuses.
     public static bool TryWrite<T>(string key, string type, int version, T value)
     {
         if (VersionOf(key) is { } stored && stored > version)
         {
-            // A newer build wrote this. Rather than refuse outright, carry forward the fields this
-            // build does not know about, so the write keeps them. The overwrite goes ahead only when
-            // every one of them survives the merge; anything that cannot be kept still refuses.
+            // A newer build wrote this. Rather than refuse outright, carry forward the fields this build does
+            // not know about. The overwrite goes ahead only when every one of them survives the merge.
             if (TryWritePreservingNewer(key, type, version, stored, value))
             {
                 Cache[key] = new Cached(value, stored);
@@ -126,15 +117,8 @@ public static class KvpStore
         return true;
     }
 
-    /// <summary>
-    /// Writes <paramref name="value"/> over a save a newer build made, merging in the fields that
-    /// build wrote which this one does not know about so they are not lost.
-    /// </summary>
-    /// <returns>
-    /// <see langword="false"/> when the newer data could not be fully preserved, or the JSON tools
-    /// were unavailable, in which case nothing was written.
-    /// </returns>
-    /// <param name="version">What this build understands, which is what the result is marked with.</param>
+    // Merges in the fields the newer build wrote which this one does not know about, so they are not
+    // lost. False when they could not be fully preserved, in which case nothing was written.
     private static bool TryWritePreservingNewer<T>(string key, string type, int version, int storedVersion, T value)
     {
         try
@@ -158,9 +142,8 @@ public static class KvpStore
 
             var mergedValueJson = JsonMerge.Merge(newValueJson, storedValueJson);
 
-            // The merge keeps object fields the newer build added, but it cannot safely reconcile an
-            // array or a shape this build restructured. When anything the stored payload had is missing
-            // from the merge, preserving it is not possible, so the caller falls back to refusing.
+            // The merge keeps object fields the newer build added, but it cannot safely reconcile an array or a
+            // shape this build restructured, so anything missing from the merge falls back to refusing.
             if (!JsonMerge.IsSupersetOf(mergedValueJson, storedValueJson))
             {
                 return false;
@@ -168,10 +151,9 @@ public static class KvpStore
 
             using var mergedDoc = JsonDocument.Parse(mergedValueJson);
 
-            // Written with the stored version, because the payload still holds that version's fields.
-            // MergedBy says who actually wrote it, so the newer build can tell that the fields only
-            // it knows about were carried through untouched rather than saved by something that
-            // understood them.
+            // Written with the stored version, because the payload still holds that version's fields. MergedBy
+            // says who actually wrote it, so the newer build can tell its own fields were carried through
+            // untouched rather than saved by something that understood them.
             var envelope = new KvpEnvelope<JsonElement>
             {
                 Key = key,
@@ -201,10 +183,8 @@ public static class KvpStore
         Reported.Remove(key);
     }
 
-    // Gets the raw data without parsing it into another class
     public static string? ReadRaw(string key) => Native.GetResourceKvpString(key);
 
-    // Puts the raw data back, no matter what was there.
     public static void WriteRaw(string key, string envelope)
     {
         Native.SetResourceKvp(key, envelope);
@@ -213,8 +193,7 @@ public static class KvpStore
         Reported.Remove(key);
     }
 
-    /// <summary>Identifies an envelope without deserializing whatever it holds.</summary>
-    /// <returns><see langword="false"/> when it is not a vMenu envelope at all.</returns>
+    // False when it is not a vMenu envelope at all.
     public static bool TryReadHeader(string? envelope, out string key, out string type, out int version)
     {
         key = string.Empty;
@@ -236,7 +215,6 @@ public static class KvpStore
         return true;
     }
 
-    /// <summary>Every key starting with <paramref name="prefix"/>.</summary>
     // Materialised so a caller can delete while iterating.
     public static List<string> Keys(string prefix)
     {
@@ -268,7 +246,6 @@ public static class KvpStore
         return keys;
     }
 
-    /// <summary>One raw line per key, for a dump command.</summary>
     public static IEnumerable<string> Describe(string prefix)
     {
         foreach (var key in Keys(prefix))
@@ -285,7 +262,6 @@ public static class KvpStore
         Reported.Clear();
     }
 
-    /// <summary>What the key holds now, or <see langword="null"/> when it holds nothing readable.</summary>
     // Header only, so a payload whose shape this build does not know is never guessed at.
     public static int? VersionOf(string key)
     {
@@ -305,8 +281,8 @@ public static class KvpStore
         }
     }
 
-    // Not a record: the generated equality reaches for EqualityComparer<T>.Default, which the
-    // sandbox refuses.
+    // Not a record: the generated equality reaches for EqualityComparer<T>.Default, which the sandbox
+    // refuses.
     private readonly struct Cached(object? value, int version)
     {
         internal object? Value { get; } = value;

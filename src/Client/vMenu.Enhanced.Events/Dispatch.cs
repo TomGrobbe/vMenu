@@ -2,7 +2,7 @@ using vMenu.Enhanced.Logging;
 
 namespace vMenu.Enhanced.Events;
 
-/// <summary>Raises a watcher's event, one subscriber at a time.</summary>
+// Raises a watcher's event, one subscriber at a time.
 internal static class Dispatch
 {
     internal static void Raise<TPayload>(Action<TPayload>? subscribers, TPayload payload, string name)
@@ -13,8 +13,8 @@ internal static class Dispatch
             return;
         }
 
-        // Allocates a Delegate[] per raise. These fire on a state change rather than on every poll,
-        // so that is a handful of arrays a minute, not one a frame.
+        // Allocates a Delegate[] per raise. These fire on a state change rather than on every poll, so that
+        // is a handful of arrays a minute, not one a frame.
         foreach (var subscriber in subscribers.GetInvocationList())
         {
             try
@@ -40,8 +40,8 @@ internal static class Dispatch
         {
             Task started;
 
-            // Everything up to the handler's first await runs right here, so it needs catching
-            // separately from whatever the returned task goes on to do.
+            // Everything up to the handler's first await runs right here, so it needs catching separately from
+            // whatever the returned task goes on to do.
             try
             {
                 started = ((Func<TPayload, Task>)subscriber)(payload);
@@ -53,13 +53,13 @@ internal static class Dispatch
                 continue;
             }
 
-            // Deliberately not awaited: a handler waiting on a model load or a reply from the server
-            // must not hold up the other handlers or the watcher's next poll.
+            // Deliberately not awaited: a handler waiting on a model load or a reply from the server must not
+            // hold up the other handlers or the watcher's next poll.
             _ = Observe(started, name);
         }
     }
 
-    /// <summary>Watches a task nobody is awaiting, so a failure is logged rather than lost.</summary>
+    // Watches a task nobody is awaiting, so a failure is logged rather than lost.
     private static async Task Observe(Task task, string name)
     {
         try

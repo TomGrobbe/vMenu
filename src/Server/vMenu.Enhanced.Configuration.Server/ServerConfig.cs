@@ -15,7 +15,7 @@ public static class ServerConfig
 
     private static readonly ConfigStore Store = new(Native.GetConvar, Write);
 
-    /// <summary>Call once, first, from the server entry point.</summary>
+    // Call once, first, from the server entry point.
     public static void Initialize()
     {
         Store.Prime();
@@ -24,9 +24,8 @@ public static class ServerConfig
 
         Store.Watch([Debugging.Server], ApplyDebugMode);
 
-        // One listener per convar rather than a single wildcard filter: an exact name cannot be
-        // matched wrongly, and a filter that silently matches nothing would look like the whole
-        // module quietly not working.
+        // One listener per convar rather than a single wildcard filter: an exact name cannot be matched
+        // wrongly, and a filter that silently matches nothing would look like the module quietly not working.
         foreach (var convar in Store.Tracked)
         {
             NativeFixer.AddConvarChangeListener(convar, OnConvarChanged);
@@ -35,15 +34,12 @@ public static class ServerConfig
         SharedAPI.Commands.RegisterCommand(DumpCommand, true, DebugCommands.Gate(Dump));
     }
 
-    /// <summary>Calls <paramref name="handler"/> whenever any of these settings changes, and nothing else.</summary>
+    // Calls the handler whenever any of these settings changes, and nothing else.
     public static void AddEventListenerFor(IReadOnlyList<Setting> settings, Action handler) =>
         Store.Watch(settings, handler);
 
-    /// <summary>
-    /// Calls <paramref name="handler"/> whenever any setting other than these changes. For a
-    /// subscriber that really does react to almost anything, where naming the settings it reads
-    /// would mean one added later silently never reaching it.
-    /// </summary>
+    // For a subscriber that really does react to almost anything, where naming the settings it reads
+    // would mean one added later silently never reaching it.
     public static void AddEventListenerExcept(IReadOnlyList<Setting> settings, Action handler) =>
         Store.WatchExcept(settings, handler);
 
@@ -52,7 +48,6 @@ public static class ServerConfig
 
     public static void RemoveEventListenerExcept(Action handler) => Store.UnwatchExcept(handler);
 
-    /// <summary>Prints what the server currently reads for every setting.</summary>
     public static void Dump()
     {
         Log.Info("[Config] Current values:");

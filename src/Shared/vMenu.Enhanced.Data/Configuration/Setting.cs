@@ -2,21 +2,17 @@ using System.Globalization;
 
 namespace vMenu.Enhanced.Data.Configuration;
 
-/// <summary>
-/// One configurable value, declared once and read by both sides.
-/// </summary>
-/// <remarks>
-/// <see cref="Default"/> on the derived types describes what vMenu does when the convar is unset; it
-/// is written into the example file and applied by the <c>Value</c> accessors. The four nullable
-/// getters never substitute it, so "unset" stays distinguishable from "set to the default".
-/// </remarks>
+// One configurable value, declared once and read by both sides. Default on the derived types
+// describes what vMenu does when the convar is unset; it is written into the example file and applied
+// by the Value accessors. The four nullable getters never substitute it, so "unset" stays
+// distinguishable from "set to the default".
 public abstract class Setting(string name)
 {
     public string Name { get; } = name;
 
     public required string Description { get; init; }
 
-    /// <summary>The value as it is written in the generated example file.</summary>
+    // The value as it is written in the generated example file.
     public abstract string DefaultText { get; }
 }
 

@@ -5,10 +5,9 @@ using vMenu.Enhanced.MenuFramework.Localization;
 
 namespace vMenu.Enhanced.MenuFramework;
 
-/// <summary>Owns one MenuAPI <see cref="Menu"/>, its entries, subscriptions, filter and gate state.</summary>
 // All eleven MenuAPI events are menu level rather than per item, which is what forces a hand written
-// menu into one long if/else over item identity. Subscribing once here and routing on object
-// identity is the whole point of the framework.
+// menu into one long if/else over item identity. Subscribing once here and routing on object identity
+// is the whole point of the framework.
 internal sealed class MenuHost : IDisposable
 {
     private readonly Dictionary<MenuItem, MenuEntry> _byItem = new(ReferenceComparer<MenuItem>.Instance);
@@ -17,13 +16,12 @@ internal sealed class MenuHost : IDisposable
 
     private readonly HashSet<MenuEntry> _inFlight = new(ReferenceComparer<MenuEntry>.Instance);
 
-    // Closing and reopening while the previous refresh is still awaiting would otherwise run two
-    // handlers over the same menu, and both would append their rows to it.
+    // Closing and reopening while the previous refresh is still awaiting would otherwise run two handlers
+    // over the same menu, and both would append their rows to it.
     private bool _openInFlight;
 
-    /// <summary>The one row waiting for its confirming press, if any.</summary>
-    // Remembered rather than looked for, so putting a row back to asking never walks the entry list.
-    // A menu can hold thousands of rows and this happens on every arrow key.
+    // Remembered rather than looked for, so putting a row back to asking never walks the entry list. A
+    // menu can hold thousands of rows and this happens on every arrow key.
     private IConfirmable? _awaitingConfirmation;
 
     private Func<MenuItem, bool>? _userFilter;
@@ -51,7 +49,6 @@ internal sealed class MenuHost : IDisposable
 
     internal MenuHost? Parent { get; }
 
-    /// <summary>The gate of whatever opens this menu, so the menu can re-check its own door.</summary>
     internal MenuGate Gate { get; }
 
     internal MenuText Title { get; }
@@ -62,7 +59,6 @@ internal sealed class MenuHost : IDisposable
 
     internal List<MenuHost> Children { get; } = [];
 
-    /// <summary>Whether this menu and every menu above it currently pass their gate.</summary>
     internal bool IsReachable()
     {
         for (var host = this; host is not null; host = host.Parent)
@@ -76,7 +72,6 @@ internal sealed class MenuHost : IDisposable
         return true;
     }
 
-    /// <summary>Creates the MenuAPI item for an entry and registers it for dispatch.</summary>
     // Gating does not happen here: the filter needs the complete item list, so it runs afterwards.
     internal MenuItem Materialise(MenuEntry entry, ILocalizer localizer)
     {
@@ -88,17 +83,14 @@ internal sealed class MenuHost : IDisposable
         return item;
     }
 
-    /// <summary>Whether the menu is already built, so a late entry has to be materialised on the spot.</summary>
     internal bool IsLive => _attached;
 
-    /// <summary>Drops every row, so the caller can declare a fresh set.</summary>
-    // For a menu whose contents are runtime data rather than a fixed declaration. Everything that
-    // remembers an item has to be emptied together, or a later refresh would gate rows the menu no
-    // longer has.
+    // Everything that remembers an item has to be emptied together, or a later refresh would gate rows
+    // the menu no longer has.
     internal void ClearEntries()
     {
-        // MenuAPI drops the menu a bound row opened along with the row, so the host for it is
-        // untracked to match. Before the entries, which is what ClearMenuItems reads.
+        // MenuAPI drops the menu a bound row opened along with the row, so the host for it is untracked to
+        // match. Before the entries, which is what ClearMenuItems reads.
         foreach (var entry in Builder.Entries)
         {
             if (entry is SubmenuEntry { Child: { } child })
@@ -117,8 +109,8 @@ internal sealed class MenuHost : IDisposable
         _awaitingConfirmation = null;
         _filterDirty = false;
 
-        // ClearMenuItems took the notice with everything else, so the record of it has to go too or
-        // it would never be added back.
+        // ClearMenuItems took the notice with everything else, so the record of it has to go too or it would
+        // never be added back.
         _noticeShown = false;
     }
 
@@ -166,10 +158,8 @@ internal sealed class MenuHost : IDisposable
         Menu.OnIndexChange -= HandleIndexChange;
     }
 
-    /// <summary>Re-evaluates every gate and rewrites every visible property.</summary>
-    // Used for both a permission resync and a language change, which cannot be allowed to disagree
-    // about what an item says. Synchronous, or menus would show stale state after the notifier
-    // already returned.
+    // Used for both a permission resync and a language change, which cannot be allowed to disagree about
+    // what an item says. Synchronous, or menus would show stale state after the notifier already returned.
     internal void Refresh(ILocalizer localizer)
     {
         RefreshHeader(localizer);
@@ -217,8 +207,8 @@ internal sealed class MenuHost : IDisposable
 
         if (Menu.Visible)
         {
-            // Re-filtering under an open menu would shuffle rows beneath the cursor. Hidden entries
-            // are already disabled above, so deferring is cosmetic only.
+            // Re-filtering under an open menu would shuffle rows beneath the cursor. Hidden entries are already
+            // disabled above, so deferring is cosmetic only.
             _filterDirty = true;
             return;
         }
@@ -226,17 +216,14 @@ internal sealed class MenuHost : IDisposable
         ApplyFilter();
     }
 
-    /// <summary>Writes the banner text and the bar under it back from their declarations.</summary>
     internal void RefreshHeader(ILocalizer localizer)
     {
         Menu.MenuTitle = Title.Resolve(localizer);
         Menu.MenuSubtitle = ResolveSubtitle(Title, Subtitle, localizer);
     }
 
-    /// <summary>What MenuAPI should be given as a subtitle, never an empty string.</summary>
-    // MenuAPI draws the bar under the banner whether or not there is a subtitle in it, but only
-    // moves the rows down when there is one. An empty subtitle therefore leaves the first row drawn
-    // on top of the bar, on a doubled black background.
+    // MenuAPI draws the bar under the banner whether or not there is a subtitle in it, but only moves the
+    // rows down when there is one, so an empty subtitle leaves the first row drawn on top of the bar.
     internal static string ResolveSubtitle(MenuText title, MenuText subtitle, ILocalizer localizer)
     {
         var resolved = subtitle.Resolve(localizer);
@@ -251,7 +238,6 @@ internal sealed class MenuHost : IDisposable
         ApplyFilter();
     }
 
-    /// <summary>Puts the filter back after the item list was replaced underneath it.</summary>
     internal void RefreshFilter() => ApplyFilter();
 
     internal void SortItems(Comparison<MenuItem> comparison)
@@ -295,7 +281,6 @@ internal sealed class MenuHost : IDisposable
         Menu.RefreshIndex(index < 0 ? 0 : index);
     }
 
-    /// <summary>Whether this menu has rows but the gate has taken every single one of them away.</summary>
     private bool NoticeWanted()
     {
         var any = false;
@@ -318,7 +303,6 @@ internal sealed class MenuHost : IDisposable
         return any;
     }
 
-    /// <summary>Puts the notice into the menu, or takes it back out.</summary>
     private void ShowNotice(bool wanted)
     {
         if (wanted == _noticeShown)
@@ -400,7 +384,6 @@ internal sealed class MenuHost : IDisposable
         await RunAsync(entry, button.SingleFlight, () => handler(arguments), item);
     }
 
-    /// <summary>Answers whether this press was the confirming one, remembering the row when it was not.</summary>
     private bool Arm<TItem>(ConfirmEntry<TItem> entry)
         where TItem : MenuItem
     {
@@ -416,7 +399,6 @@ internal sealed class MenuHost : IDisposable
         return false;
     }
 
-    /// <summary>Puts whichever row is waiting for a confirming press back to asking.</summary>
     private void ClearConfirmation()
     {
         if (_awaitingConfirmation is not { } entry)
@@ -442,8 +424,8 @@ internal sealed class MenuHost : IDisposable
         }
         catch (Exception exception)
         {
-            // MenuAPI's events are multicast and return void, so an unobserved throw would take the
-            // rest of the invocation list with it.
+            // MenuAPI's events are multicast and return void, so an unobserved throw would take the rest of the
+            // invocation list with it.
             Log.Error($"[Menu] '{item.Text}' select handler threw: {exception}");
         }
         finally
@@ -500,9 +482,8 @@ internal sealed class MenuHost : IDisposable
             return;
         }
 
-        // GoLeft/GoRight do not check Enabled and the value has already moved, so the change has to
-        // be undone rather than the callback suppressed. Before the entry type check, so a hand
-        // added raw list item is covered too.
+        // GoLeft/GoRight do not check Enabled and the value has already moved, so the change has to be undone
+        // rather than the callback suppressed. Before the entry type check, so a raw list item is covered too.
         if (!item.Enabled)
         {
             item.ListIndex = oldIndex;
@@ -675,8 +656,8 @@ internal sealed class MenuHost : IDisposable
     {
         ClearConfirmation();
 
-        // The bound item table is static and rebindable, and any code can call OpenMenu directly, so
-        // the menu re-checks its own gate rather than trusting the door.
+        // The bound item table is static and rebindable, and any code can call OpenMenu directly, so the menu
+        // re-checks its own gate rather than trusting the door.
         if (!IsReachable())
         {
             menu.CloseMenu();
@@ -685,10 +666,8 @@ internal sealed class MenuHost : IDisposable
             return;
         }
 
-        // A row bound to a submenu is opened by MenuAPI itself, so a title that depends on what the
-        // player just picked has had no refresh pass since they picked it. Without this the banner
-        // still says whatever it did when the menu was built, which for a name picked at runtime is
-        // nothing at all, and MenuAPI draws no banner for an empty title.
+        // A row bound to a submenu is opened by MenuAPI itself, so a title that depends on what the player
+        // just picked has had no refresh pass since they picked it, and MenuAPI draws no banner for an empty title.
         RefreshHeader(Localizer.Current);
 
         if (_filterDirty)
@@ -729,8 +708,7 @@ internal sealed class MenuHost : IDisposable
         }
     }
 
-    // Opening a submenu closes this one, so this covers walking away from the menu as well as
-    // shutting the whole thing.
+    // Opening a submenu closes this one, so this covers walking away from the menu as well as shutting it.
     private void HandleMenuClose(Menu menu)
     {
         ClearConfirmation();
@@ -747,8 +725,8 @@ internal sealed class MenuHost : IDisposable
         Guard(() => Builder.OnIndexChanged?.Invoke(new MenuIndexChanged(menu, oldItem, newItem, oldIndex, newIndex)), newItem);
     }
 
-    // Drives the stats panels from the highlighted entry, which is why entries model them and
-    // ItemData stays free for callers.
+    // Drives the stats panels from the highlighted entry, which is why entries model them and ItemData
+    // stays free for callers.
     private void ApplyHighlight(MenuItem? item)
     {
         if (item is null || !_byItem.TryGetValue(item, out var entry))

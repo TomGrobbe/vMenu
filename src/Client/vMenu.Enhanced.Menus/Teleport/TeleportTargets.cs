@@ -11,18 +11,16 @@ using vMenu.Enhanced.Menus.Players;
 
 namespace vMenu.Enhanced.Menus.Teleport;
 
-/// <summary>
-/// The two teleports a player asks for directly, rather than picking off a list.
-/// </summary>
-// Out here rather than on the menu, because the teleport key runs the same two and must not have to
-// reach into a menu definition to do it.
+// The two teleports a player asks for directly, rather than picking off a list. Out here rather than
+// on the menu, because the teleport key runs the same two and must not have to reach into a menu
+// definition to do it.
 internal static class TeleportTargets
 {
     private const int TextLength = 50;
 
     private const int WaypointBlipType = 4;
 
-    /// <summary>Long enough for the teleport's own fade, short enough not to hang on a stuck screen.</summary>
+    // Long enough for the teleport's own fade, short enough not to hang on a stuck screen.
     private const int FadeWaitMs = 2000;
 
     private static readonly char[] CoordSeparators = [',', ' '];
@@ -54,13 +52,12 @@ internal static class TeleportTargets
 
         Notifications.Error(MenuText.Key(Loc.TeleportMenu.GroundNotFound));
 
-        // The game clears a waypoint once the player reaches it, and moving up the column at its
-        // coordinates counts as reaching it. Nothing was found, so the player has been put back and
-        // the waypoint they set is worth having again.
+        // The game clears a waypoint once the player reaches it, and moving up the column at its coordinates
+        // counts as reaching it. Nothing was found, so the waypoint they set is worth having again.
         await WaitForFadeInAsync();
 
-        // Only now: setting it while still standing at those coordinates, whatever the height, has
-        // the game clear it straight back off again.
+        // Only now: setting it while still standing at those coordinates, whatever the height, has the game
+        // clear it straight back off again.
         Native.SetNewWaypoint(target.X, target.Y);
     }
 
@@ -86,7 +83,7 @@ internal static class TeleportTargets
         await PlayerTeleport.ToCoordsAsync(position);
     }
 
-    /// <summary>Waits out the fade the teleport back runs, so the player is really somewhere else.</summary>
+    // Waits out the fade the teleport back runs, so the player is really somewhere else.
     private static async Task WaitForFadeInAsync()
     {
         var started = Native.GetGameTimer();

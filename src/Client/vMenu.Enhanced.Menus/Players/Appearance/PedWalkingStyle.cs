@@ -4,35 +4,23 @@ using vMenu.Enhanced.Storage;
 
 namespace vMenu.Enhanced.Menus.Players.Appearance;
 
-/// <summary>
-/// How the player walks, which survives a change of ped and a change of server.
-/// </summary>
-/// <remarks>
-/// Legacy only offered this on the two freemode peds, because it swapped in animation dictionaries
-/// picked by gender and there was no sensible answer for anything else. A movement clip set is one
-/// name that the game applies to whatever ped you are wearing, so the restriction goes.
-///
-/// <para>
-/// It does not follow that every clip set suits every ped. One authored for a human skeleton on an
-/// animal will not load, which is why the wait below has an answer for failure rather than assuming
-/// success.
-/// </para>
-/// </remarks>
+// Legacy only offered this on the two freemode peds, because it swapped in animation dictionaries
+// picked by gender. A movement clip set is one name the game applies to whatever ped you are
+// wearing, so the restriction goes. It does not follow that every clip set suits every ped: one
+// authored for a human skeleton will not load on an animal, which is why the wait below can fail.
 public static class PedWalkingStyle
 {
-    /// <summary>How long to wait for the animations before giving up on a style.</summary>
     // Bounded because this sits behind a menu row. A clip set that never loads would otherwise leave
     // that row unusable for the rest of the session.
     private const int LoadTimeout = 1000;
 
-    /// <summary>How quickly the new walk blends in. One second looks deliberate rather than abrupt.</summary>
+    // One second looks deliberate rather than abrupt.
     private const float BlendSeconds = 1f;
 
-    /// <summary>The clip set in use, or empty for the walk the ped came with.</summary>
+    // The clip set in use, or empty for the walk the ped came with.
     public static string Current => UserDefaults.PlayerWalkingStyle.Value;
 
-    /// <summary>Puts a walk on the player and remembers it.</summary>
-    /// <returns>False when the game has no animations under that name for this ped.</returns>
+    // False when the game has no animations under that name for this ped.
     public static async Task<bool> ApplyAsync(string clipset)
     {
         var ped = Native.PlayerPedId();
@@ -58,10 +46,8 @@ public static class PedWalkingStyle
         return true;
     }
 
-    /// <summary>
-    /// Puts the remembered walk back on. A new ped does not inherit it, so this runs after every
-    /// model change rather than only when the player picks one.
-    /// </summary>
+    // A new ped does not inherit the remembered walk, so this runs after every model change rather than
+    // only when the player picks one.
     public static async Task ReapplyAsync()
     {
         if (Current is not { Length: > 0 } clipset)
@@ -69,9 +55,8 @@ public static class PedWalkingStyle
             return;
         }
 
-        // Deliberately not reported and deliberately not forgotten. A walk that suits the ped the
-        // player just left but not the one they just put on should still be there when they change
-        // back, and a notification every time they change ped would be noise.
+        // Deliberately not reported and deliberately not forgotten. A walk that suits the ped the player
+        // just left but not the one they just put on should still be there when they change back.
         if (await LoadAsync(clipset))
         {
             Native.SetPedMovementClipset(Native.PlayerPedId(), clipset, BlendSeconds);

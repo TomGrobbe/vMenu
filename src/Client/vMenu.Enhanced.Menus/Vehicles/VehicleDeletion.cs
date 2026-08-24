@@ -17,10 +17,8 @@ public static class VehicleDeletion
 {
     private static bool _running;
 
-    /// <summary>
-    /// Deletes whatever the player is targeting and tells them how it went. Shared by the menu option
-    /// and the /dv command.
-    /// </summary>
+    // Deletes whatever the player is targeting and tells them how it went. Shared by the menu option and
+    // the /dv command.
     public static async Task DeleteTargetAsync()
     {
         // The menu button drops re-entrant selections itself; the command has nothing that would.
@@ -67,10 +65,8 @@ public static class VehicleDeletion
         }
     }
 
-    /// <summary>
-    /// The server does the deleting, so this client never needs control of the entity and cannot
-    /// decide on its own that somebody else's vehicle may go.
-    /// </summary>
+    // The server does the deleting, so this client never needs control of the entity and cannot decide
+    // on its own that somebody else's vehicle may go.
     private static async Task<ActionStatus> SendDeleteAsync(int entity)
     {
         // The server cannot see this one, and by definition nobody else can either.
@@ -93,8 +89,8 @@ public static class VehicleDeletion
         Native.SetVehicleHasBeenOwnedByPlayer(entity, false);
         Native.SetEntityAsMissionEntity(entity, true, true);
 
-        // Ref<T> is a ref struct and cannot live across an await. The out overload of this native
-        // pushes a literal 0 and can only ever delete entity 0.
+        // Ref<T> is a ref struct and cannot live across an await. The out overload of this native pushes a
+        // literal 0 and can only ever delete entity 0.
         var handle = entity;
         Native.DeleteVehicle(ref handle);
 

@@ -1,10 +1,8 @@
 namespace vMenu.Enhanced.Data.Permissions;
 
-/// <summary>
-/// Rules of the dotted permission naming scheme, shared by both sides so inheritance is derived
-/// identically. A permission whose last segment is <see cref="All"/> grants everything inside its
-/// container, which is what lets the client resolve inheritance from a name alone.
-/// </summary>
+// Rules of the dotted permission naming scheme, shared by both sides so inheritance is derived
+// identically. A permission whose last segment is All grants everything inside its container, which
+// is what lets the client resolve inheritance from a name alone.
 public static class PermissionPath
 {
     public const string Root = "vMenu.Enhanced";
@@ -18,7 +16,7 @@ public static class PermissionPath
     public static bool IsContainerGrant(string permission) =>
         permission.EndsWith(AllSuffix, StringComparison.OrdinalIgnoreCase);
 
-    /// <summary>Container of a permission, or <see langword="null"/> when it sits directly under <see cref="Root"/>.</summary>
+    // Null when the permission sits directly under Root.
     public static string? GetContainer(string permission)
     {
         var index = permission.LastIndexOf(Separator);
@@ -38,7 +36,7 @@ public static class PermissionPath
         }
     }
 
-    /// <summary>The <c>.All</c> permissions that grant <paramref name="permission"/>, nearest first.</summary>
+    // The .All permissions that grant this one, nearest first.
     public static IEnumerable<string> EnumerateContainerGrants(string permission)
     {
         foreach (var container in EnumerateContainers(permission))
@@ -53,7 +51,7 @@ public static class PermissionPath
         }
     }
 
-    /// <summary>Whether a segment is usable in an ACE name. Anything else could never be granted.</summary>
+    // Whether a segment is usable in an ACE name. Anything else could never be granted.
     public static bool IsValidSegment(string segment)
     {
         if (string.IsNullOrEmpty(segment))

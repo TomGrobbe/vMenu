@@ -77,9 +77,8 @@ public static class NoClip
             isActive: () => NoclipActive,
             onToggle: new Action(() =>
             {
-                // We need to run this on the main thread, if we try to request a scaleform
-                // (which happens down the line of SetNoclipActive(true) somewhere)
-                // inside a thread executed by a command handler/keybind handler, it will fail
+                // Requesting a scaleform inside a thread run by a command or keybind handler fails, and one is
+                // requested somewhere down the line of SetNoclipActive(true), so this goes through the main thread.
                 SharedAPI.RunOnMainThread(ToggleRequested);
             }),
             onSpeedUp: () => AdjustSpeed(1),
@@ -111,7 +110,6 @@ public static class NoClip
 
         ClientPermissions.PermissionsChanged += OnPermissionsChanged;
     }
-
 
     #region Instructional buttons
     private static async Task InstructionalButtonsTick()
@@ -173,7 +171,7 @@ public static class NoClip
         new(() => FollowCamMode ? "Follow Cam: On" : "Follow Cam: Off", static () => Native.GetControlInstructionalButton(0, NoClipKeyBindings.FollowCamControl, true))
     ];
 
-    /// <summary>Only shown when the entity isn't following the camera, see <see cref="FollowCamMode"/>.</summary>
+    // Only shown when the entity is not following the camera.
     private static readonly InstructionalButton[] TurnButtons = [
         new (() => "Turn Left / Right", static () => $"{Native.GetControlInstructionalButton(0, NoClipKeyBindings.TurnLeftControl, true)}%b_998%{Native.GetControlInstructionalButton(0, NoClipKeyBindings.TurnRightControl, true)}"),
     ];
@@ -271,7 +269,6 @@ public static class NoClip
         }
     }
 
-
     internal static void SetNoclipActive(bool active)
     {
         // The key tick follows the permission, but a revoke can land between the two.
@@ -302,8 +299,8 @@ public static class NoClip
 
     private static void EndNoclip()
     {
-        // A switch on the last frame leaves a hand-back owing that the next frame would have done,
-        // and there is no next frame now.
+        // A switch on the last frame leaves a hand-back owing that the next frame would have done, and there
+        // is no next frame now.
         if (_cachedEntity != _noclipEntity)
         {
             ReleaseEntity(_cachedEntity);
@@ -315,15 +312,13 @@ public static class NoClip
 
     private static async Task NoClipFrame()
     {
-        // Deliberately a frame behind the switch that set it: handing the old entity back on the
-        // same frame lets the game overwrite the reset, and it stays invisible.
+        // Deliberately a frame behind the switch that set it: handing the old entity back on the same frame
+        // lets the game overwrite the reset, and it stays invisible.
         if (_noclipEntity != _cachedEntity)
         {
             ReleaseEntity(_cachedEntity);
             _cachedEntity = _noclipEntity;
         }
-
-        //await PrepareInstructionalButtons();
 
         _noclipPed = Native.PlayerPedId();
         _noclipEntity = GetNoclipEntity(_noclipPed, out var inVehicle);
@@ -380,7 +375,7 @@ public static class NoClip
             forward = -ForwardStep;
         }
 
-        // Turning is only available when the entity isn't already following the camera.
+        // Turning is only available when the entity is not already following the camera.
         if (!FollowCamMode)
         {
             if (NoClipKeyBindings.TurnLeftHeld)

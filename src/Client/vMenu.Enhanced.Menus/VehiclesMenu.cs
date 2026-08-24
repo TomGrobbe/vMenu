@@ -8,16 +8,15 @@ using VehicleSpawnerPermissions = vMenu.Enhanced.Data.Permissions.Menus.VehicleS
 
 namespace vMenu.Enhanced.Menus;
 
-/// <summary>Groups the three vehicle menus under one item on the main menu.</summary>
 [VMenu(
     TitleKey = Loc.VehiclesMenu.Title,
     SubtitleKey = Loc.VehiclesMenu.Subtitle,
     DescriptionKey = Loc.VehiclesMenu.LinkDescription)]
 public sealed class VehiclesMenu : MenuDefinition
 {
-    /// <summary>Open to anybody who can reach at least one of the menus inside it.</summary>
-    // Deliberately not a permission of its own: existing servers would have to grant a new one before
-    // the vehicle menus they already allow came back.
+    // Open to anybody who can reach at least one of the menus inside it. Deliberately not a permission
+    // of its own: existing servers would have to grant a new one before the vehicle menus they already
+    // allow came back.
     public override MenuGate Gate { get; } =
         MenuGate.Permission(VehicleOptionsPermissions.Menu)
         | MenuGate.Permission(PersonalVehiclePermissions.Menu)

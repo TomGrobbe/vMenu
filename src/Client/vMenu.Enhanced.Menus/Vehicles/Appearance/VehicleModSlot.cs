@@ -1,13 +1,8 @@
 namespace vMenu.Enhanced.Menus.Vehicles.Appearance;
 
-/// <summary>
-/// The game's modification slots, in the order the natives number them.
-/// </summary>
-/// <remarks>
-/// Written out in full rather than taken from the CitizenFX wrapper, which does not name every slot.
-/// Which slots a particular vehicle actually offers is a question for
-/// <c>GetNumVehicleMods</c>, not for this list.
-/// </remarks>
+// The game's modification slots, in the order the natives number them. Written out in full rather
+// than taken from the CitizenFX wrapper, which does not name every slot. Which slots a particular
+// vehicle actually offers is a question for GetNumVehicleMods, not for this list.
 public enum VehicleModSlot
 {
     Spoiler = 0,
@@ -37,10 +32,10 @@ public enum VehicleModSlot
     Hydraulics = 21,
     XenonLights = 22,
 
-    /// <summary>The rims. On a bike this is the front wheel only.</summary>
+    // The rims. On a bike this is the front wheel only.
     Wheels = 23,
 
-    /// <summary>A bike's rear wheel. On anything else the game reuses this slot for hydraulics.</summary>
+    // A bike's rear wheel. On anything else the game reuses this slot for hydraulics.
     RearWheels = 24,
 
     PlateHolder = 25,
@@ -67,7 +62,7 @@ public enum VehicleModSlot
     LeftDoor = 46,
     RightDoor = 47,
 
-    /// <summary>Liveries that came in with the mod kit, separate from the vehicle's own liveries.</summary>
+    // Liveries that came in with the mod kit, separate from the vehicle's own liveries.
     LiveryMod = 48,
 
     Lightbar = 49,

@@ -6,26 +6,17 @@ using vMenu.Enhanced.Storage;
 
 namespace vMenu.Enhanced.Menus.Weapons.Saved;
 
-/// <summary>
-/// Where saved loadouts live: the player's own machine, not the server.
-/// </summary>
-/// <remarks>
-/// Because this is the player's local storage keyed on the resource name, the same loadouts show up
-/// on every server running vMenu Enhanced. That is the point, and it is also why the version check
-/// matters: one of those servers may be running an older build than the one that wrote a save.
-/// <see cref="KvpStore"/> already refuses that write, and this only passes the answer along.
-/// </remarks>
+// The player's own machine, not the server. Keyed on the resource name, so the same loadouts show up
+// on every server running vMenu Enhanced, which is also why the version check matters: one of those
+// servers may be older than the build that wrote a save.
 public static class WeaponLoadoutStore
 {
     public const string LoadoutPrefix = "vmenu_weaponloadout_";
 
-    /// <summary>
-    /// The snapshot taken before a respawn. Deliberately not a suffix of the loadout prefix, so
-    /// listing one never finds the other.
-    /// </summary>
+    // The snapshot taken before a respawn. Deliberately not a suffix of the loadout prefix, so listing
+    // one never finds the other.
     public const string PendingKey = "vmenu_pendingweaponloadout";
 
-    /// <summary>Every saved loadout, sorted by name.</summary>
     public static List<WeaponLoadout> All()
     {
         var loadouts = new List<WeaponLoadout>();
@@ -48,10 +39,7 @@ public static class WeaponLoadoutStore
 
     public static bool Exists(string name) => Load(name) is not null;
 
-    /// <param name="replacing">
-    /// True when the caller means to overwrite an existing save, which is the difference between
-    /// "replace this one" and "save a new one".
-    /// </param>
+    // replacing is the difference between "replace this one" and "save a new one".
     public static SaveOutcome Save(WeaponLoadout loadout, bool replacing)
     {
         var key = Key(loadout.Name);
@@ -77,8 +65,7 @@ public static class WeaponLoadoutStore
         }
     }
 
-    /// <summary>Stores a loadout under a new name and forgets the old one.</summary>
-    /// <returns>False when the new name is taken.</returns>
+    // False when the new name is taken.
     public static bool Rename(WeaponLoadout loadout, string newName)
     {
         if (Exists(newName))
@@ -110,7 +97,6 @@ public static class WeaponLoadoutStore
         return true;
     }
 
-    /// <summary>Stores a second copy under a new name, leaving the original alone.</summary>
     public static bool Duplicate(WeaponLoadout loadout, string newName)
     {
         var copy = new WeaponLoadout
@@ -127,7 +113,6 @@ public static class WeaponLoadoutStore
 
     public static void SetDefault(string name) => UserDefaults.WeaponLoadoutDefaultName.Value = name;
 
-    /// <summary>Reads what the player is carrying right now.</summary>
     public static WeaponLoadout Capture(string name)
     {
         var loadout = new WeaponLoadout { Name = name };
@@ -163,15 +148,14 @@ public static class WeaponLoadoutStore
         return loadout;
     }
 
-    /// <summary>Puts the current weapons aside before a respawn takes them away.</summary>
     public static void SavePending()
     {
         var loadout = Capture(string.Empty);
 
         KvpStore.TryWrite(PendingKey, KvpValueType.Json, WeaponLoadout.SchemaVersion, loadout);
 
-        // Counted here as well as where it is handed back, so a restore that comes up short says
-        // which of the two lost it: the snapshot taken off a ped that has just died, or the giving.
+        // Counted here as well as where it is handed back, so a restore that comes up short says which of
+        // the two lost it: the snapshot taken off a ped that has just died, or the giving.
         Log.Debug(
             $"[Weapons] Put {loadout.Weapons.Count} weapon(s) aside for the respawn, "
             + $"{loadout.Weapons.Sum(weapon => weapon.Components.Count)} component(s) between them.");
@@ -186,8 +170,8 @@ public static class WeaponLoadoutStore
 
     private static string Key(string name) => LoadoutPrefix + name;
 
-    // A save that will not read is skipped rather than taking the whole list with it. KvpStore
-    // already logs the key it could not read, so nothing is lost silently.
+    // A save that will not read is skipped rather than taking the whole list with it. KvpStore already
+    // logs the key it could not read, so nothing is lost silently.
     private static WeaponLoadout? Read(string key) =>
         KvpStore.TryRead<WeaponLoadout>(key, KvpValueType.Json, WeaponLoadout.SchemaVersion, out var loadout, out _)
             ? loadout

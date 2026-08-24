@@ -7,9 +7,7 @@ using vMenu.Enhanced.Logging;
 
 namespace vMenu.Enhanced.Actions.Server;
 
-/// <summary>
-/// An allowance shared by a group of actions: so many of them per player, per stretch of time.
-/// </summary>
+// An allowance shared by a group of actions: so many of them per player, per stretch of time.
 public sealed class ActionRateLimit(string name, IntSetting allowance, IntSetting windowSeconds)
 {
     private readonly Dictionary<int, Recent> _byPlayer = [];

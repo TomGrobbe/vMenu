@@ -7,11 +7,9 @@ using vMenu.Enhanced.PluginContracts;
 
 namespace vMenu.Enhanced.Plugins;
 
-/// <summary>
-/// The one place plugins reach outside their own tree: a shared "Plugin Actions" submenu inside
-/// every player's entry of the Online Players menu. The same action rows serve every player, the
-/// target being read from the selected snapshot row at the moment an action fires.
-/// </summary>
+// The one place plugins reach outside their own tree: a shared "Plugin Actions" submenu inside every
+// player's entry of the Online Players menu. The same action rows serve every player, the target
+// being read from the selected snapshot row at the moment an action fires.
 public static class PluginPlayerActions
 {
     private static readonly Dictionary<MenuItem, ItemNode> NodesByItem = new(ReferenceComparer<MenuItem>.Instance);
@@ -20,12 +18,12 @@ public static class PluginPlayerActions
 
     private static Func<(int ServerId, string Name)?>? _readTarget;
 
-    /// <summary>Set once the menu has materialised, after which filters are safe to apply.</summary>
+    // Set once the menu has materialised, after which filters are safe to apply.
     private static bool _live;
 
     private static bool _subscribed;
 
-    /// <summary>Whether any registered plugin action would currently show. Gates the row.</summary>
+    // Whether any registered plugin action would currently show. Gates the row.
     public static bool AnyVisible()
     {
         foreach (var state in PluginHost.All)
@@ -42,10 +40,8 @@ public static class PluginPlayerActions
         return false;
     }
 
-    /// <summary>
-    /// Called by the Online Players menu while it declares its per player actions.
-    /// </summary>
-    /// <param name="readTarget">Reads the player the shared menu is currently showing.</param>
+    // Called by the Online Players menu while it declares its per player actions. readTarget reads the
+    // player the shared menu is currently showing.
     public static void Attach(MenuBuilder builder, Func<(int ServerId, string Name)?> readTarget)
     {
         _builder = builder;
@@ -58,8 +54,8 @@ public static class PluginPlayerActions
             PluginHost.PluginsChanged += Rebuild;
         }
 
-        // The filter can only be applied once the rows exist, and while Attach runs they do not
-        // yet. The first open is the earliest safe moment.
+        // The filter can only be applied once the rows exist, and while Attach runs they do not yet. The
+        // first open is the earliest safe moment.
         builder.OnOpened += _ =>
         {
             _live = true;
@@ -219,11 +215,8 @@ public static class PluginPlayerActions
     private static MenuText Text(PluginState state, Func<TextRef?> read) =>
         MenuText.From(() => state.Resolve(read()));
 
-    /// <summary>
-    /// A row's description with the resource that added it named on the last line.
-    /// </summary>
-    // These rows sit among vMenu's own, inside a menu the player did not go to a plugin to reach,
-    // so without this there is nothing anywhere on screen saying where they came from.
+    // These rows sit among vMenu's own, inside a menu the player did not go to a plugin to reach, so
+    // without this there is nothing anywhere on screen saying where they came from.
     private static MenuText Description(PluginState state, Func<TextRef?> read) =>
         MenuText.From(() =>
         {

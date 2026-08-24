@@ -2,18 +2,12 @@ using CitizenFX.FiveM.Client;
 
 namespace vMenu.Enhanced.Menus.Players;
 
-/// <summary>
-/// Turns a ped model hash back into the name it was spawned from.
-/// </summary>
-/// <remarks>
-/// The game has no reverse lookup for a ped model, so the only names available are the ones the
-/// server owner listed in <c>config/ped-models.json</c>. A hash from outside that list stays a hash,
-/// which is honest: guessing at a name nothing could confirm would be worse than admitting the model
-/// has none here.
-/// </remarks>
+// The game has no reverse lookup for a ped model, so the only names available are the ones the server
+// owner listed in config/ped-models.json. A hash from outside that list stays a hash, which is honest:
+// guessing at a name nothing could confirm would be worse than admitting the model has none here.
 public static class PedModelNames
 {
-    /// <summary>The model's name, or an empty string when this client cannot name it.</summary>
+    // The model's name, or an empty string when this client cannot name it.
     public static string Resolve(uint hash)
     {
         foreach (var category in PedModelSync.Categories)
@@ -30,10 +24,8 @@ public static class PedModelNames
         return string.Empty;
     }
 
-    /// <summary>
-    /// The model's name, falling back to one recorded earlier and then to the hash itself, so a row
-    /// always has something to show.
-    /// </summary>
+    // Falls back to a name recorded earlier and then to the hash itself, so a row always has something
+    // to show.
     public static string Resolve(uint hash, string stored)
     {
         if (Resolve(hash) is { Length: > 0 } known)

@@ -14,9 +14,6 @@ using WeatherOptionsSettings = vMenu.Enhanced.Data.Configuration.Settings.Weathe
 
 namespace vMenu.Enhanced.Configuration.Server;
 
-/// <summary>
-/// Sends the server's UTC time to every client via convars to stay in sync for time and weather.
-/// </summary>
 public static class ServerClock
 {
     private const string DumpCommand = "vmenu_clock";
@@ -41,21 +38,19 @@ public static class ServerClock
 
         SharedAPI.Commands.RegisterCommand(DumpCommand, true, DebugCommands.Gate(Dump));
 
-        // Not behind the debug gate: this one changes the world rather than reporting on it, and an
-        // owner who has just raised the speed needs it whether or not they are debugging.
+        // Not behind the debug gate: this one changes the world rather than reporting on it, and an owner
+        // who has just raised the speed needs it whether or not they are debugging.
         SharedAPI.Commands.RegisterCommand(ResetCommand, true, new Action(ResetToRealTime));
     }
 
-    /// <summary>
-    /// The offset that lands the clock back on the time it would be showing at normal speed, which is
-    /// what both the menu's reset button and <c>vmenu_resettime</c> ask for.
-    /// </summary>
-    // Worked out here because the published time and the speed convar both live here, and because a
-    // client working it out for itself would use its own slightly older idea of what time it is.
+    // The offset that lands the clock back on the time it would be showing at normal speed, which is
+    // what both the menu's reset button and vmenu_resettime ask for. Worked out here because the
+    // published time and the speed convar both live here, and because a client working it out for itself
+    // would use its own slightly older idea of what time it is.
     public static int RealTimeOffset() =>
         TryPublishedUnixSeconds(out var now) ? (int)GameClock.RealTimeOffset(now, Speed()) : 0;
 
-    /// <summary>The console side of the menu's reset button.</summary>
+    // The console side of the menu's reset button.
     public static void ResetToRealTime()
     {
         if (!ServerConfig.Value(TimeOptionsSettings.Enabled))
@@ -117,7 +112,6 @@ public static class ServerClock
         DumpDate(now, speed, offset, secondOfDay);
     }
 
-
     private static void DumpDate(long now, double speed, int offset, double secondOfDay)
     {
         var day = (long)GameClock.Mod(GameClock.GameDay(now, offset, speed), MoonCycle.PeriodDays);
@@ -144,16 +138,16 @@ public static class ServerClock
     private static double Speed() =>
         GameClock.ClampSpeed(ServerConfig.Value(TimeOptionsSettings.SpeedMultiplier));
 
-    /// <summary>The clock feeds both features, so it runs while either one wants it.</summary>
+    // The clock feeds both features, so it runs while either one wants it.
     private static bool IsNeeded() =>
         ServerConfig.Value(WeatherOptionsSettings.Enabled) || ServerConfig.Value(TimeOptionsSettings.Enabled);
 
     private static bool TryPublishedUnixSeconds(out long unixSeconds) =>
         WorldStateConvars.TryParseUnix(Native.GetConvar(WorldStateConvars.Utc, string.Empty), out unixSeconds);
 
-    // os.time()'s replacement now that the runtime's clock works: UTC seconds since the Unix epoch,
-    // the same number in every timezone, which is what the client reads back. SetConvarReplicated
-    // carries it to every client.
+    // os.time()'s replacement now that the runtime's clock works: UTC seconds since the Unix epoch, the
+    // same number in every timezone, which is what the client reads back. SetConvarReplicated carries it
+    // to every client.
     private static void Publish() =>
         Native.SetConvarReplicated(
             WorldStateConvars.Utc,

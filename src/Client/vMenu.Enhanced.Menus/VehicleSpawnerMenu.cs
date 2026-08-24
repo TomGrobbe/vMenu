@@ -9,10 +9,8 @@ using VehicleSpawnerPermissions = vMenu.Enhanced.Data.Permissions.Menus.VehicleS
 
 namespace vMenu.Enhanced.Menus;
 
-/// <summary>
-/// Spawns vehicles, grouped by category: the game's own vehicle classes, plus whatever the server
-/// owner defined in <c>config/vehicle-categories.json</c>.
-/// </summary>
+// Grouped by category: the game's own vehicle classes, plus whatever the server owner defined in
+// config/vehicle-categories.json.
 [VMenu(
     TitleKey = Loc.VehicleSpawner.Title,
     SubtitleKey = Loc.VehicleSpawner.Subtitle,
@@ -30,8 +28,8 @@ public sealed class VehicleSpawnerMenu : MenuDefinition
 
         if (vehicles is null)
         {
-            // The menu still exists, it just has no categories in it. Leaving it half-built would be
-            // worse than leaving it empty.
+            // The menu still exists, it just has no categories in it. Leaving it half-built would be worse than
+            // leaving it empty.
             return Task.CompletedTask;
         }
 
@@ -147,10 +145,8 @@ public sealed class VehicleSpawnerMenu : MenuDefinition
         }
     }
 
-    /// <summary>
-    /// Vehicles keep their own class id here, whichever category they ended up in, because the stats
-    /// and the icon are read off the game's class rather than off the grouping.
-    /// </summary>
+    // Vehicles keep their own class id here, whichever category they ended up in, because the stats and
+    // the icon are read off the game's class rather than off the grouping.
     private static void BuildCategoryMenu(MenuBuilder categoryMenu, (string Model, int Class, string Label)[] vehicles)
     {
         VehicleSpawnShortcuts.Attach(categoryMenu);
@@ -205,7 +201,7 @@ public sealed class VehicleSpawnerMenu : MenuDefinition
         await SpawnVehicleAsync(modelName, vehicleClass);
     }
 
-    /// <summary>Built per opening: a permission refresh in between changes what belongs in it.</summary>
+    // Built per opening: a permission refresh in between changes what belongs in it.
     private IReadOnlyList<InputSuggestion> SpawnableSuggestions() =>
         [.. _describedVehicles
             .Where(vehicle => ClientVehiclePermissions.CanSpawnVehicle(vehicle.Model, vehicle.Class))
@@ -217,10 +213,8 @@ public sealed class VehicleSpawnerMenu : MenuDefinition
                 Detail = vehicle.CategoryName,
             })];
 
-    /// <summary>
-    /// These natives answer for a model hash, unlike <c>GET_VEHICLE_TYPE_RAW</c>, which needs a
-    /// vehicle that exists.
-    /// </summary>
+    // These natives answer for a model hash, unlike GET_VEHICLE_TYPE_RAW, which needs a vehicle that
+    // already exists.
     private static string VehicleIcon(uint hash, int vehicleClass)
     {
         if (Native.IsThisModelATrain(hash))
@@ -263,8 +257,8 @@ public sealed class VehicleSpawnerMenu : MenuDefinition
             return "boat";
         }
 
-        // A blimp is its own type, a trailer is none of these: what the natives have no word for
-        // follows its class instead.
+        // A blimp is its own type, a trailer is none of these: what the natives have no word for follows its
+        // class instead.
         return vehicleClass switch
         {
             8 => "motorcycle",
@@ -279,17 +273,14 @@ public sealed class VehicleSpawnerMenu : MenuDefinition
         };
     }
 
-    /// <summary>The game already returns these in the player's game language.</summary>
+    // The game already returns these in the player's game language.
     private static string ClassName(int vehicleClass) => Native.GetLabelText($"VEH_CLASS_{vehicleClass}");
 
-    /// <summary>
-    /// One submenu's worth of vehicles, either a game class or one the server owner defined.
-    /// </summary>
-    // A plain class rather than a record: the generated equality would route through
+    // A class rather than a record: generated equality routes through
     // EqualityComparer<string>.Default, which the sandbox refuses to load.
     private sealed class VehicleCategory
     {
-        /// <summary>Resolved once, for the alphabetical ordering and the by name suggestions.</summary>
+        // Resolved once, for the alphabetical ordering and the by name suggestions.
         public required string Name { get; init; }
 
         public required MenuText Title { get; init; }
@@ -303,8 +294,8 @@ public sealed class VehicleSpawnerMenu : MenuDefinition
 
     private static async Task SpawnVehicleAsync(string modelName, int vehicleClass)
     {
-        // Re-checked because a permission refresh can land between drawing and selecting. The server
-        // decides for real; this only avoids doing the work.
+        // Re-checked because a permission refresh can land between drawing and selecting. The server decides
+        // for real; this only avoids doing the work.
         if (!ClientVehiclePermissions.CanSpawnVehicle(modelName, vehicleClass))
         {
             return;

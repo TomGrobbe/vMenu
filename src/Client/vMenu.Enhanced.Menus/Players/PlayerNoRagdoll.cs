@@ -8,21 +8,17 @@ using PlayerOptionsPermissions = vMenu.Enhanced.Data.Permissions.Menus.PlayerOpt
 
 namespace vMenu.Enhanced.Menus.Players;
 
-/// <summary>
-/// The player stays upright: no stumbling, no being thrown off a bike.
-/// </summary>
 public static class PlayerNoRagdoll
 {
     private static readonly PedProtection.Claim Protection = PedProtection.Register();
 
     private static bool _watching;
 
-    /// <summary>What the player asked for and what the server allows, which together are the only answer.</summary>
     public static bool Enabled => UserDefaults.PlayerNoRagdoll.Value && IsAllowed;
 
     private static bool IsAllowed => ClientPermissions.IsAllowed(PlayerOptionsPermissions.NoRagdoll);
 
-    /// <summary>Call once at startup, before permissions have arrived.</summary>
+    // Call once at startup, before permissions have arrived.
     public static void Initialize()
     {
         ClientPermissions.PermissionsChanged += Apply;

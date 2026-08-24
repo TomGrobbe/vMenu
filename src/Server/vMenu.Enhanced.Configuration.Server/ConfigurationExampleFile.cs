@@ -7,10 +7,8 @@ using vMenu.Enhanced.Logging;
 
 namespace vMenu.Enhanced.Configuration.Server;
 
-/// <summary>
-/// Writes every known setting to <c>config/configuration.cfg.example</c> on every start, so the
-/// reference can never drift from what the code actually reads.
-/// </summary>
+// Writes every known setting to config/configuration.cfg.example on every start, so the reference
+// can never drift from what the code actually reads.
 public static class ConfigurationExampleFile
 {
     public static void Write()

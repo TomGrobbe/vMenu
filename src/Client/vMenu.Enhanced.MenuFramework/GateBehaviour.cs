@@ -1,20 +1,13 @@
 namespace vMenu.Enhanced.MenuFramework;
 
-/// <summary>
-/// What a denied entry looks like.
-/// </summary>
 public enum GateBehaviour
 {
-    /// <summary>
-    /// Stays visible but disabled, with a lock icon and the restricted description. The default,
-    /// because it tells the player the feature exists and why they cannot use it, and because it
-    /// avoids MenuAPI's filter entirely.
-    /// </summary>
+    // Stays visible but disabled, with a lock icon and the restricted description. The default, because
+    // it tells the player the feature exists and why they cannot use it, and because it avoids MenuAPI's
+    // filter entirely.
     Lock,
 
-    /// <summary>
-    /// Removed from view via the menu's filter. Nothing hints that it exists. Costs a re-filter
-    /// whenever the denied set changes, which resets and has to restore the cursor.
-    /// </summary>
+    // Removed from view via the menu's filter. Nothing hints that it exists. Costs a re-filter whenever
+    // the denied set changes, which resets and has to restore the cursor.
     Hide,
 }
