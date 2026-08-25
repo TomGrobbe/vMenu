@@ -2,6 +2,7 @@ using CitizenFX.FiveM.Client;
 
 using vMenu.Enhanced.MenuFramework;
 using vMenu.Enhanced.MenuFramework.Localization;
+using vMenu.Enhanced.Storage;
 
 namespace vMenu.Enhanced.Menus.Vehicles.Sections;
 
@@ -10,7 +11,6 @@ internal static class DoorsSection
     // Anything past this is standing open rather than merely unlatched.
     private const float OpenAngle = 0.1f;
 
-    // The door numbers the game uses, in the order they are shown.
     private static readonly (int Index, string TextKey)[] Doors =
     [
         (0, Loc.VehicleOptions.DoorFrontLeft),
@@ -66,6 +66,14 @@ internal static class DoorsSection
         });
 
         rows.Add(RemoveDoorRow(present));
+
+        rows.Add(new CheckboxEntry
+        {
+            Text = MenuText.Key(Loc.VehicleOptions.DeleteRemovedDoors),
+            Description = MenuText.Key(Loc.VehicleOptions.DeleteRemovedDoorsDescription),
+            ReadState = () => UserDefaults.VehicleDeleteRemovedDoors.Value,
+            OnChanged = changed => UserDefaults.VehicleDeleteRemovedDoors.Value = changed.Checked,
+        });
 
         return rows;
     }
@@ -125,7 +133,10 @@ internal static class DoorsSection
                     return;
                 }
 
-                Native.SetVehicleDoorBroken(handle, present[confirmed.SelectedIndex].Index, false);
+                Native.SetVehicleDoorBroken(
+                    handle,
+                    present[confirmed.SelectedIndex].Index,
+                    UserDefaults.VehicleDeleteRemovedDoors.Value);
             },
         };
     }

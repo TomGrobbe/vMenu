@@ -159,6 +159,43 @@ public static class UserDefaults
 
     public static BoolDefault VehicleKeepClean { get; } = new("vehicleKeepClean") { Default = false };
 
+    public static BoolDefault VehicleEngineAlwaysOn { get; } =
+        new("vehicleEngineAlwaysOn") { Default = false };
+
+    public static BoolDefault VehiclePowerMultiplierEnabled { get; } =
+        new("vehiclePowerMultiplierEnabled") { Default = false };
+
+    public static IntDefault VehiclePowerMultiplier { get; } =
+        new("vehiclePowerMultiplier") { Default = 2 };
+
+    public static BoolDefault VehicleTorqueMultiplierEnabled { get; } =
+        new("vehicleTorqueMultiplierEnabled") { Default = false };
+
+    public static IntDefault VehicleTorqueMultiplier { get; } =
+        new("vehicleTorqueMultiplier") { Default = 2 };
+
+    // Percentages, where 100 is the amount the game ships with.
+    public static IntDefault VehicleHeliTurbulence { get; } =
+        new("vehicleHeliTurbulence") { Default = 100 };
+
+    public static IntDefault VehiclePlaneTurbulence { get; } =
+        new("vehiclePlaneTurbulence") { Default = 100 };
+
+    public static BoolDefault VehicleAnchorBoat { get; } =
+        new("vehicleAnchorBoat") { Default = false };
+
+    public static BoolDefault VehicleDeleteRemovedDoors { get; } =
+        new("vehicleDeleteRemovedDoors") { Default = false };
+
+    public static BoolDefault VehicleDefaultRadioEnabled { get; } =
+        new("vehicleDefaultRadioEnabled") { Default = false };
+
+    public static StringDefault VehicleDefaultRadioStation { get; } =
+        new("vehicleDefaultRadioStation") { Default = "OFF" };
+
+    public static StringDefault VehicleBlockedRadioStations { get; } =
+        new("vehicleBlockedRadioStations") { Default = string.Empty };
+
     public static BoolDefault PersonalVehicleBlip { get; } = new("personalVehicleBlip") { Default = true };
 
     #endregion
@@ -355,6 +392,18 @@ public static class UserDefaults
         VehicleGodRamp,
         VehicleGodAutoRepair,
         VehicleKeepClean,
+        VehicleEngineAlwaysOn,
+        VehiclePowerMultiplierEnabled,
+        VehiclePowerMultiplier,
+        VehicleTorqueMultiplierEnabled,
+        VehicleTorqueMultiplier,
+        VehicleHeliTurbulence,
+        VehiclePlaneTurbulence,
+        VehicleAnchorBoat,
+        VehicleDeleteRemovedDoors,
+        VehicleDefaultRadioEnabled,
+        VehicleDefaultRadioStation,
+        VehicleBlockedRadioStations,
         PersonalVehicleBlip,
 
         VehicleSpawnerSpawnInside,

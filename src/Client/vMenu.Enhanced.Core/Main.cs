@@ -128,6 +128,13 @@ public sealed class Main : IScript
         PedKeepProps.Initialize();
         VehicleGodMode.Initialize();
         VehicleKeepClean.Initialize();
+        VehicleEngine.Initialize();
+        VehiclePerformance.Initialize();
+        VehicleFreeze.Initialize();
+        VehicleVisibility.Initialize();
+        VehicleTurbulence.Initialize();
+        VehicleAnchor.Initialize();
+        VehicleRadio.Initialize();
         PersonalVehicleFeature.Initialize();
         VehicleAutoPilot.Initialize();
         PathRecorder.Initialize();
@@ -149,6 +156,7 @@ public sealed class Main : IScript
 
         TeleportKeyBinding.Initialize();
         VisorKeyBinding.Initialize();
+        VehicleEngineKeyBinding.Initialize();
         MinimapControls.Initialize();
         HudVisibility.Initialize();
         VisionModes.Initialize();

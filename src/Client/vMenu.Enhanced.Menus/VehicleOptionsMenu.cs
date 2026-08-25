@@ -141,6 +141,41 @@ public sealed class VehicleOptionsMenu : MenuDefinition
             VehicleOptionsPermissions.Windows,
             WindowsSection.Build));
 
+        menu.Entries.Add(Section(
+            Loc.VehicleOptions.Engine,
+            Loc.VehicleOptions.EngineDescription,
+            Loc.VehicleOptions.EngineSubtitle,
+            VehicleOptionsPermissions.Engine,
+            EngineSection.Build));
+
+        menu.Entries.Add(Section(
+            Loc.VehicleOptions.Handling,
+            Loc.VehicleOptions.HandlingDescription,
+            Loc.VehicleOptions.HandlingSubtitle,
+            VehicleOptionsPermissions.Handling,
+            HandlingSection.Build));
+
+        menu.Entries.Add(Section(
+            Loc.VehicleOptions.Damage,
+            Loc.VehicleOptions.DamageDescription,
+            Loc.VehicleOptions.DamageSubtitle,
+            VehicleOptionsPermissions.Damage,
+            DamageSection.Build));
+
+        menu.Entries.Add(Section(
+            Loc.VehicleOptions.Aircraft,
+            Loc.VehicleOptions.AircraftDescription,
+            Loc.VehicleOptions.AircraftSubtitle,
+            VehicleOptionsPermissions.Aircraft,
+            AircraftBoatSection.Build));
+
+        menu.Entries.Add(Section(
+            Loc.VehicleOptions.Radio,
+            Loc.VehicleOptions.RadioDescription,
+            Loc.VehicleOptions.RadioSubtitle,
+            VehicleOptionsPermissions.Radio,
+            RadioSection.Build));
+
         menu.Entries.Add(new ConfirmButtonEntry
         {
             Text = MenuText.Key(Loc.VehicleOptions.DeleteVehicle),

@@ -552,5 +552,229 @@ public static partial class Loc
         public const string GodAutoRepairDescription = "vehicleoptions.god.autorepair.desc";
 
         #endregion
+
+        #region Engine
+
+        public const string Engine = "vehicleoptions.engine";
+
+        public const string EngineDescription = "vehicleoptions.engine.desc";
+
+        public const string EngineSubtitle = "vehicleoptions.engine.subtitle";
+
+        public const string EngineNoVehicle = "vehicleoptions.engine.novehicle";
+
+        public const string EngineNotDriver = "vehicleoptions.engine.notdriver";
+
+        public const string EngineAlwaysOn = "vehicleoptions.engine.alwayson";
+
+        public const string EngineAlwaysOnDescription = "vehicleoptions.engine.alwayson.desc";
+
+        public const string ToggleEngine = "vehicleoptions.engine.toggle";
+
+        public const string ToggleEngineDescription = "vehicleoptions.engine.toggle.desc";
+
+        public const string EngineStarted = "vehicleoptions.engine.started";
+
+        public const string EngineStopped = "vehicleoptions.engine.stopped";
+
+        public const string MultiplierOption = "vehicleoptions.multiplier.option";
+
+        public const string PowerMultiplierEnabled = "vehicleoptions.power.enabled";
+
+        public const string PowerMultiplierEnabledDescription = "vehicleoptions.power.enabled.desc";
+
+        public const string PowerMultiplier = "vehicleoptions.power";
+
+        public const string PowerMultiplierDescription = "vehicleoptions.power.desc";
+
+        public const string PowerMultiplierLocked = "vehicleoptions.power.locked";
+
+        public const string TorqueMultiplierEnabled = "vehicleoptions.torque.enabled";
+
+        public const string TorqueMultiplierEnabledDescription = "vehicleoptions.torque.enabled.desc";
+
+        public const string TorqueMultiplier = "vehicleoptions.torque";
+
+        public const string TorqueMultiplierDescription = "vehicleoptions.torque.desc";
+
+        public const string TorqueMultiplierLocked = "vehicleoptions.torque.locked";
+
+        #endregion
+
+        #region Handling
+
+        public const string Handling = "vehicleoptions.handling";
+
+        public const string HandlingDescription = "vehicleoptions.handling.desc";
+
+        public const string HandlingSubtitle = "vehicleoptions.handling.subtitle";
+
+        public const string SpeedLimiter = "vehicleoptions.speedlimiter";
+
+        public const string SpeedLimiterDescription = "vehicleoptions.speedlimiter.desc";
+
+        public const string SpeedLimiterSet = "vehicleoptions.speedlimiter.set";
+
+        public const string SpeedLimiterReset = "vehicleoptions.speedlimiter.reset";
+
+        public const string SpeedLimiterCustom = "vehicleoptions.speedlimiter.custom";
+
+        public const string SpeedLimiterPrompt = "vehicleoptions.speedlimiter.prompt";
+
+        public const string SpeedLimiterBadNumber = "vehicleoptions.speedlimiter.badnumber";
+
+        public const string SpeedLimiterSetKmh = "vehicleoptions.speedlimiter.setkmh";
+
+        public const string SpeedLimiterSetMph = "vehicleoptions.speedlimiter.setmph";
+
+        public const string SpeedLimiterCleared = "vehicleoptions.speedlimiter.cleared";
+
+        public const string SpeedLimiterStandstill = "vehicleoptions.speedlimiter.standstill";
+
+        public const string SpeedLimiterNoVehicle = "vehicleoptions.speedlimiter.novehicle";
+
+        public const string SpeedLimiterNotDriver = "vehicleoptions.speedlimiter.notdriver";
+
+        public const string Freeze = "vehicleoptions.freeze";
+
+        public const string FreezeDescription = "vehicleoptions.freeze.desc";
+
+        public const string Flip = "vehicleoptions.flip";
+
+        public const string FlipDescription = "vehicleoptions.flip.desc";
+
+        public const string Flipped = "vehicleoptions.flip.done";
+
+        public const string FlipNoVehicle = "vehicleoptions.flip.novehicle";
+
+        public const string FlipNotDriver = "vehicleoptions.flip.notdriver";
+
+        public const string Visibility = "vehicleoptions.visibility";
+
+        public const string VisibilityDescription = "vehicleoptions.visibility.desc";
+
+        public const string VisibilityHidden = "vehicleoptions.visibility.hidden";
+
+        public const string VisibilityShown = "vehicleoptions.visibility.shown";
+
+        public const string VisibilityNoVehicle = "vehicleoptions.visibility.novehicle";
+
+        public const string VisibilityNotDriver = "vehicleoptions.visibility.notdriver";
+
+        public const string Alarm = "vehicleoptions.alarm";
+
+        public const string AlarmDescription = "vehicleoptions.alarm.desc";
+
+        public const string AlarmStarted = "vehicleoptions.alarm.started";
+
+        public const string AlarmStopped = "vehicleoptions.alarm.stopped";
+
+        public const string AlarmNoVehicle = "vehicleoptions.alarm.novehicle";
+
+        public const string AlarmNotDriver = "vehicleoptions.alarm.notdriver";
+
+        #endregion
+
+        #region Damage
+
+        public const string Damage = "vehicleoptions.damage";
+
+        public const string DamageDescription = "vehicleoptions.damage.desc";
+
+        public const string DamageSubtitle = "vehicleoptions.damage.subtitle";
+
+        public const string EngineHealth = "vehicleoptions.enginehealth";
+
+        public const string EngineHealthDescription = "vehicleoptions.enginehealth.desc";
+
+        public const string DestroyEngine = "vehicleoptions.destroyengine";
+
+        public const string DestroyEngineDescription = "vehicleoptions.destroyengine.desc";
+
+        public const string DestroyEngineConfirm = "vehicleoptions.destroyengine.confirm";
+
+        public const string EngineDestroyed = "vehicleoptions.destroyengine.done";
+
+        public const string Tyres = "vehicleoptions.tyres";
+
+        public const string TyresDescription = "vehicleoptions.tyres.desc";
+
+        public const string AllTyres = "vehicleoptions.tyres.all";
+
+        public const string TyreNumbered = "vehicleoptions.tyres.numbered";
+
+        public const string TyreFixed = "vehicleoptions.tyres.fixed";
+
+        public const string TyreBurst = "vehicleoptions.tyres.burst";
+
+        public const string TyresFixed = "vehicleoptions.tyres.allfixed";
+
+        public const string TyresBurst = "vehicleoptions.tyres.allburst";
+
+        #endregion
+
+        #region Aircraft and boats
+
+        public const string Aircraft = "vehicleoptions.aircraft";
+
+        public const string AircraftDescription = "vehicleoptions.aircraft.desc";
+
+        public const string AircraftSubtitle = "vehicleoptions.aircraft.subtitle";
+
+        public const string HelicopterTurbulence = "vehicleoptions.turbulence.heli";
+
+        public const string HelicopterTurbulenceDescription = "vehicleoptions.turbulence.heli.desc";
+
+        public const string PlaneTurbulence = "vehicleoptions.turbulence.plane";
+
+        public const string PlaneTurbulenceDescription = "vehicleoptions.turbulence.plane.desc";
+
+        public const string AnchorBoat = "vehicleoptions.anchor";
+
+        public const string AnchorBoatDescription = "vehicleoptions.anchor.desc";
+
+        #endregion
+
+        #region Radio
+
+        public const string Radio = "vehicleoptions.radio";
+
+        public const string RadioDescription = "vehicleoptions.radio.desc";
+
+        public const string RadioSubtitle = "vehicleoptions.radio.subtitle";
+
+        public const string RadioOff = "vehicleoptions.radio.off";
+
+        public const string RadioDefaultEnabled = "vehicleoptions.radio.default.enabled";
+
+        public const string RadioDefaultEnabledDescription = "vehicleoptions.radio.default.enabled.desc";
+
+        public const string RadioDefaultStation = "vehicleoptions.radio.default";
+
+        public const string RadioDefaultStationDescription = "vehicleoptions.radio.default.desc";
+
+        public const string RadioDefaultStationLocked = "vehicleoptions.radio.default.locked";
+
+        public const string RadioBlocked = "vehicleoptions.radio.blocked";
+
+        public const string RadioBlockedDescription = "vehicleoptions.radio.blocked.desc";
+
+        public const string RadioBlockedSubtitle = "vehicleoptions.radio.blocked.subtitle";
+
+        public const string RadioStationDescription = "vehicleoptions.radio.station.desc";
+
+        public const string RadioUnblockAll = "vehicleoptions.radio.unblockall";
+
+        public const string RadioUnblockAllDescription = "vehicleoptions.radio.unblockall.desc";
+
+        #endregion
+
+        #region Doors
+
+        public const string DeleteRemovedDoors = "vehicleoptions.deleteremoveddoors";
+
+        public const string DeleteRemovedDoorsDescription = "vehicleoptions.deleteremoveddoors.desc";
+
+        #endregion
     }
 }

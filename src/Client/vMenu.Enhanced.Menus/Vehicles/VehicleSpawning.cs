@@ -91,18 +91,11 @@ public static class VehicleSpawning
 
         Native.SetVehicleEngineOn(VehicleIndex: newVehicle.Handle, EngineOnFlag: true, bNoDelay: true, bOnlyStartWithPlayerInput: false);
 
-        if ((Native.IsThisModelAHeli(hash) is bool isHeli && isHeli) || Native.IsThisModelAPlane(hash))
+        if (Native.IsThisModelAHeli(hash) || Native.IsThisModelAPlane(hash))
         {
             newVehicle.HeliBladesSpeed = 1f;
 
-            if (isHeli)
-            {
-                Native.SetHeliTurbulenceScalar(newVehicle.Handle, 0f);
-            }
-            else
-            {
-                Native.SetPlaneTurbulenceMultiplier(newVehicle.Handle, 0f);
-            }
+            VehicleTurbulence.Write(newVehicle.Handle, hash);
         }
 
         Native.SetVehicleForwardSpeed(newVehicle.Handle, speed);
