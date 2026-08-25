@@ -40,30 +40,16 @@ internal static class PlayerTeleport
             return false;
         }
 
-        if (FreeSeat(vehicle) is not { } seat)
+        if (!Native.AreAnyVehicleSeatsFree(vehicle))
         {
             return false;
         }
 
-        Native.SetPedIntoVehicle(ped.Handle, vehicle, seat);
+        Native.SetPedIntoVehicle(ped.Handle, vehicle, -2);
 
         return true;
     }
 
-    private static int? FreeSeat(int vehicle)
-    {
-        var seats = Native.GetVehicleModelNumberOfSeats(Native.GetEntityModel(vehicle));
-
-        for (var seat = 0; seat < seats - 1; seat++)
-        {
-            if (Native.IsVehicleSeatFree(vehicle, seat, false))
-            {
-                return seat;
-            }
-        }
-
-        return Native.IsVehicleSeatFree(vehicle, DriverSeat, false) ? DriverSeat : null;
-    }
 
     private static async Task<bool> GoAsync(Vector3 destination, bool findGround, float? heading)
     {
