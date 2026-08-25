@@ -21,6 +21,7 @@ using vMenu.Enhanced.Menus.Players.Appearance;
 using vMenu.Enhanced.Menus.Players.Character;
 using vMenu.Enhanced.Menus.Teleport;
 using vMenu.Enhanced.Menus.Vehicles;
+using vMenu.Enhanced.Menus.Vehicles.AutoPilot;
 using vMenu.Enhanced.Menus.Weapons;
 using vMenu.Enhanced.Menus.Weapons.Saved;
 using vMenu.Enhanced.Menus.World;
@@ -128,6 +129,8 @@ public sealed class Main : IScript
         VehicleGodMode.Initialize();
         VehicleKeepClean.Initialize();
         PersonalVehicleFeature.Initialize();
+        VehicleAutoPilot.Initialize();
+        PathRecorder.Initialize();
 
         WeaponUnlimitedAmmo.Initialize();
         WeaponNoReload.Initialize();

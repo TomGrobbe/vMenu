@@ -241,6 +241,10 @@ public sealed class PlayerOptionsMenu : MenuDefinition
             Gate = PlayerOptionsPermissions.Scenarios,
             OnSelected = _ => PlayerScenarios.ForceStop(),
         });
+
+        menu.Entries.Add(Group(Loc.PlayerOptions.GroupDriving, Loc.PlayerOptions.GroupDrivingDescription));
+
+        menu.Entries.Add(SubmenuEntry.For(new VehicleAutoPilotMenu()));
     }
 
     private static SeparatorEntry Group(string textKey, string descriptionKey) => new()

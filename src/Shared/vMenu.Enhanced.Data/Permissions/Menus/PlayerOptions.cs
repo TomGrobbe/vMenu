@@ -53,4 +53,6 @@ public static class PlayerOptions
     public const string WetPlayer = "vMenu.Enhanced.Menus.PlayerOptions.WetPlayer";
 
     public const string Scenarios = "vMenu.Enhanced.Menus.PlayerOptions.Scenarios";
+
+    public const string AutoPilot = "vMenu.Enhanced.Menus.PlayerOptions.AutoPilot";
 }

@@ -264,6 +264,30 @@ public static class UserDefaults
 
     #endregion
 
+    #region Auto Pilot
+
+    public static StringDefault AutoPilotVehicleProfile { get; } =
+        new("autoPilotVehicleProfile") { Default = string.Empty };
+
+    public static StringDefault AutoPilotPlaneProfile { get; } =
+        new("autoPilotPlaneProfile") { Default = string.Empty };
+
+    public static StringDefault AutoPilotBoatProfile { get; } =
+        new("autoPilotBoatProfile") { Default = string.Empty };
+
+    public static StringDefault AutoPilotHeliProfile { get; } =
+        new("autoPilotHeliProfile") { Default = string.Empty };
+
+    public static IntDefault AutoPilotStopAction { get; } = new("autoPilotStopAction") { Default = 0 };
+
+    public static IntDefault AutoPilotCruiseSpeed { get; } = new("autoPilotCruiseSpeed") { Default = 0 };
+
+    public static IntDefault AutoPilotPathSpacing { get; } = new("autoPilotPathSpacing") { Default = 25 };
+
+    public static BoolDefault AutoPilotAutoRecord { get; } = new("autoPilotAutoRecord") { Default = true };
+
+    #endregion
+
     #region Character Creator
 
     public static StringDefault DefaultCharacterName { get; } =
@@ -368,6 +392,15 @@ public static class UserDefaults
         TicksOverlay,
 
         PointingDebug,
+
+        AutoPilotVehicleProfile,
+        AutoPilotPlaneProfile,
+        AutoPilotBoatProfile,
+        AutoPilotHeliProfile,
+        AutoPilotStopAction,
+        AutoPilotCruiseSpeed,
+        AutoPilotPathSpacing,
+        AutoPilotAutoRecord,
     ];
 
     // Call once, after ClientJson.Verify.
