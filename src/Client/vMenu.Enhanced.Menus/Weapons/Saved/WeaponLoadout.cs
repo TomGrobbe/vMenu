@@ -17,6 +17,8 @@ public sealed class SavedWeapon
     // weapon has left the server, and so its category permission can be looked up.
     public string SpawnName { get; set; } = string.Empty;
 
+    // Still written so older loadout files keep their shape, but no longer read: restoring fills every
+    // weapon to the top instead, which is the only thing that works for special ammo.
     public int Ammo { get; set; }
 
     public int Tint { get; set; }

@@ -77,7 +77,7 @@ public static class WeaponLoadoutApply
 
         // Handed over loaded rather than empty. A weapon given with no rounds is one the game has no reason
         // to build, and components asked of it in that state are the ones that go missing.
-        Native.GiveWeaponToPed(ped, hash, Wanted(hash, saved.Ammo), false, false);
+        Native.GiveWeaponToPed(ped, hash, WeaponInventory.MaxAmmo(hash), false, false);
 
         foreach (var component in saved.Components)
         {
@@ -103,7 +103,7 @@ public static class WeaponLoadoutApply
             Native.SetPedWeaponTintIndex(ped, hash, saved.Tint);
         }
 
-        await FillAsync(ped, hash, saved.Ammo);
+        await FillAsync(ped, hash);
     }
 
     // False when the component never took, which is the caller's cue to say so.
@@ -128,10 +128,14 @@ public static class WeaponLoadoutApply
         return true;
     }
 
-    private static async Task FillAsync(int ped, uint weaponHash, int ammo)
+    // We're filling ammo to the max because MK2 weapons with custom ammo is a PITA to deal with
+    // it never restores properly. Stupid game.
+    private static async Task FillAsync(int ped, uint weaponHash)
     {
-        var wanted = Wanted(weaponHash, ammo);
+        var wanted = WeaponInventory.MaxAmmo(weaponHash);
         var deadline = Native.GetGameTimer() + AmmoTimeoutMs;
+
+        Native.SetAmmoInClip(ped, weaponHash, Native.GetMaxAmmoInClip(ped, weaponHash, false));
 
         Native.SetPedAmmo(ped, weaponHash, wanted, false);
 
@@ -151,7 +155,4 @@ public static class WeaponLoadoutApply
         }
     }
 
-    // Clamped, because a component may have changed what this weapon can hold, and asking for more than
-    // that is what would make FillAsync never agree.
-    private static int Wanted(uint weaponHash, int ammo) => Math.Min(ammo, WeaponInventory.MaxAmmo(weaponHash));
 }
