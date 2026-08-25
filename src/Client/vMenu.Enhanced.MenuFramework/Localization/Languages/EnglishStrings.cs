@@ -1155,6 +1155,8 @@ internal static class EnglishStrings
             [Loc.DisplaySettings.SpeedometerPositionLocked] = "Turn the speedometer on first, then you can pick where it goes.",
             [Loc.DisplaySettings.SpeedometerPositionRight] = "Bottom Right",
             [Loc.DisplaySettings.SpeedometerPositionCenter] = "Bottom Middle",
+            [Loc.DisplaySettings.VehicleHealth] = "Vehicle Health",
+            [Loc.DisplaySettings.VehicleHealthDescription] = "Adds three small bars to the speedometer panel showing how healthy the engine, the body and the fuel tank of your vehicle are. They work whether the speedometer itself is on or off.",
             [Loc.DisplaySettings.MinimapAction] = "Minimap Key",
             [Loc.DisplaySettings.MinimapActionDescription] = "Change what the minimap key does. When pressed (~b~Z~s~ by default) the minimap will either zoom out or be expanded for 10 seconds, or until you press the key again. You can change the keybind in the pause menu under ~y~Settings~s~, ~y~Key Bindings~s~, ~y~FiveM~s~.",
             [Loc.DisplaySettings.MinimapActionOff] = "Nothing",

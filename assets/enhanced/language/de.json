@@ -670,6 +670,8 @@
     "displaysettings.timecycles.subtitle": "Bildfilter",
     "displaysettings.timecycles.subtitle.filtered": "{query} ({count} von {total})",
     "displaysettings.title": "Anzeigeeinstellungen",
+    "displaysettings.vehiclehealth": "Fahrzeugzustand",
+    "displaysettings.vehiclehealth.desc": "Fügt dem Tachofeld drei kleine Balken hinzu, die zeigen, wie gesund Motor, Karosserie und Tank deines Fahrzeugs sind. Sie funktionieren auch, wenn der Tacho selbst aus ist.",
     "framework.confirm": "~r~Willst du das wirklich tun? Drücke noch einmal Enter, um zu bestätigen.",
     "framework.emptymenu": "Keine Rechte",
     "framework.emptymenu.desc": "Hier drin ist nichts, was du benutzen darfst. Frag den Serverbesitzer, wenn du denkst, dass das anders sein sollte.",

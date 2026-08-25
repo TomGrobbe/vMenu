@@ -670,6 +670,8 @@
     "displaysettings.timecycles.subtitle": "Filtres d'image",
     "displaysettings.timecycles.subtitle.filtered": "{query} ({count} sur {total})",
     "displaysettings.title": "Paramètres d'affichage",
+    "displaysettings.vehiclehealth": "État du véhicule",
+    "displaysettings.vehiclehealth.desc": "Ajoute trois petites barres au compteur qui montrent l'état du moteur, de la carrosserie et du réservoir de votre véhicule. Elles fonctionnent que le compteur soit affiché ou non.",
     "framework.confirm": "~r~Tu es sûr de vouloir faire ça ? Appuie encore une fois sur entrée pour confirmer.",
     "framework.emptymenu": "Aucune permission",
     "framework.emptymenu.desc": "Il n'y a rien ici que vous ayez le droit d'utiliser. Demandez au propriétaire du serveur si vous pensez que cela devrait être autrement.",

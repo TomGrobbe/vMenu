@@ -32,6 +32,10 @@ public static partial class Loc
 
         public const string SpeedometerPositionCenter = "displaysettings.speedometer.position.center";
 
+        public const string VehicleHealth = "displaysettings.vehiclehealth";
+
+        public const string VehicleHealthDescription = "displaysettings.vehiclehealth.desc";
+
         public const string MinimapAction = "displaysettings.minimap.action";
 
         public const string MinimapActionDescription = "displaysettings.minimap.action.desc";

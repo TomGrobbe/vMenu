@@ -56,6 +56,15 @@ public sealed class DisplaySettingsMenu : MenuDefinition
 
         menu.Entries.Add(new CheckboxEntry
         {
+            Text = MenuText.Key(Loc.DisplaySettings.VehicleHealth),
+            Description = MenuText.Key(Loc.DisplaySettings.VehicleHealthDescription),
+            Gate = DisplaySettingsPermissions.VehicleHealth,
+            ReadState = () => Speedometer.ShowHealth,
+            OnChanged = changed => Speedometer.ShowHealth = changed.Checked,
+        });
+
+        menu.Entries.Add(new CheckboxEntry
+        {
             Text = MenuText.Key(Loc.DisplaySettings.LocationDisplay),
             Description = MenuText.Key(Loc.DisplaySettings.LocationDisplayDescription),
             Gate = DisplaySettingsPermissions.ShowLocation,

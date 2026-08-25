@@ -83,3 +83,59 @@
     background: linear-gradient(90deg, var(--speedo-accent), #ffffff);
     transition: width 0.12s linear;
 }
+
+#speedometer .health-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.22rem;
+    margin-top: 0.15rem;
+}
+
+#speedometer .health {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+}
+
+#speedometer .health-label {
+    flex: 0 0 auto;
+    min-width: 2.2em;
+    font-size: 0.6rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    color: var(--text);
+    opacity: 0.55;
+}
+
+#speedometer .health-rail {
+    flex: 1 1 auto;
+    height: 0.2rem;
+    border-radius: 0.2rem;
+    background: rgba(255, 255, 255, 0.1);
+    overflow: hidden;
+}
+
+#speedometer .health-rail > span {
+    display: block;
+    height: 100%;
+    width: 0;
+    border-radius: inherit;
+    background: var(--health-tone);
+    transition: width 0.15s linear, background 0.3s ease;
+}
+
+#speedometer .health.good {
+    --health-tone: rgba(126, 217, 137, 0.9);
+}
+
+#speedometer .health.fair {
+    --health-tone: rgba(233, 213, 118, 0.9);
+}
+
+#speedometer .health.poor {
+    --health-tone: rgba(233, 163, 98, 0.9);
+}
+
+#speedometer .health.bad {
+    --health-tone: rgba(230, 118, 118, 0.9);
+}

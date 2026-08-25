@@ -670,6 +670,8 @@
     "displaysettings.timecycles.subtitle": "Filtros de pantalla",
     "displaysettings.timecycles.subtitle.filtered": "{query} ({count} de {total})",
     "displaysettings.title": "Ajustes de pantalla",
+    "displaysettings.vehiclehealth": "Estado del vehículo",
+    "displaysettings.vehiclehealth.desc": "Añade tres barras pequeñas al panel del velocímetro que muestran cómo están el motor, la carrocería y el depósito de tu vehículo. Funcionan tanto si el velocímetro está encendido como si no.",
     "framework.confirm": "~r~¿Seguro que quieres hacer esto? Pulsa enter otra vez para confirmar.",
     "framework.emptymenu": "Sin permisos",
     "framework.emptymenu.desc": "Aquí dentro no hay nada que puedas usar. Pregúntale al dueño del servidor si crees que debería ser de otra manera.",

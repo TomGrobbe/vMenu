@@ -11,6 +11,8 @@ public static class DisplaySettings
 
     public const string Forecast = "vMenu.Enhanced.Menus.DisplaySettings.Forecast";
 
+    public const string VehicleHealth = "vMenu.Enhanced.Menus.DisplaySettings.VehicleHealth";
+
     public const string HideHud = "vMenu.Enhanced.Menus.DisplaySettings.HideHud";
 
     public const string HideRadar = "vMenu.Enhanced.Menus.DisplaySettings.HideRadar";

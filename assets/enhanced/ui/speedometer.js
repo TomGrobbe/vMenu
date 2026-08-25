@@ -5,6 +5,12 @@
 
     const RAIL_CEILING_KMH = 300;
 
+    const HEALTH_BARS = [
+        { key: "engine", label: "ENG" },
+        { key: "body", label: "BDY" },
+        { key: "tank", label: "TNK" },
+    ];
+
     function readout(value, unit) {
         const element = document.createElement("div");
         element.className = "readout";
@@ -34,9 +40,39 @@
         return track;
     }
 
-    function render(data) {
-        boxEl.textContent = "";
+    function healthTone(percent) {
+        if (percent > 75) {
+            return "good";
+        }
 
+        if (percent > 50) {
+            return "fair";
+        }
+
+        return percent > 25 ? "poor" : "bad";
+    }
+
+    function healthBar(label, percent) {
+        const row = document.createElement("div");
+        row.className = `health ${healthTone(percent)}`;
+
+        const name = document.createElement("span");
+        name.className = "health-label";
+        name.textContent = label;
+
+        const track = document.createElement("div");
+        track.className = "health-rail";
+
+        const fill = document.createElement("span");
+        fill.style.width = `${Math.min(Math.max(percent, 0), 100)}%`;
+
+        track.appendChild(fill);
+        row.append(name, track);
+
+        return row;
+    }
+
+    function renderSpeed(data) {
         const kmh = typeof data.kmh === "number" ? data.kmh : null;
         const mph = typeof data.mph === "number" ? data.mph : null;
 
@@ -57,6 +93,34 @@
         boxEl.appendChild(rail(reference / RAIL_CEILING_KMH));
 
         return true;
+    }
+
+    function renderHealth(data) {
+        const bars = HEALTH_BARS
+            .filter(bar => typeof data[bar.key] === "number")
+            .map(bar => healthBar(bar.label, data[bar.key]));
+
+        if (bars.length === 0) {
+            return false;
+        }
+
+        const group = document.createElement("div");
+        group.className = "health-group";
+
+        bars.forEach(bar => group.appendChild(bar));
+        boxEl.appendChild(group);
+
+        return true;
+    }
+
+    // Either half can be switched off on its own, so the panel shows whichever of the two arrived.
+    function render(data) {
+        boxEl.textContent = "";
+
+        const speed = renderSpeed(data);
+        const health = renderHealth(data);
+
+        return speed || health;
     }
 
     function place(side, right, bottom) {

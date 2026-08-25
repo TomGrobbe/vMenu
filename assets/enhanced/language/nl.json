@@ -670,6 +670,8 @@
     "displaysettings.timecycles.subtitle": "Beeldfilters",
     "displaysettings.timecycles.subtitle.filtered": "{query} ({count} van {total})",
     "displaysettings.title": "Weergave-instellingen",
+    "displaysettings.vehiclehealth": "Voertuigconditie",
+    "displaysettings.vehiclehealth.desc": "Zet drie kleine balkjes bij de snelheidsmeter die laten zien hoe gezond de motor, de carrosserie en de brandstoftank van je voertuig zijn. Ze werken ook als de snelheidsmeter zelf uit staat.",
     "framework.confirm": "~r~Weet je zeker dat je dit wilt doen? Druk nog een keer op enter om te bevestigen.",
     "framework.emptymenu": "Geen rechten",
     "framework.emptymenu.desc": "Er staat hier niets in wat jij mag gebruiken. Vraag het de servereigenaar als je denkt dat dat wel zo hoort te zijn.",

@@ -71,6 +71,9 @@ public static class UserDefaults
     public static BoolDefault DisplayShowCoordinates { get; } =
         new("displayShowCoordinates") { Default = false };
 
+    public static BoolDefault DisplayVehicleHealth { get; } =
+        new("displayVehicleHealth") { Default = false };
+
     public static BoolDefault DisplayWeatherForecast { get; } =
         new("displayWeatherForecast") { Default = false };
 
@@ -361,6 +364,7 @@ public static class UserDefaults
         DisplaySpeedometerPosition,
         DisplayShowLocation,
         DisplayShowCoordinates,
+        DisplayVehicleHealth,
 
         PlayerGodMode,
         PlayerSuperJump,

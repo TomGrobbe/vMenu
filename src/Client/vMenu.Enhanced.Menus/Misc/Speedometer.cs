@@ -5,9 +5,12 @@ using MenuAPI;
 using vMenu.Enhanced.Data.Ticks;
 using vMenu.Enhanced.Events;
 using vMenu.Enhanced.MenuFramework;
+using vMenu.Enhanced.Permissions;
 using vMenu.Enhanced.Serialization;
 using vMenu.Enhanced.Storage;
 using vMenu.Enhanced.Ticks;
+
+using DisplaySettingsPermissions = vMenu.Enhanced.Data.Permissions.Menus.DisplaySettings;
 
 namespace vMenu.Enhanced.Menus.Misc;
 
@@ -41,6 +44,9 @@ public static class Speedometer
 
     private const float HudTextClearance = 1f / 80f;
 
+    // Engine, body and tank health all top out here.
+    private const float FullHealth = 1000f;
+
     private const int VehicleNameComponent = 6;
 
     private const int AreaNameComponent = 7;
@@ -62,6 +68,14 @@ public static class Speedometer
     private static int _paintedKmh = -1;
 
     private static int _paintedMph = -1;
+
+    private static bool _paintedHealth;
+
+    private static int _paintedEngine = -1;
+
+    private static int _paintedBody = -1;
+
+    private static int _paintedTank = -1;
 
     private static int _paintedPosition = -1;
 
@@ -93,15 +107,42 @@ public static class Speedometer
         set => UserDefaults.DisplaySpeedometerPosition.Value = value;
     }
 
+    public static bool ShowHealth
+    {
+        get => UserDefaults.DisplayVehicleHealth.Value && IsHealthAllowed;
+
+        set
+        {
+            if (value && !IsHealthAllowed)
+            {
+                return;
+            }
+
+            if (UserDefaults.DisplayVehicleHealth.Value == value)
+            {
+                return;
+            }
+
+            UserDefaults.DisplayVehicleHealth.Value = value;
+
+            Reevaluate();
+        }
+    }
+
+    private static bool IsHealthAllowed =>
+        ClientPermissions.IsAllowed(DisplaySettingsPermissions.VehicleHealth);
+
     public static void Initialize()
     {
         LocalVehicleTicks.VehicleChanged += OnVehicleChanged;
+
+        ClientPermissions.PermissionsChanged += Reevaluate;
 
         _tick = TickRegistry.Register(
             "Misc.Speedometer",
             Flush,
             TickRate.Every(RefreshIntervalMs),
-            () => Mode != Off && _inVehicle,
+            () => (Mode != Off || ShowHealth) && _inVehicle,
             autoStart: false);
     }
 
@@ -123,7 +164,7 @@ public static class Speedometer
     {
         _tick?.Reevaluate();
 
-        if (Mode == Off || !_inVehicle)
+        if ((Mode == Off && !ShowHealth) || !_inVehicle)
         {
             Hide();
         }
@@ -133,6 +174,9 @@ public static class Speedometer
     {
         _paintedKmh = -1;
         _paintedMph = -1;
+        _paintedEngine = -1;
+        _paintedBody = -1;
+        _paintedTank = -1;
 
         if (!_shown)
         {
@@ -164,10 +208,17 @@ public static class Speedometer
 
         var mode = Mode;
         var position = Position;
+        var health = ShowHealth;
         var speed = Native.GetEntitySpeed(vehicle);
 
         var kmh = mode is Kmh or Both ? (int)MathF.Round(speed * MetersPerSecondToKmh) : 0;
         var mph = mode is Mph or Both ? (int)MathF.Round(speed * MetersPerSecondToMph) : 0;
+
+        // Whole percentages, so the panel is not repainted for a fraction nobody can see. Engine health
+        // goes negative once it is beyond saving, which the clamp turns into an empty bar.
+        var engine = health ? Percent(Native.GetVehicleEngineHealth(vehicle)) : -1;
+        var body = health ? Percent(Native.GetVehicleBodyHealth(vehicle)) : -1;
+        var tank = health ? Percent(Native.GetVehiclePetrolTankHealth(vehicle)) : -1;
 
         var lift = MenuController.IsAnyMenuOpen() || NoClip.NoClip.IsActive ? InstructionalButtonsHeight : 0f;
 
@@ -186,8 +237,12 @@ public static class Speedometer
 
         if (mode == _paintedMode
             && position == _paintedPosition
+            && health == _paintedHealth
             && kmh == _paintedKmh
             && mph == _paintedMph
+            && engine == _paintedEngine
+            && body == _paintedBody
+            && tank == _paintedTank
             && inset == _paintedRight
             && bottom == _paintedBottom)
         {
@@ -196,8 +251,12 @@ public static class Speedometer
 
         _paintedMode = mode;
         _paintedPosition = position;
+        _paintedHealth = health;
         _paintedKmh = kmh;
         _paintedMph = mph;
+        _paintedEngine = engine;
+        _paintedBody = body;
+        _paintedTank = tank;
         _paintedRight = inset;
         _paintedBottom = bottom;
         _shown = true;
@@ -206,11 +265,17 @@ public static class Speedometer
         {
             Kmh = mode is Kmh or Both ? kmh : null,
             Mph = mode is Mph or Both ? mph : null,
+            Engine = health ? engine : null,
+            Body = health ? body : null,
+            Tank = health ? tank : null,
             Side = position == BottomCenter ? "center" : "right",
             Right = inset,
             Bottom = bottom,
         }));
     }
+
+    private static int Percent(float value) =>
+        (int)MathF.Round(Math.Clamp(value / FullHealth, 0f, 1f) * 100f);
 
     private static float HudTextTop()
     {
@@ -236,6 +301,12 @@ public static class Speedometer
         public required int? Kmh { get; init; }
 
         public required int? Mph { get; init; }
+
+        public required int? Engine { get; init; }
+
+        public required int? Body { get; init; }
+
+        public required int? Tank { get; init; }
 
         public required string Side { get; init; }
 
