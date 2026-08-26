@@ -54,6 +54,28 @@
   </Target>
 
   <!--
+    MenuAPI's NUI renderer ships its stylesheet, its scripts, its fonts and its sprites inside the
+    NuGet package, and they land next to the client assemblies rather than in the resource. They have
+    to sit under ui/ instead, because ui/index.html reaches them by relative path.
+
+    The ItemGroup is inside the target on purpose: the package content is restored into OutputPath
+    during the build, so a wildcard evaluated when this file is read would find nothing on a clean
+    clone.
+  -->
+  <Target Name="CopyMenuApiUiFiles"
+          AfterTargets="Build"
+          Condition="'$(IsResourceRootProject)' == 'true'">
+
+    <ItemGroup>
+      <MenuApiUiFile Include="$(OutputPath)menuapi\**\*" />
+    </ItemGroup>
+
+    <Copy SourceFiles="@(MenuApiUiFile)"
+          DestinationFiles="@(MenuApiUiFile -> '$(ResourceRoot)ui\menuapi\%(RecursiveDir)%(Filename)%(Extension)')"
+          SkipUnchangedFiles="true" />
+  </Target>
+
+  <!--
     Overwritten like the UI rather than preserved like config: these are vMenu's own translations,
     and an update has to be able to deliver keys added since. A language an owner adds themselves is
     never listed here, so it is never touched.

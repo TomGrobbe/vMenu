@@ -92,6 +92,8 @@ public sealed class Main : IScript
 
         MenuController.MenuToggleKeyDefault = ClientConfig.Value(KeyBindings.MenuToggleKey);
 
+        MenuController.RenderMode = MenuRenderMode.Nui;
+
         HeaderStyle.Initialize();
 
         LanguageLoader.Load();
