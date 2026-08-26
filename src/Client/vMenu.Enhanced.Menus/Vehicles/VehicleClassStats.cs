@@ -21,6 +21,15 @@ internal static class VehicleClassStats
             Map(Native.GetVehicleModelMaxTraction(modelHash), 0f, ceiling.Traction, 0f, 1f));
     }
 
-    internal static float Map(float value, float minIn, float maxIn, float minOut, float maxOut) =>
-        ((value - minIn) * (maxOut - minOut) / (maxIn - minIn)) + minOut;
+    internal static float Map(float value, float minIn, float maxIn, float minOut, float maxOut)
+    {
+        var range = maxIn - minIn;
+
+        if (range == 0f)
+        {
+            return minOut;
+        }
+
+        return ((value - minIn) * (maxOut - minOut) / range) + minOut;
+    }
 }
