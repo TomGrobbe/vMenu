@@ -1,3 +1,5 @@
+using vMenu.Enhanced.Logging;
+
 namespace vMenu.Enhanced.Updates.Server.Http;
 
 // One GET over HttpClient, started on the thread pool and waited on the tick thread so everything
@@ -48,6 +50,24 @@ public static class HttpGet
         }
         catch (Exception exception)
         {
+            Log.Debug(
+                $"""
+                ^1[Error] ^0An exception occurred during ^2HTTP GET^0.
+
+                ^3Message:^0
+                {exception.Message}
+
+                ^3Inner exception message:^0
+                {exception.InnerException?.Message}
+
+                ^3Stacktrace:^0
+                {exception.StackTrace}
+
+                ^3Inner exception stacktrace:^0
+                {exception.InnerException?.StackTrace}
+                """
+            );
+                
             slot.Complete(HttpReply.Unusable(exception.GetType().Name + ": " + exception.Message));
         }
     }
