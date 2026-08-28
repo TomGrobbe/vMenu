@@ -2,8 +2,6 @@ using System.Text.Json.Serialization;
 
 using CitizenFX.FiveM.Client;
 
-using MenuAPI;
-
 using vMenu.Enhanced.Logging;
 using vMenu.Enhanced.MenuFramework.Localization;
 using vMenu.Enhanced.Serialization;
@@ -24,8 +22,6 @@ public static class UserInput
 
     // The page's first callback of a session takes seconds; every one after is immediate.
     private const int FirstReadyTimeoutMs = 15000;
-
-    private const int ButtonGraceMs = 300;
 
     private static bool _callbacksRegistered;
     private static bool _handshaken;
@@ -62,9 +58,7 @@ public static class UserInput
 
         _open = true;
 
-        var buttonsWereEnabled = !MenuController.DisableMenuButtons;
-
-        MenuController.DisableMenuButtons = true;
+        MenuButtonLock.Take();
 
         try
         {
@@ -89,10 +83,7 @@ public static class UserInput
             Native.SetNuiFocus(false, false);
             Native.SendNuiMessage(CloseMessage);
 
-            if (buttonsWereEnabled)
-            {
-                _ = ReleaseMenuButtonsAsync();
-            }
+            MenuButtonLock.Release();
         }
     }
 
@@ -128,17 +119,6 @@ public static class UserInput
         }
     }
 
-    // The key or click that closed the prompt is still held when focus returns to the game, and MenuAPI
-    // selects on release: without this grace the row that opened the prompt reopens it.
-    private static async Task ReleaseMenuButtonsAsync()
-    {
-        await API.Delay(ButtonGraceMs);
-
-        if (!_open)
-        {
-            MenuController.DisableMenuButtons = false;
-        }
-    }
 
     private static void EnsureCallbacks()
     {

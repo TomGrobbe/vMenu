@@ -1,7 +1,5 @@
 using CitizenFX.FiveM.Client;
 
-using MenuAPI;
-
 using vMenu.Enhanced.Logging;
 using vMenu.Enhanced.MenuFramework;
 using vMenu.Enhanced.Serialization;
@@ -26,8 +24,6 @@ public static class DataTransferScreen
 
     // The page's first callback of a session takes seconds; every one after is immediate.
     private const int FirstReadyTimeoutMs = 15000;
-
-    private const int ButtonGraceMs = 300;
 
     // How long the rest of a pasted code has to turn up once the first piece has.
     private const int AssemblyTimeoutMs = 10000;
@@ -62,10 +58,6 @@ public static class DataTransferScreen
 
         _open = true;
 
-        var buttonsWereEnabled = !MenuController.DisableMenuButtons;
-
-        MenuController.DisableMenuButtons = true;
-
         var token = ++_token;
         var chunks = payload is null ? [] : Split(payload);
         var ready = new TaskCompletionSource<bool>();
@@ -76,6 +68,8 @@ public static class DataTransferScreen
         _incoming = [];
         _arrived = 0;
         _assembling = false;
+
+        MenuButtonLock.Take();
 
         try
         {
@@ -110,22 +104,7 @@ public static class DataTransferScreen
             Native.SetNuiFocus(false, false);
             Native.SendNuiMessage(CloseMessage);
 
-            if (buttonsWereEnabled)
-            {
-                _ = ReleaseMenuButtonsAsync();
-            }
-        }
-    }
-
-    // The key or click that closed the screen is still held when focus returns to the game, and MenuAPI
-    // selects on release: without this grace the row that opened it opens it again.
-    private static async Task ReleaseMenuButtonsAsync()
-    {
-        await API.Delay(ButtonGraceMs);
-
-        if (!_open)
-        {
-            MenuController.DisableMenuButtons = false;
+            MenuButtonLock.Release();
         }
     }
 
