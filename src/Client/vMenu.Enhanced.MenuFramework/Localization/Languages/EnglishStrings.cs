@@ -1169,7 +1169,7 @@ internal static class EnglishStrings
             [Loc.DisplaySettings.MinimapAlwaysOnDescription] = "Keeps the radar expanded or zoomed out all the time, so you do not have to press anything. The key does nothing while this is ticked, there being nothing left for it to turn on.",
             [Loc.DisplaySettings.MinimapAlwaysOnLocked] = "Pick what the minimap key does first, then this can keep it that way.",
             [Loc.MiscSettings.FingerPointing] = "Finger Pointing",
-            [Loc.MiscSettings.FingerPointingDescription] = "Point your finger at whatever you are looking at, just like in GTA Online. Press ~b~B~s~ to start and press it again to stop, or click the right stick on a controller. You can change the keybind in the pause menu under ~y~Settings~s~, ~y~Key Bindings~s~, ~y~FiveM~s~.",
+            [Loc.MiscSettings.FingerPointingDescription] = "Point your finger at whatever you are looking at, just like in GTA Online. Press ~b~B~s~ to start and press it again to stop, or click the right stick on a controller. It only works with your hands empty, a drawn weapon breaks the aiming animation. You can change the keybind in the pause menu under ~y~Settings~s~, ~y~Key Bindings~s~, ~y~FiveM~s~.",
             [Loc.MiscSettings.PlayerBlips] = "Show Player Blips",
             [Loc.MiscSettings.PlayerBlipsDescription] = "Put a blip on the map for every other player, which changes shape depending on what they are driving. Players far away from you are kept off the minimap to stop it getting cluttered, and appear when you expand it.",
             [Loc.DisplaySettings.LocationDisplay] = "Location Display",

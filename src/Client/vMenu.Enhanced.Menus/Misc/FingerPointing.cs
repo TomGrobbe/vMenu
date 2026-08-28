@@ -123,10 +123,6 @@ public static class FingerPointing
 
     private static float _probeZ;
 
-    private static uint _storedWeapon;
-
-    private static bool _hidWeapon;
-
     private static bool _heldHelmetOn;
 
     private static bool _debug;
@@ -196,7 +192,7 @@ public static class FingerPointing
         {
             if (CanStart(ped))
             {
-                Start(ped);
+                Start();
             }
 
             return;
@@ -218,20 +214,17 @@ public static class FingerPointing
     private static bool IsSafe(int ped) =>
         !Native.IsPedInAnyVehicle(ped, false)
         && !Native.IsPedInjured(ped)
-        && !Native.IsPlayerSwitchInProgress();
+        && !Native.IsPlayerSwitchInProgress()
+        && !IsArmed(ped);
 
-    private static void Start(int ped)
+    // The pointing move network fights the aiming animation, so a drawn weapon is never worth the mess.
+    private static bool IsArmed(int ped) => Native.GetSelectedPedWeapon(ped) != API.Hash(Unarmed);
+
+    private static void Start()
     {
         Native.RequestAnimDict(AnimDict);
 
         _stopRequested = false;
-
-        if (IsTwoHanded(Native.GetSelectedPedWeapon(ped)))
-        {
-            Native.SetPedCurrentWeaponVisible(ped, false, false, false, true);
-
-            _hidWeapon = true;
-        }
 
         Enter(State.Loading);
 
@@ -285,8 +278,6 @@ public static class FingerPointing
 
             return;
         }
-
-        UpdateStowedWeapon(ped);
 
         UpdateProbe(ped);
 
@@ -368,18 +359,6 @@ public static class FingerPointing
         if (Native.IsTaskMoveNetworkActive(ped) && !Native.IsPedInjured(ped))
         {
             Native.ClearPedSecondaryTask(ped);
-        }
-
-        RestoreWeapon(ped);
-
-        if (_hidWeapon)
-        {
-            if (!Native.IsPedInAnyVehicle(ped, true))
-            {
-                Native.SetPedCurrentWeaponVisible(ped, true, false, false, true);
-            }
-
-            _hidWeapon = false;
         }
 
         if (_heldHelmetOn)
@@ -488,47 +467,6 @@ public static class FingerPointing
         }
     }
 
-    private static void UpdateStowedWeapon(int ped)
-    {
-        if (!IsFirstPerson())
-        {
-            RestoreWeapon(ped);
-
-            return;
-        }
-
-        if (_storedWeapon != 0)
-        {
-            return;
-        }
-
-        var weapon = Native.GetSelectedPedWeapon(ped);
-
-        if (weapon == API.Hash(Unarmed))
-        {
-            return;
-        }
-
-        _storedWeapon = weapon;
-
-        Native.SetCurrentPedWeapon(ped, API.Hash(Unarmed), true);
-    }
-
-    private static void RestoreWeapon(int ped)
-    {
-        if (_storedWeapon == 0)
-        {
-            return;
-        }
-
-        if (Native.HasPedGotWeapon(ped, _storedWeapon, 0))
-        {
-            Native.SetCurrentPedWeapon(ped, _storedWeapon, true);
-        }
-
-        _storedWeapon = 0;
-    }
-
     private static void HoldHelmetOn(int ped)
     {
         if (Native.GetPedConfigFlag(ped, DontTakeOffHelmet, false))
@@ -539,18 +477,6 @@ public static class FingerPointing
         Native.SetPedConfigFlag(ped, DontTakeOffHelmet, true);
 
         _heldHelmetOn = true;
-    }
-
-    private static bool IsTwoHanded(uint weapon)
-    {
-        var group = Native.GetWeapontypeGroup(weapon);
-
-        return group == API.Hash("GROUP_RIFLE")
-            || group == API.Hash("GROUP_SHOTGUN")
-            || group == API.Hash("GROUP_SMG")
-            || group == API.Hash("GROUP_SNIPER")
-            || group == API.Hash("GROUP_HEAVY")
-            || group == API.Hash("GROUP_MG");
     }
 
     private static void DrawDebug()

@@ -43,7 +43,7 @@ The minimap, visor, pointing, auto camera, snowball and engine keys have no conv
 
 - **Minimap.** Players choose under **Misc Settings** whether the key expands the radar or zooms it out. The effect lasts 10 seconds, or until the key is pressed again.
 - **Visor.** Some multiplayer ped helmets have a visor or gadget. Hold the key while on foot or on a motorcycle to flip it, just like GTA Online.
-- **Pointing.** Press once to point your finger at whatever you are looking at, press again to stop. Players switch it on under **Misc Settings**, and it does nothing while it is off.
+- **Pointing.** Press once to point your finger at whatever you are looking at, press again to stop. Players switch it on under **Misc Settings**, and it does nothing while it is off. Your hands have to be empty, because pointing with a weapon out breaks the aiming animation, so it also stops on its own the moment you pull one out.
 - **Auto camera.** Only does something while the character creator is open. It is the same switch as **Disable Auto Camera** at the top of the creator page, and the choice is remembered between sessions.
 - **Snowball.** Only does something while there is snow on the ground. Press it to scoop up a snowball, the same way you would in the game's own snow event.
 - **Engine.** Starts or stops the engine of whatever you happen to be sitting in, as long as you are the driver. It does nothing without the **Toggle Engine On/Off** permission, and there is no controller button for it.
