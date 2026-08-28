@@ -64,6 +64,7 @@ export default defineConfig({
         { label: 'Moving Your Data', link: '/moving-your-data/' },
         { label: 'Edit Your Data', link: '/data-editor/' },
         { label: 'Custom Character Creator', link: '/character-creator/' },
+        { label: 'Admin Menu', link: '/admin-menu/' },
         {
           label: 'Configuration',
           items: [
