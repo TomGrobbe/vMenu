@@ -32,6 +32,16 @@
     animation: staff-alert-in 200ms ease-out;
 }
 
+/*
+   A server announcement borrows the same banner, in blue rather than amber, because it is the server
+   talking rather than a player asking for help and the two must not be mistaken for each other.
+*/
+.staff-alert.announcement {
+    --tone: #4d94f7;
+    --tone-soft: rgba(61, 128, 224, 0.16);
+    --tone-edge: rgba(61, 128, 224, 0.35);
+}
+
 /* The uppercase strip over a tinted bar is the menu's own subtitle row, shrunk to fit. */
 .staff-alert .bar {
     display: flex;

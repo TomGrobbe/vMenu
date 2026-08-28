@@ -41,4 +41,6 @@ public static class SpawnedVehicleRegistry
     }
 
     public static void Drop(int serverId) => ByPlayer.Remove(serverId);
+
+    public static void ForgetAll() => ByPlayer.Clear();
 }

@@ -40,8 +40,8 @@ public static class UserDefaults
     public static BoolDefault MiscShowOverheadNames { get; } =
         new("miscShowOverheadNames") { Default = false };
 
-    public static BoolDefault MiscSeeNoClipPlayers { get; } =
-        new("miscSeeNoClipPlayers") { Default = true };
+    public static BoolDefault AdminSeeNoClipPlayers { get; } =
+        new("adminSeeNoClipPlayers") { Default = true };
 
     public static BoolDefault MiscHideStaffAlerts { get; } =
         new("miscHideStaffAlerts") { Default = false };
@@ -358,7 +358,7 @@ public static class UserDefaults
         MiscFingerPointing,
         MiscShowPlayerBlips,
         MiscShowOverheadNames,
-        MiscSeeNoClipPlayers,
+        AdminSeeNoClipPlayers,
         MiscHideStaffAlerts,
         DisplaySpeedometer,
         DisplaySpeedometerPosition,

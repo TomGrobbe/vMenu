@@ -334,6 +334,17 @@ public sealed class OnlinePlayersMenu : MenuDefinition
             OnSelectedAsync = _ => SetWaypointAsync(),
         });
 
+        actions.Entries.Add(new ButtonEntry
+        {
+            Text = MenuText.Key(Loc.OnlinePlayers.RefreshPermissions),
+            Description = MenuText.Key(Loc.OnlinePlayers.RefreshPermissionsDescription),
+            Gate = OnlinePlayersPermissions.RefreshPermissions,
+            OnSelectedAsync = _ => SendAsync(
+                ActionIds.OnlinePlayers.RefreshPermissions,
+                Loc.OnlinePlayers.RefreshPermissionsDone,
+                allowSelf: true),
+        });
+
         // Its own menu rather than a notification: there are usually five or six of these and every one is
         // far too long to read in a corner of the screen.
         _identifiers = actions.AddDetachedMenu(

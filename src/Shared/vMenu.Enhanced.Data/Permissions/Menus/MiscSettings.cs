@@ -12,11 +12,5 @@ public static class MiscSettings
     public const string OverheadNames = "vMenu.Enhanced.Menus.MiscSettings.OverheadNames";
 
     [StaffOnly]
-    public const string ClearArea = "vMenu.Enhanced.Menus.MiscSettings.ClearArea";
-
-    [StaffOnly]
-    public const string SeeNoClipPlayers = "vMenu.Enhanced.Menus.MiscSettings.SeeNoClipPlayers";
-
-    [StaffOnly]
     public const string SeeLeaveReasons = "vMenu.Enhanced.Menus.MiscSettings.SeeLeaveReasons";
 }

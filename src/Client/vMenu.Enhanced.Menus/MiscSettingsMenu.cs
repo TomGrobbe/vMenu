@@ -102,24 +102,6 @@ public sealed class MiscSettingsMenu : MenuDefinition
             },
         });
 
-        menu.Entries.Add(new CheckboxEntry
-        {
-            Text = MenuText.Key(Loc.MiscSettings.SeeNoClipPlayers),
-            Description = MenuText.Key(Loc.MiscSettings.SeeNoClipPlayersDescription),
-            Gate = MiscSettingsPermissions.SeeNoClipPlayers,
-            ReadState = () => UserDefaults.MiscSeeNoClipPlayers.Value,
-            OnChanged = changed => UserDefaults.MiscSeeNoClipPlayers.Value = changed.Checked,
-        });
-
-        menu.Entries.Add(new ConfirmButtonEntry
-        {
-            Text = MenuText.Key(Loc.MiscSettings.ClearArea),
-            Description = MenuText.Key(Loc.MiscSettings.ClearAreaDescription),
-            ConfirmationDescription = MenuText.Key(Loc.MiscSettings.ClearAreaConfirm),
-            Gate = MiscSettingsPermissions.ClearArea,
-            OnConfirmedAsync = _ => ClearArea.RequestAsync(),
-        });
-
         menu.Entries.Add(new ButtonEntry
         {
             Text = MenuText.Key(Loc.MiscSettings.AlertStaff),

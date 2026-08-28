@@ -18,6 +18,8 @@ public static partial class Loc
 
         public const string DeleteNotDriver = "vehicleoptions.delete.notdriver";
 
+        public const string DeleteNotDriving = "vehicleoptions.delete.notdriving";
+
         public const string DeleteNoVehicle = "vehicleoptions.delete.novehicle";
 
         public const string DeleteDenied = "vehicleoptions.delete.denied";

@@ -10,6 +10,7 @@ using vMenu.Enhanced.Permissions;
 using vMenu.Enhanced.Storage;
 using vMenu.Enhanced.Ticks;
 
+using AdminPermissions = vMenu.Enhanced.Data.Permissions.Menus.Admin;
 using MiscSettingsPermissions = vMenu.Enhanced.Data.Permissions.Menus.MiscSettings;
 
 namespace vMenu.Enhanced.Menus.Misc;
@@ -127,7 +128,7 @@ public static class PlayerPresence
     // This decides nothing about whether either feature runs. Both loops start and stop on their own
     // preferences alone, and this only changes who they draw once they are running.
     internal static bool SeesHiddenPlayers =>
-        UserDefaults.MiscSeeNoClipPlayers.Value && ClientPermissions.IsAllowed(MiscSettingsPermissions.SeeNoClipPlayers);
+        UserDefaults.AdminSeeNoClipPlayers.Value && ClientPermissions.IsAllowed(AdminPermissions.SeeNoClipPlayers);
 
     // Opt in, so a server where nobody has blips switched on sends nothing at all. Only the blips want
     // it: name tags are drawn on peds, and a ped you have not got is a ped you cannot label.

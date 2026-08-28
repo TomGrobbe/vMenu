@@ -1,7 +1,11 @@
 "use strict";
 
 (() => {
+    /* What a staff alert says over the top. An announcement carries its own heading instead. */
     const TITLE = "STAFF NEEDED";
+
+    /* The variants a banner may ask for. Anything else is drawn as a plain staff alert. */
+    const VARIANTS = ["announcement"];
     const DEFAULT_DURATION = 12000;
 
     /* Long enough for `.leaving` to finish; the banner is only removed once it has faded out. */
@@ -11,6 +15,8 @@
     const PAUSE_GRACE_MS = 2000;
 
     const WARNING_ICON = '<path d="M12 3.4l9.2 16.2H2.8z"/><path d="M12 9.4v4.4"/><path d="M12 16.9h.01"/>';
+
+    const ANNOUNCEMENT_ICON = '<path d="M3.5 9.5v5h3l6 4V5.5l-6 4z"/><path d="M17.5 8.8a4.5 4.5 0 0 1 0 6.4"/><path d="M20 6.2a8 8 0 0 1 0 11.6"/>';
 
     /* GTA's own single-letter text colours, matched to this panel rather than to the game's HUD. */
     const COLOURS = {
@@ -97,10 +103,11 @@
 
     // Built through a wrapper because innerHTML on a bare <svg> is not reliable. The only markup this
     // file ever parses, and it is a constant.
-    function icon() {
+    function icon(variant) {
         const wrapper = document.createElement("div");
+        const path = variant === "announcement" ? ANNOUNCEMENT_ICON : WARNING_ICON;
 
-        wrapper.innerHTML = `<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${WARNING_ICON}</svg>`;
+        wrapper.innerHTML = `<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${path}</svg>`;
 
         return wrapper.firstElementChild;
     }
@@ -183,13 +190,16 @@
             ? data.duration
             : DEFAULT_DURATION;
 
+        const variant = VARIANTS.includes(data.variant) ? data.variant : "";
+        const title = typeof data.title === "string" && data.title.length > 0 ? data.title : TITLE;
+
         const element = document.createElement("div");
-        element.className = "staff-alert";
+        element.className = variant ? `staff-alert ${variant}` : "staff-alert";
 
         const bar = document.createElement("div");
         bar.className = "bar";
-        bar.appendChild(icon());
-        bar.appendChild(document.createTextNode(TITLE));
+        bar.appendChild(icon(variant));
+        bar.appendChild(document.createTextNode(title));
 
         const body = document.createElement("div");
         body.className = "body";
@@ -204,7 +214,7 @@
 
         listEl.appendChild(element);
 
-        const entry = { id, element, progress, duration, remaining: duration, startedAt: Date.now(), timer: 0 };
+        const entry = { id, variant, element, progress, duration, remaining: duration, startedAt: Date.now(), timer: 0 };
 
         tracked.set(id, entry);
 
@@ -249,10 +259,16 @@
             return;
         }
 
-        /* Everything at once, for the staff member who cleared their own screen with /dismiss. */
+        /*
+           Every alert at once, for the staff member who cleared their own screen with /dismiss.
+           Announcements borrow this banner but are not alerts and are not theirs to clear, so they
+           are left where they are.
+        */
         if (data.type === "staff_alert_clear") {
-            for (const id of [...tracked.keys()]) {
-                dismiss(id);
+            for (const [id, entry] of [...tracked.entries()]) {
+                if (entry.variant !== "announcement") {
+                    dismiss(id);
+                }
             }
         }
     });

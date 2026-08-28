@@ -1,0 +1,57 @@
+{
+  // Announcements that send themselves, with no staff member having to press anything.
+  //
+  // Everything below is commented out on purpose, so a fresh server announces nothing at all. Take the
+  // // off the lines of an example to switch it on, or write your own.
+  //
+  // Each announcement takes:
+  //   name          a short label so you can find it again in the menu. Never shown to players.
+  //   text          what everybody actually sees. Written exactly as you type it, never translated.
+  //   everyMinutes  send it this often, counting from when the server started. Between 1 and 1440.
+  //   at            send it at this time of day instead, written as HH:MM on a 24 hour clock.
+  //   clock         which clock this announcement measures itself against. It applies to "everyMinutes"
+  //                 and to "at" alike. "real" is the real world, so 30 minutes is half an hour and 20:00
+  //                 is eight in the evening where your server runs. "game" is the clock inside GTA, which
+  //                 runs much faster, so 30 game minutes come round in about a real minute and 20:00 lands
+  //                 whenever it turns evening in the world. Leave it out and you get "real".
+  //
+  // Use either "everyMinutes" or "at" on one announcement, never both. An announcement with neither is
+  // skipped and says so in the server console.
+  //
+  // An "at" announcement that the server started past waits for the next time round rather than firing
+  // the moment it loads, so restarting at 20:05 will not replay your 20:00 message.
+  //
+  // Staff with the ManageAnnouncements permission can also add and remove announcements from inside the
+  // menu, which rewrites this file. Comments you leave in here are not kept when that happens.
+  //
+  // The whole thing can also be switched off without deleting anything, by setting
+  // vMenu.Enhanced.Admin.ScheduledAnnouncements to false in your configuration.cfg.
+  //
+  // Deleting this file is fine. It just means nothing announces itself.
+
+  "announcements": [
+    // {
+    //   "name": "Rules reminder",
+    //   "text": "Remember to read the rules. You can find them in our Discord.",
+    //   "everyMinutes": 45
+    // },
+    // {
+    //   "name": "Restart warning",
+    //   "text": "~y~The server restarts in 10 minutes.~s~ Park up somewhere safe.",
+    //   "at": "05:50",
+    //   "clock": "real"
+    // },
+    // {
+    //   "name": "Sunrise",
+    //   "text": "The sun is coming up over Los Santos.",
+    //   "at": "06:00",
+    //   "clock": "game"
+    // },
+    // {
+    //   "name": "Drive properly",
+    //   "text": "Drive on the right, please.",
+    //   "everyMinutes": 30,
+    //   "clock": "game"
+    // }
+  ]
+}

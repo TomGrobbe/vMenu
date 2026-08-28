@@ -75,6 +75,14 @@ public static class ServerClock
                   "time again from here, so run this whenever it needs lining back up.");
     }
 
+    public static double InGameSecondOfDay()
+    {
+        var speed = Speed();
+        var clock = ServerState.FrozenAtUnix ?? Now();
+
+        return GameClock.Mod(GameClock.SecondOfDay(clock, speed) + Offset(), GameClock.SecondsPerGameDay);
+    }
+
     public static void Dump()
     {
         if (!IsNeeded())

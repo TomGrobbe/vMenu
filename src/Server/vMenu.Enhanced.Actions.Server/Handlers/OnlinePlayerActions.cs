@@ -135,6 +135,12 @@ public static class OnlinePlayerActions
             GetStatus,
             Limit);
 
+        ActionRegistry.Register(
+            ActionIds.OnlinePlayers.RefreshPermissions,
+            OnlinePlayersPermissions.RefreshPermissions,
+            RefreshPermissions,
+            Limit);
+
         PublishRevision();
 
         ServerTickRegistry.Register(
@@ -647,6 +653,21 @@ public static class OnlinePlayerActions
         }
 
         pending.Answered.TrySetResult((playerGod, vehicleGod));
+    }
+
+    private static ActionResponse RefreshPermissions(Player source, string[] args)
+    {
+        if (!TryResolveTarget(args, out var target))
+        {
+            return ActionResponse.NotFound();
+        }
+
+        if (!PermissionsSync.RefreshOne(target))
+        {
+            return ActionResponse.Failed();
+        }
+
+        return ActionResponse.Ok();
     }
 
     // Somebody still connecting already holds a server id, so they answer DoesPlayerExist while having

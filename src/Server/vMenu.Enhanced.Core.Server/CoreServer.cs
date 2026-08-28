@@ -71,7 +71,8 @@ public class CoreServer : IScript
         WorldActions.Register();
         OnlinePlayerActions.Register();
         StaffAlertActions.Register();
-        MiscActions.Register();
+        AdminActions.Register();
+        AnnouncementSchedule.Register();
         RemoteVehicleControl.RegisterEventHandlers();
         ActionRegistry.RegisterEventHandlers();
 

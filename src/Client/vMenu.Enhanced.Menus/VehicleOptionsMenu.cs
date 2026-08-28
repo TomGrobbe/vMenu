@@ -182,7 +182,7 @@ public sealed class VehicleOptionsMenu : MenuDefinition
             Description = MenuText.Key(Loc.VehicleOptions.DeleteVehicleDescription),
             ConfirmationDescription = MenuText.Key(Loc.VehicleOptions.DeleteVehicleConfirm),
             Gate = VehicleOptionsPermissions.DeleteVehicle,
-            OnConfirmedAsync = _ => VehicleDeletion.DeleteTargetAsync(),
+            OnConfirmedAsync = _ => VehicleDeletion.DeleteDrivenAsync(),
         });
 
         SectionRows.AutoRefresh(menu, MenuRegistry.RefreshAll);

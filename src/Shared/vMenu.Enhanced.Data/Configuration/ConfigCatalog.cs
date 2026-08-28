@@ -1,5 +1,6 @@
 using vMenu.Enhanced.Data.Configuration.Settings;
 
+using AdminSettings = vMenu.Enhanced.Data.Configuration.Settings.Admin;
 using JoinLeaveSettings = vMenu.Enhanced.Data.Configuration.Settings.JoinLeave;
 using OnlinePlayerSettings = vMenu.Enhanced.Data.Configuration.Settings.OnlinePlayers;
 using StaffAlertSettings = vMenu.Enhanced.Data.Configuration.Settings.StaffAlerts;
@@ -38,7 +39,13 @@ public static class ConfigCatalog
             MenuAppearance.HeaderGlare,
         ]),
         new("Gameplay", [Gameplay.PvpMode]),
-        new("Misc Settings", [MiscSettings.ClearAreaRadius]),
+        new("Admin",
+        [
+            AdminSettings.ClearAreaRadius,
+            AdminSettings.ClosestPlayerRange,
+            AdminSettings.ScheduledAnnouncements,
+            AdminSettings.AnnouncementSeconds,
+        ]),
         new("Staff Alerts",
         [
             StaffAlertSettings.Enabled,

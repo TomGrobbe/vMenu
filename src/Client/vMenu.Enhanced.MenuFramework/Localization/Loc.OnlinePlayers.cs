@@ -144,6 +144,12 @@ public static partial class Loc
 
         public const string IdentifierPrinted = "onlineplayers.identifier.printed";
 
+        public const string RefreshPermissions = "onlineplayers.refreshpermissions";
+
+        public const string RefreshPermissionsDescription = "onlineplayers.refreshpermissions.desc";
+
+        public const string RefreshPermissionsDone = "onlineplayers.refreshpermissions.done";
+
         public const string TxAdmin = "onlineplayers.txadmin";
 
         public const string TxAdminDescription = "onlineplayers.txadmin.desc";

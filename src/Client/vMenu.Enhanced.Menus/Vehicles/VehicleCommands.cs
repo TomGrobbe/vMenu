@@ -9,6 +9,7 @@ using vMenu.Enhanced.MenuFramework;
 using vMenu.Enhanced.MenuFramework.Localization;
 using vMenu.Enhanced.Permissions;
 
+using AdminPermissions = vMenu.Enhanced.Data.Permissions.Menus.Admin;
 using VehicleOptionsPermissions = vMenu.Enhanced.Data.Permissions.Menus.VehicleOptions;
 using VehicleOptionsSettings = vMenu.Enhanced.Data.Configuration.Settings.VehicleOptions;
 
@@ -24,6 +25,8 @@ public static class VehicleCommands
             VehicleOptionsSettings.DeleteVehicleCommand,
             VehicleOptionsPermissions.DeleteVehicle,
             Loc.VehicleOptions.DeleteDenied,
+            VehicleDeletion.DeleteDrivenAsync,
+            AdminPermissions.DeleteVehicle,
             VehicleDeletion.DeleteTargetAsync),
 
         new("fixveh",
@@ -68,7 +71,6 @@ public static class VehicleCommands
         }
     }
 
-    // A command that exists only while its setting is on and its permission is granted.
     private sealed class ToggledCommand
     {
         private readonly string _name;
@@ -76,6 +78,8 @@ public static class VehicleCommands
         private readonly string _permission;
         private readonly string _deniedKey;
         private readonly Func<Task> _run;
+        private readonly string? _elevatedPermission;
+        private readonly Func<Task>? _runElevated;
 
         // Cached, because the func ref registry keys on the delegate, so a new lambda per cycle leaks.
         private readonly Action<int, MessagePackBuffer, string> _handler;
@@ -83,19 +87,33 @@ public static class VehicleCommands
         // Null while the command is not registered.
         private int? _id;
 
-        public ToggledCommand(string name, BoolSetting setting, string permission, string deniedKey, Func<Task> run)
+        public ToggledCommand(
+            string name,
+            BoolSetting setting,
+            string permission,
+            string deniedKey,
+            Func<Task> run,
+            string? elevatedPermission = null,
+            Func<Task>? runElevated = null)
         {
             _name = name;
             _setting = setting;
             _permission = permission;
             _deniedKey = deniedKey;
             _run = run;
+            _elevatedPermission = elevatedPermission;
+            _runElevated = runElevated;
             _handler = (_, _, _) => Run();
         }
 
+        private bool IsElevated =>
+            _elevatedPermission is { } permission && ClientPermissions.IsAllowed(permission);
+
+        private bool IsAllowed => ClientPermissions.IsAllowed(_permission) || IsElevated;
+
         public void Apply()
         {
-            var shouldRegister = ClientConfig.Value(_setting) && ClientPermissions.IsAllowed(_permission);
+            var shouldRegister = ClientConfig.Value(_setting) && IsAllowed;
 
             if (shouldRegister && _id is null)
             {
@@ -118,14 +136,14 @@ public static class VehicleCommands
             try
             {
                 // Registration follows the permission, but a revoke can land between the two.
-                if (!ClientPermissions.IsAllowed(_permission))
+                if (!IsAllowed)
                 {
                     Notifications.Error(MenuText.Key(_deniedKey));
 
                     return;
                 }
 
-                await _run();
+                await (IsElevated && _runElevated is { } elevated ? elevated() : _run());
             }
             catch (Exception exception)
             {

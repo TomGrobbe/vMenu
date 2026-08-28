@@ -41,5 +41,8 @@ public static class OnlinePlayers
     public const string Identifiers = "vMenu.Enhanced.Menus.OnlinePlayers.Identifiers";
 
     [StaffOnly]
+    public const string RefreshPermissions = "vMenu.Enhanced.Menus.OnlinePlayers.RefreshPermissions";
+
+    [StaffOnly]
     public const string TxAdmin = "vMenu.Enhanced.Menus.OnlinePlayers.TxAdmin";
 }

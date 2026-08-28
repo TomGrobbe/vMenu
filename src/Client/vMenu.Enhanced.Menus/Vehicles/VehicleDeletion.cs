@@ -17,9 +17,13 @@ public static class VehicleDeletion
 {
     private static bool _running;
 
-    // Deletes whatever the player is targeting and tells them how it went. Shared by the menu option and
-    // the /dv command.
-    public static async Task DeleteTargetAsync()
+    public static Task DeleteDrivenAsync() =>
+        RunAsync(ActionIds.VehicleOptions.DeleteVehicle, reachAhead: false);
+
+    public static Task DeleteTargetAsync() =>
+        RunAsync(ActionIds.Admin.DeleteVehicle, reachAhead: true);
+
+    private static async Task RunAsync(string action, bool reachAhead)
     {
         // The menu button drops re-entrant selections itself; the command has nothing that would.
         if (_running)
@@ -38,12 +42,11 @@ public static class VehicleDeletion
                 return;
             }
 
-            var target = await VehicleTargeting.ResolveAsync(
-                ped,
-                ClientConfig.Value(VehicleOptionsSettings.DeleteVehicleDistance));
+            var target = reachAhead
+                ? await VehicleTargeting.ResolveAsync(ped, ClientConfig.Value(VehicleOptionsSettings.DeleteVehicleDistance))
+                : VehicleTargeting.Current(ped);
 
-            // Passengers do not get to delete the car out from under the driver.
-            if (target.Kind is VehicleTargetKind.Passenger)
+            if (!reachAhead && target.Kind is VehicleTargetKind.Passenger)
             {
                 Notifications.Error(MenuText.Key(Loc.VehicleOptions.DeleteNotDriver));
 
@@ -52,12 +55,13 @@ public static class VehicleDeletion
 
             if (!target.Found)
             {
-                Notifications.Error(MenuText.Key(Loc.VehicleOptions.DeleteNoVehicle));
+                Notifications.Error(MenuText.Key(
+                    reachAhead ? Loc.VehicleOptions.DeleteNoVehicle : Loc.VehicleOptions.DeleteNotDriving));
 
                 return;
             }
 
-            Notify(await SendDeleteAsync(target.Handle));
+            Notify(await SendDeleteAsync(action, target.Handle));
         }
         finally
         {
@@ -67,7 +71,7 @@ public static class VehicleDeletion
 
     // The server does the deleting, so this client never needs control of the entity and cannot decide
     // on its own that somebody else's vehicle may go.
-    private static async Task<ActionStatus> SendDeleteAsync(int entity)
+    private static async Task<ActionStatus> SendDeleteAsync(string action, int entity)
     {
         // The server cannot see this one, and by definition nobody else can either.
         if (!Native.NetworkGetEntityIsNetworked(entity))
@@ -78,7 +82,7 @@ public static class VehicleDeletion
         var networkId = Native.NetworkGetNetworkIdFromEntity(entity);
 
         var result = await ServerActions.InvokeAsync(
-            ActionIds.VehicleOptions.DeleteVehicle,
+            action,
             networkId.ToString(CultureInfo.InvariantCulture));
 
         return result.Status;

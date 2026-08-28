@@ -13,6 +13,8 @@ public static class PersonalVehicleRegistry
 
     public static void Drop(int serverId) => MarkedByPlayer.Remove(serverId);
 
+    public static void ForgetAll() => MarkedByPlayer.Clear();
+
     public static void CollectOwners(List<int> owners)
     {
         foreach (var pair in MarkedByPlayer)

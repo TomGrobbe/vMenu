@@ -92,6 +92,8 @@ public static class ActionIds
         public const string DeleteVehicle = "OnlinePlayers.DeleteVehicle";
 
         public const string GetStatus = "OnlinePlayers.GetStatus";
+
+        public const string RefreshPermissions = "OnlinePlayers.RefreshPermissions";
     }
 
     public static class DisplaySettings
@@ -101,9 +103,29 @@ public static class ActionIds
         public const string RemoveBlip = "DisplaySettings.RemoveBlip";
     }
 
-    public static class MiscSettings
+    public static class Admin
     {
-        public const string ClearArea = "MiscSettings.ClearArea";
+        public const string ClearArea = "Admin.ClearArea";
+
+        public const string SetFrozen = "Admin.SetFrozen";
+
+        public const string SetHeld = "Admin.SetHeld";
+
+        public const string DeleteVehicle = "Admin.DeleteVehicle";
+
+        public const string DeleteEmptyVehicles = "Admin.DeleteEmptyVehicles";
+
+        public const string DeleteAllVehicles = "Admin.DeleteAllVehicles";
+
+        public const string Announce = "Admin.Announce";
+
+        public const string GetAnnouncements = "Admin.GetAnnouncements";
+
+        public const string AddAnnouncement = "Admin.AddAnnouncement";
+
+        public const string RemoveAnnouncement = "Admin.RemoveAnnouncement";
+
+        public const string RefreshPermissions = "Admin.RefreshPermissions";
     }
 
     public static class StaffAlerts
