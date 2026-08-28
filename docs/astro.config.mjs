@@ -61,6 +61,7 @@ export default defineConfig({
         { label: 'Home', link: '/' },
         { label: 'Getting Started', link: '/getting-started/' },
         { label: 'Key Bindings', link: '/key-bindings/' },
+        { label: 'Menu Appearance', link: '/menu-appearance/' },
         { label: 'Moving Your Data', link: '/moving-your-data/' },
         { label: 'Edit Your Data', link: '/data-editor/' },
         { label: 'Custom Character Creator', link: '/character-creator/' },
