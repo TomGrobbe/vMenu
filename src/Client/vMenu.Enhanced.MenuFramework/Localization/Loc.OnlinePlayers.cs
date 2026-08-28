@@ -26,6 +26,8 @@ public static partial class Loc
 
         public const string SearchButton = "onlineplayers.search.button";
 
+        public const string SearchBinding = "onlineplayers.search.binding";
+
         public const string PreviousPageButton = "onlineplayers.page.previous";
 
         public const string NextPageButton = "onlineplayers.page.next";

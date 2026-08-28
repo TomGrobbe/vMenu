@@ -459,6 +459,8 @@ public static partial class Loc
 
         public const string ToggleDoorsButton = "vehicleoptions.doors.toggleall.button";
 
+        public const string ToggleDoorsBinding = "vehicleoptions.toggledoors.binding";
+
         public const string RemoveDoor = "vehicleoptions.doors.remove";
 
         public const string RemoveDoorDescription = "vehicleoptions.doors.remove.desc";

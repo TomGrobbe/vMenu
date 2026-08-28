@@ -114,6 +114,8 @@ public static partial class Loc
 
         public const string BackBlocked = "charactercreator.build.backblocked";
 
+        public const string BackBlockedBinding = "charactercreator.backblocked.binding";
+
         public const string RandomizeDone = "charactercreator.build.randomize.done";
 
         #endregion

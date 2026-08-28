@@ -158,22 +158,39 @@ internal sealed class MenuHost : IDisposable
         Menu.OnIndexChange -= HandleIndexChange;
     }
 
+    private void RegisterKeyBindings(ILocalizer localizer)
+    {
+        for (var index = Builder.Registered.Count; index < Builder.InstructionalButtons.Count; index++)
+        {
+            var hint = Builder.InstructionalButtons[index];
+
+            Builder.Registered.Add(Menu.AddKeyBinding(
+                hint.Name,
+                hint.Description.Resolve(localizer),
+                hint.DefaultKey,
+                hint.DefaultButton,
+                hint.PressType,
+                hint.Handler,
+                hint.Text.Resolve(localizer)));
+        }
+    }
+
     // Used for both a permission resync and a language change, which cannot be allowed to disagree about
     // what an item says. Synchronous, or menus would show stale state after the notifier already returned.
     internal void Refresh(ILocalizer localizer)
     {
         RefreshHeader(localizer);
 
-        foreach (var hint in Builder.InstructionalButtons)
+        RegisterKeyBindings(localizer);
+
+        for (var index = 0; index < Builder.Registered.Count; index++)
         {
-            if (hint.Gate.Evaluate())
-            {
-                Menu.InstructionalButtons[hint.Control] = hint.Text.Resolve(localizer);
-            }
-            else
-            {
-                Menu.InstructionalButtons.Remove(hint.Control);
-            }
+            var hint = Builder.InstructionalButtons[index];
+            var registered = Builder.Registered[index];
+            var allowed = hint.Gate.Evaluate();
+
+            registered.ButtonText = allowed ? hint.Text.Resolve(localizer) : null;
+            registered.Handler = allowed ? hint.Handler : null;
         }
 
         var fallback = Builder.DefaultGateBehaviour ?? MenuFrameworkOptions.DefaultGateBehaviour;

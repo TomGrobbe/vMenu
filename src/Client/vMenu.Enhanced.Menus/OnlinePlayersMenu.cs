@@ -83,13 +83,16 @@ public sealed class OnlinePlayersMenu : MenuDefinition
         menu.Menu.WrapPages = true;
         menu.Menu.OnPageChange += OnPageChanged;
 
-        // Space opens the search. MenuAPI runs these from its draw loop, so it only fires while this menu is
-        // the one on screen, and disabling the control stops the player jumping at the same time.
-        menu.Menu.ButtonPressHandlers.Add(new Menu.ButtonPressHandler(
-            Control.Jump,
-            Menu.ControlPressCheckType.JUST_PRESSED,
-            (_, _) => _ = SearchAsync(),
-            true));
+        menu.InstructionalButtons.Add(new ButtonHint
+        {
+            Name = "search",
+            Description = MenuText.Key(Loc.OnlinePlayers.SearchBinding),
+            DefaultKey = "SPACE",
+            DefaultButton = "R1_INDEX",
+            ShadowedControl = Control.Jump,
+            Text = MenuText.Key(Loc.OnlinePlayers.SearchButton),
+            Handler = (_, _) => _ = SearchAsync(),
+        });
 
         _actions = menu.AddDetachedMenu(
             MenuText.From(() => _selected?.Name ?? string.Empty),
@@ -121,7 +124,6 @@ public sealed class OnlinePlayersMenu : MenuDefinition
         // does. MenuAPI's button hints hold a plain string, not a translation key.
         var localizer = Localizer.Current;
 
-        menu.Menu.InstructionalButtons[Control.Jump] = localizer.Get(Loc.OnlinePlayers.SearchButton);
         menu.Menu.PreviousPageButtonText = localizer.Get(Loc.OnlinePlayers.PreviousPageButton);
         menu.Menu.NextPageButtonText = localizer.Get(Loc.OnlinePlayers.NextPageButton);
 

@@ -37,7 +37,6 @@ internal static class CharacterFaceRows
 
     internal static void Attach(MenuBuilder menu)
     {
-        CharacterCamera.AddButtons(menu);
 
         foreach (var (feature, name) in Sliders)
         {

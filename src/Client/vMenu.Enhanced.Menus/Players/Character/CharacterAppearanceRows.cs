@@ -33,7 +33,6 @@ internal static class CharacterAppearanceRows
 
     internal static void Attach(MenuBuilder menu)
     {
-        CharacterCamera.AddButtons(menu);
 
         menu.Entries.Add(HairStyleRow());
         menu.Entries.Add(HairColourRow(Loc.CharacterCreator.HairColour, highlight: false));

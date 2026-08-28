@@ -31,13 +31,16 @@ internal sealed class PedCategoryFilter(PedModelCategory category)
     {
         _menu = menu;
 
-        menu.InstructionalButtons.Add((Control.Jump, MenuText.Key(Loc.PedModels.FilterButton)));
-
-        menu.Menu.ButtonPressHandlers.Add(new Menu.ButtonPressHandler(
-            Control.Jump,
-            Menu.ControlPressCheckType.JUST_PRESSED,
-            (_, _) => _ = PromptAsync(),
-            true));
+        menu.InstructionalButtons.Add(new ButtonHint
+        {
+            Name = "pedfilter",
+            Description = MenuText.Key(Loc.PedModels.FilterBinding),
+            DefaultKey = "SPACE",
+            DefaultButton = "R1_INDEX",
+            ShadowedControl = Control.Jump,
+            Text = MenuText.Key(Loc.PedModels.FilterButton),
+            Handler = (_, _) => _ = PromptAsync(),
+        });
     }
 
     internal string Subtitle()

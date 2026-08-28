@@ -161,13 +161,6 @@ public static class CharacterCamera
 
     public static void Reevaluate() => _tick?.Reevaluate();
 
-    public static void AddButtons(MenuBuilder menu)
-    {
-        menu.InstructionalButtons.Add((Control.LookLeftRight, MenuText.Key(Loc.CharacterCreator.MoveCamera)));
-        menu.InstructionalButtons.Add((Control.LookBehind, MenuText.Key(Loc.CharacterCreator.ResetCamera)));
-        menu.InstructionalButtons.Add((Control.Jump, MenuText.Key(Loc.CharacterCreator.TurnCharacter)));
-    }
-
     public static CameraFocus FocusFor(Menu? menu, CameraFocus page)
     {
         if (menu?.GetCurrentMenuItem() is not { } item)
@@ -487,12 +480,26 @@ public static class CharacterCamera
             ? CharacterCameraKeyBinding.KeyboardControl
             : CharacterCameraKeyBinding.ControllerControl;
 
-        menu.InstructionalButtons[Control.MoveUpDown] = localizer.Get(axis);
-
         menu.CustomInstructionalButtons.Clear();
+
+        menu.CustomInstructionalButtons.Add(new Menu.InstructionalButton(
+            Icon((int)Control.LookLeftRight),
+            localizer.Get(Loc.CharacterCreator.MoveCamera)));
+
+        menu.CustomInstructionalButtons.Add(new Menu.InstructionalButton(
+            Icon((int)Control.MoveUpDown),
+            localizer.Get(axis)));
 
         menu.CustomInstructionalButtons.Add(
             new Menu.InstructionalButton($"{Icon((int)low)}{IconSeparator}{Icon((int)high)}", localizer.Get(pair)));
+
+        menu.CustomInstructionalButtons.Add(new Menu.InstructionalButton(
+            Icon((int)Control.LookBehind),
+            localizer.Get(Loc.CharacterCreator.ResetCamera)));
+
+        menu.CustomInstructionalButtons.Add(new Menu.InstructionalButton(
+            Icon((int)Control.Jump),
+            localizer.Get(Loc.CharacterCreator.TurnCharacter)));
 
         menu.CustomInstructionalButtons.Add(new Menu.InstructionalButton(
             Icon(auto),

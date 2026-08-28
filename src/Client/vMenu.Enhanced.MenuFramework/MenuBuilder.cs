@@ -15,9 +15,9 @@ public sealed class MenuBuilder
 
     public Menu Menu => _host.Menu;
 
-    // Extra hints on top of the select and back MenuAPI draws itself. Resolved on every refresh, so they
-    // follow a language change like everything else.
     public List<ButtonHint> InstructionalButtons { get; } = [];
+
+    internal List<Menu.KeyBindingHandler> Registered { get; } = [];
 
     // Null inherits MenuFrameworkOptions.DefaultGateBehaviour.
     public GateBehaviour? DefaultGateBehaviour { get; set; }

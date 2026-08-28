@@ -16,13 +16,16 @@ internal static class ModsSection
     {
         menu.AddRange(Rows());
 
-        menu.Menu.ButtonPressHandlers.Add(new Menu.ButtonPressHandler(
-            Control.Jump,
-            Menu.ControlPressCheckType.JUST_PRESSED,
-            (_, _) => DoorsSection.ToggleAll(),
-            true));
-
-        menu.InstructionalButtons.Add((Control.Jump, MenuText.Key(Loc.VehicleOptions.ToggleDoorsButton)));
+        menu.InstructionalButtons.Add(new ButtonHint
+        {
+            Name = "toggledoors",
+            Description = MenuText.Key(Loc.VehicleOptions.ToggleDoorsBinding),
+            DefaultKey = "SPACE",
+            DefaultButton = "R1_INDEX",
+            ShadowedControl = Control.Jump,
+            Text = MenuText.Key(Loc.VehicleOptions.ToggleDoorsButton),
+            Handler = (_, _) => DoorsSection.ToggleAll(),
+        });
 
         SectionRows.AutoFill(menu, Rows);
     }

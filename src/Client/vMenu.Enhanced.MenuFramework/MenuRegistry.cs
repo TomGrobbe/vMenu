@@ -1,4 +1,9 @@
+using CitizenFX.FiveM.Client;
+
 using MenuAPI;
+
+using vMenu.Enhanced.Data.Ticks;
+using vMenu.Enhanced.Ticks;
 
 using vMenu.Enhanced.Configuration;
 using vMenu.Enhanced.Data.Configuration;
@@ -81,6 +86,12 @@ public static class MenuRegistry
         ClientPermissions.PermissionsChanged += RefreshAll;
         ClientConfig.AddEventListenerExcept(Ignored, RefreshAll);
         Localizer.Changed += RefreshAll;
+
+        TickRegistry.Register(
+            "Menu.ShadowedControls",
+            DisableShadowedControls,
+            TickRate.PerFrame,
+            MenuController.IsAnyMenuOpen);
 
         // Items are created enabled, so without this everything looks unlocked until the first permission set
         // lands.
@@ -375,6 +386,23 @@ public static class MenuRegistry
         MenuController.CloseAllMenus();
 
         target?.Menu.OpenMenu();
+    }
+
+    private static void DisableShadowedControls()
+    {
+        if (MenuController.GetCurrentMenu() is not { } open
+            || !HostsByMenu.TryGetValue(open, out var host))
+        {
+            return;
+        }
+
+        foreach (var hint in host.Builder.InstructionalButtons)
+        {
+            if (hint.ShadowedControl is { } control)
+            {
+                Native.DisableControlAction(0, (int)control, true);
+            }
+        }
     }
 
     private static MenuHost Track(MenuHost host)

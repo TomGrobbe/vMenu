@@ -39,16 +39,16 @@ public static class PedCustomizationRows
         IReadOnlyList<int>? components = null,
         bool fitTorso = false)
     {
-        menu.InstructionalButtons.Add((Control.Duck, MenuText.Key(Loc.PlayerAppearance.ExactIdButton)));
-
-        // Through MenuAPI rather than asking the control ourselves. It disables every control while a menu
-        // is on screen, so IsControlPressed answers false and a check of our own could never fire. The last
-        // argument disables it here too, so the player does not crouch.
-        menu.Menu.ButtonPressHandlers.Add(new Menu.ButtonPressHandler(
-            Control.Duck,
-            Menu.ControlPressCheckType.JUST_PRESSED,
-            (_, _) => _ = ExactIdForHighlightedAsync(menu, scope),
-            true));
+        menu.InstructionalButtons.Add(new ButtonHint
+        {
+            Name = "exactid",
+            Description = MenuText.Key(Loc.PlayerAppearance.ExactIdBinding),
+            DefaultKey = "LCONTROL",
+            DefaultButton = "L1_INDEX",
+            ShadowedControl = Control.Duck,
+            Text = MenuText.Key(Loc.PlayerAppearance.ExactIdButton),
+            Handler = (_, _) => _ = ExactIdForHighlightedAsync(menu, scope),
+        });
 
         menu.AddRange(Rows(scope(), show, components, fitTorso));
 

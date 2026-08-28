@@ -104,6 +104,8 @@ public static partial class Loc
 
         public const string ExactIdButton = "playerappearance.exactid.button";
 
+        public const string ExactIdBinding = "playerappearance.exactid.binding";
+
         public const string ExactIdPrompt = "playerappearance.exactid.prompt";
 
         public const string ExactIdInvalid = "playerappearance.exactid.invalid";

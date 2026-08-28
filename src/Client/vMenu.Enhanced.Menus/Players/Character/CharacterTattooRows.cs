@@ -28,15 +28,17 @@ internal static class CharacterTattooRows
 
     internal static void Attach(MenuBuilder menu)
     {
-        CharacterCamera.AddButtons(menu);
 
-        menu.InstructionalButtons.Add((Control.Duck, MenuText.Key(Loc.CharacterCreator.TattooExactIdButton)));
-
-        menu.Menu.ButtonPressHandlers.Add(new Menu.ButtonPressHandler(
-            Control.Duck,
-            Menu.ControlPressCheckType.JUST_PRESSED,
-            (_, _) => _ = JumpToNumberAsync(menu),
-            true));
+        menu.InstructionalButtons.Add(new ButtonHint
+        {
+            Name = "exactid",
+            Description = MenuText.Key(Loc.PlayerAppearance.ExactIdBinding),
+            DefaultKey = "LCONTROL",
+            DefaultButton = "L1_INDEX",
+            ShadowedControl = Control.Duck,
+            Text = MenuText.Key(Loc.CharacterCreator.TattooExactIdButton),
+            Handler = (_, _) => _ = JumpToNumberAsync(menu),
+        });
 
         foreach (var (zone, name) in Zones)
         {

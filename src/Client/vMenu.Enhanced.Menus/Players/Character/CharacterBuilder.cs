@@ -32,8 +32,6 @@ internal sealed class CharacterBuilder
             MenuText.Key(Loc.CharacterCreator.CollectionsSubtitle),
             child =>
             {
-                CharacterCamera.AddButtons(child);
-
                 PedCustomizationRows.Attach(
                     child,
                     () => PedVariationScope.ForCollection(CollectionName()),
@@ -111,8 +109,6 @@ internal sealed class CharacterBuilder
 
     private void Build(MenuBuilder menu)
     {
-        CharacterCamera.AddButtons(menu);
-
         menu.Entries.Add(new CheckboxEntry
         {
             Text = MenuText.Key(Loc.CharacterCreator.DisableAutoCamera),
@@ -191,11 +187,15 @@ internal sealed class CharacterBuilder
             OnConfirmedAsync = _ => LeaveAsync(),
         });
 
-        menu.Menu.ButtonPressHandlers.Add(new Menu.ButtonPressHandler(
-            Control.PhoneCancel,
-            Menu.ControlPressCheckType.JUST_PRESSED,
-            (_, _) => Notifications.Warning(MenuText.Key(Loc.CharacterCreator.BackBlocked)),
-            true));
+        menu.InstructionalButtons.Add(new ButtonHint
+        {
+            Name = "creatorback",
+            Description = MenuText.Key(Loc.CharacterCreator.BackBlockedBinding),
+            DefaultKey = "BACK",
+            DefaultButton = "B_INDEX",
+            Text = MenuText.Empty,
+            Handler = (_, _) => Notifications.Warning(MenuText.Key(Loc.CharacterCreator.BackBlocked)),
+        });
 
         menu.OnOpened = _ =>
         {
@@ -221,8 +221,6 @@ internal sealed class CharacterBuilder
 
     private static void Wardrobe(MenuBuilder menu, PedCustomizationRows.PedRows rows)
     {
-        CharacterCamera.AddButtons(menu);
-
         PedCustomizationRows.Attach(
             menu,
             () => PedVariationScope.Global,
@@ -377,8 +375,6 @@ internal sealed class CharacterBuilder
 
     private void BuildCollectionList(MenuBuilder menu)
     {
-        CharacterCamera.AddButtons(menu);
-
         menu.AddRange(CollectionRows());
 
         menu.OnOpened = _ =>

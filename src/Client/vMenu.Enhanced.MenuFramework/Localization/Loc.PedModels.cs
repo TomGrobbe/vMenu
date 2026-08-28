@@ -20,6 +20,8 @@ public static partial class Loc
 
         public const string FilterButton = "pedmodels.filter.button";
 
+        public const string FilterBinding = "pedmodels.filter.binding";
+
         public const string FilterPrompt = "pedmodels.filter.prompt";
 
         public const string FilterApplied = "pedmodels.filter.applied";

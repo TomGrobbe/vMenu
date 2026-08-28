@@ -13,7 +13,6 @@ internal static class CharacterInheritanceRows
 
     internal static void Attach(MenuBuilder menu)
     {
-        CharacterCamera.AddButtons(menu);
 
         menu.Entries.Add(FaceRow(
             Loc.CharacterCreator.ParentOne,
