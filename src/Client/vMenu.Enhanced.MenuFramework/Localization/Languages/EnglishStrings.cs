@@ -1330,7 +1330,7 @@ internal static class EnglishStrings
             [Loc.Admin.ScheduleEveryGame] = "Every {minutes} ~g~game~s~ minute(s)",
             [Loc.Admin.ScheduleAtReal] = "At {time}",
             [Loc.Admin.ScheduleAtGame] = "At {time} ~g~game time~s~",
-            [Loc.Admin.ScheduleTriggerHelp] = "Type @ and a number of minutes for a repeat, like @45. Or type a time of day on a 24 hour clock, like 20:00. Add game on the end of either to use the clock inside GTA instead of the real one, so @5 game repeats every 5 in game minutes and 20:00 game lands at eight in the evening in game.",
+            [Loc.Admin.ScheduleTriggerHelp] = "Type @ and a number of minutes for a repeat, like `@45`. Or type a time of day on a 24 hour clock, like `20:00`. Add `game` on the end of either to use the clock inside GTA instead of the real one, so `@5 game` repeats every 5 in game minutes and `20:00 game` lands at eight in the evening in game.",
             [Loc.Admin.ScheduleNameHelp] = "Only you and other staff ever see this. It is what the announcement is called in this list.",
             [Loc.Admin.ScheduleTextHelp] = "This is what every player on the server reads. Colour codes like ~y~ work here.",
             [Loc.Admin.ScheduleRowDescription] = "{trigger} · {text}",

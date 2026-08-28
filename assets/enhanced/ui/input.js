@@ -294,11 +294,36 @@
         render();
     }
 
+    // Nodes rather than innerHTML: a description comes from a translation file a server owner
+    // edits, so it is never trusted as markup.
+    function writeDescription(value) {
+        descriptionEl.replaceChildren();
+
+        const parts = value.split("`");
+
+        for (let index = 0; index < parts.length; index++) {
+            if (parts[index] === "") {
+                continue;
+            }
+
+            // A trailing backtick leaves an unclosed run, which reads better as plain text than as
+            // code running to the end of the sentence.
+            const isCode = index % 2 === 1 && index < parts.length - 1;
+            const node = isCode ? document.createElement("code") : document.createTextNode(parts[index]);
+
+            if (isCode) {
+                node.textContent = parts[index];
+            }
+
+            descriptionEl.append(node);
+        }
+    }
+
     function open(data) {
         suggestions = Array.isArray(data.suggestions) ? data.suggestions : [];
         suggestWhenEmpty = data.suggestWhenEmpty === true;
         titleEl.textContent = data.title || "";
-        descriptionEl.textContent = data.description || "";
+        writeDescription(data.description || "");
         footerEl.textContent = data.hint || "";
         noMatchesText = data.noMatches || "";
         inputEl.placeholder = data.placeholder || "";

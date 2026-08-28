@@ -771,7 +771,7 @@
     "admin.schedule.every.game": "Alle {minutes} ~g~Spiel~s~minute(n)",
     "admin.schedule.at.real": "Um {time}",
     "admin.schedule.at.game": "Um {time} ~g~Spielzeit~s~",
-    "admin.schedule.trigger.help": "Tipp @ und eine Anzahl Minuten für eine Wiederholung, zum Beispiel @45. Oder tipp eine Uhrzeit im 24 Stunden Format, zum Beispiel 20:00. Häng an beides game an, um die Uhr in GTA statt der echten zu nehmen, also wiederholt @5 game alle 5 Spielminuten und 20:00 game landet um acht Uhr abends im Spiel.",
+    "admin.schedule.trigger.help": "Tipp @ und eine Anzahl Minuten für eine Wiederholung, zum Beispiel `@45`. Oder tipp eine Uhrzeit im 24 Stunden Format, zum Beispiel `20:00`. Häng an beides `game` an, um die Uhr in GTA statt der echten zu nehmen, also wiederholt `@5 game` alle 5 Spielminuten und `20:00 game` landet um acht Uhr abends im Spiel.",
     "admin.schedule.name.help": "Das sehen nur du und andere Teammitglieder. So heißt die Ankündigung in dieser Liste.",
     "admin.schedule.text.help": "Das lesen alle Spieler auf dem Server. Farbcodes wie ~y~ funktionieren hier.",
     "admin.schedule.row.desc": "{trigger} · {text}",

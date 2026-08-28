@@ -771,7 +771,7 @@
     "admin.schedule.every.game": "Toutes les {minutes} minute(s) ~g~de jeu~s~",
     "admin.schedule.at.real": "À {time}",
     "admin.schedule.at.game": "À {time} ~g~heure du jeu~s~",
-    "admin.schedule.trigger.help": "Tape @ suivi d'un nombre de minutes pour une répétition, par exemple @45. Ou tape une heure sur 24 heures, par exemple 20:00. Ajoute game à la fin de l'un ou l'autre pour utiliser l'horloge de GTA au lieu de la vraie, donc @5 game se répète toutes les 5 minutes de jeu et 20:00 game tombe à vingt heures dans le jeu.",
+    "admin.schedule.trigger.help": "Tape @ suivi d'un nombre de minutes pour une répétition, par exemple `@45`. Ou tape une heure sur 24 heures, par exemple `20:00`. Ajoute `game` à la fin de l'un ou l'autre pour utiliser l'horloge de GTA au lieu de la vraie, donc `@5 game` se répète toutes les 5 minutes de jeu et `20:00 game` tombe à vingt heures dans le jeu.",
     "admin.schedule.name.help": "Toi et les autres membres du staff êtes les seuls à le voir. C'est le nom de l'annonce dans cette liste.",
     "admin.schedule.text.help": "C'est ce que lisent tous les joueurs du serveur. Les codes couleur comme ~y~ fonctionnent ici.",
     "admin.schedule.row.desc": "{trigger} · {text}",

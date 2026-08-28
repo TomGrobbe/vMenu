@@ -771,7 +771,7 @@
     "admin.schedule.every.game": "Elke {minutes} ~g~game~s~ minuut/minuten",
     "admin.schedule.at.real": "Om {time}",
     "admin.schedule.at.game": "Om {time} ~g~gametijd~s~",
-    "admin.schedule.trigger.help": "Typ @ en een aantal minuten voor een herhaling, bijvoorbeeld @45. Of typ een tijdstip op een 24 uurs klok, bijvoorbeeld 20:00. Zet game achter een van beide om de klok in GTA te gebruiken in plaats van de echte, dus @5 game herhaalt elke 5 gameminuten en 20:00 game valt om acht uur s avonds in het spel.",
+    "admin.schedule.trigger.help": "Typ @ en een aantal minuten voor een herhaling, bijvoorbeeld `@45`. Of typ een tijdstip op een 24 uurs klok, bijvoorbeeld `20:00`. Zet `game` achter een van beide om de klok in GTA te gebruiken in plaats van de echte, dus `@5 game` herhaalt elke 5 gameminuten en `20:00 game` valt om acht uur s avonds in het spel.",
     "admin.schedule.name.help": "Alleen jij en andere staffleden zien dit ooit. Zo heet de mededeling in deze lijst.",
     "admin.schedule.text.help": "Dit is wat elke speler op de server leest. Kleurcodes zoals ~y~ werken hier.",
     "admin.schedule.row.desc": "{trigger} · {text}",

@@ -49,6 +49,17 @@
     display: none;
 }
 
+#prompt-description code {
+    padding: 0.05rem 0.3rem;
+    border: 1px solid var(--edge);
+    border-radius: 0.2rem;
+    background: rgba(0, 0, 0, 0.45);
+    font-family: Consolas, monospace;
+    font-size: 0.85em;
+    color: var(--text);
+    white-space: nowrap;
+}
+
 /* The title stops carrying the gap when a description is there to carry it instead. */
 #panel:has(#prompt-description:not(:empty)) #title {
     padding-bottom: 0.35rem;
