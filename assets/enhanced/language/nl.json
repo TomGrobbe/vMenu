@@ -774,7 +774,7 @@
     "admin.schedule.trigger.help": "Typ @ en een aantal minuten voor een herhaling, bijvoorbeeld `@45`. Of typ een tijdstip op een 24 uurs klok, bijvoorbeeld `20:00`. Zet `game` achter een van beide om de klok in GTA te gebruiken in plaats van de echte, dus `@5 game` herhaalt elke 5 gameminuten en `20:00 game` valt om acht uur s avonds in het spel.",
     "admin.schedule.name.help": "Alleen jij en andere staffleden zien dit ooit. Zo heet de mededeling in deze lijst.",
     "admin.schedule.text.help": "Dit is wat elke speler op de server leest. Kleurcodes zoals ~y~ werken hier.",
-    "admin.schedule.row.desc": "{trigger} · {text}",
+    "admin.schedule.row.desc": "{trigger} · {text}\n~y~Druk op enter om de mededeling te beheren.",
     "admin.schedule.disabled": "Uitgezet",
     "admin.schedule.disabled.desc": "Ingeplande mededelingen staan uit op deze server, dus niets van wat hier staat verstuurt zichzelf. Zet vMenu.Enhanced.Admin.ScheduledAnnouncements in je configuration.cfg op true om ze weer aan te zetten.",
     "admin.schedule.add": "Mededeling toevoegen",

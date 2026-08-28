@@ -774,7 +774,7 @@
     "admin.schedule.trigger.help": "Escribe @ y unos minutos para que se repita, por ejemplo `@45`. O escribe una hora en formato de 24 horas, por ejemplo `20:00`. Añade `game` al final de cualquiera de los dos para usar el reloj de GTA en vez del real, así `@5 game` se repite cada 5 minutos de juego y `20:00 game` cae a las ocho de la tarde dentro del juego.",
     "admin.schedule.name.help": "Solo lo veis tú y el resto del staff. Es como se llama el anuncio en esta lista.",
     "admin.schedule.text.help": "Esto es lo que lee todo el mundo en el servidor. Los códigos de color como ~y~ funcionan aquí.",
-    "admin.schedule.row.desc": "{trigger} · {text}",
+    "admin.schedule.row.desc": "{trigger} · {text}\n~y~Pulsa intro para gestionar el anuncio.",
     "admin.schedule.disabled": "Desactivado",
     "admin.schedule.disabled.desc": "Los anuncios programados están desactivados en este servidor, así que nada de lo que aparece aquí se enviará solo. Pon vMenu.Enhanced.Admin.ScheduledAnnouncements en true en tu configuration.cfg para volver a activarlos.",
     "admin.schedule.add": "Añadir anuncio",
