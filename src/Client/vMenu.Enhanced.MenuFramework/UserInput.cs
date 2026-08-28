@@ -39,10 +39,11 @@ public static class UserInput
         int maxLength,
         string initialValue = "",
         IReadOnlyList<InputSuggestion>? suggestions = null,
-        bool suggestWhenEmpty = false)
+        bool suggestWhenEmpty = false,
+        MenuText description = default)
     {
         var answers = await GetTextAsync(
-            new InputPrompt(title, maxLength, initialValue, suggestions, suggestWhenEmpty));
+            new InputPrompt(title, maxLength, initialValue, suggestions, suggestWhenEmpty, description));
 
         return answers?[0];
     }
@@ -198,6 +199,7 @@ public static class UserInput
         return ClientJson.Serialize(new OpenMessage
         {
             Title = prompt.Title.Resolve(localizer),
+            Description = prompt.Description.Resolve(localizer),
             Value = prompt.InitialValue,
             MaxLength = prompt.MaxLength,
             Placeholder = localizer.Get(Loc.Framework.InputPlaceholder),
@@ -213,6 +215,8 @@ public static class UserInput
         public string Type { get; } = "open";
 
         public required string Title { get; init; }
+
+        public required string Description { get; init; }
 
         public required string Value { get; init; }
 

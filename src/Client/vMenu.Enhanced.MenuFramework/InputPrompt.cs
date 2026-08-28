@@ -9,9 +9,12 @@ public sealed class InputPrompt(
     int maxLength,
     string initialValue = "",
     IReadOnlyList<InputSuggestion>? suggestions = null,
-    bool suggestWhenEmpty = false)
+    bool suggestWhenEmpty = false,
+    MenuText description = default)
 {
     public MenuText Title { get; } = title;
+
+    public MenuText Description { get; } = description;
 
     public int MaxLength { get; } = maxLength;
 

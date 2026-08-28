@@ -37,6 +37,23 @@
     letter-spacing: 0.01em;
 }
 
+/* Hidden rather than empty, so a prompt without one keeps the title sitting on the input box. */
+#prompt-description {
+    padding: 0 1.25rem 0.75rem;
+    font-size: 0.92rem;
+    line-height: 1.45;
+    color: var(--muted);
+}
+
+#prompt-description:empty {
+    display: none;
+}
+
+/* The title stops carrying the gap when a description is there to carry it instead. */
+#panel:has(#prompt-description:not(:empty)) #title {
+    padding-bottom: 0.35rem;
+}
+
 #field {
     padding: 0 1.25rem 1rem;
 }

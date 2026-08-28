@@ -20,6 +20,7 @@
 
     const scrim = document.getElementById("scrim");
     const titleEl = document.getElementById("title");
+    const descriptionEl = document.getElementById("prompt-description");
     const inputEl = document.getElementById("input");
     const listEl = document.getElementById("suggestions");
     const footerEl = document.getElementById("footer");
@@ -297,6 +298,7 @@
         suggestions = Array.isArray(data.suggestions) ? data.suggestions : [];
         suggestWhenEmpty = data.suggestWhenEmpty === true;
         titleEl.textContent = data.title || "";
+        descriptionEl.textContent = data.description || "";
         footerEl.textContent = data.hint || "";
         noMatchesText = data.noMatches || "";
         inputEl.placeholder = data.placeholder || "";
