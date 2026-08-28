@@ -97,6 +97,8 @@ public sealed class Main : IScript
 
         HeaderStyle.Initialize();
 
+        MenuSkin.Initialize();
+
         LanguageLoader.Load();
 
         TattooCatalogue.Load();

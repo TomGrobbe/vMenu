@@ -2,6 +2,18 @@ namespace vMenu.Enhanced.Data.Configuration.Settings;
 
 public static class MenuAppearance
 {
+    public static readonly StringSetting Skin = new("vMenu.Enhanced.MenuAppearance.Skin")
+    {
+        Description =
+            "The look of every menu. Use 'default' for vMenu's own style, soft dark glass you can " +
+            "see the game through. Use 'dark' for a solid, almost black panel with a bright blue " +
+            "highlight. Use 'cartoon' for the bright, rounded look of the vMenu documentation " +
+            "site. Use 'gta' for the plain Grand Theft Auto V style, which is what older versions " +
+            "of vMenu looked like. Anything else is ignored and 'default' is used. Changing this " +
+            "applies straight away, no restart needed.",
+        Default = "default",
+    };
+
     public static readonly StringSetting TitleAlignment = new("vMenu.Enhanced.MenuAppearance.TitleAlignment")
     {
         Description =

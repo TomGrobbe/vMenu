@@ -42,6 +42,10 @@ internal sealed class MenuHost : IDisposable
         Title = title;
         Subtitle = subtitle;
 
+        // Every menu in the resource is created through here, so this is what reaches the ones built
+        // after the skin was applied.
+        menu.HeaderImage = MenuSkin.Banner;
+
         Builder = new MenuBuilder(this) { DefaultGateBehaviour = defaultBehaviour };
     }
 

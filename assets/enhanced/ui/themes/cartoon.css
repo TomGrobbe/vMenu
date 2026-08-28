@@ -1,0 +1,80 @@
+@font-face {
+    font-family: "Fredoka";
+    font-style: normal;
+    font-weight: 300 700;
+    font-stretch: 100%;
+    font-display: block;
+    src: url("../fonts/fredoka-latin.woff2") format("woff2");
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+    font-family: "Fredoka";
+    font-style: normal;
+    font-weight: 300 700;
+    font-stretch: 100%;
+    font-display: block;
+    src: url("../fonts/fredoka-latin-ext.woff2") format("woff2");
+    unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+#menuapi {
+    --menuapi-font: "Fredoka", "Segoe UI", system-ui, sans-serif;
+
+    --menuapi-text: rgb(254 243 217);
+
+    --menuapi-radius: 18px;
+
+    --menuapi-shadow: 0 5px 16px rgb(26 21 35 / 45%);
+
+    --menuapi-subtitle-bg: rgb(26 21 35);
+    --menuapi-subtitle-text: rgb(254 243 217);
+    --menuapi-freemode: rgb(127 224 200);
+
+    --menuapi-rows-bg: rgb(254 243 217 / 97%);
+    --menuapi-row-text: rgb(26 21 35);
+    --menuapi-row-selected-bg: rgb(26 21 35 / 97%);
+    --menuapi-row-selected-text: rgb(254 243 217);
+    --menuapi-row-disabled-text: rgb(26 21 35 / 38%);
+    --menuapi-row-selected-disabled-text: rgb(254 243 217 / 45%);
+
+    --menuapi-header-text: rgb(254 243 217);
+    --menuapi-slider-divider: rgb(254 243 217);
+
+    --menuapi-overflow-bg: rgb(251 233 199 / 97%);
+
+    --menuapi-desc-bg: rgb(26 21 35 / 97%);
+    --menuapi-desc-rule: rgb(107 70 224 / 90%);
+
+    --menuapi-stats-bg: rgb(26 21 35 / 97%);
+    --menuapi-stat-track: rgb(255 255 255 / 14%);
+    --menuapi-stat-value: rgb(183 155 255);
+    --menuapi-stat-upgrade: rgb(127 224 200);
+    --menuapi-stat-upgrade-reduced: rgb(255 143 143);
+
+    --menuapi-panel-bg: rgb(254 243 217 / 97%);
+    --menuapi-panel-accent: 74, 47, 176;
+    --menuapi-panel-text: rgb(26 21 35);
+    --menuapi-panel-swatch-selected: rgb(26 21 35);
+    --menuapi-panel-opacity-bar: rgb(183 155 255);
+}
+
+#menuapi .menuapi-header {
+    border-radius: var(--menuapi-radius) var(--menuapi-radius) 0 0;
+}
+
+#menuapi .menuapi-header__glare {
+    border-radius: var(--menuapi-radius) var(--menuapi-radius) 0 0;
+}
+
+#menuapi .menuapi-desc {
+    overflow: hidden;
+}
+
+#menuapi .menuapi-row:last-child {
+    border-radius: 0 0 var(--menuapi-radius) var(--menuapi-radius);
+}
+
+#menuapi .menuapi-icon {
+    filter: invert(1);
+}

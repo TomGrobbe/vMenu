@@ -1,0 +1,52 @@
+#menuapi {
+    --menuapi-font: "Segoe UI", Tahoma, sans-serif;
+
+    --menuapi-radius: 12px;
+    --menuapi-shadow: 0 2px 6px rgb(0 0 0 / 30%);
+
+    --menuapi-subtitle-bg: rgb(12 14 19 / 66%);
+    --menuapi-subtitle-text: rgb(242 242 242);
+    --menuapi-freemode: rgb(138 190 255);
+
+    --menuapi-rows-bg: rgb(12 14 19 / 52%);
+    --menuapi-row-text: rgb(242 242 242);
+    --menuapi-row-selected-bg: rgb(138 190 255 / 90%);
+    --menuapi-row-selected-text: rgb(8 12 20);
+    --menuapi-row-disabled-text: rgb(132 141 156);
+    --menuapi-row-selected-disabled-text: rgb(8 12 20 / 52%);
+
+    --menuapi-header-text: rgb(242 242 242);
+    --menuapi-slider-divider: rgb(138 190 255);
+
+    --menuapi-overflow-bg: rgb(12 14 19 / 52%);
+    --menuapi-desc-bg: rgb(12 14 19 / 58%);
+    --menuapi-desc-rule: rgb(255 255 255 / 12%);
+
+    --menuapi-stats-bg: rgb(12 14 19 / 52%);
+    --menuapi-stat-track: rgb(255 255 255 / 14%);
+    --menuapi-stat-value: rgb(138 190 255);
+    --menuapi-stat-upgrade: rgb(126 217 137);
+    --menuapi-stat-upgrade-reduced: rgb(230 118 118);
+
+    --menuapi-panel-bg: rgb(12 14 19 / 66%);
+    --menuapi-panel-accent: 138, 190, 255;
+    --menuapi-panel-text: rgb(242 242 242);
+    --menuapi-panel-swatch-selected: rgb(242 242 242);
+    --menuapi-panel-opacity-bar: rgb(255 255 255 / 40%);
+}
+
+#menuapi .menuapi-header {
+    border-radius: var(--menuapi-radius) var(--menuapi-radius) 0 0;
+}
+
+#menuapi .menuapi-header__glare {
+    border-radius: var(--menuapi-radius) var(--menuapi-radius) 0 0;
+}
+
+#menuapi .menuapi-desc {
+    overflow: hidden;
+}
+
+#menuapi .menuapi-row:last-child {
+    border-radius: 0 0 var(--menuapi-radius) var(--menuapi-radius);
+}

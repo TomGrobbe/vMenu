@@ -34,6 +34,7 @@ public static class ConfigCatalog
         ]),
         new("Menu Appearance",
         [
+            MenuAppearance.Skin,
             MenuAppearance.TitleAlignment,
             MenuAppearance.TitleFont,
             MenuAppearance.HeaderGlare,

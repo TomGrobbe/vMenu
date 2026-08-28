@@ -112,6 +112,16 @@ public static class MenuRegistry
         BackOutOfUnreachableMenu();
     }
 
+    // Only the skin's banner changes here, so this deliberately does not go through Refresh: nothing
+    // about the rows or the gates is affected.
+    internal static void ApplyBanner(string? image)
+    {
+        foreach (var host in Hosts)
+        {
+            host.Menu.HeaderImage = image;
+        }
+    }
+
     public static void Refresh(Menu menu)
     {
         if (HostsByMenu.TryGetValue(menu, out var host))
