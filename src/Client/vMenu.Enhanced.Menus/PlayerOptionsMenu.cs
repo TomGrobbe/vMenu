@@ -141,15 +141,6 @@ public sealed class PlayerOptionsMenu : MenuDefinition
             OnSelected = _ => PlayerActions.Heal(),
         });
 
-        menu.Entries.Add(new ConfirmButtonEntry
-        {
-            Text = MenuText.Key(Loc.PlayerOptions.Suicide),
-            Description = MenuText.Key(Loc.PlayerOptions.SuicideDescription),
-            ConfirmationDescription = MenuText.Key(Loc.PlayerOptions.SuicideConfirm),
-            Gate = PlayerOptionsPermissions.Suicide,
-            OnConfirmed = _ => PlayerActions.CommitSuicide(),
-        });
-
         menu.Entries.Add(new ListEntry
         {
             Text = MenuText.Key(Loc.PlayerOptions.SetArmor),
@@ -158,6 +149,15 @@ public sealed class PlayerOptionsMenu : MenuDefinition
             Options = ArmorTiers(),
             ReadSelectedIndex = PlayerActions.ArmorTier,
             OnSelected = selected => PlayerActions.SetArmorTier(selected.SelectedIndex),
+        });
+
+        menu.Entries.Add(new ConfirmButtonEntry
+        {
+            Text = MenuText.Key(Loc.PlayerOptions.Suicide),
+            Description = MenuText.Key(Loc.PlayerOptions.SuicideDescription),
+            ConfirmationDescription = MenuText.Key(Loc.PlayerOptions.SuicideConfirm),
+            Gate = PlayerOptionsPermissions.Suicide,
+            OnConfirmed = _ => PlayerActions.CommitSuicide(),
         });
 
         menu.Entries.Add(Group(Loc.PlayerOptions.GroupAppearance, Loc.PlayerOptions.GroupAppearanceDescription));
