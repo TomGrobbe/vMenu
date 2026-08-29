@@ -1,5 +1,13 @@
+@font-face {
+    /* Only the arrow glyphs, so the list and scroll arrows keep the game's shape whatever the theme font is. */
+    font-family: "GTA Chalet Arrows";
+    src: url("../menuapi/fonts/chalet-london.woff") format("woff");
+    font-display: block;
+    unicode-range: U+2190-2193;
+}
+
 #menuapi {
-    --menuapi-font: "Segoe UI", Tahoma, sans-serif;
+    --menuapi-font: "GTA Chalet Arrows", "Segoe UI", Tahoma, sans-serif;
 
     --menuapi-radius: 5px;
     --menuapi-shadow: 0 3px 10px rgb(0 0 0 / 50%);
