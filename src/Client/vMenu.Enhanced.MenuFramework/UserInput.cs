@@ -23,11 +23,15 @@ public static class UserInput
     // The page's first callback of a session takes seconds; every one after is immediate.
     private const int FirstReadyTimeoutMs = 15000;
 
+    // What the page falls back to when a prompt declares no limit, so both ends agree on the cap.
+    private const int DefaultMaxLength = 255;
+
     private static bool _callbacksRegistered;
     private static bool _handshaken;
     private static bool _open;
     private static TaskCompletionSource<string?>? _pending;
     private static TaskCompletionSource<bool>? _ready;
+    private static int _maxLength = DefaultMaxLength;
 
     // What was typed, or null if the player cancelled.
     public static async Task<string?> GetTextAsync(
@@ -94,6 +98,7 @@ public static class UserInput
 
         _pending = pending;
         _ready = ready;
+        _maxLength = prompt.MaxLength > 0 ? prompt.MaxLength : DefaultMaxLength;
 
         try
         {
@@ -149,12 +154,34 @@ public static class UserInput
 
         if (ClientJson.TryDeserialize<string>(raw, out var text))
         {
-            return text ?? string.Empty;
+            return Capped(text ?? string.Empty);
         }
 
         Log.Error($"[Input] A callback body was not the JSON string the page posts: {raw}");
 
         return string.Empty;
+    }
+
+    // The page's maxLength is a DOM attribute, so anything with the developer tools open can post past
+    // it. Cut here rather than in each caller, so no prompt can answer with more than it asked for.
+    private static string Capped(string text)
+    {
+        if (text.Length <= _maxLength)
+        {
+            return text;
+        }
+
+        var end = _maxLength;
+
+        // Never between a surrogate pair: half of one is not valid UTF-8 once it leaves here.
+        if (char.IsHighSurrogate(text[end - 1]))
+        {
+            end--;
+        }
+
+        Log.Warning($"[Input] An answer of {text.Length} characters was cut to the {_maxLength} the prompt asked for.");
+
+        return text[..end];
     }
 
     private static string BuildOpenMessage(InputPrompt prompt)
