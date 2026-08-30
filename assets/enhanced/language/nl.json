@@ -584,7 +584,7 @@
     "displaysettings.blips.manage.desc": "Zet een markering waar je staat, of haal de dichtstbijzijnde van de kaart, voor iedereen op de server.",
     "displaysettings.blips.manage.subtitle": "Markeringen beheren",
     "displaysettings.blips.name": "Naam van de markering",
-    "displaysettings.blips.nametaken": "Er is al een markering met die naam.",
+    "displaysettings.blips.nametaken": "Er staat hier al een markering met die naam.",
     "displaysettings.blips.nonenearby": "Er is geen enkele markering bij je in de buurt.",
     "displaysettings.blips.remove": "Dichtstbijzijnde markering weghalen",
     "displaysettings.blips.remove.confirm": "~r~Weet je het zeker?~s~ Druk nogmaals om hem voor iedereen weg te halen.",

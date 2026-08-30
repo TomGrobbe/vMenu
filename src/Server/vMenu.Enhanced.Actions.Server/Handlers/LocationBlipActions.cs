@@ -30,6 +30,10 @@ public static class LocationBlipActions
 
     private const float MaxScaleOffset = 1.2f;
 
+    private const float SamePlaceRange = 5f;
+
+    private const float RemoveRange = 2f;
+
     private static readonly BlipFile Blips = new();
 
     private static string _payload = "{}";
@@ -75,7 +79,8 @@ public static class LocationBlipActions
 
         foreach (var existing in list)
         {
-            if (string.Equals(existing.Name, name, StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(existing.Name, name, StringComparison.OrdinalIgnoreCase)
+                && DistanceSquared(existing, x, y, z) <= SamePlaceRange * SamePlaceRange)
             {
                 return ActionResponse.Refused();
             }
@@ -100,7 +105,7 @@ public static class LocationBlipActions
 
     private static ActionResponse RemoveBlip(Player source, string[] args)
     {
-        if (args.Length < 2 || Trimmed(args[1]) is not { } name)
+        if (args.Length < 5 || Trimmed(args[1]) is not { } name)
         {
             return ActionResponse.InvalidRequest();
         }
@@ -110,7 +115,12 @@ public static class LocationBlipActions
             return ActionResponse.NotFound();
         }
 
-        var at = IndexOf(list, name);
+        if (!TryParse(args[2], out var x) || !TryParse(args[3], out var y) || !TryParse(args[4], out var z))
+        {
+            return ActionResponse.InvalidRequest();
+        }
+
+        var at = IndexOfNearest(list, name, x, y, z);
 
         if (at < 0)
         {
@@ -175,17 +185,40 @@ public static class LocationBlipActions
         _ => null,
     };
 
-    private static int IndexOf(List<BlipEntry> list, string name)
+    // By name and place together, since several blips are allowed to carry the same name.
+    private static int IndexOfNearest(List<BlipEntry> list, string name, float x, float y, float z)
     {
+        var found = -1;
+        var nearest = RemoveRange * RemoveRange;
+
         for (var index = 0; index < list.Count; index++)
         {
-            if (string.Equals(list[index].Name, name, StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(list[index].Name, name, StringComparison.OrdinalIgnoreCase))
             {
-                return index;
+                continue;
             }
+
+            var apart = DistanceSquared(list[index], x, y, z);
+
+            if (apart > nearest)
+            {
+                continue;
+            }
+
+            nearest = apart;
+            found = index;
         }
 
-        return -1;
+        return found;
+    }
+
+    private static float DistanceSquared(BlipEntry blip, float x, float y, float z)
+    {
+        var dx = blip.X - x;
+        var dy = blip.Y - y;
+        var dz = blip.Z - z;
+
+        return (dx * dx) + (dy * dy) + (dz * dz);
     }
 
     private static string? Trimmed(string? value) =>
@@ -230,7 +263,6 @@ public static class LocationBlipActions
     private static List<BlipEntry> Keep(List<BlipEntry>? entries, string list)
     {
         var kept = new List<BlipEntry>();
-        var claimed = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
         foreach (var blip in entries ?? [])
         {
@@ -241,12 +273,6 @@ public static class LocationBlipActions
             }
 
             blip.Name = blip.Name.Trim();
-
-            if (!claimed.Add(blip.Name))
-            {
-                Log.Warning($"[Blips] '{blip.Name}' is listed more than once in '{list}', so only the first one is used.");
-                continue;
-            }
 
             blip.Sprite = Math.Clamp(blip.Sprite, 0, MaxSprite);
             blip.Colour = Math.Clamp(blip.Colour, 0, MaxColour);

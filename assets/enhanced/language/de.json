@@ -584,7 +584,7 @@
     "displaysettings.blips.manage.desc": "Setze eine Markierung dort, wo du stehst, oder nimm die nächstgelegene von der Karte, für alle auf dem Server.",
     "displaysettings.blips.manage.subtitle": "Markierungen verwalten",
     "displaysettings.blips.name": "Name der Markierung",
-    "displaysettings.blips.nametaken": "Es gibt bereits eine Markierung mit diesem Namen.",
+    "displaysettings.blips.nametaken": "Es gibt hier bereits eine Markierung mit diesem Namen.",
     "displaysettings.blips.nonenearby": "In deiner Nähe gibt es keine Markierung.",
     "displaysettings.blips.remove": "Nächste Markierung entfernen",
     "displaysettings.blips.remove.confirm": "~r~Bist du sicher?~s~ Drücke erneut, um sie für alle zu entfernen.",

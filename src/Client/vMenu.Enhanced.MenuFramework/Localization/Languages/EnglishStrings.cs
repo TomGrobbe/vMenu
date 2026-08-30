@@ -1044,7 +1044,7 @@ internal static class EnglishStrings
             [Loc.DisplaySettings.BlipNoneNearby] = "There is no blip anywhere near you.",
             [Loc.DisplaySettings.BlipSaved] = "Blip added.",
             [Loc.DisplaySettings.BlipSaveDenied] = "You are not allowed to add blips.",
-            [Loc.DisplaySettings.BlipNameTaken] = "There is already a blip with that name.",
+            [Loc.DisplaySettings.BlipNameTaken] = "There is already a blip with that name right here.",
             [Loc.DisplaySettings.BlipSaveFailed] = "The blip could not be saved.",
             [Loc.DisplaySettings.BlipDeleted] = "Blip removed.",
             [Loc.DisplaySettings.BlipDeleteDenied] = "You are not allowed to remove blips.",

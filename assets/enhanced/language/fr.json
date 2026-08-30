@@ -584,7 +584,7 @@
     "displaysettings.blips.manage.desc": "Placez un marqueur là où vous êtes, ou retirez le plus proche de la carte, pour tout le serveur.",
     "displaysettings.blips.manage.subtitle": "Gérer les marqueurs",
     "displaysettings.blips.name": "Nom du marqueur",
-    "displaysettings.blips.nametaken": "Il y a déjà un marqueur portant ce nom.",
+    "displaysettings.blips.nametaken": "Il y a déjà un marqueur portant ce nom juste ici.",
     "displaysettings.blips.nonenearby": "Il n'y a aucun marqueur près de vous.",
     "displaysettings.blips.remove": "Retirer le marqueur le plus proche",
     "displaysettings.blips.remove.confirm": "~r~Êtes-vous sûr ?~s~ Appuyez à nouveau pour le retirer pour tout le monde.",

@@ -59,7 +59,7 @@ That split is the point of the file. You can cover the map in useful markers wit
 
 | Field | What it does |
 | --- | --- |
-| `name` | The text beside the marker. Shown exactly as you type it, never translated. |
+| `name` | The text beside the marker. Shown exactly as you type it, never translated. Several blips may share a name, the game groups those together on the map the way it does with its own shops and stations. |
 | `sprite` | Which icon to draw. There is a full list of sprite ids on the FiveM documentation site. |
 | `colour` | Which colour the icon is drawn in. |
 | `scaleOffset` | Added to the normal size. `0` is normal, `-0.1` slightly smaller, `0.2` slightly bigger. |
@@ -76,9 +76,11 @@ Staff with the `vMenu.Enhanced.Menus.DisplaySettings.ManageBlips` permission get
 
 - **Add Always On Blip Here** puts a blip where you are standing, in the `alwaysOn` list.
 - **Add Toggleable Blip Here** does the same, in the `toggleable` list.
-- **Remove Nearest Blip** takes the closest blip off the map.
+- **Remove Nearest Blip** takes the closest blip off the map. It goes by name and position together, so the one you are standing next to is the one that goes, even when others share its name.
 
 Adding one asks for the name, sprite id, colour id and size offset. The position comes from wherever you are standing, which is usually easier than looking coordinates up. Everything is written back to `blips.json` and sent to every player immediately.
+
+Reusing a name is fine and often what you want, one **Ammu-Nation** per shop for instance. The only thing turned away is the same name in the same spot, within about five metres, since that is a blip added twice rather than a second place.
 
 ## When something is wrong with it
 
@@ -89,7 +91,6 @@ A problem with one blip only costs you that blip. The rest still work, and the s
 | `No config/blips.json found, so no map blips are added.` | The file is missing. That is fine, it is optional. |
 | `config/blips.json could not be parsed...` | The JSON is broken, usually a missing comma or bracket. |
 | `Skipping a blip in 'alwayson': it has no name.` | A blip with no `name`. |
-| `'X' is listed more than once in 'toggleable'...` | Two blips with the same name in one list. The first wins. |
 
 A sprite, colour or size that is out of range is not an error. It is pulled back to the nearest sensible value.
 

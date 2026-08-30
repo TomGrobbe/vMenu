@@ -584,7 +584,7 @@
     "displaysettings.blips.manage.desc": "Pon un marcador donde estás, o quita el más cercano del mapa, para todo el servidor.",
     "displaysettings.blips.manage.subtitle": "Gestionar marcadores",
     "displaysettings.blips.name": "Nombre del marcador",
-    "displaysettings.blips.nametaken": "Ya hay un marcador con ese nombre.",
+    "displaysettings.blips.nametaken": "Ya hay un marcador con ese nombre justo aquí.",
     "displaysettings.blips.nonenearby": "No hay ningún marcador cerca de ti.",
     "displaysettings.blips.remove": "Quitar el marcador más cercano",
     "displaysettings.blips.remove.confirm": "~r~¿Estás seguro?~s~ Pulsa otra vez para quitarlo para todos.",

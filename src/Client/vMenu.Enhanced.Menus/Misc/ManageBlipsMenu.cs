@@ -100,7 +100,10 @@ internal static class ManageBlipsMenu
         ReportDeleted(await ServerActions.InvokeAsync(
             ActionIds.DisplaySettings.RemoveBlip,
             alwaysOn ? AlwaysOnList : ToggleableList,
-            blip.Name));
+            blip.Name,
+            Coord(blip.X),
+            Coord(blip.Y),
+            Coord(blip.Z)));
     }
 
     private static void Report(ActionResult result)
