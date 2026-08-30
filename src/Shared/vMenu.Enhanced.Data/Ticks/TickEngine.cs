@@ -18,7 +18,9 @@ public sealed class TickEngine(
     Func<Task> yield,
     Action<TickLog, string> write,
     Action<string> enterScope,
-    Action exitScope)
+    Action exitScope,
+    Func<bool> isMainThread,
+    Action<Action> scheduleOnMainThread)
 {
     private readonly List<TickHandle> _registered = [];
 
@@ -100,6 +102,10 @@ public sealed class TickEngine(
     internal Task DelayAsync(long milliseconds) => delay(milliseconds);
 
     internal Task YieldAsync() => yield();
+
+    internal MainThreadHop MainThreadAsync() => new(isMainThread, scheduleOnMainThread);
+
+    internal bool IsMainThread => isMainThread();
 
     internal void Log(TickLog level, string message) => write(level, message);
 

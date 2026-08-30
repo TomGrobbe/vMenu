@@ -99,6 +99,14 @@ public sealed class TickHandle : IDisposable
 
         _running = shouldRun;
 
+        if (!_engine.IsMainThread)
+        {
+            _engine.Log(
+                TickLog.Error,
+                $"^3{Name}^1 was switched ^3{(shouldRun ? "on" : "off")}^1 from a background thread. "
+                + "Natives called from there terminate the process instead of throwing.^0");
+        }
+
         _engine.NotifyChanged();
 
         if (!shouldRun)
@@ -162,6 +170,8 @@ public sealed class TickHandle : IDisposable
 
             while (_running)
             {
+                await _engine.MainThreadAsync();
+
                 // Opened outside the try and closed in the finally, so a handler that throws still leaves the
                 // profiler balanced. An unbalanced scope corrupts every reading after it, not just this tick's.
                 _engine.EnterScope(_scope);

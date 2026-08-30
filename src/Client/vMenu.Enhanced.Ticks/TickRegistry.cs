@@ -17,7 +17,9 @@ public static class TickRegistry
         () => API.Yield(),
         Write,
         Native.ProfilerEnterScope,
-        Native.ProfilerExitScope);
+        Native.ProfilerExitScope,
+        IsMainThread,
+        API.NextTick);
 
     public static IReadOnlyList<TickHandle> Handles => Engine.Handles;
 
@@ -65,6 +67,8 @@ public static class TickRegistry
             Log.Info("[Tick]   " + line);
         }
     }
+
+    private static bool IsMainThread() => API.JumpToMainThread().GetAwaiter().IsCompleted;
 
     private static void Write(TickLog level, string message)
     {
