@@ -1,6 +1,6 @@
 ---
 title: "Menu Appearance"
-description: "Pick one of vMenu's four menu skins, and change the banner title's font and position."
+description: "Pick one of vMenu's four menu skins, add skins of your own, and change the banner title's font and position."
 ---
 
 Every menu comes with vMenu's own look: soft dark glass you can see the game through, gently rounded corners, and the pale blue highlight the speedometer and street name display already use. If that does not suit your server, you can hand every menu a different **skin** with one line in your `server.cfg`.
@@ -38,6 +38,18 @@ Grand Theft Auto's own text colours, the ones that turn a word yellow or red in 
 :::caution[The button hints stay as they are]
 The row of button prompts along the bottom of the screen is drawn by the game itself, not by vMenu, so no skin can reach it. It keeps the Grand Theft Auto look whichever skin you pick.
 :::
+
+## More skins than these four
+
+vMenu's four skins are not the end of it. Any resource on your server can hand vMenu a theme of its own, a CSS file that stays in that resource, and vMenu then treats it exactly like the four above. The `Skin` setting accepts its name, and it is offered to your players the same way.
+
+The simplest way to make a custom theme is to use [Custom Themes plugin](https://github.com/TomGrobbe/vMenu.CustomThemesPlugin). 
+You drop a stylesheet in a folder, name it in a JSON file and restart the resource, with nothing to build and no code to write. 
+Copying a theme into vMenu's own `ui/themes` folder does not work, so don't do that, also every vMenu update overwrites that folder.
+
+If you want your players to choose their own look rather than forcing the server style, the [Theme Picker plugin](https://github.com/TomGrobbe/vMenu.ThemePicker) adds a menu for it.
+
+Writing one of these yourself is a single event, described on the [plugin development page](/vmenu/enhanced/plugins/developing/#adding-themes-of-your-own).
 
 ## The banner title
 

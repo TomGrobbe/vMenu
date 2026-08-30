@@ -3,10 +3,14 @@ title: "Making a plugin"
 description: "How to write a vMenu Enhanced plugin in C#: the packages, the project layout, the menu API, permissions and settings."
 ---
 
-A plugin is a normal FiveM resource of your own that asks vMenu to draw a menu on its behalf. C# is the only officially supported language for now, Lua and JavaScript will follow later.
+A plugin is a normal FiveM resource of your own that asks vMenu to draw a menu on its behalf. C# is the only officially supported language for menus, Lua and JavaScript will follow later. 
+A look at what a tiny JavaScript plugin could look like can be found in the custom themes plugin below.
 
-:::tip[Start from the example]
+:::tip[Start from an example]
 [vMenu.ExamplePlugin](https://github.com/TomGrobbe/vMenu.ExamplePlugin) is a complete working plugin that uses every kind of row once. Copy from it.
+
+For theme related plugins, see [vMenu.ThemePicker](https://github.com/TomGrobbe/vMenu.ThemePicker),
+and [vMenu.CustomThemesPlugin](https://github.com/TomGrobbe/vMenu.CustomThemesPlugin), and read [registering themes](#adding-themes-of-your-own) to see how you can make your own themes for your server.
 :::
 
 :::caution[Read the license section]
@@ -284,7 +288,30 @@ plugin.Themes.Reset();       // back to the theme the server picked
 
 vMenu sends the list right after your plugin registers and again on every change, whoever caused it, so build your rows from the `Changed` event rather than straight after connecting. `Available` is empty until that first message arrives, and stays empty against a vMenu too old to know about themes.
 
-A theme set this way beats the server's convar, and it belongs to that one player and that one session. Nothing is saved, so reconnecting or restarting the game puts the server's choice back, and `Reset` does the same without the wait. No permission and no setting gates any of this, because it changes nothing except what that player sees.
+A theme set this way beats the server's convar, and it belongs to that one player. vMenu saves nothing, so reconnecting puts the server's choice back, and `Reset` does the same without the wait. Remembering a choice is your plugin's job: keep the id in your own resource's key value store and set it again on the first list vMenu sends you, which is what the Theme Picker plugin does. No permission and no setting gates any of this, because it changes nothing except what that player sees.
+
+### Adding themes of your own
+
+A resource can also hand vMenu new themes, so a server does not have to edit vMenu's own files to get a look of its own. This one needs no C# and no plugin registration at all, it is a single event, so a plain JavaScript or Lua resource can do it:
+
+```js
+emit("vMenu.Enhanced:Plugins:RegisterThemes", JSON.stringify({
+    themes: [
+        { id: "reddead", name: "Red Dead", css: "themes/red-dead.css", banner: "default" },
+    ],
+}));
+```
+
+- **id** is what a convar or a plugin names the theme by. Letters, digits, dashes, underscores and dots, and never one of vMenu's own names.
+- **name** is what a player reads, falling back to the id.
+- **css** is a path inside your own resource, or a full `https://cfx-nui-<resource>/` url naming another one. vMenu's menu page loads it from there, so nothing is copied into vMenu. Addresses out on the internet are refused.
+- **banner** is the picture on top of the menu. One of vMenu's own, `default`, `dark`, `cartoon`, or `none` for the plain Grand Theft Auto one, or a `.png`, `.jpg` or `.webp` of your own, given the same way as the stylesheet. An image needs a MenuAPI new enough to load banners out of another resource, and falls back to vMenu's default banner otherwise.
+
+Every file the stylesheet uses has to be listed in your `fxmanifest.lua` under `files`, or the game has no copy of it to serve. Fonts and images inside the stylesheet are resolved relative to the stylesheet itself.
+
+Send the whole set in one go: a second registration replaces everything that resource registered before, and its themes are dropped the moment it stops. vMenu answers on `vMenu.Enhanced:Plugins:<your resource>:ThemesRegistered` with `accepted`, `errors` and `warnings`, which is where a refused theme tells you why. Send it once when your resource starts, and again whenever vMenu says `vMenu.Enhanced:Plugins:Ready`, which is what it says when it restarts.
+
+Once registered, a theme is a theme like any other. It shows up for plugins reading `Themes.Available`, and the `vMenu.Enhanced.MenuAppearance.Skin` convar accepts its id. If you would rather not write any of this yourself, the [Custom Themes plugin](https://github.com/TomGrobbe/vMenu.CustomThemesPlugin) is exactly this, driven by a JSON file you edit.
 
 ## Rules to keep to
 

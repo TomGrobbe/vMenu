@@ -29,6 +29,8 @@ public static class PluginHost
 
     private const int MaxPromptLength = 500;
 
+    private const int MaxThemesPerResource = 25;
+
     private static readonly Dictionary<string, PluginState> Plugins = new(StringComparer.OrdinalIgnoreCase);
 
     // Registrations that arrived before the menu tree was built.
@@ -70,6 +72,7 @@ public static class PluginHost
         API.OnEvent(PluginEvents.Notify, new Action<string>(OnNotify), false);
         API.OnEvent(PluginEvents.Prompt, new Action<string>(OnPrompt), false);
         API.OnEvent(PluginEvents.SetTheme, new Action<string>(OnSetTheme), false);
+        API.OnEvent(PluginEvents.RegisterThemes, new Action<string>(OnRegisterThemes), false);
         API.OnEvent(StopEvent, new Action<string>(OnResourceStop), false);
 
         MenuSkin.Changed += BroadcastThemes;
@@ -128,6 +131,13 @@ public static class PluginHost
 
     private static void OnResourceStop(string stopped)
     {
+        var themes = MenuSkin.RemoveCustomFrom(stopped);
+
+        if (themes > 0)
+        {
+            Log.Info($"[Plugins] '{stopped}' stopped, dropping {themes} theme(s) it provided.");
+        }
+
         if (Plugins.ContainsKey(stopped) || Pending.ContainsKey(stopped))
         {
             Teardown(stopped);
@@ -639,6 +649,71 @@ public static class PluginHost
 
         SendThemes(resource);
     }
+
+    private static void OnRegisterThemes(string json)
+    {
+        if (Sender() is not { } resource)
+        {
+            return;
+        }
+
+        if (!ClientJson.TryDeserialize<RegisterThemesRequest>(json, out var request) || request is null)
+        {
+            Log.Warning($"[Plugins] The themes from '{resource}' did not parse.");
+            ReplyThemes(resource, Refused("The theme payload did not parse. It has to be JSON."));
+
+            return;
+        }
+
+        MenuSkin.RemoveCustomFrom(resource);
+
+        var result = new RegisterResult { Accepted = true };
+        var accepted = 0;
+
+        foreach (var theme in request.Themes)
+        {
+            if (accepted >= MaxThemesPerResource)
+            {
+                result.Warnings.Add(
+                    $"Only the first {MaxThemesPerResource} themes were taken, the rest were skipped.");
+
+                break;
+            }
+
+            if (MenuSkin.TryRegisterCustom(
+                    resource, theme.Id, theme.Name, theme.Css, theme.Banner, out var error, out var warning))
+            {
+                accepted++;
+
+                if (warning is not null)
+                {
+                    result.Warnings.Add(warning);
+
+                    Log.Warning($"[Plugins] The banner of theme '{theme.Id}' from '{resource}': {warning}");
+                }
+
+                continue;
+            }
+
+            result.Warnings.Add(error);
+
+            Log.Warning($"[Plugins] A theme from '{resource}' was skipped: {error}");
+        }
+
+        if (accepted == 0 && request.Themes.Count > 0)
+        {
+            result.Accepted = false;
+        }
+
+        Log.Info($"[Plugins] '{resource}' provided {accepted} theme(s).");
+
+        ReplyThemes(resource, result);
+
+        MenuSkin.Refresh();
+    }
+
+    private static void ReplyThemes(string resource, RegisterResult result) =>
+        NativeFixer.EmitLocal(PluginEvents.ThemesRegisteredFor(resource), ClientJson.Serialize(result));
 
     private static void BroadcastThemes()
     {
