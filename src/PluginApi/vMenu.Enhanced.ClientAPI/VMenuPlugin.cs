@@ -42,6 +42,7 @@ public sealed class VMenuPlugin
         Resource = Native.GetCurrentResourceName();
         Id = PluginId.Sanitize(Resource);
         Settings = new PluginSettings(Id);
+        Themes = new PluginThemes(this);
         Translations = new PluginTranslations(this);
         PlayerActions = new PluginPlayerActions(this);
         RootMenu = new PluginMenu(this, new MenuNode { Id = "root", Title = displayName.ToRef() });
@@ -61,6 +62,8 @@ public sealed class VMenuPlugin
     public PluginSettings Settings { get; }
 
     public PluginTranslations Translations { get; }
+
+    public PluginThemes Themes { get; }
 
     /// <summary>The menu behind your row in vMenu's Plugins menu.</summary>
     public PluginMenu RootMenu { get; }
@@ -271,6 +274,7 @@ public sealed class VMenuPlugin
         API.OnEvent(PluginEvents.RegisterResultFor(Resource), new Action<string>(OnRegisterResult), false);
         API.OnEvent(PluginEvents.EventFor(Resource), new Action<string>(OnCallback), false);
         API.OnEvent(PluginEvents.PromptResultFor(Resource), new Action<string>(OnPromptResult), false);
+        API.OnEvent(PluginEvents.ThemesFor(Resource), new Action<string>(Themes.Handle), false);
         API.OnEvent("onResourceStop", new Action<string>(OnResourceStop), false);
     }
 

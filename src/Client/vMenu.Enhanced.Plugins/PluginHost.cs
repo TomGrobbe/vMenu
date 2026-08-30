@@ -69,7 +69,10 @@ public static class PluginHost
         API.OnEvent(PluginEvents.Update, new Action<string>(OnUpdate), false);
         API.OnEvent(PluginEvents.Notify, new Action<string>(OnNotify), false);
         API.OnEvent(PluginEvents.Prompt, new Action<string>(OnPrompt), false);
+        API.OnEvent(PluginEvents.SetTheme, new Action<string>(OnSetTheme), false);
         API.OnEvent(StopEvent, new Action<string>(OnResourceStop), false);
+
+        MenuSkin.Changed += BroadcastThemes;
     }
 
     public static void AnnounceReady()
@@ -172,6 +175,7 @@ public static class PluginHost
         if (LastPayload.TryGetValue(resource, out var previous) && previous == json && Plugins.ContainsKey(resource))
         {
             Reply(resource, new RegisterResult { Accepted = true });
+            SendThemes(resource);
             return;
         }
 
@@ -258,6 +262,8 @@ public static class PluginHost
         Log.Info($"[Plugins] Registered '{resource}' with {state.ItemsById.Count} item(s).");
 
         Reply(resource, result);
+
+        SendThemes(resource);
     }
 
     private static bool CopyTranslations(PluginState state, RegisterRequest request, RegisterResult result)
@@ -597,6 +603,76 @@ public static class PluginHost
         {
             _promptBusy = false;
         }
+    }
+
+    private static void OnSetTheme(string json)
+    {
+        if (Sender() is not { } resource)
+        {
+            return;
+        }
+
+        if (!Plugins.ContainsKey(resource))
+        {
+            Log.Warning($"[Plugins] '{resource}' asked for a theme but is not registered.");
+            return;
+        }
+
+        if (!ClientJson.TryDeserialize<ThemeRequest>(json, out var request) || request is null)
+        {
+            Log.Warning($"[Plugins] A theme request from '{resource}' did not parse.");
+            return;
+        }
+
+        if (request.Theme is not { Length: > 0 } theme)
+        {
+            MenuSkin.ClearOverride();
+            return;
+        }
+
+        if (MenuSkin.TryApplyOverride(theme))
+        {
+            return;
+        }
+
+        Log.Warning($"[Plugins] '{resource}' asked for theme '{theme}', which vMenu does not know about.");
+
+        SendThemes(resource);
+    }
+
+    private static void BroadcastThemes()
+    {
+        if (Plugins.Count == 0)
+        {
+            return;
+        }
+
+        var json = ClientJson.Serialize(BuildThemeList());
+
+        foreach (var state in Plugins.Values)
+        {
+            NativeFixer.EmitLocal(PluginEvents.ThemesFor(state.Resource), json);
+        }
+    }
+
+    private static void SendThemes(string resource) =>
+        NativeFixer.EmitLocal(PluginEvents.ThemesFor(resource), ClientJson.Serialize(BuildThemeList()));
+
+    private static ThemeList BuildThemeList()
+    {
+        var list = new ThemeList
+        {
+            Current = MenuSkin.CurrentId,
+            Configured = MenuSkin.ConfiguredId,
+            Overridden = MenuSkin.IsOverridden,
+        };
+
+        foreach (var choice in MenuSkin.Choices())
+        {
+            list.Themes.Add(new ThemeInfo { Id = choice.Id, Name = choice.Name });
+        }
+
+        return list;
     }
 
     private static void ReplyPrompt(string resource, PromptResult result) =>

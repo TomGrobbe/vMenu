@@ -15,6 +15,7 @@ public static class PluginEvents
     public const string Update = Prefix + ":Update";
     public const string Notify = Prefix + ":Notify";
     public const string Prompt = Prefix + ":Prompt";
+    public const string SetTheme = Prefix + ":SetTheme";
 
     // Client side, vMenu broadcast.
     public const string Ready = Prefix + ":Ready";
@@ -31,6 +32,7 @@ public static class PluginEvents
     public static string RegisterResultFor(string resource) => $"{Prefix}:{resource}:RegisterResult";
     public static string EventFor(string resource) => $"{Prefix}:{resource}:Event";
     public static string PromptResultFor(string resource) => $"{Prefix}:{resource}:PromptResult";
+    public static string ThemesFor(string resource) => $"{Prefix}:{resource}:Themes";
 
     // vMenu to one plugin, server side.
     public static string ServerReadyFor(string resource) => $"{Prefix}:{resource}:Server:Ready";

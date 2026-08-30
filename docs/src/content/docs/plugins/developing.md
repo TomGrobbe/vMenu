@@ -264,6 +264,28 @@ if (await plugin.GetTextAsync("What is your name?", maxLength: 32) is { } name)
 
 Notifications appear in vMenu's notification area, credited to your plugin. `GetTextAsync` opens vMenu's input box and returns null when the player cancels. It can ask several questions in a row, and refuses when something else is already using the box.
 
+## The menu's theme
+
+vMenu can draw its menus in a few different looks, called themes. The server owner picks one for everybody with a convar, and a plugin can put one player in a different one:
+
+```csharp
+plugin.Themes.Changed += () =>
+{
+    foreach (var theme in plugin.Themes.Available)
+    {
+        // theme.Id is what you send back, theme.Name is what a player reads,
+        // theme.IsCurrent says whether it is the one on screen.
+    }
+};
+
+plugin.Themes.Set("dark");   // this player sees the dark theme from now on
+plugin.Themes.Reset();       // back to the theme the server picked
+```
+
+vMenu sends the list right after your plugin registers and again on every change, whoever caused it, so build your rows from the `Changed` event rather than straight after connecting. `Available` is empty until that first message arrives, and stays empty against a vMenu too old to know about themes.
+
+A theme set this way beats the server's convar, and it belongs to that one player and that one session. Nothing is saved, so reconnecting or restarting the game puts the server's choice back, and `Reset` does the same without the wait. No permission and no setting gates any of this, because it changes nothing except what that player sees.
+
 ## Rules to keep to
 
 - **Your resource name is your identity.** Permissions, settings and both template files are named after it. Two resources whose names sanitize to the same identity cannot both register, the second is refused.
