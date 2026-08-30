@@ -16,7 +16,17 @@ Plugins show up in two places:
 
 Everything a plugin adds uses vMenu's own permissions system. A missing or locked row means the server owner has not given you that permission. A plugin cannot hand itself permissions, and it cannot give you access to anything of vMenu itself.
 
+## Official plugins
+
+These are made and kept up to date alongside vMenu itself. Each one is a real plugin you can install as it is, and each is also worth reading as an example of how a plugin is put together.
+
+| Plugin | What it does |
+| --- | --- |
+| [Theme Picker](https://github.com/TomGrobbe/vMenu.ThemePicker) | Let your players pick their own theme. |
+| [Custom Themes](https://github.com/TomGrobbe/vMenu.CustomThemesPlugin) | Use this plugin to create and register your own themes inside vMenu. |
+| [Example Plugin](https://github.com/TomGrobbe/vMenu.ExamplePlugin) | An example plugin in C#. You shouldn't use this on your production server, but feel free to use it as a baseline for making your own C# plugin. |
+
 ## Where to go from here
 
 - **Installing one?** See [Installing plugins](/vmenu/enhanced/plugins/installing/).
-- **Writing one?** See [Making a plugin](/vmenu/enhanced/plugins/developing/). There is a complete working example repository to copy from, and two NuGet packages that do the talking for you. Only C# is officially supported for now. Lua and JS plugins are possible in theory, but there is no support or guidance for them yet.
+- **Writing one?** See [Making a plugin](/vmenu/enhanced/plugins/developing/). There are the three plugins above to copy from, and two NuGet packages that do the talking for you. C# is the supported way to build a menu. A resource in another language can still register themes, which is a single event and what the Custom Themes plugin does, but menus are C# for now.
