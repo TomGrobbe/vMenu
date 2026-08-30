@@ -4,16 +4,6 @@
     "description": "City locations",
     "locations": [
       {
-        "name": "Legion Square",
-        "description": "Downtown Legion Square",
-        "position": {
-          "x": 215.76,
-          "y": -810.12,
-          "z": 30.73
-        },
-        "heading": 141.5
-      },
-      {
         "name": "Airport",
         "description": "Los Santos International Airport",
         "position": {
@@ -21,6 +11,96 @@
           "y": -2733.21,
           "z": 20.17
         }
+      },
+      {
+        "name": "Legion Square",
+        "description": "",
+        "position": {
+          "x": 197.78,
+          "y": -934.75,
+          "z": 30.69
+        },
+        "heading": 141.93
+      },
+      {
+        "name": "Maze Bank Arena",
+        "description": "",
+        "position": {
+          "x": -212.84,
+          "y": -1999.53,
+          "z": 27.76
+        },
+        "heading": 80.07
+      },
+      {
+        "name": "Premium Deluxe Motorsport",
+        "description": "Simeon's car dealership",
+        "position": {
+          "x": -61.8,
+          "y": -1112.63,
+          "z": 26.44
+        },
+        "heading": 339.3
+      },
+      {
+        "name": "FIB Building Entrance",
+        "description": "",
+        "position": {
+          "x": 92.89,
+          "y": -743.63,
+          "z": 45.75
+        },
+        "heading": 264.97
+      },
+      {
+        "name": "Vespucci Beach",
+        "description": "",
+        "position": {
+          "x": -1417.05,
+          "y": -1046.99,
+          "z": 4.63
+        },
+        "heading": 131.02
+      },
+      {
+        "name": "Pacific Standard Bank",
+        "description": "",
+        "position": {
+          "x": 227.59,
+          "y": 212.4,
+          "z": 105.53
+        },
+        "heading": 298.86
+      },
+      {
+        "name": "Vespucci Helipad",
+        "description": "",
+        "position": {
+          "x": -706.23,
+          "y": -1393.53,
+          "z": 5.15
+        },
+        "heading": 127.54
+      },
+      {
+        "name": "Puerto Del Sol Marina",
+        "description": "",
+        "position": {
+          "x": -812.15,
+          "y": -1402.72,
+          "z": 5
+        },
+        "heading": 175.03
+      },
+      {
+        "name": "GWC And Golfing Society",
+        "description": "",
+        "position": {
+          "x": -1329.35,
+          "y": 59.71,
+          "z": 53.54
+        },
+        "heading": 270.6
       }
     ]
   },
@@ -36,7 +116,467 @@
           "y": 3273.6,
           "z": 41.15
         },
-        "heading": 105.0
+        "heading": 105
+      },
+      {
+        "name": "Grapeseed Airfield",
+        "description": "",
+        "position": {
+          "x": 2138.48,
+          "y": 4799.26,
+          "z": 41.13
+        },
+        "heading": 118.37
+      },
+      {
+        "name": "The Boat House",
+        "description": "Sandy Shores Boat House",
+        "position": {
+          "x": 1544.9,
+          "y": 3778.9,
+          "z": 34.05
+        },
+        "heading": 26.78
+      },
+      {
+        "name": "Harmony Town Stores",
+        "description": "",
+        "position": {
+          "x": 1178.53,
+          "y": 2694.49,
+          "z": 37.94
+        },
+        "heading": 88.93
+      },
+      {
+        "name": "Rebel Radio Tower",
+        "description": "",
+        "position": {
+          "x": 742.15,
+          "y": 2574.05,
+          "z": 75.52
+        },
+        "heading": 229.52
+      },
+      {
+        "name": "Stab City",
+        "description": "",
+        "position": {
+          "x": 75.91,
+          "y": 3638.6,
+          "z": 39.69
+        },
+        "heading": 14.19
+      },
+      {
+        "name": "You Tool Megastore",
+        "description": "Senora Fwy Hardware Store",
+        "position": {
+          "x": 2771.42,
+          "y": 3465.26,
+          "z": 55.55
+        },
+        "heading": 70.87
+      },
+      {
+        "name": "Humane Labs And Research",
+        "description": "",
+        "position": {
+          "x": 3419.02,
+          "y": 3756.11,
+          "z": 30.57
+        },
+        "heading": 295
+      },
+      {
+        "name": "Rex's Diner",
+        "description": "",
+        "position": {
+          "x": 2566.47,
+          "y": 2594.17,
+          "z": 37.86
+        },
+        "heading": 115.89
+      },
+      {
+        "name": "Davis Quartz Mine",
+        "description": "",
+        "position": {
+          "x": 2639.93,
+          "y": 2738.06,
+          "z": 40.11
+        },
+        "heading": 303.16
+      },
+      {
+        "name": "Lighthouse",
+        "description": "",
+        "position": {
+          "x": 3352.07,
+          "y": 5150.98,
+          "z": 20.05
+        },
+        "heading": 280.46
+      }
+    ]
+  },
+  {
+    "name": "Mountains",
+    "description": "Mountain locations.",
+    "locations": [
+      {
+        "name": "Vinewood Hills Sign",
+        "description": "Behind the Vinewood sign.",
+        "position": {
+          "x": 734.25,
+          "y": 1205.23,
+          "z": 326.22
+        },
+        "heading": 169.5
+      },
+      {
+        "name": "Galileo Observatory",
+        "description": "",
+        "position": {
+          "x": -421.34,
+          "y": 1138.4,
+          "z": 325.85
+        },
+        "heading": 341.38
+      },
+      {
+        "name": "Mt. Josiah",
+        "description": "At the top of mount Josiah.",
+        "position": {
+          "x": -1181.68,
+          "y": 3855.79,
+          "z": 489.72
+        },
+        "heading": 277.58
+      },
+      {
+        "name": "Nudist Camp",
+        "description": "",
+        "position": {
+          "x": -1116.07,
+          "y": 4925.69,
+          "z": 218.19
+        },
+        "heading": 87.47
+      },
+      {
+        "name": "Mt. Chiliad",
+        "description": "The top of Mount Chiliad",
+        "position": {
+          "x": 501.75,
+          "y": 5604.6,
+          "z": 797.91
+        },
+        "heading": 176.61
+      },
+      {
+        "name": "Mt. Gordo",
+        "description": "The top of Mount Gordo.",
+        "position": {
+          "x": 2877.1,
+          "y": 5911.21,
+          "z": 369.62
+        },
+        "heading": 133.11
+      },
+      {
+        "name": "Land Act Dam",
+        "description": "",
+        "position": {
+          "x": 1663.65,
+          "y": 0.66,
+          "z": 173.78
+        },
+        "heading": 302.18
+      }
+    ]
+  },
+  {
+    "name": "Points of Interest",
+    "description": "Various POIs",
+    "locations": [
+      {
+        "name": "Fort Zancudo Approach Rd",
+        "description": "In front of the Fort Zancudo entrance gate.",
+        "position": {
+          "x": -1569.73,
+          "y": 2774.73,
+          "z": 17.26
+        },
+        "heading": 43.2
+      },
+      {
+        "name": "Bayview Lodge",
+        "description": "Bayview Lodge - Diner and Store in Paleto Forest.",
+        "position": {
+          "x": -705.56,
+          "y": 5798,
+          "z": 17.32
+        },
+        "heading": 332.23
+      },
+      {
+        "name": "Weed Farm",
+        "description": "",
+        "position": {
+          "x": 2206.77,
+          "y": 5578.26,
+          "z": 53.8
+        },
+        "heading": 262.76
+      },
+      {
+        "name": "O'Neil Ranch",
+        "description": "O'Neil Ranch in Grapeseed",
+        "position": {
+          "x": 2451.9,
+          "y": 4954.57,
+          "z": 44.94
+        },
+        "heading": 33.88
+      },
+      {
+        "name": "Abandoned Motel Sandy",
+        "description": "Abandoned Motel in Sandy Shores.",
+        "position": {
+          "x": 1611.71,
+          "y": 3601.71,
+          "z": 35.15
+        },
+        "heading": 124.17
+      },
+      {
+        "name": "Bolingbroke Penitentiary",
+        "description": "State Prison Bolingbroke Penitentiary",
+        "position": {
+          "x": 1849.82,
+          "y": 2585.8,
+          "z": 45.67
+        },
+        "heading": 91.3
+      },
+      {
+        "name": "Redwood Lights Track",
+        "description": "",
+        "position": {
+          "x": 995.01,
+          "y": 2281.88,
+          "z": 53.08
+        },
+        "heading": 299.53
+      },
+      {
+        "name": "Martin Madrazo's Ranch",
+        "description": "",
+        "position": {
+          "x": 1381.56,
+          "y": 1147.38,
+          "z": 114.33
+        },
+        "heading": 269.63
+      },
+      {
+        "name": "Diamond Casino Entrance",
+        "description": "",
+        "position": {
+          "x": 913.73,
+          "y": 54.25,
+          "z": 80.9
+        },
+        "heading": 235.38
+      },
+      {
+        "name": "Del Perro Pier",
+        "description": "",
+        "position": {
+          "x": -1640.33,
+          "y": -1104.6,
+          "z": 13.02
+        },
+        "heading": 142.01
+      },
+      {
+        "name": "Vanilla Unicorn (Strip Club)",
+        "description": "",
+        "position": {
+          "x": 133.46,
+          "y": -1305.79,
+          "z": 29.16
+        },
+        "heading": 40.69
+      }
+    ]
+  },
+  {
+    "name": "Mansions",
+    "description": "",
+    "locations": [
+      {
+        "name": "Richman Villa",
+        "description": "",
+        "position": {
+          "x": -1692.63,
+          "y": 490.51,
+          "z": 129.02
+        },
+        "heading": 196.47
+      },
+      {
+        "name": "The Vinewood Residence",
+        "description": "",
+        "position": {
+          "x": 543.66,
+          "y": 779.33,
+          "z": 202.23
+        },
+        "heading": 123.4
+      },
+      {
+        "name": "The Tongva Estate",
+        "description": "",
+        "position": {
+          "x": -2554.02,
+          "y": 1912.19,
+          "z": 168.95
+        },
+        "heading": 60.21
+      }
+    ]
+  },
+  {
+    "name": "Police Stations",
+    "description": "",
+    "locations": [
+      {
+        "name": "Vinewood Blvd Police Station",
+        "description": "",
+        "position": {
+          "x": 620.92,
+          "y": 21.65,
+          "z": 88.4
+        },
+        "heading": 160.75
+      },
+      {
+        "name": "Mission Row Police Station",
+        "description": "",
+        "position": {
+          "x": 428.07,
+          "y": -981.7,
+          "z": 30.71
+        },
+        "heading": 266.74
+      },
+      {
+        "name": "Vespucci Police Department",
+        "description": "",
+        "position": {
+          "x": -1087.35,
+          "y": -792.84,
+          "z": 19.25
+        },
+        "heading": 209.98
+      },
+      {
+        "name": "La Mesa Police Department",
+        "description": "",
+        "position": {
+          "x": 815.37,
+          "y": -1290.51,
+          "z": 26.28
+        },
+        "heading": 272.81
+      },
+      {
+        "name": "Sandy Shores County Sheriff",
+        "description": "",
+        "position": {
+          "x": 1858.63,
+          "y": 3677.96,
+          "z": 33.7
+        },
+        "heading": 30.94
+      },
+      {
+        "name": "Paleto Bay County Sheriff",
+        "description": "",
+        "position": {
+          "x": -439.34,
+          "y": 6020.57,
+          "z": 31.49
+        },
+        "heading": 134.54
+      }
+    ]
+  },
+  {
+    "name": "Hospitals",
+    "description": "",
+    "locations": [
+      {
+        "name": "Sandy Shores Medical Center",
+        "description": "",
+        "position": {
+          "x": 1841.61,
+          "y": 3668.8,
+          "z": 33.68
+        },
+        "heading": 30.63
+      },
+      {
+        "name": "Paleto Bay Therapy Care Center",
+        "description": "",
+        "position": {
+          "x": -241.5,
+          "y": 6310.51,
+          "z": 31.46
+        },
+        "heading": 44.57
+      },
+      {
+        "name": "St. Fiacre Hospital",
+        "description": "",
+        "position": {
+          "x": 1153.07,
+          "y": -1525.89,
+          "z": 34.84
+        },
+        "heading": 146.77
+      },
+      {
+        "name": "Central Los Santos Medical Center",
+        "description": "",
+        "position": {
+          "x": 338.3,
+          "y": -1394.29,
+          "z": 32.51
+        },
+        "heading": 230.04
+      },
+      {
+        "name": "Pillbox Hill Medical Center (Top)",
+        "description": "",
+        "position": {
+          "x": 283.45,
+          "y": -579.35,
+          "z": 43.22
+        },
+        "heading": 77.02
+      },
+      {
+        "name": "Pillbox Hill Medical Center (Bottom)",
+        "description": "",
+        "position": {
+          "x": 368.61,
+          "y": -603.38,
+          "z": 28.87
+        },
+        "heading": 33.76
       }
     ]
   }
