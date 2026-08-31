@@ -9,6 +9,6 @@
     <!-- The half both sides share, referenced on its own by the shared logging assembly. -->
     <PackageVersion Include="CitizenFX.FiveM.Shared" Version="0.0.4-alpha" />
     <!-- Menu rendering for the client-side menus. -->
-    <PackageVersion Include="MenuAPI.FiveM.Enhanced" Version="1.0.23" />
+    <PackageVersion Include="MenuAPI.FiveM.Enhanced" Version="1.0.24" />
   </ItemGroup>
 </Project>
