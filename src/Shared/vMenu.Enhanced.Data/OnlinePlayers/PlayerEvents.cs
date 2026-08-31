@@ -18,5 +18,9 @@ public static class PlayerEvents
 
     public const string GodModeAck = "vMenu.Enhanced:OnlinePlayers:GodModeAck";
 
+    public const string SetNoClip = "vMenu.Enhanced:OnlinePlayers:SetNoClip";
+
+    public const string SetNoClipAccess = "vMenu.Enhanced:OnlinePlayers:SetNoClipAccess";
+
     public const string RevisionConvar = "vMenu.Enhanced.State.PlayersRevision";
 }

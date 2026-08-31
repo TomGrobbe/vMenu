@@ -59,7 +59,11 @@ public static class NoClip
 
     public static bool IsActive => NoclipActive;
 
-    private static bool IsAllowed => ClientPermissions.IsAllowed(Global.NoClip);
+    private static bool _lentByStaff;
+
+    private static bool _putThereByStaff;
+
+    private static bool IsAllowed => _lentByStaff || ClientPermissions.IsAllowed(Global.NoClip);
 
     private static int _noclipEntity;
     private static int _noclipPed;
@@ -223,6 +227,26 @@ public static class NoClip
     }
     #endregion
 
+    public static void SetLentByStaff(bool lent)
+    {
+        if (lent == _lentByStaff)
+        {
+            return;
+        }
+
+        _lentByStaff = lent;
+
+        if (lent || IsAllowed)
+        {
+            return;
+        }
+
+        SharedAPI.RunOnMainThread(() => SetNoclipActive(false));
+    }
+
+    public static void SetActiveByStaff(bool active) =>
+        SharedAPI.RunOnMainThread(() => SetNoclipActive(active, byStaff: true));
+
     public static bool Enable()
     {
         if (!IsAllowed)
@@ -237,7 +261,7 @@ public static class NoClip
 
     private static void ToggleRequested()
     {
-        if (!IsAllowed)
+        if (!IsAllowed && !NoclipActive)
         {
             Notifications.Warning(MenuText.Key(Loc.NoClip.ToggleDenied));
 
@@ -263,16 +287,16 @@ public static class NoClip
 
     private static void OnPermissionsChanged()
     {
-        if (!IsAllowed)
+        if (!IsAllowed && !_putThereByStaff)
         {
             SetNoclipActive(false);
         }
     }
 
-    internal static void SetNoclipActive(bool active)
+    internal static void SetNoclipActive(bool active, bool byStaff = false)
     {
         // The key tick follows the permission, but a revoke can land between the two.
-        if (active && !IsAllowed)
+        if (active && !byStaff && !IsAllowed)
         {
             return;
         }
@@ -283,6 +307,7 @@ public static class NoClip
         }
 
         NoclipActive = active;
+        _putThereByStaff = active && byStaff;
 
         API.EmitServer(PlayerStateEvents.ReportNoClip, active);
 

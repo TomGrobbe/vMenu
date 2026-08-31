@@ -213,11 +213,12 @@ These go in your `configuration.cfg`. They are all listed in the `configuration.
 
 All of them start with `vMenu.Enhanced.Menus.`, and `...Admin.All` grants the lot. They are listed in the `config/permissions.cfg.example` file your server writes on every start.
 
-One more lives with the Online Players menu rather than here:
+Two more live with the Online Players menu rather than here:
 
 | Permission | What it allows |
 | --- | --- |
 | `...OnlinePlayers.RefreshPermissions` | Refreshing one player's permissions from their row in Online Players |
+| `...OnlinePlayers.NoClip` | Lending a player noclip, and putting them into or out of it, from their row in Online Players |
 
 ## If you are updating from an older version
 

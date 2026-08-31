@@ -4,8 +4,10 @@ using CitizenFX.FiveM.Server;
 using CitizenFX.FiveM.Server.Entities;
 using CitizenFX.FiveM.Shared.Serialization;
 
+using vMenu.Enhanced.Actions.Server.Events;
 using vMenu.Enhanced.Data.Actions;
 using vMenu.Enhanced.Data.OnlinePlayers;
+using vMenu.Enhanced.Data.Permissions;
 using vMenu.Enhanced.Data.Ticks;
 using vMenu.Enhanced.Logging;
 using vMenu.Enhanced.Permissions.Server;
@@ -140,6 +142,20 @@ public static class OnlinePlayerActions
             OnlinePlayersPermissions.RefreshPermissions,
             RefreshPermissions,
             Limit);
+
+        ActionRegistry.Register(
+            ActionIds.OnlinePlayers.SetNoClip,
+            OnlinePlayersPermissions.NoClip,
+            SetNoClip,
+            Limit);
+
+        ActionRegistry.Register(
+            ActionIds.OnlinePlayers.SetNoClipAccess,
+            OnlinePlayersPermissions.NoClip,
+            SetNoClipAccess,
+            Limit);
+
+        ActionRegistry.Register(ActionIds.OnlinePlayers.GetNoClip, OnlinePlayersPermissions.NoClip, GetNoClip);
 
         PublishRevision();
 
@@ -423,6 +439,80 @@ public static class OnlinePlayerActions
 
         return ActionResponse.Ok();
     }
+
+    private static ActionResponse SetNoClip(Player source, string[] args)
+    {
+        if (!TryResolveTarget(args, out var target))
+        {
+            return ActionResponse.NotFound();
+        }
+
+        if (PedOf(target) is null)
+        {
+            return ActionResponse.NotReady();
+        }
+
+        var on = !PlayerNoClipState.IsActive(target);
+
+        PlayerNoClipState.SetForced(target, on);
+
+        API.EmitClient(target, PlayerEvents.SetNoClip, on ? StatusOn : StatusOff);
+
+        var name = NameOf(target);
+
+        Log.Info($"[OnlinePlayers] {source.Name} {(on ? "put" : "took")} {name} {(on ? "into" : "out of")} noclip.");
+
+        return ActionResponse.Ok(on ? StatusOn : StatusOff, name);
+    }
+
+    private static ActionResponse SetNoClipAccess(Player source, string[] args)
+    {
+        if (!TryResolveTarget(args, out var target))
+        {
+            return ActionResponse.NotFound();
+        }
+
+        if (PedOf(target) is null)
+        {
+            return ActionResponse.NotReady();
+        }
+
+        if (CanNoClip(target))
+        {
+            return ActionResponse.InvalidRequest();
+        }
+
+        var granted = !PlayerNoClipState.IsGranted(target);
+
+        PlayerNoClipState.SetGranted(target, granted);
+
+        API.EmitClient(target, PlayerEvents.SetNoClipAccess, granted ? StatusOn : StatusOff);
+
+        var name = NameOf(target);
+
+        Log.Info($"[OnlinePlayers] {source.Name} {(granted ? "lent" : "took")} noclip {(granted ? "to" : "from")} {name}.");
+
+        return ActionResponse.Ok(granted ? StatusOn : StatusOff, name);
+    }
+
+    private static ActionResponse GetNoClip(Player source, string[] args)
+    {
+        if (!TryResolveTarget(args, out var target))
+        {
+            return ActionResponse.NotFound();
+        }
+
+        return ActionResponse.Ok(
+            CanNoClip(target) ? StatusOn : StatusOff,
+            PlayerNoClipState.IsGranted(target) ? StatusOn : StatusOff,
+            PlayerNoClipState.IsActive(target) ? StatusOn : StatusOff);
+    }
+
+    private static bool CanNoClip(int serverId) =>
+        ServerPermissions.IsPlayerAllowed(serverId.ToString(CultureInfo.InvariantCulture), Global.NoClip);
+
+    private static string NameOf(int serverId) =>
+        Native.GetPlayerName(serverId.ToString(CultureInfo.InvariantCulture));
 
     // The coordinates go to the target's own client rather than being written here, so it can wait for
     // the world to stream in. Moving somebody from the server drops them through an unloaded map.

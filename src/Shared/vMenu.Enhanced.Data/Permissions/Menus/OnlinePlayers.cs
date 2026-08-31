@@ -4,6 +4,7 @@ namespace vMenu.Enhanced.Data.Permissions.Menus;
 [PermissionCategory]
 public static class OnlinePlayers
 {
+    [StaffOnly]
     public const string All = "vMenu.Enhanced.Menus.OnlinePlayers.All";
 
     public const string Menu = "vMenu.Enhanced.Menus.OnlinePlayers.Menu";
@@ -14,7 +15,7 @@ public static class OnlinePlayers
     [StaffOnly]
     public const string Kill = "vMenu.Enhanced.Menus.OnlinePlayers.Kill";
 
-    [StaffOnly]
+    
     public const string TeleportTo = "vMenu.Enhanced.Menus.OnlinePlayers.TeleportTo";
 
     [StaffOnly]
@@ -28,7 +29,6 @@ public static class OnlinePlayers
 
     public const string SendMessage = "vMenu.Enhanced.Menus.OnlinePlayers.SendMessage";
 
-    [StaffOnly]
     public const string Waypoint = "vMenu.Enhanced.Menus.OnlinePlayers.Waypoint";
 
     [StaffOnly]
@@ -45,4 +45,7 @@ public static class OnlinePlayers
 
     [StaffOnly]
     public const string TxAdmin = "vMenu.Enhanced.Menus.OnlinePlayers.TxAdmin";
+
+    [StaffOnly]
+    public const string NoClip = "vMenu.Enhanced.Menus.OnlinePlayers.NoClip";
 }

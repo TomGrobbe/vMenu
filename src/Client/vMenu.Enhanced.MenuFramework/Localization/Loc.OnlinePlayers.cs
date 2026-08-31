@@ -144,6 +144,30 @@ public static partial class Loc
 
         public const string IdentifierPrinted = "onlineplayers.identifier.printed";
 
+        public const string NoClip = "onlineplayers.noclip";
+
+        public const string NoClipDescription = "onlineplayers.noclip.desc";
+
+        public const string NoClipOnDone = "onlineplayers.noclip.on.done";
+
+        public const string NoClipOffDone = "onlineplayers.noclip.off.done";
+
+        public const string NoClipOnByStaff = "onlineplayers.noclip.on.received";
+
+        public const string NoClipOffByStaff = "onlineplayers.noclip.off.received";
+
+        public const string NoClipAccess = "onlineplayers.noclipaccess";
+
+        public const string NoClipAccessDescription = "onlineplayers.noclipaccess.desc";
+
+        public const string NoClipAccessOnDone = "onlineplayers.noclipaccess.on.done";
+
+        public const string NoClipAccessOffDone = "onlineplayers.noclipaccess.off.done";
+
+        public const string NoClipAccessLentByStaff = "onlineplayers.noclipaccess.on.received";
+
+        public const string NoClipAccessTakenByStaff = "onlineplayers.noclipaccess.off.received";
+
         public const string RefreshPermissions = "onlineplayers.refreshpermissions";
 
         public const string RefreshPermissionsDescription = "onlineplayers.refreshpermissions.desc";

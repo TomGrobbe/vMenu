@@ -16,6 +16,8 @@ namespace vMenu.Enhanced.Menus.Players;
 // as the client_script and this one is a project reference.
 public static class PlayerPushEvents
 {
+    private const string On = "1";
+
     // Nearly twice the usual, because a message from another player is something to read rather than
     // something to glance at.
     public const int MessageDurationMs = 15000;
@@ -36,6 +38,30 @@ public static class PlayerPushEvents
         API.OnNetEvent(PlayerEvents.Teleport, new Action<string, string, string, string>(OnSummoned), false);
         API.OnNetEvent(PlayerEvents.SetWantedLevel, new Action<string, string>(OnWantedLevelRequested), false);
         API.OnNetEvent(PlayerEvents.GetGodMode, new Action<string>(OnGodModeRequested), false);
+        API.OnNetEvent(PlayerEvents.SetNoClip, new Action<string>(OnNoClipSet), false);
+        API.OnNetEvent(PlayerEvents.SetNoClipAccess, new Action<string>(OnNoClipAccessSet), false);
+    }
+
+    private static void OnNoClipSet(string state)
+    {
+        var active = state == On;
+
+        NoClip.NoClip.SetActiveByStaff(active);
+
+        Notifications.Info(MenuText.Key(active
+            ? Loc.OnlinePlayers.NoClipOnByStaff
+            : Loc.OnlinePlayers.NoClipOffByStaff));
+    }
+
+    private static void OnNoClipAccessSet(string state)
+    {
+        var lent = state == On;
+
+        NoClip.NoClip.SetLentByStaff(lent);
+
+        Notifications.Info(MenuText.Key(lent
+            ? Loc.OnlinePlayers.NoClipAccessLentByStaff
+            : Loc.OnlinePlayers.NoClipAccessTakenByStaff));
     }
 
     private static void OnGodModeRequested(string requestId) =>

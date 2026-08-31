@@ -94,6 +94,12 @@ public static class ActionIds
         public const string GetStatus = "OnlinePlayers.GetStatus";
 
         public const string RefreshPermissions = "OnlinePlayers.RefreshPermissions";
+
+        public const string SetNoClip = "OnlinePlayers.SetNoClip";
+
+        public const string SetNoClipAccess = "OnlinePlayers.SetNoClipAccess";
+
+        public const string GetNoClip = "OnlinePlayers.GetNoClip";
     }
 
     public static class DisplaySettings

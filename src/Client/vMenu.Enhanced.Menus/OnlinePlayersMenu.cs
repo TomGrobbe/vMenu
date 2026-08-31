@@ -9,11 +9,14 @@ using vMenu.Enhanced.Actions;
 using vMenu.Enhanced.Configuration;
 using vMenu.Enhanced.Data.Actions;
 using vMenu.Enhanced.Data.OnlinePlayers;
+using vMenu.Enhanced.Data.Ticks;
 using vMenu.Enhanced.Logging;
 using vMenu.Enhanced.MenuFramework;
 using vMenu.Enhanced.MenuFramework.Localization;
 using vMenu.Enhanced.Menus.Players;
+using vMenu.Enhanced.Permissions;
 using vMenu.Enhanced.Plugins;
+using vMenu.Enhanced.Ticks;
 
 using OnlinePlayersPermissions = vMenu.Enhanced.Data.Permissions.Menus.OnlinePlayers;
 
@@ -45,6 +48,8 @@ public sealed class OnlinePlayersMenu : MenuDefinition
 
     private const string StatusOff = "0";
 
+    private const int NoClipPollMs = 1000;
+
     private readonly List<OnlinePlayer> _players = [];
 
     private MenuBuilder? _menu;
@@ -66,6 +71,18 @@ public sealed class OnlinePlayersMenu : MenuDefinition
     private bool _hasSnapshot;
 
     private bool _busy;
+
+    private bool _actionsOpen;
+
+    private bool _readingNoClip;
+
+    private bool _targetOwnsNoClip;
+
+    private bool _targetLentNoClip;
+
+    private bool _targetInNoClip;
+
+    private TickHandle? _noClipPoll;
 
     // Opening the actions menu closes this one, and closing and reopening is what refreshes, so without
     // this backing out of a player would refetch the list and lose their place. Going back closes the
@@ -101,7 +118,29 @@ public sealed class OnlinePlayersMenu : MenuDefinition
                 .Resolve(Localizer.Current)),
             BuildActions);
 
-        _actions.Builder.OnClosed = _ => _leftForActions = Native.GetGameTimer();
+        _actions.Builder.OnOpenedAsync = _ =>
+        {
+            _actionsOpen = true;
+
+            _noClipPoll?.Reevaluate();
+
+            return ReadNoClipAsync();
+        };
+
+        _actions.Builder.OnClosed = _ =>
+        {
+            _actionsOpen = false;
+
+            _noClipPoll?.Reevaluate();
+
+            _leftForActions = Native.GetGameTimer();
+        };
+
+        _noClipPoll = TickRegistry.Register(
+            "OnlinePlayers.NoClip",
+            ReadNoClipAsync,
+            TickRate.Every(NoClipPollMs),
+            () => _actionsOpen);
 
         menu.OnOpened = _ => OnOpened();
         menu.OnClosed = _ => _open = false;
@@ -245,6 +284,10 @@ public sealed class OnlinePlayersMenu : MenuDefinition
 
         _selected = player;
 
+        _targetOwnsNoClip = false;
+        _targetLentNoClip = false;
+        _targetInNoClip = false;
+
         actions.Open();
     }
 
@@ -332,6 +375,25 @@ public sealed class OnlinePlayersMenu : MenuDefinition
             Description = MenuText.Key(Loc.OnlinePlayers.WaypointDescription),
             Gate = OnlinePlayersPermissions.Waypoint,
             OnSelectedAsync = _ => SetWaypointAsync(),
+        });
+
+        actions.Entries.Add(new CheckboxEntry
+        {
+            Text = MenuText.Key(Loc.OnlinePlayers.NoClipAccess),
+            Description = MenuText.Key(Loc.OnlinePlayers.NoClipAccessDescription),
+            Gate = OnlinePlayersPermissions.NoClip,
+            ReadState = () => _targetOwnsNoClip || _targetLentNoClip,
+            ReadEnabled = () => !_targetOwnsNoClip,
+            OnChangedAsync = _ => ToggleNoClipAccessAsync(),
+        });
+
+        actions.Entries.Add(new CheckboxEntry
+        {
+            Text = MenuText.Key(Loc.OnlinePlayers.NoClip),
+            Description = MenuText.Key(Loc.OnlinePlayers.NoClipDescription),
+            Gate = OnlinePlayersPermissions.NoClip,
+            ReadState = () => _targetInNoClip,
+            OnChangedAsync = _ => ToggleNoClipAsync(),
         });
 
         actions.Entries.Add(new ButtonEntry
@@ -425,6 +487,90 @@ public sealed class OnlinePlayersMenu : MenuDefinition
                 Notifications.Info(MenuText.Key(Loc.OnlinePlayers.DeleteVehicleOnFoot, ("player", name)));
 
                 break;
+        }
+    }
+
+    private Task ToggleNoClipAsync() =>
+        SendNoClipToggleAsync(
+            ActionIds.OnlinePlayers.SetNoClip,
+            Loc.OnlinePlayers.NoClipOnDone,
+            Loc.OnlinePlayers.NoClipOffDone,
+            on => _targetInNoClip = on);
+
+    private Task ToggleNoClipAccessAsync() =>
+        SendNoClipToggleAsync(
+            ActionIds.OnlinePlayers.SetNoClipAccess,
+            Loc.OnlinePlayers.NoClipAccessOnDone,
+            Loc.OnlinePlayers.NoClipAccessOffDone,
+            on => _targetLentNoClip = on);
+
+    private async Task SendNoClipToggleAsync(string action, string onKey, string offKey, Action<bool> apply)
+    {
+        if (Target(allowSelf: true) is not { } player)
+        {
+            return;
+        }
+
+        var name = MenuText.Literal(player.Name);
+
+        var result = await ServerActions.InvokeAsync(action, Id(player));
+
+        if (result.Status != ActionStatus.Ok || result.Data.Length < 2)
+        {
+            Report(result, name);
+
+            _actions?.Refresh();
+
+            return;
+        }
+
+        var on = result.Data[0] == StatusOn;
+
+        apply(on);
+
+        _actions?.Refresh();
+
+        Notifications.Success(MenuText.Key(on ? onKey : offKey, ("player", MenuText.Literal(result.Data[1]))));
+    }
+
+    private async Task ReadNoClipAsync()
+    {
+        if (_readingNoClip
+            || _selected is not { } player
+            || !ClientPermissions.IsAllowed(OnlinePlayersPermissions.NoClip))
+        {
+            return;
+        }
+
+        _readingNoClip = true;
+
+        try
+        {
+            var result = await ServerActions.InvokeAsync(ActionIds.OnlinePlayers.GetNoClip, Id(player));
+
+            if (result.Status != ActionStatus.Ok || result.Data.Length < 3)
+            {
+                return;
+            }
+
+            var owns = result.Data[0] == StatusOn;
+            var lent = result.Data[1] == StatusOn;
+            var active = result.Data[2] == StatusOn;
+
+            if (owns == _targetOwnsNoClip && lent == _targetLentNoClip && active == _targetInNoClip)
+            {
+                return;
+            }
+
+            _targetOwnsNoClip = owns;
+            _targetLentNoClip = lent;
+            _targetInNoClip = active;
+
+            _actions?.Refresh();
+        }
+        finally
+        {
+            _readingNoClip = false;
         }
     }
 
