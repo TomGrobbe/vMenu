@@ -1,0 +1,60 @@
+<Project>
+
+  <!--
+    Every assembly a side builds, copied into that side's folder in the resource.
+
+    Projects build into build/intermediate/<side>/ and this assembles
+    build/vMenu.Enhanced/<side>/ from that, so the resource folder only ever holds what actually
+    ships.
+  -->
+  <PropertyGroup>
+    <!--
+      Not shipped: the runtime already has these, in coreclr/ next to the client and the server
+      binary. Shipping a second copy is worse than pointless, because ours is a different build under
+      the same assembly identity. CitizenFX.Base is 31KB here against the runtime's 41KB, and
+      MessagePack 382KB against 392KB, both claiming the same version. Which one a resource ends up
+      bound to is not something to leave to chance, and a mismatch there is the shape of a fault that
+      shows up on a restart rather than on a cold start.
+
+      The game specific half (CitizenFX.FiveM.Shared, .Client and .Server) does genuinely belong to
+      the resource, so it ships. The runtime has no copy of that.
+    -->
+    <RuntimeOwnedAssemblies>CitizenFX.Base;CitizenFX.Bootstrap;CitizenFX.Host;MessagePack;MessagePack.Annotations;Microsoft.NET.StringTools</RuntimeOwnedAssemblies>
+
+    <ResourceSideDir>$(ResourceRoot)$(ResourceSide)\</ResourceSideDir>
+  </PropertyGroup>
+
+  <!--
+    A file left over from an earlier build is still downloaded by every client and still resolvable
+    by the host, so anything in the folder that this build did not put there is removed. Scoped to
+    the one side's folder, which is regenerated output rather than anything a person edits.
+  -->
+  <Target Name="CopyResourceAssemblies"
+          AfterTargets="Build"
+          Condition="'$(IsResourceSideProject)' == 'true'">
+
+    <ItemGroup>
+      <SideCandidate Include="$(OutputPath)*.dll" />
+
+      <SideAssembly Include="@(SideCandidate)"
+                    Condition="!$([System.String]::Copy(';$(RuntimeOwnedAssemblies);').Contains(';%(Filename);'))" />
+
+      <SideShipped Include="$(ResourceSideDir)*.dll;$(ResourceSideDir)*.xml" />
+
+      <SideStale Include="@(SideShipped)"
+                 Exclude="@(SideAssembly->'$(ResourceSideDir)%(Filename)%(Extension)')" />
+    </ItemGroup>
+
+    <MakeDir Directories="$(ResourceSideDir)" />
+
+    <Message Importance="high" Text="Copying @(SideAssembly->Count()) $(ResourceSide) assemblies into the resource." />
+
+    <Copy SourceFiles="@(SideAssembly)" DestinationFolder="$(ResourceSideDir)" SkipUnchangedFiles="true" />
+
+    <Message Importance="high" Text="Removing stale $(ResourceSide) file @(SideStale->'%(Filename)%(Extension)', ', ')."
+             Condition="'@(SideStale)' != ''" />
+
+    <Delete Files="@(SideStale)" />
+  </Target>
+
+</Project>

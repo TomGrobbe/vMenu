@@ -1,8 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <IsResourceRootProject>true</IsResourceRootProject>
-    <IsResourceBundleProject>true</IsResourceBundleProject>
-    <BundleSide>client</BundleSide>
+    <IsResourceSideProject>true</IsResourceSideProject>
+    <ResourceSide>client</ResourceSide>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="CitizenFX.FiveM.Client" />

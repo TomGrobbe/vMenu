@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <IsResourceBundleProject>true</IsResourceBundleProject>
-    <BundleSide>server</BundleSide>
+    <IsResourceSideProject>true</IsResourceSideProject>
+    <ResourceSide>server</ResourceSide>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="CitizenFX.FiveM.Server" />

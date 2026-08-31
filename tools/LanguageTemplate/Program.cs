@@ -106,7 +106,7 @@ static void Usage()
     Console.Error.WriteLine("      --limit <n>            Name at most n key(s) per list. 0 means all, the default.");
     Console.Error.WriteLine("      --quiet                Counts only, naming no keys.");
     Console.Error.WriteLine("      --strict               Exit 1 when anything is missing, stale or unreadable.");
-    Console.Error.WriteLine($"      --client <folder>      Where the unmerged assemblies are. Default {DefaultClientFolder}.");
+    Console.Error.WriteLine($"      --client <folder>      Where the client assemblies are. Default {DefaultClientFolder}.");
     Console.Error.WriteLine($"      --languages <folder>   Where the language files are. Default {DefaultLanguageFolder}.");
 }
 

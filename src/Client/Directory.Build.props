@@ -8,8 +8,8 @@
 
   <PropertyGroup>
     <!--
-      Client assemblies build outside the resource, and src/Bundle.targets merges them into the one
-      that ships. Nothing here lands in build/vMenu.Enhanced/client/ except through that.
+      Client assemblies build outside the resource, and src/Assemblies.targets copies them into it.
+      Nothing here lands in build/vMenu.Enhanced/client/ except through that.
 
       The client and server sides stay in separate folders all the way through, because
       CitizenFX.FiveM.Client and CitizenFX.FiveM.Server each carry their own copy of

@@ -93,11 +93,6 @@ jobs:
       - name: Restore
         run: dotnet restore vMenu.Enhanced.slnx
 
-      # ILRepack, which src/Bundle.targets uses to merge each side into one assembly. The build
-      # restores it itself if this is skipped, but doing it here keeps that off the build's clock.
-      - name: Restore .NET tools
-        run: dotnet tool restore
-
       - name: Build
         shell: bash
         run: |
