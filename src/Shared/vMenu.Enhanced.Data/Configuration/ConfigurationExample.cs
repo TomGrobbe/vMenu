@@ -42,11 +42,15 @@ public static class ConfigurationExample
         {
             file.Append('\n');
             file.Append(ExampleFile.Comment(setting.Description));
+            file.Append(ExampleFile.Comment(Describe(setting)));
             file.Append("setr " + setting.Name + " " + setting.DefaultText + "\n");
         }
 
         return file.ToString();
     }
+
+    private static string Describe(Setting setting) =>
+        "Default value: \"" + setting.DefaultValue + "\" (" + setting.TypeName + ")";
 
     public static string Render()
     {
@@ -68,6 +72,7 @@ public static class ConfigurationExample
             {
                 file.Append('\n');
                 file.Append(ExampleFile.Comment(setting.Description));
+                file.Append(ExampleFile.Comment(Describe(setting)));
                 file.Append("setr " + setting.Name + " " + setting.DefaultText + "\n");
             }
         }
