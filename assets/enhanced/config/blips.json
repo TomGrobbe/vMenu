@@ -19,39 +19,97 @@
   //
   // Deleting this file is fine. It just means no blips are added.
 
-  "alwaysOn": [
-    {
-      "name": "Police Station",
-      "sprite": 60,
-      "colour": 29,
-      "scaleOffset": 0.0,
-      "shortRange": true,
-      "x": 425.13,
-      "y": -979.55,
-      "z": 30.71
-    },
-    {
-      "name": "Hospital",
-      "sprite": 61,
-      "colour": 1,
-      "scaleOffset": 0.0,
-      "shortRange": true,
-      "x": 295.83,
-      "y": -1446.94,
-      "z": 29.97
-    }
-  ],
-
+  "alwaysOn": [],
   "toggleable": [
     {
-      "name": "Ammu-Nation",
-      "sprite": 110,
-      "colour": 1,
-      "scaleOffset": -0.1,
+      "name": "Ammunation with Gun Range",
+      "sprite": 119,
+      "colour": 0,
+      "scaleOffset": 0,
       "shortRange": true,
-      "x": 22.09,
-      "y": -1107.28,
+      "x": 19.84,
+      "y": -1107.5,
       "z": 29.8
+    },
+    {
+      "name": "Ammunation with Gun Range",
+      "sprite": 119,
+      "colour": 0,
+      "scaleOffset": 0,
+      "shortRange": true,
+      "x": 811.38,
+      "y": -2156.57,
+      "z": 29.62
+    },
+    {
+      "name": "Ammunation",
+      "sprite": 110,
+      "colour": 0,
+      "scaleOffset": 0,
+      "shortRange": true,
+      "x": -662.57,
+      "y": -936.32,
+      "z": 21.82
+    },
+    {
+      "name": "Ammunation",
+      "sprite": 110,
+      "colour": 0,
+      "scaleOffset": 0,
+      "shortRange": true,
+      "x": 251.8,
+      "y": -48.54,
+      "z": 69.89
+    },
+    {
+      "name": "Ammunation",
+      "sprite": 110,
+      "colour": 0,
+      "scaleOffset": 0,
+      "shortRange": true,
+      "x": -1306.14,
+      "y": -393.15,
+      "z": 36.37
+    },
+    {
+      "name": "Ammunation",
+      "sprite": 110,
+      "colour": 0,
+      "scaleOffset": 0,
+      "shortRange": true,
+      "x": -1117.06,
+      "y": 2696.93,
+      "z": 18.9
+    },
+    {
+      "name": "Ammunation",
+      "sprite": 110,
+      "colour": 0,
+      "scaleOffset": 0,
+      "shortRange": true,
+      "x": -3171.09,
+      "y": 1087.16,
+      "z": 20.78
+    },
+    {
+      "name": "Ammunation",
+      "sprite": 110,
+      "colour": 0,
+      "scaleOffset": 0,
+      "shortRange": true,
+      "x": 1693.78,
+      "y": 3758.96,
+      "z": 34.58
+    },
+    {
+      "name": "Ammunation",
+      "sprite": 110,
+      "colour": 0,
+      "scaleOffset": 0,
+      "shortRange": true,
+      "x": -329.7,
+      "y": 6082.61,
+      "z": 31.81
     },
     {
       "name": "Los Santos Customs",
@@ -62,6 +120,536 @@
       "x": -337.18,
       "y": -136.7,
       "z": 39.01
+    },
+    {
+      "name": "Los Santos Customs",
+      "sprite": 72,
+      "colour": 0,
+      "scaleOffset": 0,
+      "shortRange": true,
+      "x": 110.38,
+      "y": 6626.61,
+      "z": 31.79
+    },
+    {
+      "name": "Los Santos Customs",
+      "sprite": 72,
+      "colour": 0,
+      "scaleOffset": 0,
+      "shortRange": true,
+      "x": 1175.31,
+      "y": 2639.22,
+      "z": 37.75
+    },
+    {
+      "name": "Los Santos Customs",
+      "sprite": 72,
+      "colour": 0,
+      "scaleOffset": 0,
+      "shortRange": true,
+      "x": -1154.99,
+      "y": -2006.17,
+      "z": 13.18
+    },
+    {
+      "name": "Los Santos Customs",
+      "sprite": 72,
+      "colour": 0,
+      "scaleOffset": 0,
+      "shortRange": true,
+      "x": 733.7,
+      "y": -1088.57,
+      "z": 22.26
+    },
+    {
+      "name": "Convenience Store",
+      "sprite": 52,
+      "colour": 0,
+      "scaleOffset": 0,
+      "shortRange": true,
+      "x": -48.1,
+      "y": -1756.64,
+      "z": 29.62
+    },
+    {
+      "name": "Convenience Store",
+      "sprite": 52,
+      "colour": 0,
+      "scaleOffset": 0,
+      "shortRange": true,
+      "x": -1223.77,
+      "y": -906.33,
+      "z": 12.2
+    },
+    {
+      "name": "Convenience Store",
+      "sprite": 52,
+      "colour": 0,
+      "scaleOffset": 0,
+      "shortRange": true,
+      "x": -1487.69,
+      "y": -380.52,
+      "z": 40.26
+    },
+    {
+      "name": "Convenience Store",
+      "sprite": 52,
+      "colour": 0,
+      "scaleOffset": 0,
+      "shortRange": true,
+      "x": -708.14,
+      "y": -913.14,
+      "z": 19.02
+    },
+    {
+      "name": "Convenience Store",
+      "sprite": 52,
+      "colour": 0,
+      "scaleOffset": 0,
+      "shortRange": true,
+      "x": 26.13,
+      "y": -1345.83,
+      "z": 29.65
+    },
+    {
+      "name": "Convenience Store",
+      "sprite": 52,
+      "colour": 0,
+      "scaleOffset": 0,
+      "shortRange": true,
+      "x": 547.12,
+      "y": 2669.96,
+      "z": 42.44
+    },
+    {
+      "name": "Convenience Store",
+      "sprite": 52,
+      "colour": 0,
+      "scaleOffset": 0,
+      "shortRange": true,
+      "x": 2556.66,
+      "y": 382.86,
+      "z": 108.78
+    },
+    {
+      "name": "Convenience Store",
+      "sprite": 52,
+      "colour": 0,
+      "scaleOffset": 0,
+      "shortRange": true,
+      "x": 1162.75,
+      "y": -322.93,
+      "z": 69.18
+    },
+    {
+      "name": "Convenience Store",
+      "sprite": 52,
+      "colour": 0,
+      "scaleOffset": 0,
+      "shortRange": true,
+      "x": 1961.42,
+      "y": 3742.22,
+      "z": 32.7
+    },
+    {
+      "name": "Convenience Store",
+      "sprite": 52,
+      "colour": 0,
+      "scaleOffset": 0,
+      "shortRange": true,
+      "x": 2678.53,
+      "y": 3281.48,
+      "z": 55.25
+    },
+    {
+      "name": "Convenience Store",
+      "sprite": 52,
+      "colour": 0,
+      "scaleOffset": 0,
+      "shortRange": true,
+      "x": 1730.15,
+      "y": 6415.77,
+      "z": 35.28
+    },
+    {
+      "name": "Convenience Store",
+      "sprite": 52,
+      "colour": 0,
+      "scaleOffset": 0,
+      "shortRange": true,
+      "x": 1699.07,
+      "y": 4924.54,
+      "z": 42.06
+    },
+    {
+      "name": "Convenience Store",
+      "sprite": 52,
+      "colour": 0,
+      "scaleOffset": 0,
+      "shortRange": true,
+      "x": -3243.35,
+      "y": 1002.07,
+      "z": 13.05
+    },
+    {
+      "name": "Convenience Store",
+      "sprite": 52,
+      "colour": 0,
+      "scaleOffset": 0,
+      "shortRange": true,
+      "x": -2968.78,
+      "y": 390.52,
+      "z": 15.25
+    },
+    {
+      "name": "Convenience Store",
+      "sprite": 52,
+      "colour": 0,
+      "scaleOffset": 0,
+      "shortRange": true,
+      "x": -3040.43,
+      "y": 585.94,
+      "z": 8
+    },
+    {
+      "name": "Convenience Store",
+      "sprite": 52,
+      "colour": 0,
+      "scaleOffset": 0,
+      "shortRange": true,
+      "x": -1822.23,
+      "y": 793.08,
+      "z": 137.96
+    },
+    {
+      "name": "Convenience Store",
+      "sprite": 52,
+      "colour": 0,
+      "scaleOffset": 0,
+      "shortRange": true,
+      "x": 1136.96,
+      "y": -981.75,
+      "z": 46.64
+    },
+    {
+      "name": "Convenience Store",
+      "sprite": 52,
+      "colour": 0,
+      "scaleOffset": 0,
+      "shortRange": true,
+      "x": 374.66,
+      "y": 326.67,
+      "z": 103.59
+    },
+    {
+      "name": "Convenience Store",
+      "sprite": 52,
+      "colour": 0,
+      "scaleOffset": 0,
+      "shortRange": true,
+      "x": 1166.07,
+      "y": 2708.39,
+      "z": 38.17
+    },
+    {
+      "name": "Convenience Store",
+      "sprite": 52,
+      "colour": 0,
+      "scaleOffset": 0,
+      "shortRange": true,
+      "x": 1392.85,
+      "y": 3603.81,
+      "z": 35.27
+    },
+    {
+      "name": "Tattoo Parlor",
+      "sprite": 75,
+      "colour": 0,
+      "scaleOffset": 0,
+      "shortRange": true,
+      "x": 1322.98,
+      "y": -1652.35,
+      "z": 52.28
+    },
+    {
+      "name": "Tattoo Parlor",
+      "sprite": 75,
+      "colour": 0,
+      "scaleOffset": 0,
+      "shortRange": true,
+      "x": -1153.54,
+      "y": -1425.46,
+      "z": 4.95
+    },
+    {
+      "name": "Tattoo Parlor",
+      "sprite": 75,
+      "colour": 0,
+      "scaleOffset": 0,
+      "shortRange": true,
+      "x": 322.03,
+      "y": 180.44,
+      "z": 103.59
+    },
+    {
+      "name": "Tattoo Parlor",
+      "sprite": 75,
+      "colour": 0,
+      "scaleOffset": 0,
+      "shortRange": true,
+      "x": -3169.95,
+      "y": 1074.95,
+      "z": 20.83
+    },
+    {
+      "name": "Tattoo Parlor",
+      "sprite": 75,
+      "colour": 0,
+      "scaleOffset": 0,
+      "shortRange": true,
+      "x": 1863.41,
+      "y": 3749.82,
+      "z": 33.03
+    },
+    {
+      "name": "Tattoo Parlor",
+      "sprite": 75,
+      "colour": 0,
+      "scaleOffset": 0,
+      "shortRange": true,
+      "x": -293.14,
+      "y": 6198.66,
+      "z": 31.49
+    },
+    {
+      "name": "Barber",
+      "sprite": 71,
+      "colour": 0,
+      "scaleOffset": 0,
+      "shortRange": true,
+      "x": -279.36,
+      "y": 6229.59,
+      "z": 31.81
+    },
+    {
+      "name": "Barber",
+      "sprite": 71,
+      "colour": 0,
+      "scaleOffset": 0,
+      "shortRange": true,
+      "x": 1932.3,
+      "y": 3728.04,
+      "z": 32.84
+    },
+    {
+      "name": "Barber",
+      "sprite": 71,
+      "colour": 0,
+      "scaleOffset": 0,
+      "shortRange": true,
+      "x": 1210.5,
+      "y": -471.98,
+      "z": 66.21
+    },
+    {
+      "name": "Barber",
+      "sprite": 71,
+      "colour": 0,
+      "scaleOffset": 0,
+      "shortRange": true,
+      "x": -32.69,
+      "y": -150.57,
+      "z": 57.08
+    },
+    {
+      "name": "Barber",
+      "sprite": 71,
+      "colour": 0,
+      "scaleOffset": 0,
+      "shortRange": true,
+      "x": -816.7,
+      "y": -184.93,
+      "z": 37.57
+    },
+    {
+      "name": "Barber",
+      "sprite": 71,
+      "colour": 0,
+      "scaleOffset": 0,
+      "shortRange": true,
+      "x": -1283.4,
+      "y": -1117.04,
+      "z": 6.99
+    },
+    {
+      "name": "Barber",
+      "sprite": 71,
+      "colour": 0,
+      "scaleOffset": 0,
+      "shortRange": true,
+      "x": 136.12,
+      "y": -1708.24,
+      "z": 29.29
+    },
+    {
+      "name": "Clothing Store",
+      "sprite": 73,
+      "colour": 0,
+      "scaleOffset": 0,
+      "shortRange": true,
+      "x": 78.69,
+      "y": -1390.37,
+      "z": 29.38
+    },
+    {
+      "name": "Clothing Store",
+      "sprite": 73,
+      "colour": 0,
+      "scaleOffset": 0,
+      "shortRange": true,
+      "x": -818.7,
+      "y": -1075.57,
+      "z": 11.33
+    },
+    {
+      "name": "Clothing Store",
+      "sprite": 73,
+      "colour": 0,
+      "scaleOffset": 0,
+      "shortRange": true,
+      "x": -1197.98,
+      "y": -775.47,
+      "z": 17.32
+    },
+    {
+      "name": "Clothing Store",
+      "sprite": 73,
+      "colour": 0,
+      "scaleOffset": 0,
+      "shortRange": true,
+      "x": -1453.05,
+      "y": -235.44,
+      "z": 49.8
+    },
+    {
+      "name": "Clothing Store",
+      "sprite": 73,
+      "colour": 0,
+      "scaleOffset": 0,
+      "shortRange": true,
+      "x": -713.39,
+      "y": -154.66,
+      "z": 37.42
+    },
+    {
+      "name": "Clothing Store",
+      "sprite": 73,
+      "colour": 0,
+      "scaleOffset": 0,
+      "shortRange": true,
+      "x": -160.03,
+      "y": -304.04,
+      "z": 39.73
+    },
+    {
+      "name": "Clothing Store",
+      "sprite": 73,
+      "colour": 0,
+      "scaleOffset": 0,
+      "shortRange": true,
+      "x": 125.8,
+      "y": -215.06,
+      "z": 54.56
+    },
+    {
+      "name": "Clothing Store",
+      "sprite": 73,
+      "colour": 0,
+      "scaleOffset": 0,
+      "shortRange": true,
+      "x": 422.64,
+      "y": -808.46,
+      "z": 29.49
+    },
+    {
+      "name": "Clothing Store",
+      "sprite": 73,
+      "colour": 0,
+      "scaleOffset": 0,
+      "shortRange": true,
+      "x": -3170.11,
+      "y": 1052.02,
+      "z": 20.86
+    },
+    {
+      "name": "Clothing Store",
+      "sprite": 73,
+      "colour": 0,
+      "scaleOffset": 0,
+      "shortRange": true,
+      "x": -1097.29,
+      "y": 2709.32,
+      "z": 19.11
+    },
+    {
+      "name": "Clothing Store",
+      "sprite": 73,
+      "colour": 0,
+      "scaleOffset": 0,
+      "shortRange": true,
+      "x": 617.96,
+      "y": 2757.23,
+      "z": 42.09
+    },
+    {
+      "name": "Clothing Store",
+      "sprite": 73,
+      "colour": 0,
+      "scaleOffset": 0,
+      "shortRange": true,
+      "x": 1198.29,
+      "y": 2706.87,
+      "z": 38.22
+    },
+    {
+      "name": "Clothing Store",
+      "sprite": 73,
+      "colour": 0,
+      "scaleOffset": 0,
+      "shortRange": true,
+      "x": 1690.22,
+      "y": 4820.55,
+      "z": 42.06
+    },
+    {
+      "name": "Clothing Store",
+      "sprite": 73,
+      "colour": 0,
+      "scaleOffset": 0,
+      "shortRange": true,
+      "x": 1.26,
+      "y": 6513.48,
+      "z": 31.88
+    },
+    {
+      "name": "Casino",
+      "sprite": 679,
+      "colour": 0,
+      "scaleOffset": 0,
+      "shortRange": true,
+      "x": 930.37,
+      "y": 43.34,
+      "z": 81.1
+    },
+    {
+      "name": "Ferris Whale",
+      "sprite": 266,
+      "colour": 0,
+      "scaleOffset": 0,
+      "shortRange": true,
+      "x": -1663.57,
+      "y": -1126.33,
+      "z": 13.21
     }
   ]
 }
