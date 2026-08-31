@@ -137,6 +137,8 @@ public static class MenuSkin
 
         Replace(new CustomSkin(id, display.Length > 0 ? display : id, resource, BannerFor(resource, banner, out warning)));
 
+        MenuAudit.ReportTheme(resource, id, display.Length > 0 ? display : id);
+
         error = string.Empty;
 
         return true;

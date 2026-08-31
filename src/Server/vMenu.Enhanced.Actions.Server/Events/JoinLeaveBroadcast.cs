@@ -11,6 +11,7 @@ using vMenu.Enhanced.Logging;
 using vMenu.Enhanced.Permissions.Server;
 using vMenu.Enhanced.Players.Server;
 using vMenu.Enhanced.Ticks.Server;
+using vMenu.Enhanced.Webhooks.Server;
 
 using JoinLeaveSettings = vMenu.Enhanced.Data.Configuration.Settings.JoinLeave;
 using MiscSettingsPermissions = vMenu.Enhanced.Data.Permissions.Menus.MiscSettings;
@@ -134,8 +135,7 @@ public static class JoinLeaveBroadcast
         }
 
         Record(
-            serverId,
-            known.Name,
+            known.Actor,
             known.Arrived ? "left the server" : "disconnected while connecting",
             Reasons.GetValueOrDefault(serverId));
     }
@@ -186,11 +186,14 @@ public static class JoinLeaveBroadcast
 
             var arrived = HasArrived(handle);
 
-            Known[player.ServerId] = new KnownPlayer(
+            var arrival = new KnownPlayer(
                 Identify(handle, player, out var real),
                 player.Name,
                 arrived,
-                provisional: !real);
+                provisional: !real,
+                WebhookActor.For(player.ServerId, player.Name));
+
+            Known[player.ServerId] = arrival;
 
             if (!report)
             {
@@ -202,7 +205,7 @@ public static class JoinLeaveBroadcast
                 EmitJoined(players, player);
             }
 
-            Record(player.ServerId, player.Name, arrived ? "joined the server" : "is connecting");
+            Record(arrival.Actor, arrived ? "joined the server" : "is connecting");
 
             return;
         }
@@ -212,7 +215,9 @@ public static class JoinLeaveBroadcast
             return;
         }
 
-        Known[player.ServerId] = known.NowArrived();
+        known = known.NowArrived(WebhookActor.For(player.ServerId, player.Name));
+
+        Known[player.ServerId] = known;
 
         if (!report)
         {
@@ -221,7 +226,7 @@ public static class JoinLeaveBroadcast
 
         EmitJoined(players, player);
 
-        Record(player.ServerId, player.Name, "joined the server");
+        Record(known.Actor, "joined the server");
     }
 
     // Whether this server id still belongs to the person it was recorded for.
@@ -295,8 +300,10 @@ public static class JoinLeaveBroadcast
         return identity.ToString();
     }
 
-    private static void Record(int serverId, string name, string what, string? reason = null)
+    private static void Record(WebhookActor actor, string what, string? reason = null)
     {
+        WebhookLog.Connection(actor, what + ".", Reason(reason));
+
         if (!ServerConfig.Value(JoinLeaveSettings.LogToConsole))
         {
             return;
@@ -304,8 +311,11 @@ public static class JoinLeaveBroadcast
 
         var because = string.IsNullOrEmpty(reason) ? string.Empty : $" Reason: {reason}";
 
-        Log.Info($"[JoinLeave] {name} ({serverId}) {what}.{because}");
+        Log.Info($"[JoinLeave] {actor.Name} ({actor.ServerId}) {what}.{because}");
     }
+
+    private static (string Key, string Value)[] Reason(string? reason) =>
+        string.IsNullOrEmpty(reason) ? [] : [("reason", reason)];
 
     private static void EmitJoined(List<ConnectedPlayer> players, ConnectedPlayer joiner)
     {
@@ -367,7 +377,7 @@ public static class JoinLeaveBroadcast
 
     // A class rather than a record: generated equality routes through
     // EqualityComparer<string>.Default, which the sandbox refuses to load.
-    private sealed class KnownPlayer(string identity, string name, bool arrived, bool provisional)
+    private sealed class KnownPlayer(string identity, string name, bool arrived, bool provisional, WebhookActor actor)
     {
         public string Identity { get; } = identity;
 
@@ -379,8 +389,10 @@ public static class JoinLeaveBroadcast
         // Whether Identity is the name based stand in rather than identifiers.
         public bool Provisional { get; } = provisional;
 
-        public KnownPlayer NowArrived() => new(Identity, Name, arrived: true, Provisional);
+        public WebhookActor Actor { get; } = actor;
 
-        public KnownPlayer WithIdentity(string identity) => new(identity, Name, Arrived, provisional: false);
+        public KnownPlayer NowArrived(WebhookActor actor) => new(Identity, Name, arrived: true, Provisional, actor);
+
+        public KnownPlayer WithIdentity(string identity) => new(identity, Name, Arrived, provisional: false, Actor);
     }
 }

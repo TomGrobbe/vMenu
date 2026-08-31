@@ -11,6 +11,7 @@
     <ProjectReference Include="..\vMenu.Enhanced.BrokenNatives.Server\vMenu.Enhanced.BrokenNatives.Server.csproj" />
     <ProjectReference Include="..\vMenu.Enhanced.Permissions.Server\vMenu.Enhanced.Permissions.Server.csproj" />
     <ProjectReference Include="..\vMenu.Enhanced.Serialization.Server\vMenu.Enhanced.Serialization.Server.csproj" />
+    <ProjectReference Include="..\vMenu.Enhanced.Webhooks.Server\vMenu.Enhanced.Webhooks.Server.csproj" />
   </ItemGroup>
 
 </Project>

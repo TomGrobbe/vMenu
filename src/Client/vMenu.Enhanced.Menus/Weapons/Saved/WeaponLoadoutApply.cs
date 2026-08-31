@@ -7,7 +7,7 @@ namespace vMenu.Enhanced.Menus.Weapons.Saved;
 
 // Given is what the player actually ended up with. Skipped is what was in the loadout but could not
 // be handed over, either because the server no longer has it or because this player is not allowed it.
-public readonly record struct ApplyReport(int Given, int Skipped);
+public readonly record struct ApplyReport(int Given, int Skipped, List<string> Names);
 
 public static class WeaponLoadoutApply
 {
@@ -30,6 +30,7 @@ public static class WeaponLoadoutApply
 
         var given = 0;
         var skipped = 0;
+        var names = new List<string>();
 
         foreach (var saved in loadout.Weapons)
         {
@@ -55,6 +56,8 @@ public static class WeaponLoadoutApply
 
             await GiveAsync(saved, hash);
 
+            names.Add(DisplayName(saved.SpawnName));
+
             given++;
         }
 
@@ -62,8 +65,11 @@ public static class WeaponLoadoutApply
         // pointed at whoever is standing there.
         Native.SetCurrentPedWeapon(Native.PlayerPedId(), API.Hash(Unarmed), true);
 
-        return new ApplyReport(given, skipped);
+        return new ApplyReport(given, skipped, names);
     }
+
+    private static string DisplayName(string spawnName) =>
+        WeaponSync.Find(spawnName) is { } known ? WeaponNames.Resolve(known.Label, spawnName) : spawnName;
 
     // A weapon the owner has since taken out of config/weapons.json counts as not allowed, so a loadout
     // cannot be used to keep something the server has stopped handing out.

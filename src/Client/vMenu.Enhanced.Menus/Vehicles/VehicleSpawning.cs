@@ -6,6 +6,7 @@ using CitizenFX.FiveM.Client.Entities;
 using CitizenFX.FiveM.Client.Extensions;
 
 using vMenu.Enhanced.Configuration;
+using vMenu.Enhanced.Data.Logging;
 using vMenu.Enhanced.Data.VehicleData;
 using vMenu.Enhanced.MenuFramework;
 using vMenu.Enhanced.MenuFramework.Localization;
@@ -81,6 +82,8 @@ public static class VehicleSpawning
         _previousVehicle = newVehicle.Handle;
 
         ReportSpawn(newVehicle.Handle);
+
+        MenuAudit.ReportAction(AuditActions.VehicleSpawned, DisplayName(hash));
 
         if (!spawnInside)
         {

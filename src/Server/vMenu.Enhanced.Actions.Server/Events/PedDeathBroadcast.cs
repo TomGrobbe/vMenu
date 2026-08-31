@@ -3,8 +3,10 @@ using System.Globalization;
 using CitizenFX.FiveM.Server;
 
 using vMenu.Enhanced.Data.Deaths;
+using vMenu.Enhanced.Data.Logging;
 using vMenu.Enhanced.Logging;
 using vMenu.Enhanced.Players.Server;
+using vMenu.Enhanced.Webhooks.Server;
 
 namespace vMenu.Enhanced.Actions.Server.Events;
 
@@ -68,6 +70,14 @@ public static class PedDeathBroadcast
         Log.Debug(
             $"[Deaths] {victim.Name} ({victim.ServerId}) died. "
             + $"Attacker entity {attackerPed}, killer {killer?.Name ?? "none"}, cause {cause}.");
+
+        if (WebhookLog.Wants(LogCategory.Event))
+        {
+            WebhookLog.Event(
+                killer is null ? "died." : "was killed by",
+                WebhookActor.For(victim.ServerId, victim.Name),
+                killer is null ? null : WebhookActor.For(killer.ServerId, killer.Name));
+        }
 
         var victimId = victim.ServerId.ToString(CultureInfo.InvariantCulture);
         var killerId = killer is null ? string.Empty : killer.ServerId.ToString(CultureInfo.InvariantCulture);

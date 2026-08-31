@@ -5,8 +5,10 @@ using CitizenFX.FiveM.Server.Entities;
 using CitizenFX.FiveM.Shared.Serialization;
 
 using vMenu.Enhanced.Data.Actions;
+using vMenu.Enhanced.Data.Logging;
 using vMenu.Enhanced.Logging;
 using vMenu.Enhanced.Permissions.Server;
+using vMenu.Enhanced.Webhooks.Server;
 
 namespace vMenu.Enhanced.Actions.Server;
 
@@ -96,6 +98,8 @@ public static class ActionRegistry
                 // Not a warning: a stale menu reaches this as readily as somebody poking at the event.
                 Log.Info($"[Actions] {source.Name} was denied '{actionId}': missing {action.Permission}.");
 
+                Audit(source, actionId, Target(actionId, args), ActionStatus.Denied);
+
                 Reply(source, requestId, ActionStatus.Denied, []);
 
                 return;
@@ -114,6 +118,8 @@ public static class ActionRegistry
 
             ActionResponse response;
 
+            var target = Target(actionId, args);
+
             try
             {
                 response = await action.Handler(source, args);
@@ -126,6 +132,8 @@ public static class ActionRegistry
                 response = ActionResponse.Failed();
             }
 
+            Audit(source, actionId, target, response.Status);
+
             Reply(source, requestId, response.Status, response.Data);
         }
         catch (Exception exception)
@@ -133,6 +141,44 @@ public static class ActionRegistry
             // No reply attempt: whatever just failed may well be the reply. The caller times out.
             Log.Error($"[Actions] Dispatching '{actionId}' for {source} failed: {exception}");
         }
+    }
+
+    private static void Audit(Player source, string actionId, WebhookActor? target, ActionStatus status)
+    {
+        if (!StaffActionIds.Includes(actionId))
+        {
+            return;
+        }
+
+        var verb = StaffActionIds.VerbFor(actionId);
+
+        if (status == ActionStatus.Ok)
+        {
+            WebhookLog.Staff(source, target, verb);
+
+            return;
+        }
+
+        WebhookLog.Staff(source, target, "tried to " + verb, ("outcome", status.ToString()));
+    }
+
+    private static WebhookActor? Target(string actionId, string[] args)
+    {
+        if (!StaffActionIds.Includes(actionId)
+            || !StaffActionIds.TakesTarget(actionId)
+            || !WebhookLog.Wants(LogCategory.Staff))
+        {
+            return null;
+        }
+
+        if (args.Length < 1
+            || !int.TryParse(args[0], NumberStyles.Integer, CultureInfo.InvariantCulture, out var serverId)
+            || serverId <= 0)
+        {
+            return null;
+        }
+
+        return WebhookActor.For(serverId);
     }
 
     private static void OnPlayerDropped([FromSource] int source, string? reason = null)

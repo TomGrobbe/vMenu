@@ -95,6 +95,8 @@ public sealed class Main : IScript
 
         MenuController.RenderMode = MenuRenderMode.Nui;
 
+        MenuAudit.Initialize();
+
         HeaderStyle.Initialize();
 
         MenuSkin.Initialize();

@@ -16,5 +16,6 @@
     <ProjectReference Include="..\vMenu.Enhanced.Plugins.Server\vMenu.Enhanced.Plugins.Server.csproj" />
     <ProjectReference Include="..\vMenu.Enhanced.Ticks.Server\vMenu.Enhanced.Ticks.Server.csproj" />
     <ProjectReference Include="..\vMenu.Enhanced.Updates.Server\vMenu.Enhanced.Updates.Server.csproj" />
+    <ProjectReference Include="..\vMenu.Enhanced.Webhooks.Server\vMenu.Enhanced.Webhooks.Server.csproj" />
   </ItemGroup>
 </Project>

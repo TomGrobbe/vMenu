@@ -1,6 +1,7 @@
 using vMenu.Enhanced.Data.Configuration.Settings;
 
 using AdminSettings = vMenu.Enhanced.Data.Configuration.Settings.Admin;
+using LoggingSettings = vMenu.Enhanced.Data.Configuration.Settings.Logging;
 using JoinLeaveSettings = vMenu.Enhanced.Data.Configuration.Settings.JoinLeave;
 using OnlinePlayerSettings = vMenu.Enhanced.Data.Configuration.Settings.OnlinePlayers;
 using StaffAlertSettings = vMenu.Enhanced.Data.Configuration.Settings.StaffAlerts;
@@ -60,6 +61,18 @@ public static class ConfigCatalog
             OnlinePlayerSettings.ActionLimitSeconds,
         ]),
         new("Join and Leave", [JoinLeaveSettings.LogToConsole]),
+        new("Webhook Logging",
+        [
+            LoggingSettings.Enabled,
+            LoggingSettings.EventsWebhook,
+            LoggingSettings.ActionsWebhook,
+            LoggingSettings.StaffWebhook,
+            LoggingSettings.GenericWebhook,
+            LoggingSettings.FlushSeconds,
+            LoggingSettings.QueueLimit,
+            LoggingSettings.MenuActionLimit,
+            LoggingSettings.MenuActionLimitSeconds,
+        ]),
         new("Player Stats",
         [
             PlayerStats.MaxShooting,

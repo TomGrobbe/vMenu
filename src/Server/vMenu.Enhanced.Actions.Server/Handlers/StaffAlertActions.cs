@@ -13,6 +13,7 @@ using vMenu.Enhanced.Logging;
 using vMenu.Enhanced.Permissions.Server;
 using vMenu.Enhanced.Players.Server;
 using vMenu.Enhanced.Ticks.Server;
+using vMenu.Enhanced.Webhooks.Server;
 
 using StaffAlertSettings = vMenu.Enhanced.Data.Configuration.Settings.StaffAlerts;
 
@@ -119,6 +120,13 @@ public static class StaffAlertActions
             $"[StaffAlerts] #{id} raised by {source.Name} ({source.Handle}): \"{description}\". "
             + $"Sent to {recipients.Count} staff member(s).");
 
+        WebhookLog.Staff(
+            source,
+            null,
+            "raised staff alert " + Number(id) + ".",
+            ("reason", description),
+            ("staff reached", recipients.Count.ToString(CultureInfo.InvariantCulture)));
+
         return ActionResponse.Ok(recipients.Count.ToString(CultureInfo.InvariantCulture));
     }
 
@@ -162,6 +170,8 @@ public static class StaffAlertActions
         var coords = Native.GetEntityCoords(ped);
 
         Log.Info($"[StaffAlerts] #{id} answered by {source.Name} ({source.Handle}), who is going to {alert.AlerterName}.");
+
+        WebhookLog.Staff(source, Alerter(alert), "answered staff alert " + Number(id) + " from", ("reason", alert.Description));
 
         return ActionResponse.Ok(
             coords.X.ToString(CultureInfo.InvariantCulture),
@@ -227,6 +237,12 @@ public static class StaffAlertActions
         }
 
         Log.Info($"[StaffAlerts] #{alert.Id} from {alert.AlerterName} was dismissed by {source.Name} ({source.Handle}).");
+
+        WebhookLog.Staff(
+            source,
+            Alerter(alert),
+            "dismissed staff alert " + Number(alert.Id) + " from",
+            ("reason", alert.Description));
 
         return ActionResponse.Ok(alert.AlerterName);
     }
@@ -382,7 +398,17 @@ public static class StaffAlertActions
         }
 
         Log.Warning($"[StaffAlerts] #{alert.Id} from {alert.AlerterName} ran out with nobody answering it.");
+
+        WebhookLog.Staff(
+            WebhookActor.Server,
+            Alerter(alert),
+            "Staff alert " + Number(alert.Id) + " ran out with nobody answering it. It was raised by",
+            ("reason", alert.Description));
     }
+
+    private static WebhookActor Alerter(Alert alert) => WebhookActor.For(alert.AlerterServerId, alert.AlerterName);
+
+    private static string Number(int id) => "#" + id.ToString(CultureInfo.InvariantCulture);
 
     private static void Forget(Dictionary<int, int> tracked)
     {

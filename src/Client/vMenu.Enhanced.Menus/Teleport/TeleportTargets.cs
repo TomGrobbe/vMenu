@@ -5,6 +5,7 @@ using CitizenFX.FiveM.Client;
 using CitizenFX.FiveM.Client.Entities;
 using CitizenFX.FiveM.Client.Extensions;
 
+using vMenu.Enhanced.Data.Logging;
 using vMenu.Enhanced.MenuFramework;
 using vMenu.Enhanced.MenuFramework.Localization;
 using vMenu.Enhanced.Menus.Players;
@@ -47,6 +48,8 @@ internal static class TeleportTargets
         // A waypoint says where on the map, never how high up, so the height has to be looked up.
         if (await PlayerTeleport.ToGroundAsync(target.X, target.Y))
         {
+            MenuAudit.ReportAction(AuditActions.TeleportWaypoint);
+
             return;
         }
 
@@ -81,7 +84,14 @@ internal static class TeleportTargets
         }
 
         await PlayerTeleport.ToCoordsAsync(position);
+
+        MenuAudit.ReportAction(AuditActions.TeleportCoords, Describe(position));
     }
+
+    private static string Describe(Vector3 position) =>
+        Coordinate(position.X) + ", " + Coordinate(position.Y) + ", " + Coordinate(position.Z);
+
+    private static string Coordinate(float value) => value.ToString("F1", CultureInfo.InvariantCulture);
 
     // Waits out the fade the teleport back runs, so the player is really somewhere else.
     private static async Task WaitForFadeInAsync()

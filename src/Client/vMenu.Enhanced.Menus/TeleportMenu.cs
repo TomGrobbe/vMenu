@@ -5,6 +5,7 @@ using CitizenFX.FiveM.Client;
 
 using vMenu.Enhanced.Actions;
 using vMenu.Enhanced.Data.Actions;
+using vMenu.Enhanced.Data.Logging;
 using vMenu.Enhanced.MenuFramework;
 using vMenu.Enhanced.MenuFramework.Localization;
 using vMenu.Enhanced.Menus.Players;
@@ -231,9 +232,14 @@ public sealed class TeleportMenu : MenuDefinition
             {
                 Text = MenuText.From(() => location.Name),
                 Description = MenuText.From(() => location.Description),
-                OnSelectedAsync = _ => PlayerTeleport.ToCoordsAsync(
-                    new Vector3(location.Position.X, location.Position.Y, location.Position.Z),
-                    location.Heading),
+                OnSelectedAsync = async _ =>
+                {
+                    await PlayerTeleport.ToCoordsAsync(
+                        new Vector3(location.Position.X, location.Position.Y, location.Position.Z),
+                        location.Heading);
+
+                    MenuAudit.ReportAction(AuditActions.TeleportLocation, location.Name);
+                },
             });
         }
 

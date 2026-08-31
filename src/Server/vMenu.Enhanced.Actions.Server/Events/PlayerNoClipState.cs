@@ -7,6 +7,7 @@ using vMenu.Enhanced.Data.PlayerState;
 using vMenu.Enhanced.Logging;
 using vMenu.Enhanced.Permissions.Server;
 using vMenu.Enhanced.Serialization.Server;
+using vMenu.Enhanced.Webhooks.Server;
 
 namespace vMenu.Enhanced.Actions.Server.Events;
 
@@ -102,6 +103,8 @@ public static class PlayerNoClipState
         }
 
         ServerStateBags.SetPlayer(source.Handle, PlayerStateKeys.NoClip, active);
+
+        WebhookLog.Action(WebhookActor.For(source), active ? "turned noclip on." : "turned noclip off.");
 
         Log.Debug($"[NoClip] {source.Name} ({source.Handle}) is {(active ? "now" : "no longer")} noclipping.");
     }

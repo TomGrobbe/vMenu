@@ -6,6 +6,7 @@ using vMenu.Enhanced.Configuration.Server;
 using vMenu.Enhanced.Data.Actions;
 using vMenu.Enhanced.Data.World;
 using vMenu.Enhanced.Logging;
+using vMenu.Enhanced.Webhooks.Server;
 
 using TimeOptionsPermissions = vMenu.Enhanced.Data.Permissions.Menus.TimeOptions;
 using TimeOptionsSettings = vMenu.Enhanced.Data.Configuration.Settings.TimeOptions;
@@ -56,6 +57,8 @@ public static class WorldActions
 
         Log.Debug($"[State] {source} set the blackout to {BlackoutModes.NameOf(mode)}.");
 
+        Announce(source, "changed the blackout", ("blackout", BlackoutModes.NameOf(mode)));
+
         return ActionResponse.Ok();
     }
 
@@ -75,6 +78,8 @@ public static class WorldActions
 
         Log.Debug($"[State] {source} set the snow effects to {SnowModes.NameOf(mode)}.");
 
+        Announce(source, "changed the snow effects", ("snow", SnowModes.NameOf(mode)));
+
         return ActionResponse.Ok();
     }
 
@@ -93,6 +98,8 @@ public static class WorldActions
         ServerState.SetTimeFrozen(frozen);
 
         Log.Debug($"[State] {source} {(frozen ? "froze" : "unfroze")} the clock.");
+
+        Announce(source, frozen ? "froze the clock" : "unfroze the clock");
 
         return ActionResponse.Ok();
     }
@@ -116,6 +123,8 @@ public static class WorldActions
 
             Log.Debug($"[State] {source} handed the weather back to the schedule.");
 
+            Announce(source, "handed the weather back to the schedule");
+
             return ActionResponse.Ok();
         }
 
@@ -128,8 +137,13 @@ public static class WorldActions
 
         Log.Debug($"[State] {source} forced the weather to {WeatherTypes.NameOf(type)}.");
 
+        Announce(source, "changed the weather", ("weather", WeatherTypes.NameOf(type)));
+
         return ActionResponse.Ok();
     }
+
+    private static void Announce(Player source, string what, params (string Key, string Value)[] data) =>
+        WebhookLog.Event(what + ".", WebhookActor.For(source), null, data);
 
     private static ActionResponse SetTime(Player source, string[] args)
     {
@@ -153,6 +167,8 @@ public static class WorldActions
                 $"[State] {source} put the clock back on the server's own time, " +
                 $"offset {ServerState.TimeOffsetSeconds}s.");
 
+            Announce(source, "put the clock back on the server's own time");
+
             return ActionResponse.Ok();
         }
 
@@ -164,6 +180,8 @@ public static class WorldActions
         ServerState.SetTimeOffset(seconds);
 
         Log.Debug($"[State] {source} set the clock offset to {ServerState.TimeOffsetSeconds}s.");
+
+        Announce(source, "changed the time", ("offset", ServerState.TimeOffsetSeconds + "s"));
 
         return ActionResponse.Ok();
     }

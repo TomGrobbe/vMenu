@@ -67,7 +67,7 @@ public static class MenuRegistry
 
         MenuController.AddMenu(mainMenu);
 
-        _root = Track(new MenuHost(mainMenu, null, MenuGate.Always, title, subtitle, null));
+        _root = Track(new MenuHost(mainMenu, null, MenuGate.Always, title, subtitle, null, "MainMenu"));
 
         foreach (var definition in definitions)
         {
@@ -194,7 +194,7 @@ public static class MenuRegistry
 
         MenuController.AddSubmenu(parent.Menu, menu);
 
-        var child = Track(new MenuHost(menu, parent, gate, title, subtitle, defaultBehaviour));
+        var child = Track(new MenuHost(menu, parent, gate, title, subtitle, defaultBehaviour, parent.AuditName));
 
         parent.Children.Add(child);
 
@@ -306,7 +306,8 @@ public static class MenuRegistry
             submenu.EffectiveGate,
             title,
             subtitle,
-            definition?.DefaultGateBehaviour));
+            definition?.DefaultGateBehaviour,
+            definition?.GetType().Name ?? parent.AuditName));
 
         parent.Children.Add(child);
 

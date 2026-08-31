@@ -2,6 +2,7 @@ using System.Globalization;
 
 using MenuAPI;
 
+using vMenu.Enhanced.Data.Logging;
 using vMenu.Enhanced.MenuFramework;
 using vMenu.Enhanced.MenuFramework.Localization;
 using vMenu.Enhanced.Menus.Saved;
@@ -226,6 +227,8 @@ public sealed class WeaponLoadoutsMenu : MenuDefinition
         }
 
         var report = await WeaponLoadoutApply.ApplyAsync(loadout, append: false, ignorePermissions: false);
+
+        MenuAudit.ReportAction(AuditActions.LoadoutEquipped, loadout.Name, string.Join(", ", report.Names));
 
         // Said once at the end rather than per weapon, so a loadout full of things this server does not
         // allow does not bury the player in messages.

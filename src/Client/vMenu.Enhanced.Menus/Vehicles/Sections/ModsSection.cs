@@ -2,6 +2,7 @@ using CitizenFX.FiveM.Client;
 
 using MenuAPI;
 
+using vMenu.Enhanced.Data.Logging;
 using vMenu.Enhanced.MenuFramework;
 using vMenu.Enhanced.MenuFramework.Localization;
 using vMenu.Enhanced.Menus.Vehicles.Appearance;
@@ -12,6 +13,10 @@ namespace vMenu.Enhanced.Menus.Vehicles.Sections;
 // base game never had shows them without vMenu knowing anything about it.
 internal static class ModsSection
 {
+    private static readonly Dictionary<int, int> Before = [];
+
+    private static int _tracked;
+
     public static void Build(MenuBuilder menu)
     {
         menu.AddRange(Rows());
@@ -28,6 +33,15 @@ internal static class ModsSection
         });
 
         SectionRows.AutoFill(menu, Rows);
+
+        var closed = menu.OnClosed;
+
+        menu.OnClosed = closing =>
+        {
+            closed?.Invoke(closing);
+
+            Report();
+        };
     }
 
     private static IReadOnlyList<MenuEntry> Rows()
@@ -260,6 +274,8 @@ internal static class ModsSection
             return;
         }
 
+        Track(handle, slot);
+
         // Carried over rather than defaulted, since fitting a spoiler must not silently swap the tyres back
         // to the standard ones.
         var customTyres = Native.GetVehicleModVariation(handle, (int)VehicleModSlot.Wheels) != 0;
@@ -269,6 +285,71 @@ internal static class ModsSection
 
     private static bool Toggled(VehicleModSlot slot) =>
         SectionRows.DrivenWithModKit() is { } handle && Native.IsToggleModOn(handle, (int)slot);
+
+    private static void Track(int handle, VehicleModSlot slot)
+    {
+        if (_tracked != handle)
+        {
+            Before.Clear();
+
+            _tracked = handle;
+        }
+
+        if (!Before.ContainsKey((int)slot))
+        {
+            Before[(int)slot] = Native.GetVehicleMod(handle, (int)slot);
+        }
+    }
+
+    private static void Report()
+    {
+        if (Before.Count == 0)
+        {
+            return;
+        }
+
+        var handle = _tracked;
+        var changes = new List<string>();
+
+        if (Native.DoesEntityExist(handle))
+        {
+            foreach (var (slot, was) in Before)
+            {
+                var now = Native.GetVehicleMod(handle, slot);
+
+                if (now != was)
+                {
+                    changes.Add(Describe(handle, (VehicleModSlot)slot, now));
+                }
+            }
+        }
+
+        Before.Clear();
+
+        _tracked = 0;
+
+        if (changes.Count == 0)
+        {
+            return;
+        }
+
+        MenuAudit.ReportAction(
+            AuditActions.VehicleModsChanged,
+            VehicleSpawning.DisplayName((uint)Native.GetEntityModel(handle)),
+            string.Join(", ", changes));
+    }
+
+    private static string Describe(int handle, VehicleModSlot slot, int fitted)
+    {
+        var localizer = Localizer.Current;
+        var count = Native.GetNumVehicleMods(handle, (int)slot);
+
+        var part = fitted < 0
+            ? VehicleModLabels.StockName(handle, slot, count)
+            : VehicleModLabels.ModName(handle, slot, fitted, count);
+
+        return VehicleModLabels.BareSlotName(handle, slot).Resolve(localizer) + ": " + part.Resolve(localizer);
+    }
 
     private static void Toggle(VehicleModSlot slot, bool on)
     {

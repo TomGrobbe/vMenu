@@ -1,5 +1,8 @@
+using System.Globalization;
+
 using MenuAPI;
 
+using vMenu.Enhanced.Data.Logging;
 using vMenu.Enhanced.Logging;
 using vMenu.Enhanced.MenuFramework.Localization;
 
@@ -34,13 +37,21 @@ internal sealed class MenuHost : IDisposable
 
     private bool _noticeShown;
 
-    internal MenuHost(Menu menu, MenuHost? parent, MenuGate gate, MenuText title, MenuText subtitle, GateBehaviour? defaultBehaviour)
+    internal MenuHost(
+        Menu menu,
+        MenuHost? parent,
+        MenuGate gate,
+        MenuText title,
+        MenuText subtitle,
+        GateBehaviour? defaultBehaviour,
+        string auditName)
     {
         Menu = menu;
         Parent = parent;
         Gate = gate;
         Title = title;
         Subtitle = subtitle;
+        AuditName = auditName;
 
         // Every menu in the resource is created through here, so this is what reaches the ones built
         // after the skin was applied.
@@ -58,6 +69,8 @@ internal sealed class MenuHost : IDisposable
     internal MenuText Title { get; }
 
     internal MenuText Subtitle { get; }
+
+    internal string AuditName { get; }
 
     internal MenuBuilder Builder { get; }
 
@@ -380,6 +393,8 @@ internal sealed class MenuHost : IDisposable
                 return;
             }
 
+            Audit(entry, MenuActionKinds.Button, string.Empty);
+
             Guard(() => confirm.OnConfirmed?.Invoke(arguments), item);
 
             if (confirm.OnConfirmedAsync is { } confirmed)
@@ -394,6 +409,8 @@ internal sealed class MenuHost : IDisposable
         {
             return;
         }
+
+        Audit(entry, MenuActionKinds.Button, string.Empty);
 
         Guard(() => button.OnSelected?.Invoke(arguments), item);
 
@@ -479,6 +496,8 @@ internal sealed class MenuHost : IDisposable
 
         var arguments = new CheckboxChanged(menu, item, itemIndex, newState);
 
+        Audit(entry, MenuActionKinds.Checkbox, newState ? "1" : "0");
+
         Guard(() => checkbox.OnChanged?.Invoke(arguments), item);
 
         if (checkbox.OnChangedAsync is not { } handler)
@@ -547,6 +566,8 @@ internal sealed class MenuHost : IDisposable
                 return;
             }
 
+            Audit(entry, MenuActionKinds.List, item.GetCurrentSelection()?.ToString() ?? string.Empty);
+
             Guard(() => confirm.OnConfirmed?.Invoke(arguments), item);
 
             if (confirm.OnConfirmedAsync is { } confirmed)
@@ -561,6 +582,8 @@ internal sealed class MenuHost : IDisposable
         {
             return;
         }
+
+        Audit(entry, MenuActionKinds.List, item.GetCurrentSelection()?.ToString() ?? string.Empty);
 
         Guard(() => list.OnSelected?.Invoke(arguments), item);
 
@@ -609,6 +632,8 @@ internal sealed class MenuHost : IDisposable
 
         var arguments = new SliderSelected(menu, item, itemIndex, position);
 
+        Audit(entry, MenuActionKinds.Slider, position.ToString(CultureInfo.InvariantCulture));
+
         Guard(() => slider.OnSelected?.Invoke(arguments), item);
 
         if (slider.OnSelectedAsync is not { } handler)
@@ -655,6 +680,8 @@ internal sealed class MenuHost : IDisposable
         }
 
         var arguments = new DynamicListSelected(menu, item, value);
+
+        Audit(entry, MenuActionKinds.DynamicList, value ?? string.Empty);
 
         Guard(() => dynamicList.OnSelected?.Invoke(arguments), item);
 
@@ -786,6 +813,9 @@ internal sealed class MenuHost : IDisposable
 
         Guard(entry.RaiseHighlighted, item);
     }
+
+    private void Audit(MenuEntry entry, string kind, string value) =>
+        MenuAudit.Report(AuditName, entry.Text, kind, value);
 
     private static void Guard(Action action, MenuItem? item)
     {

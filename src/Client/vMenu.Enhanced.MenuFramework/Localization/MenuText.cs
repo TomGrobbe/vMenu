@@ -34,6 +34,8 @@ public readonly struct MenuText
 
     public bool IsEmpty => _kind is Kind.Empty;
 
+    internal string? TranslationKey => _kind is Kind.Key ? _text : null;
+
     // Text that must not be translated, such as a vehicle model name.
     public static MenuText Literal(string text) => new(Kind.Literal, text, null, null);
 

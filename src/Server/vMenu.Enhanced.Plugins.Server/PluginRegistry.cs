@@ -1,3 +1,5 @@
+using System.Globalization;
+
 using CitizenFX.FiveM.Server;
 
 using vMenu.Enhanced.BrokenNatives.Server;
@@ -7,6 +9,7 @@ using vMenu.Enhanced.Logging;
 using vMenu.Enhanced.Permissions.Server;
 using vMenu.Enhanced.PluginContracts;
 using vMenu.Enhanced.Serialization.Server;
+using vMenu.Enhanced.Webhooks.Server;
 
 using PluginPermissions = vMenu.Enhanced.Data.Permissions.Plugins;
 
@@ -64,6 +67,11 @@ public static class PluginRegistry
         var removed = PermissionRegistry.UnregisterDynamic(PluginPermissions.AllFor(plugin.Id));
 
         Log.Info($"[Plugins] '{stopped}' stopped, dropping its {removed} permission(s).");
+
+        WebhookLog.Event(
+            "Plugin '" + plugin.DisplayName + "' unregistered.",
+            WebhookActor.Server,
+            ("resource", stopped));
 
         ScheduleRefresh();
     }
@@ -160,6 +168,13 @@ public static class PluginRegistry
         Log.Info(
             $"[Plugins] Registered '{displayName}' from resource '{resource}' with "
             + $"{permissions.Count} permission(s) and {settings.Count} setting(s).");
+
+        WebhookLog.Event(
+            "Plugin '" + displayName + "' registered.",
+            WebhookActor.Server,
+            ("resource", resource),
+            ("permissions", permissions.Count.ToString(CultureInfo.InvariantCulture)),
+            ("settings", settings.Count.ToString(CultureInfo.InvariantCulture)));
 
         Reply(resource, result);
     }

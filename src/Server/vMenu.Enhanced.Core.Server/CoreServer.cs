@@ -14,6 +14,7 @@ using vMenu.Enhanced.Plugins.Server;
 using vMenu.Enhanced.Serialization.Server;
 using vMenu.Enhanced.Ticks.Server;
 using vMenu.Enhanced.Updates.Server;
+using vMenu.Enhanced.Webhooks.Server;
 
 namespace vMenu.Enhanced.Core.Server;
 
@@ -37,6 +38,7 @@ public class CoreServer : IScript
 
         ServerPermissions.Initialize();
         ServerConfig.Initialize();
+        WebhookLog.Initialize();
 
         DebugCommands.Source(
             () => ServerConfig.Value(Debugging.Server),
@@ -75,6 +77,7 @@ public class CoreServer : IScript
         AnnouncementSchedule.Register();
         RemoteVehicleControl.RegisterEventHandlers();
         ActionRegistry.RegisterEventHandlers();
+        MenuAuditHandler.Register();
 
         PedDeathBroadcast.Register();
         PlayerNoClipState.Register();
@@ -84,6 +87,8 @@ public class CoreServer : IScript
 
         PluginRegistry.RegisterEventHandlers();
         PluginRegistry.AnnounceReady();
+
+        WebhookLog.Event("vMenu Enhanced started.");
 
         Log.Debug("vMenu Server side started");
     }
