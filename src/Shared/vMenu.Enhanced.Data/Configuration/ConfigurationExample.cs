@@ -58,7 +58,10 @@ public static class ConfigurationExample
 
         file.Append(ExampleFile.Banner(
             CopyName,
-            "Every option below uses 'setr' so it is replicated to clients." +
+            "Most options below use 'setr' so they are replicated to clients. " +
+            "A few use plain 'set' instead, which keeps the value on the server where no player can " +
+            "read it. Those are the ones holding something secret, such as a webhook URL, and you " +
+            "must not change their 'set' into a 'setr'.",
             "Deleting an option, or commenting it out, restores vMenu's own default for it. " +
             "Although I do recommend that you manually set it to the default yourself instead of " +
             "commenting it out, because if the default ever changes with an update, you won't be " +
@@ -73,7 +76,7 @@ public static class ConfigurationExample
                 file.Append('\n');
                 file.Append(ExampleFile.Comment(setting.Description));
                 file.Append(ExampleFile.Comment(Describe(setting)));
-                file.Append("setr " + setting.Name + " " + setting.DefaultText + "\n");
+                file.Append((setting.ServerOnly ? "set " : "setr ") + setting.Name + " " + setting.DefaultText + "\n");
             }
         }
 

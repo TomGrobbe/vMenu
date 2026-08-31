@@ -13,7 +13,7 @@ public static class ServerConfig
 {
     private const string DumpCommand = "vmenu_config";
 
-    private static readonly ConfigStore Store = new(Native.GetConvar, Write);
+    private static readonly ConfigStore Store = new(Native.GetConvar, Write, includeServerOnly: true);
 
     // Call once, first, from the server entry point.
     public static void Initialize()

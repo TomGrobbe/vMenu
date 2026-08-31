@@ -12,6 +12,8 @@ public abstract class Setting(string name)
 
     public required string Description { get; init; }
 
+    public bool ServerOnly { get; init; }
+
     // The value as it is written in the generated example file.
     public abstract string DefaultText { get; }
 

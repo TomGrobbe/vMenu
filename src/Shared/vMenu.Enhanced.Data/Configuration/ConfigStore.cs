@@ -10,7 +10,10 @@ public enum ConfigLog
 
 // Both sides own an instance of this and supply their own convar native and logger, so the parsing,
 // caching and change detection behave identically on the client and the server.
-public sealed class ConfigStore(Func<string, string, string> readConvar, Action<ConfigLog, string> log)
+public sealed class ConfigStore(
+    Func<string, string, string> readConvar,
+    Action<ConfigLog, string> log,
+    bool includeServerOnly = false)
 {
     // A sentinel default is what makes an unset convar distinguishable from one set to an empty value.
     // The typed GetConvarBool/Int/Float natives collapse both cases into the default they were handed.
@@ -26,6 +29,8 @@ public sealed class ConfigStore(Func<string, string, string> readConvar, Action<
 
     private readonly HashSet<string> _quiet = new(StringComparer.OrdinalIgnoreCase);
 
+    private readonly HashSet<string> _secret = new(StringComparer.OrdinalIgnoreCase);
+
     private string[] _tracked = [];
 
     // The convars worth listening to, known only after Prime.
@@ -38,6 +43,11 @@ public sealed class ConfigStore(Func<string, string, string> readConvar, Action<
 
         foreach (var setting in ConfigCatalog.All)
         {
+            if (setting.ServerOnly && !includeServerOnly)
+            {
+                continue;
+            }
+
             if (!ConfigPath.IsValidName(setting.Name))
             {
                 log(ConfigLog.Error, $"'{setting.Name}' is not a usable convar name, so it can never be set.");
@@ -45,6 +55,11 @@ public sealed class ConfigStore(Func<string, string, string> readConvar, Action<
             }
 
             _cache[setting.Name] = Raw(setting.Name);
+
+            if (setting.ServerOnly)
+            {
+                _secret.Add(setting.Name);
+            }
         }
 
         _tracked = [.. _cache.Keys];
@@ -155,7 +170,7 @@ public sealed class ConfigStore(Func<string, string, string> readConvar, Action<
 
         if (!quiet)
         {
-            log(ConfigLog.Info, $"{convar} changed to {Quote(current)}.");
+            log(ConfigLog.Info, $"{convar} changed to {Redact(convar, current)}.");
         }
 
         // The listeners that named this convar go first, so one that caches the value has already refreshed
@@ -187,10 +202,15 @@ public sealed class ConfigStore(Func<string, string, string> readConvar, Action<
     {
         foreach (var setting in ConfigCatalog.All)
         {
+            if (setting.ServerOnly && !includeServerOnly)
+            {
+                continue;
+            }
+
             var raw = Raw(setting.Name);
             var tracked = _cache.ContainsKey(setting.Name) ? string.Empty : "  [not tracked]";
 
-            yield return $"{setting.Name} = {Quote(raw)} (default {setting.DefaultText}){tracked}";
+            yield return $"{setting.Name} = {Redact(setting.Name, raw)} (default {setting.DefaultText}){tracked}";
         }
     }
 
@@ -264,6 +284,9 @@ public sealed class ConfigStore(Func<string, string, string> readConvar, Action<
     }
 
     private static string Quote(string? value) => value is null ? "unset" : $"'{value}'";
+
+    private string Redact(string convar, string? value) =>
+        _secret.Contains(convar) ? (value is null ? "unset" : "set (hidden)") : Quote(value);
 
     private sealed class ExceptWatcher(HashSet<string> excluded, Action handler)
     {
