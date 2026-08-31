@@ -15,7 +15,13 @@ public enum HttpOutcome
     TimedOut,
 }
 
-public sealed class HttpReply(HttpOutcome outcome, int status, string body, string? reason, int elapsedMs)
+public sealed class HttpReply(
+    HttpOutcome outcome,
+    int status,
+    string body,
+    string? reason,
+    int elapsedMs,
+    float? retryAfterSeconds = null)
 {
     public HttpOutcome Outcome { get; } = outcome;
 
@@ -28,11 +34,15 @@ public sealed class HttpReply(HttpOutcome outcome, int status, string body, stri
 
     public int ElapsedMs { get; } = elapsedMs;
 
+    public float? RetryAfterSeconds { get; } = retryAfterSeconds;
+
     // Answered and with something worth parsing.
     public bool IsOk => Outcome == HttpOutcome.Answered && Status is >= 200 and < 300 && Body.Length > 0;
 
-    public static HttpReply Answered(int status, string body, int elapsedMs) =>
-        new(HttpOutcome.Answered, status, body, null, elapsedMs);
+    public bool IsAccepted => Outcome == HttpOutcome.Answered && Status is >= 200 and < 300;
+
+    public static HttpReply Answered(int status, string body, int elapsedMs, float? retryAfterSeconds = null) =>
+        new(HttpOutcome.Answered, status, body, null, elapsedMs, retryAfterSeconds);
 
     public static HttpReply Unusable(string reason) => new(HttpOutcome.Unusable, 0, string.Empty, reason, 0);
 

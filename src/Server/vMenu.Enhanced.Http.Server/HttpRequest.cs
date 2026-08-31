@@ -9,4 +9,12 @@ public sealed class HttpRequest(string url, string accept, string userAgent, int
     public string UserAgent { get; } = userAgent;
 
     public int TimeoutMs { get; } = timeoutMs;
+
+    public string Method { get; init; } = "GET";
+
+    public string? Body { get; init; }
+
+    public string ContentType { get; init; } = "application/json";
+
+    public bool AllowInvalidCertificates { get; init; }
 }
