@@ -192,7 +192,7 @@ internal sealed class CharacterBuilder
             Name = "creatorback",
             Description = MenuText.Key(Loc.CharacterCreator.BackBlockedBinding),
             DefaultKey = "BACK",
-            DefaultButton = "B_INDEX",
+            DefaultButton = "RRIGHT_INDEX",
             Text = MenuText.Empty,
             Handler = (_, _) => Notifications.Warning(MenuText.Key(Loc.CharacterCreator.BackBlocked)),
         });
