@@ -66,6 +66,7 @@ export default defineConfig({
         { label: 'Edit Your Data', link: '/data-editor/' },
         { label: 'Custom Character Creator', link: '/character-creator/' },
         { label: 'Admin Menu', link: '/admin-menu/' },
+        { label: 'Webhook Logging', link: '/webhook-logging/' },
         {
           label: 'Configuration',
           items: [
