@@ -39,7 +39,7 @@ public static class PedCustomizationRows
         IReadOnlyList<int>? components = null,
         bool fitTorso = false)
     {
-        menu.InstructionalButtons.Add(new ButtonHint
+        menu.Keys.Add(new MenuKey
         {
             Name = "exactid",
             Description = MenuText.Key(Loc.PlayerAppearance.ExactIdBinding),

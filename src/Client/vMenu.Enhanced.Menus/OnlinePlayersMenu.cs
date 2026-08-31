@@ -100,7 +100,7 @@ public sealed class OnlinePlayersMenu : MenuDefinition
         menu.Menu.WrapPages = true;
         menu.Menu.OnPageChange += OnPageChanged;
 
-        menu.InstructionalButtons.Add(new ButtonHint
+        menu.Keys.Add(new MenuKey
         {
             Name = "search",
             Description = MenuText.Key(Loc.OnlinePlayers.SearchBinding),

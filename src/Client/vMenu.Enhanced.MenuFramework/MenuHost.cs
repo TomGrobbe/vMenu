@@ -164,18 +164,18 @@ internal sealed class MenuHost : IDisposable
 
     private void RegisterKeyBindings(ILocalizer localizer)
     {
-        for (var index = Builder.Registered.Count; index < Builder.InstructionalButtons.Count; index++)
+        for (var index = Builder.Registered.Count; index < Builder.Keys.Count; index++)
         {
-            var hint = Builder.InstructionalButtons[index];
+            var key = Builder.Keys[index];
 
             Builder.Registered.Add(Menu.AddKeyBinding(
-                hint.Name,
-                hint.Description.Resolve(localizer),
-                hint.DefaultKey,
-                hint.DefaultButton,
-                hint.PressType,
-                hint.Handler,
-                hint.Text.Resolve(localizer)));
+                key.Name,
+                key.Description.Resolve(localizer),
+                key.DefaultKey,
+                key.DefaultButton,
+                key.PressType,
+                key.Handler,
+                key.Text.Resolve(localizer)));
         }
     }
 
@@ -189,12 +189,12 @@ internal sealed class MenuHost : IDisposable
 
         for (var index = 0; index < Builder.Registered.Count; index++)
         {
-            var hint = Builder.InstructionalButtons[index];
+            var key = Builder.Keys[index];
             var registered = Builder.Registered[index];
-            var allowed = hint.Gate.Evaluate();
+            var allowed = key.Gate.Evaluate();
 
-            registered.ButtonText = allowed ? hint.Text.Resolve(localizer) : null;
-            registered.Handler = allowed ? hint.Handler : null;
+            registered.ButtonText = allowed ? key.Text.Resolve(localizer) : null;
+            registered.Handler = allowed ? key.Handler : null;
         }
 
         var fallback = Builder.DefaultGateBehaviour ?? MenuFrameworkOptions.DefaultGateBehaviour;

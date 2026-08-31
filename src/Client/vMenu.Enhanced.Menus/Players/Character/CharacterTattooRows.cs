@@ -29,7 +29,7 @@ internal static class CharacterTattooRows
     internal static void Attach(MenuBuilder menu)
     {
 
-        menu.InstructionalButtons.Add(new ButtonHint
+        menu.Keys.Add(new MenuKey
         {
             Name = "exactid",
             Description = MenuText.Key(Loc.PlayerAppearance.ExactIdBinding),

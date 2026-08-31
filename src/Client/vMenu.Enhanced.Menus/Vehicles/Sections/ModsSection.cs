@@ -16,7 +16,7 @@ internal static class ModsSection
     {
         menu.AddRange(Rows());
 
-        menu.InstructionalButtons.Add(new ButtonHint
+        menu.Keys.Add(new MenuKey
         {
             Name = "toggledoors",
             Description = MenuText.Key(Loc.VehicleOptions.ToggleDoorsBinding),

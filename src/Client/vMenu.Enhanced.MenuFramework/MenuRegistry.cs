@@ -406,9 +406,9 @@ public static class MenuRegistry
             return;
         }
 
-        foreach (var hint in host.Builder.InstructionalButtons)
+        foreach (var key in host.Builder.Keys)
         {
-            if (hint.ShadowedControl is { } control)
+            if (key.ShadowedControl is { } control)
             {
                 Native.DisableControlAction(0, (int)control, true);
             }

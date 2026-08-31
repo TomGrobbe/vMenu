@@ -4,7 +4,7 @@ using vMenu.Enhanced.MenuFramework.Localization;
 
 namespace vMenu.Enhanced.MenuFramework;
 
-public sealed class ButtonHint
+public sealed class MenuKey
 {
     public required string Name { get; init; }
 

@@ -15,7 +15,7 @@ public sealed class MenuBuilder
 
     public Menu Menu => _host.Menu;
 
-    public List<ButtonHint> InstructionalButtons { get; } = [];
+    public List<MenuKey> Keys { get; } = [];
 
     internal List<Menu.KeyBindingHandler> Registered { get; } = [];
 

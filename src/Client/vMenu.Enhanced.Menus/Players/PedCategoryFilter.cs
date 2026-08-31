@@ -31,7 +31,7 @@ internal sealed class PedCategoryFilter(PedModelCategory category)
     {
         _menu = menu;
 
-        menu.InstructionalButtons.Add(new ButtonHint
+        menu.Keys.Add(new MenuKey
         {
             Name = "pedfilter",
             Description = MenuText.Key(Loc.PedModels.FilterBinding),

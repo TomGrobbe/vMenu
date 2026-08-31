@@ -187,7 +187,7 @@ internal sealed class CharacterBuilder
             OnConfirmedAsync = _ => LeaveAsync(),
         });
 
-        menu.InstructionalButtons.Add(new ButtonHint
+        menu.Keys.Add(new MenuKey
         {
             Name = "creatorback",
             Description = MenuText.Key(Loc.CharacterCreator.BackBlockedBinding),
