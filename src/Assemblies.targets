@@ -21,6 +21,15 @@
     -->
     <RuntimeOwnedAssemblies>CitizenFX.Base;CitizenFX.Bootstrap;CitizenFX.Host;MessagePack;MessagePack.Annotations;Microsoft.NET.StringTools</RuntimeOwnedAssemblies>
 
+    <UnshippedAssemblies>$(RuntimeOwnedAssemblies)</UnshippedAssemblies>
+
+    <!--
+      The native hook project is in the solution, so it builds into the client output whatever the
+      configuration, but only a NativeHooks build references it. Everywhere else it is a dead
+      assembly every player would download.
+    -->
+    <UnshippedAssemblies Condition="'$(Configuration)' != 'NativeHooks'">$(UnshippedAssemblies);vMenu.Enhanced.NativeHooks</UnshippedAssemblies>
+
     <ResourceSideDir>$(ResourceRoot)$(ResourceSide)\</ResourceSideDir>
   </PropertyGroup>
 
@@ -37,7 +46,7 @@
       <SideCandidate Include="$(OutputPath)*.dll" />
 
       <SideAssembly Include="@(SideCandidate)"
-                    Condition="!$([System.String]::Copy(';$(RuntimeOwnedAssemblies);').Contains(';%(Filename);'))" />
+                    Condition="!$([System.String]::Copy(';$(UnshippedAssemblies);').Contains(';%(Filename);'))" />
 
       <SideShipped Include="$(ResourceSideDir)*.dll;$(ResourceSideDir)*.xml" />
 
