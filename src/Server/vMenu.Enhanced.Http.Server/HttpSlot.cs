@@ -1,4 +1,4 @@
-namespace vMenu.Enhanced.Updates.Server.Http;
+namespace vMenu.Enhanced.Http.Server;
 
 // Where a reply is left for the waiter to pick up. A late reply lands in a slot nobody is reading
 // any more, which is exactly what should happen to one that arrived after the wait gave up.

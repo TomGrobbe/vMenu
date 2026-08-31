@@ -1,10 +1,10 @@
 using System.Globalization;
 
 using vMenu.Enhanced.Data.Updates;
+using vMenu.Enhanced.Http.Server;
 using vMenu.Enhanced.Logging;
 using vMenu.Enhanced.Serialization.Server;
 using vMenu.Enhanced.Updates.Server.Dto;
-using vMenu.Enhanced.Updates.Server.Http;
 
 namespace vMenu.Enhanced.Updates.Server;
 
@@ -28,7 +28,7 @@ internal static class GitHubSource
     // through to nuget.org rather than a warning.
     public static async Task<SourceResult> LatestAsync(UpdateChannel channel, string userAgent, int timeoutMs)
     {
-        var reply = await HttpGet.GetAsync(new HttpRequest(ReleasesUrl, Accept, userAgent, timeoutMs));
+        var reply = await HttpSend.SendAsync(new HttpRequest(ReleasesUrl, Accept, userAgent, timeoutMs));
 
         if (!reply.IsOk)
         {

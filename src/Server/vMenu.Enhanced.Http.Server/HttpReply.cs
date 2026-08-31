@@ -1,4 +1,4 @@
-namespace vMenu.Enhanced.Updates.Server.Http;
+namespace vMenu.Enhanced.Http.Server;
 
 // How a request ended, kept separate from what it returned. Splitting these tells "the server
 // answered, whatever the status" apart from "nothing came back": a 403 rate limit is a real answer,

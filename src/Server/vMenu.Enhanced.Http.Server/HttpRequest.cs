@@ -1,4 +1,4 @@
-namespace vMenu.Enhanced.Updates.Server.Http;
+namespace vMenu.Enhanced.Http.Server;
 
 public sealed class HttpRequest(string url, string accept, string userAgent, int timeoutMs)
 {

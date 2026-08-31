@@ -1,29 +1,29 @@
 using vMenu.Enhanced.Logging;
 
-namespace vMenu.Enhanced.Updates.Server.Http;
+namespace vMenu.Enhanced.Http.Server;
 
 // One GET over HttpClient, started on the thread pool and waited on the tick thread so everything
 // the caller does after it can still call natives.
-public static class HttpGet
+public static class HttpSend
 {
     // One client for the resource's lifetime. Built on first use rather than at type load, so a
     // constructor that ever throws in this runtime turns into an unusable reply instead of a class that
     // will not load.
     private static HttpClient? _client;
 
-    public static async Task<HttpReply> GetAsync(HttpRequest request)
+    public static async Task<HttpReply> SendAsync(HttpRequest request)
     {
         var slot = new HttpSlot();
 
         // Fire and forget: the request runs on the thread pool and drops its answer into the slot, while the
         // caller waits for it on the tick thread through HttpWait. That is deliberate, because the caller
         // calls natives the moment it has the reply, and only the tick thread may.
-        _ = SendAsync(request, slot);
+        _ = RunAsync(request, slot);
 
         return await HttpWait.ForAsync(slot, request.TimeoutMs);
     }
 
-    private static async Task SendAsync(HttpRequest request, HttpSlot slot)
+    private static async Task RunAsync(HttpRequest request, HttpSlot slot)
     {
         // DateTimeOffset and not GetGameTimer: everything past the first await runs off the tick thread,
         // where a native call is not allowed, and the clock is fine to read from anywhere.

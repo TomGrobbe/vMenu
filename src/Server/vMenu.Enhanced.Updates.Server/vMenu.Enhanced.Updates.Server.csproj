@@ -8,6 +8,7 @@
     <ProjectReference Include="..\..\Shared\vMenu.Enhanced.Data\vMenu.Enhanced.Data.csproj" />
     <ProjectReference Include="..\..\Shared\vMenu.Enhanced.Logging\vMenu.Enhanced.Logging.csproj" />
     <ProjectReference Include="..\vMenu.Enhanced.Configuration.Server\vMenu.Enhanced.Configuration.Server.csproj" />
+    <ProjectReference Include="..\vMenu.Enhanced.Http.Server\vMenu.Enhanced.Http.Server.csproj" />
     <ProjectReference Include="..\vMenu.Enhanced.Permissions.Server\vMenu.Enhanced.Permissions.Server.csproj" />
     <ProjectReference Include="..\vMenu.Enhanced.Players.Server\vMenu.Enhanced.Players.Server.csproj" />
     <ProjectReference Include="..\vMenu.Enhanced.Serialization.Server\vMenu.Enhanced.Serialization.Server.csproj" />

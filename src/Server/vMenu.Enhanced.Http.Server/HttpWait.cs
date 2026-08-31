@@ -1,6 +1,6 @@
 using CitizenFX.FiveM.Server;
 
-namespace vMenu.Enhanced.Updates.Server.Http;
+namespace vMenu.Enhanced.Http.Server;
 
 internal static class HttpWait
 {

@@ -51,6 +51,7 @@
     <Project Path="src/Server/vMenu.Enhanced.BrokenNatives.Server/vMenu.Enhanced.BrokenNatives.Server.csproj" />
     <Project Path="src/Server/vMenu.Enhanced.Configuration.Server/vMenu.Enhanced.Configuration.Server.csproj" />
     <Project Path="src/Server/vMenu.Enhanced.Core.Server/vMenu.Enhanced.Core.Server.csproj" />
+    <Project Path="src/Server/vMenu.Enhanced.Http.Server/vMenu.Enhanced.Http.Server.csproj" />
     <Project Path="src/Server/vMenu.Enhanced.Permissions.Server/vMenu.Enhanced.Permissions.Server.csproj" />
     <Project Path="src/Server/vMenu.Enhanced.Players.Server/vMenu.Enhanced.Players.Server.csproj" />
     <Project Path="src/Server/vMenu.Enhanced.Plugins.Server/vMenu.Enhanced.Plugins.Server.csproj" />
