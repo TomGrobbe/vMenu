@@ -1,4 +1,4 @@
-namespace vMenu.Enhanced.Data.Configuration.Settings;
+﻿namespace vMenu.Enhanced.Data.Configuration.Settings;
 
 public static class Admin
 {
@@ -8,7 +8,7 @@ public static class Admin
 
     public const int MinGrabRange = 1;
 
-    public const int MaxGrabRange = 50;
+    public const int MaxGrabRange = 15;
 
     public static readonly IntSetting ClearAreaRadius =
         new("vMenu.Enhanced.Admin.ClearAreaRadius")
@@ -24,7 +24,7 @@ public static class Admin
             Description =
                 "How far away, in metres, the freeze and grab buttons will still find a player. " +
                 "Anybody further away than this is treated as nobody being nearby.",
-            Default = 15,
+            Default = 5,
         };
 
     public static readonly BoolSetting ScheduledAnnouncements =

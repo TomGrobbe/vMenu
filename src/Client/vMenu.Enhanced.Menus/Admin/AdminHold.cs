@@ -1,4 +1,4 @@
-using CitizenFX.FiveM.Client;
+﻿using CitizenFX.FiveM.Client;
 
 using vMenu.Enhanced.Data.Ticks;
 using vMenu.Enhanced.Events;
@@ -12,8 +12,6 @@ public static class AdminHold
     private const float OffsetForward = 0.5f;
 
     private const float OffsetUp = 0.5f;
-
-    private const float FacingBack = 180f;
 
     private const int RootBone = 0;
 
@@ -97,7 +95,7 @@ public static class AdminHold
             carrier,
             RootBone,
             0f, OffsetForward, OffsetUp,
-            0f, 0f, FacingBack,
+            0f, 0f, 0f,
             false, false, false, false,
             2,
             true,

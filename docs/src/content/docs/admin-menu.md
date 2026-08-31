@@ -21,11 +21,11 @@ To give somebody access, grant them the permission for the menu itself plus whic
 
 The freeze survives them dying and respawning, and survives them changing character, so somebody cannot wriggle out of it by taking a nap. It is lifted automatically if vMenu is restarted, so nobody is ever left stuck by an accident on your end.
 
-**Grab Closest Player** picks the nearest person up and carries them with you. They come along wherever you go, and they cannot break free on their own, so remember to put them down again. The button changes to **Release Player** while you are carrying somebody, and releasing works no matter how far away they have ended up.
+**Grab Closest Player** picks the nearest person up and carries them in front of you, facing the same way you are. They come along wherever you go, and they cannot break free on their own, so remember to put them down again. The button changes to **Release Player** while you are carrying somebody, and releasing works no matter how far away they have ended up.
 
 Only the staff member who picked somebody up can put them down. If two of you reach for the same person, the second one is told they are already being carried. If the person carrying them disconnects, whoever they were carrying is released straight away rather than being left attached to somebody who is no longer there.
 
-"Closest" means the closest player your game actually knows about. On a busy server your game is only told about people near you, so this finds somebody standing in front of you, not somebody on the other side of the map. How far it reaches is set by `vMenu.Enhanced.Admin.ClosestPlayerRange`, which defaults to 15 metres.
+"Closest" means the closest player your game actually knows about. On a busy server your game is only told about people near you, so this finds somebody standing in front of you, not somebody on the other side of the map. How far it reaches is set by `vMenu.Enhanced.Admin.ClosestPlayerRange`, which defaults to 5 metres and can go up to 15.
 
 **Show Players In NoClip** is the same option that used to live in Miscellaneous Settings. It keeps showing the blip and the name of anybody flying around in noclip, who everybody else has them hidden from.
 
@@ -191,7 +191,7 @@ These go in your `configuration.cfg`. They are all listed in the `configuration.
 | Setting | What it does |
 | --- | --- |
 | `vMenu.Enhanced.Admin.ClearAreaRadius` | How far around a player Clear Area reaches, in metres. Default 100. |
-| `vMenu.Enhanced.Admin.ClosestPlayerRange` | How far away freeze and grab will still find somebody, in metres. Default 15. |
+| `vMenu.Enhanced.Admin.ClosestPlayerRange` | How far away freeze and grab will still find somebody, in metres. Default 5, maximum 15. |
 | `vMenu.Enhanced.Admin.ScheduledAnnouncements` | Whether the announcement schedule runs at all. Default true. |
 | `vMenu.Enhanced.Admin.AnnouncementSeconds` | How long an announcement stays on screen. Default 20. |
 
