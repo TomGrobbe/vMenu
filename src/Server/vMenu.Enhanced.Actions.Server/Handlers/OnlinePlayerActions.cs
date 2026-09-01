@@ -5,6 +5,7 @@ using CitizenFX.FiveM.Server.Entities;
 using CitizenFX.FiveM.Shared.Serialization;
 
 using vMenu.Enhanced.Actions.Server.Events;
+using vMenu.Enhanced.Configuration.Server;
 using vMenu.Enhanced.Data.Actions;
 using vMenu.Enhanced.Data.OnlinePlayers;
 using vMenu.Enhanced.Data.Permissions;
@@ -88,7 +89,7 @@ public static class OnlinePlayerActions
         ActionRegistry.Register(
             ActionIds.OnlinePlayers.GetCoordsForTeleport,
             OnlinePlayersPermissions.TeleportTo,
-            GetCoords,
+            GetCoordsForTeleport,
             Limit);
 
         ActionRegistry.Register(
@@ -261,6 +262,18 @@ public static class OnlinePlayerActions
         return ActionResponse.Ok([.. identifiers]);
     }
 
+    private static ActionResponse GetCoordsForTeleport(Player source, string[] args)
+    {
+        if (!TryResolveTarget(args, out var target))
+        {
+            return ActionResponse.NotFound();
+        }
+
+        MatchBucket(source.Handle, target);
+
+        return GetCoords(source, args);
+    }
+
     private static ActionResponse GetCoords(Player source, string[] args)
     {
         if (!TryResolveTarget(args, out var target))
@@ -297,6 +310,8 @@ public static class OnlinePlayerActions
         {
             return ActionResponse.NotReady();
         }
+
+        MatchBucket(source.Handle, target);
 
         var vehicle = Native.GetVehiclePedIsIn(ped, false);
         var riding = vehicle != 0 && Native.DoesEntityExist(vehicle);
@@ -514,6 +529,27 @@ public static class OnlinePlayerActions
     private static string NameOf(int serverId) =>
         Native.GetPlayerName(serverId.ToString(CultureInfo.InvariantCulture));
 
+    private static string Handle(int serverId) => serverId.ToString(CultureInfo.InvariantCulture);
+
+    private static void MatchBucket(int mover, int reference)
+    {
+        if (!ServerConfig.Value(OnlinePlayerSettings.MatchRoutingBucket))
+        {
+            return;
+        }
+
+        var bucket = Native.GetPlayerRoutingBucket(Handle(reference));
+
+        if (Native.GetPlayerRoutingBucket(Handle(mover)) == bucket)
+        {
+            return;
+        }
+
+        Native.SetPlayerRoutingBucket(Handle(mover), bucket);
+
+        Log.Info($"[OnlinePlayers] Moved {NameOf(mover)} into routing bucket {bucket}.");
+    }
+
     // The coordinates go to the target's own client rather than being written here, so it can wait for
     // the world to stream in. Moving somebody from the server drops them through an unloaded map.
     private static ActionResponse Summon(Player source, string[] args)
@@ -543,6 +579,8 @@ public static class OnlinePlayerActions
         }
 
         var coords = Native.GetEntityCoords(ped);
+
+        MatchBucket(target, source.Handle);
 
         Log.Info($"[OnlinePlayers] {source.Name} summoned {Native.GetPlayerName(target.ToString())}.");
 

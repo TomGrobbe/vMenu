@@ -37,7 +37,7 @@ Everything else a menu can do is deliberately not logged. Opening the about page
 
 If you want something added to this list, open an issue. The list lives in the code, not in a setting.
 
-**Staff**, what a player does to somebody else. Kicking, killing, summoning, messaging, wanted levels, freezing, carrying, lending noclip, deleting vehicles, clearing areas, announcing.
+**Staff**, what a player does to somebody else. Kicking, killing, summoning, messaging, wanted levels, freezing, carrying, lending noclip, deleting vehicles, clearing areas, announcing, and putting themselves back in the default world.
 
 Staff alerts live here too. You get a line when somebody raises one, with their reason, and another when a staff member answers or dismisses it, naming both people. An alert nobody answers before it runs out is logged as well, so a missed call for help leaves a trace.
 

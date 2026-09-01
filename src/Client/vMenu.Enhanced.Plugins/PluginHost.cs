@@ -262,6 +262,8 @@ public static class PluginHost
         // that knows nothing of the menus the player may be standing in right now.
         CloseIfInsideAPluginMenu();
 
+        var firstRegistration = !Plugins.ContainsKey(resource);
+
         Plugins[resource] = state;
         LastPayload[resource] = json;
 
@@ -269,7 +271,14 @@ public static class PluginHost
 
         RaiseChanged();
 
-        Log.Info($"[Plugins] Registered '{resource}' with {state.ItemsById.Count} item(s).");
+        if (firstRegistration)
+        {
+            Log.Info($"[Plugins] Registered '{resource}'.");
+        }
+        else
+        {
+            Log.Debug($"[Plugins] '{resource}' re-registered with {state.ItemsById.Count} item(s).");
+        }
 
         Reply(resource, result);
 

@@ -22,7 +22,8 @@ public sealed class AdminMenu : MenuDefinition
     private static MenuGate PlayersGate =>
         MenuGate.Permission(AdminPermissions.FreezePlayer)
         | AdminPermissions.GrabPlayer
-        | AdminPermissions.SeeNoClipPlayers;
+        | AdminPermissions.SeeNoClipPlayers
+        | AdminPermissions.ResetRoutingBucket;
 
     private static MenuGate VehiclesGate =>
         MenuGate.Permission(AdminPermissions.DeleteVehicle)
@@ -60,6 +61,14 @@ public sealed class AdminMenu : MenuDefinition
                 AdminPlayerActions.IsCarrying ? Loc.Admin.ReleaseDescription : Loc.Admin.GrabDescription)),
             Gate = AdminPermissions.GrabPlayer,
             OnSelectedAsync = _ => GrabAsync(menu),
+        });
+
+        menu.Entries.Add(new ButtonEntry
+        {
+            Text = MenuText.Key(Loc.Admin.ResetRoutingBucket),
+            Description = MenuText.Key(Loc.Admin.ResetRoutingBucketDescription),
+            Gate = AdminPermissions.ResetRoutingBucket,
+            OnSelectedAsync = _ => AdminPlayerActions.ResetRoutingBucketAsync(),
         });
 
         menu.Entries.Add(new CheckboxEntry

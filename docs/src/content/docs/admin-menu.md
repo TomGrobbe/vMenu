@@ -27,6 +27,8 @@ Only the staff member who picked somebody up can put them down. If two of you re
 
 "Closest" means the closest player your game actually knows about. On a busy server your game is only told about people near you, so this finds somebody standing in front of you, not somebody on the other side of the map. How far it reaches is set by `vMenu.Enhanced.Admin.ClosestPlayerRange`, which defaults to 5 metres and can go up to 15.
 
+**Return To The Default World** puts you back in the main routing bucket, for when you teleported to someone who was in a different bucket.
+
 **Show Players In NoClip** is the same option that used to live in Miscellaneous Settings. It keeps showing the blip and the name of anybody flying around in noclip, who everybody else has them hidden from.
 
 ### Vehicles
@@ -210,6 +212,7 @@ These go in your `configuration.cfg`. They are all listed in the `configuration.
 | `...Admin.Announce` | Sending an announcement to the whole server |
 | `...Admin.ManageAnnouncements` | Adding and removing scheduled announcements, which writes the config file |
 | `...Admin.RefreshPermissions` | Refreshing everybody's permissions at once |
+| `...Admin.ResetRoutingBucket` | Putting yourself back in the default world |
 
 All of them start with `vMenu.Enhanced.Menus.`, and `...Admin.All` grants the lot. They are listed in the `config/permissions.cfg.example` file your server writes on every start.
 

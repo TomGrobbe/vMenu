@@ -132,6 +132,8 @@ public static class ActionIds
         public const string RemoveAnnouncement = "Admin.RemoveAnnouncement";
 
         public const string RefreshPermissions = "Admin.RefreshPermissions";
+
+        public const string ResetRoutingBucket = "Admin.ResetRoutingBucket";
     }
 
     public static class StaffAlerts

@@ -12,6 +12,8 @@ public static class AdminPlayerActions
 {
     private const string On = "1";
 
+    private const string DefaultRoutingBucket = "0";
+
     private static int _carrying;
 
     private static bool _busy;
@@ -122,6 +124,29 @@ public static class AdminPlayerActions
         Notifications.Success(MenuText.Key(
             Loc.Admin.RefreshPermissionsDone,
             ("count", MenuText.Literal(result.Data[0]))));
+    }
+
+    public static async Task ResetRoutingBucketAsync()
+    {
+        var result = await ServerActions.InvokeAsync(ActionIds.Admin.ResetRoutingBucket);
+
+        if (result.Status != ActionStatus.Ok || result.Data.Length < 1)
+        {
+            AdminReport.Show(result);
+
+            return;
+        }
+
+        if (result.Data[0] == DefaultRoutingBucket)
+        {
+            Notifications.Info(MenuText.Key(Loc.Admin.ResetRoutingBucketAlready));
+
+            return;
+        }
+
+        Notifications.Success(MenuText.Key(
+            Loc.Admin.ResetRoutingBucketDone,
+            ("bucket", MenuText.Literal(result.Data[0]))));
     }
 
     private static RosteredPlayer? Closest()

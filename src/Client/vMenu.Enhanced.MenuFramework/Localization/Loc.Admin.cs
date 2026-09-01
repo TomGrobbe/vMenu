@@ -179,5 +179,13 @@ public static partial class Loc
         public const string RefreshPermissionsDescription = "admin.refreshpermissions.desc";
 
         public const string RefreshPermissionsDone = "admin.refreshpermissions.done";
+
+        public const string ResetRoutingBucket = "admin.resetroutingbucket";
+
+        public const string ResetRoutingBucketDescription = "admin.resetroutingbucket.desc";
+
+        public const string ResetRoutingBucketDone = "admin.resetroutingbucket.done";
+
+        public const string ResetRoutingBucketAlready = "admin.resetroutingbucket.already";
     }
 }

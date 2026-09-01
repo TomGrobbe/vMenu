@@ -1362,6 +1362,10 @@ internal static class EnglishStrings
             [Loc.Admin.RefreshPermissions] = "Refresh All Permissions",
             [Loc.Admin.RefreshPermissionsDescription] = "Hand everybody on the server a fresh copy of what they are allowed to do. Use it once you have actually changed somebody's permissions on the server, so their menu catches up without them having to rejoin.",
             [Loc.Admin.RefreshPermissionsDone] = "Refreshed permissions for ~g~{count}~s~ player(s).",
+            [Loc.Admin.ResetRoutingBucket] = "Return To The Default World",
+            [Loc.Admin.ResetRoutingBucketDescription] = "Put yourself back in the world everybody else is in. Teleporting to a player in a separate world takes you along with them, and this is the way back out again.",
+            [Loc.Admin.ResetRoutingBucketDone] = "Moved you out of world ~y~{bucket}~s~ and back into the default world.",
+            [Loc.Admin.ResetRoutingBucketAlready] = "You are already in the default world.",
 
             [Loc.StaffAlerts.Title] = "Staff Alerts",
             [Loc.StaffAlerts.Subtitle] = "{count} waiting",

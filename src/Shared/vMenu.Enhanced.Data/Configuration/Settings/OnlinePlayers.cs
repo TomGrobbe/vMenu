@@ -17,4 +17,14 @@ public static class OnlinePlayers
             "With the defaults, a player gets 8 actions per 10 seconds.",
         Default = 10,
     };
+
+    public static readonly BoolSetting MatchRoutingBucket = new("vMenu.Enhanced.OnlinePlayers.MatchRoutingBucket")
+    {
+        Description =
+            "Whether teleporting to a player, teleporting into their vehicle, and summoning a player " +
+            "should also move somebody into the other player's world. Routing buckets are separate " +
+            "worlds, so without this a teleport lands on the right spot in the wrong world. Turn it " +
+            "off if another resource on your server owns routing buckets.",
+        Default = true,
+    };
 }

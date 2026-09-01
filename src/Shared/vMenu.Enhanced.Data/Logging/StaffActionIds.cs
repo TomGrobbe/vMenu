@@ -31,6 +31,7 @@ public static class StaffActionIds
         [ActionIds.Admin.RefreshPermissions] = "refreshed everybody's permissions",
         [ActionIds.Admin.AddAnnouncement] = "added a scheduled announcement",
         [ActionIds.Admin.RemoveAnnouncement] = "removed a scheduled announcement",
+        [ActionIds.Admin.ResetRoutingBucket] = "put themselves back in the default world",
 
     };
 
@@ -48,7 +49,8 @@ public static class StaffActionIds
             or ActionIds.Admin.Announce
             or ActionIds.Admin.RefreshPermissions
             or ActionIds.Admin.AddAnnouncement
-            or ActionIds.Admin.RemoveAnnouncement => false,
+            or ActionIds.Admin.RemoveAnnouncement
+            or ActionIds.Admin.ResetRoutingBucket => false,
         _ => true,
     };
 }

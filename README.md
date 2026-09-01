@@ -71,6 +71,19 @@ Just like vMenu legacy, vMenu Enhanced will be using [MenuAPI (MAPI)](https://gi
 
 vMenu Enhanced can be extended with **plugins**, which are separate FiveM resources that add their own menus inside vMenu. A plugin never patches vMenu, and vMenu does not need to know it exists beforehand. The two introduce themselves to each other while the server runs, in whatever order they happen to start.
 
+### Official plugins
+
+Made and kept up to date alongside vMenu itself. Each one is ready to install, and each is also worth reading as an example of how a plugin is put together.
+
+| Plugin | What it does |
+| --- | --- |
+| [Routing Buckets](https://github.com/TomGrobbe/vMenu.RoutingBucketsPlugin) | Allows you to manage routing buckets on your server. |
+| [Theme Picker](https://github.com/TomGrobbe/vMenu.ThemePicker) | Let's each player choose a theme for vMenu themselves, rather than being forced to use the server theme. |
+| [Custom Themes](https://github.com/TomGrobbe/vMenu.CustomThemesPlugin) | Allows you to easily add new custom themes to vMenu. |
+| [Example Plugin](https://github.com/TomGrobbe/vMenu.ExamplePlugin) | Example plugin, do not use on public servers, use this as a tempalte if you want to make your own plugins. |
+
+### Writing your own
+
 Two NuGet packages are all you need to write one:
 
 | Package | Used by |
@@ -85,7 +98,7 @@ Where to read more:
 - [What plugins are](https://docs.vespura.com/vmenu/enhanced/plugins/), if you have not met one yet
 - [Installing plugins](https://docs.vespura.com/vmenu/enhanced/plugins/installing/), for server owners
 - [Making a plugin](https://docs.vespura.com/vmenu/enhanced/plugins/developing/), for developers
-- [vMenu.ExamplePlugin](https://github.com/TomGrobbe/vMenu.ExamplePlugin), a complete working plugin to copy from
+- The [official plugins](#official-plugins) above, all of them complete working plugins to copy from
 
 A plugin built on these packages is a work based on vMenu, so it carries the same license vMenu does. That means open sourcing it if you hand it to anybody else, free or paid. See [License](#license) below, and the [licensing section of the plugin docs](https://docs.vespura.com/vmenu/enhanced/plugins/developing/#license) for what it asks of you in practice.
 

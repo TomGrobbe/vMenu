@@ -35,6 +35,8 @@ public static class AdminActions
 
     private const float RangeSlack = 10f;
 
+    private const int DefaultRoutingBucket = 0;
+
     private static readonly ActionRateLimit Limit = new(
         "admin action",
         OnlinePlayerSettings.ActionLimit,
@@ -58,6 +60,12 @@ public static class AdminActions
         ActionRegistry.Register(ActionIds.Admin.DeleteAllVehicles, AdminPermissions.DeleteAllVehicles, DeleteEverything, Limit);
         ActionRegistry.Register(ActionIds.Admin.Announce, AdminPermissions.Announce, Announce, Limit);
         ActionRegistry.Register(ActionIds.Admin.RefreshPermissions, AdminPermissions.RefreshPermissions, RefreshPermissions, Limit);
+
+        ActionRegistry.Register(
+            ActionIds.Admin.ResetRoutingBucket,
+            AdminPermissions.ResetRoutingBucket,
+            ResetRoutingBucket,
+            Limit);
 
         if (_registered)
         {
@@ -361,6 +369,24 @@ public static class AdminActions
         Log.Info($"[Admin] {source.Name} refreshed permissions for {refreshed} player(s).");
 
         return ActionResponse.Ok(refreshed.ToString(CultureInfo.InvariantCulture));
+    }
+
+    // Answers with the bucket the player was in, not the one they end up in, so the client can tell
+    // "you have been moved back" from "you were already there" without asking a second time.
+    private static ActionResponse ResetRoutingBucket(Player source, string[] args)
+    {
+        var current = Native.GetPlayerRoutingBucket(Handle(source.Handle));
+
+        if (current == DefaultRoutingBucket)
+        {
+            return ActionResponse.Ok(DefaultRoutingBucket.ToString(CultureInfo.InvariantCulture));
+        }
+
+        Native.SetPlayerRoutingBucket(Handle(source.Handle), DefaultRoutingBucket);
+
+        Log.Info($"[Admin] {source.Name} moved themselves out of routing bucket {current}.");
+
+        return ActionResponse.Ok(current.ToString(CultureInfo.InvariantCulture));
     }
 
     // Never verify this. The removal only lands on the next server tick, so DoesEntityExist still

@@ -9,8 +9,12 @@ A look at what a tiny JavaScript plugin could look like can be found in the cust
 :::tip[Start from an example]
 [vMenu.ExamplePlugin](https://github.com/TomGrobbe/vMenu.ExamplePlugin) is a complete working plugin that uses every kind of row once. Copy from it.
 
+[vMenu.RoutingBucketsPlugin](https://github.com/TomGrobbe/vMenu.RoutingBucketsPlugin) is a more advanced plugin. This plugin includes server and client side code, both sides talking to each other, server side permission checks on everything, live state pushed out to the menu (live menu updates), rows in [Online Players](#player-actions), and a saved config file of its own.
+
 For theme related plugins, see [vMenu.ThemePicker](https://github.com/TomGrobbe/vMenu.ThemePicker),
 and [vMenu.CustomThemesPlugin](https://github.com/TomGrobbe/vMenu.CustomThemesPlugin), and read [registering themes](#adding-themes-of-your-own) to see how you can make your own themes for your server.
+
+All four are listed on the [plugins page](/vmenu/enhanced/plugins/).
 :::
 
 :::caution[Read the license section]

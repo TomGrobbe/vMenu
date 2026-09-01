@@ -158,6 +158,8 @@ public static class PluginRegistry
             Permissions = permissions,
         };
 
+        var firstRegistration = !Registered.ContainsKey(resource);
+
         IdOwners[id] = resource;
         Registered[resource] = plugin;
         LastAccepted[resource] = json;
@@ -165,16 +167,28 @@ public static class PluginRegistry
         PluginTemplates.Write(plugin);
         ScheduleRefresh();
 
-        Log.Info(
-            $"[Plugins] Registered '{displayName}' from resource '{resource}' with "
-            + $"{permissions.Count} permission(s) and {settings.Count} setting(s).");
+        if (firstRegistration)
+        {
+            Log.Info(
+                $"[Plugins] Registered '{displayName}' from resource '{resource}' with "
+                + $"{permissions.Count} permission(s) and {settings.Count} setting(s).");
+        }
+        else
+        {
+            Log.Debug(
+                $"[Plugins] '{displayName}' re-registered from resource '{resource}' with "
+                + $"{permissions.Count} permission(s) and {settings.Count} setting(s).");
+        }
 
-        WebhookLog.Event(
-            "Plugin '" + displayName + "' registered.",
-            WebhookActor.Server,
-            ("resource", resource),
-            ("permissions", permissions.Count.ToString(CultureInfo.InvariantCulture)),
-            ("settings", settings.Count.ToString(CultureInfo.InvariantCulture)));
+        if (firstRegistration)
+        {
+            WebhookLog.Event(
+                "Plugin '" + displayName + "' registered.",
+                WebhookActor.Server,
+                ("resource", resource),
+                ("permissions", permissions.Count.ToString(CultureInfo.InvariantCulture)),
+                ("settings", settings.Count.ToString(CultureInfo.InvariantCulture)));
+        }
 
         Reply(resource, result);
     }
