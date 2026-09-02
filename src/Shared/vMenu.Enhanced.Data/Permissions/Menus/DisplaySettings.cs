@@ -25,6 +25,16 @@ public static class DisplaySettings
 
     public const string LocationBlips = "vMenu.Enhanced.Menus.DisplaySettings.LocationBlips";
 
+    public const string PlayerBlips = "vMenu.Enhanced.Menus.DisplaySettings.PlayerBlips";
+
+    public const string OverheadNames = "vMenu.Enhanced.Menus.DisplaySettings.OverheadNames";
+
+    [StaffOnly]
+    public const string SeeLeaveReasons = "vMenu.Enhanced.Menus.DisplaySettings.SeeLeaveReasons";
+
+    [StaffOnly]
+    public const string SeeNoClipPlayers = "vMenu.Enhanced.Menus.DisplaySettings.SeeNoClipPlayers";
+
     [StaffOnly]
     public const string ManageBlips = "vMenu.Enhanced.Menus.DisplaySettings.ManageBlips";
 }

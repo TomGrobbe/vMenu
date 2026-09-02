@@ -14,7 +14,7 @@ using vMenu.Enhanced.Ticks.Server;
 using vMenu.Enhanced.Webhooks.Server;
 
 using JoinLeaveSettings = vMenu.Enhanced.Data.Configuration.Settings.JoinLeave;
-using MiscSettingsPermissions = vMenu.Enhanced.Data.Permissions.Menus.MiscSettings;
+using DisplaySettingsPermissions = vMenu.Enhanced.Data.Permissions.Menus.DisplaySettings;
 
 namespace vMenu.Enhanced.Actions.Server.Events;
 
@@ -344,7 +344,7 @@ public static class JoinLeaveBroadcast
             var allowed = reason.Length > 0
                 && ServerPermissions.IsPlayerAllowed(
                     player.ServerId.ToString(CultureInfo.InvariantCulture),
-                    MiscSettingsPermissions.SeeLeaveReasons);
+                    DisplaySettingsPermissions.SeeLeaveReasons);
 
             API.EmitClient(player.ServerId, JoinLeaveEvents.Left, name, allowed ? reason : string.Empty);
         }

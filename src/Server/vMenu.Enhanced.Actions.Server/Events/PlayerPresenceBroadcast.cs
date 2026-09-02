@@ -13,7 +13,7 @@ using vMenu.Enhanced.Permissions.Server;
 using vMenu.Enhanced.Players.Server;
 using vMenu.Enhanced.Ticks.Server;
 
-using MiscSettingsPermissions = vMenu.Enhanced.Data.Permissions.Menus.MiscSettings;
+using DisplaySettingsPermissions = vMenu.Enhanced.Data.Permissions.Menus.DisplaySettings;
 
 namespace vMenu.Enhanced.Actions.Server.Events;
 
@@ -74,7 +74,7 @@ public static class PlayerPresenceBroadcast
 
     private static void OnSubscribe([FromSource] Player source)
     {
-        if (!ServerPermissions.IsPlayerAllowed(source, MiscSettingsPermissions.PlayerBlips))
+        if (!ServerPermissions.IsPlayerAllowed(source, DisplaySettingsPermissions.PlayerBlips))
         {
             return;
         }

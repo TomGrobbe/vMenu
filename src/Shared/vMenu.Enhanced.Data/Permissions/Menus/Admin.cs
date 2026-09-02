@@ -10,8 +10,6 @@ public static class Admin
 
     public const string ClearArea = "vMenu.Enhanced.Menus.Admin.ClearArea";
 
-    public const string SeeNoClipPlayers = "vMenu.Enhanced.Menus.Admin.SeeNoClipPlayers";
-
     public const string FreezePlayer = "vMenu.Enhanced.Menus.Admin.FreezePlayer";
 
     public const string GrabPlayer = "vMenu.Enhanced.Menus.Admin.GrabPlayer";

@@ -9,7 +9,7 @@ public static class JoinLeave
             "loading in, gives up before they get there, or leaves. Leaving includes why they went " +
             "when the server knows, so a kick or a ban shows its reason here. This is only about your " +
             "console. It is separate from the join and leave messages players see on screen, which " +
-            "every player turns on or off for themselves in misc settings. On by default, since it is " +
+            "every player turns on or off for themselves in display settings. On by default, since it is " +
             "how you work out who was on at the time something happened. Turn it off if your console " +
             "is busy enough that you would rather not have the lines.",
         Default = true,

@@ -1,9 +1,7 @@
 using vMenu.Enhanced.MenuFramework;
 using vMenu.Enhanced.MenuFramework.Localization;
 using vMenu.Enhanced.Menus.Misc;
-using vMenu.Enhanced.Storage;
 
-using MiscSettingsPermissions = vMenu.Enhanced.Data.Permissions.Menus.MiscSettings;
 using StaffAlertSettings = vMenu.Enhanced.Data.Configuration.Settings.StaffAlerts;
 
 namespace vMenu.Enhanced.Menus;
@@ -23,31 +21,6 @@ public sealed class MiscSettingsMenu : MenuDefinition
             Options = [.. Localizer.Current.AvailableLanguages.Select(NativeLanguageName)],
             ReadSelectedIndex = CurrentIndex,
             OnSelected = Apply,
-        });
-
-        menu.Entries.Add(new CheckboxEntry
-        {
-            Text = MenuText.Key(Loc.MiscSettings.MenuRightAlignment),
-            Description = MenuText.Key(Loc.MiscSettings.MenuRightAlignmentDescription),
-
-            ReadState = () => UserPreferences.IsRightAligned,
-            OnChanged = changed => UserPreferences.SetRightAligned(changed.Checked),
-        });
-
-        menu.Entries.Add(new CheckboxEntry
-        {
-            Text = MenuText.Key(Loc.MiscSettings.DeathNotifications),
-            Description = MenuText.Key(Loc.MiscSettings.DeathNotificationsDescription),
-            ReadState = () => UserPreferences.AreDeathNotificationsEnabled,
-            OnChanged = changed => UserPreferences.SetDeathNotificationsEnabled(changed.Checked),
-        });
-
-        menu.Entries.Add(new CheckboxEntry
-        {
-            Text = MenuText.Key(Loc.MiscSettings.JoinLeaveNotifications),
-            Description = MenuText.Key(Loc.MiscSettings.JoinLeaveNotificationsDescription),
-            ReadState = () => UserPreferences.AreJoinLeaveNotificationsEnabled,
-            OnChanged = changed => UserPreferences.SetJoinLeaveNotificationsEnabled(changed.Checked),
         });
 
         menu.Entries.Add(new CheckboxEntry
@@ -72,34 +45,6 @@ public sealed class MiscSettingsMenu : MenuDefinition
             Description = MenuText.Key(Loc.MiscSettings.FingerPointingDescription),
             ReadState = () => FingerPointing.Enabled,
             OnChanged = changed => FingerPointing.SetEnabled(changed.Checked),
-        });
-
-        menu.Entries.Add(new CheckboxEntry
-        {
-            Text = MenuText.Key(Loc.MiscSettings.PlayerBlips),
-            Description = MenuText.Key(Loc.MiscSettings.PlayerBlipsDescription),
-            Gate = MiscSettingsPermissions.PlayerBlips,
-            ReadState = () => UserDefaults.MiscShowPlayerBlips.Value,
-            OnChanged = changed =>
-            {
-                UserDefaults.MiscShowPlayerBlips.Value = changed.Checked;
-
-                PlayerPresence.Reevaluate();
-            },
-        });
-
-        menu.Entries.Add(new CheckboxEntry
-        {
-            Text = MenuText.Key(Loc.MiscSettings.OverheadNames),
-            Description = MenuText.Key(Loc.MiscSettings.OverheadNamesDescription),
-            Gate = MiscSettingsPermissions.OverheadNames,
-            ReadState = () => UserDefaults.MiscShowOverheadNames.Value,
-            OnChanged = changed =>
-            {
-                UserDefaults.MiscShowOverheadNames.Value = changed.Checked;
-
-                PlayerPresence.Reevaluate();
-            },
         });
 
         menu.Entries.Add(new ButtonEntry

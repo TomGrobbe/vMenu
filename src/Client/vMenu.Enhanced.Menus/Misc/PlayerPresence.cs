@@ -10,8 +10,7 @@ using vMenu.Enhanced.Permissions;
 using vMenu.Enhanced.Storage;
 using vMenu.Enhanced.Ticks;
 
-using AdminPermissions = vMenu.Enhanced.Data.Permissions.Menus.Admin;
-using MiscSettingsPermissions = vMenu.Enhanced.Data.Permissions.Menus.MiscSettings;
+using DisplaySettingsPermissions = vMenu.Enhanced.Data.Permissions.Menus.DisplaySettings;
 
 namespace vMenu.Enhanced.Menus.Misc;
 
@@ -120,15 +119,15 @@ public static class PlayerPresence
     private static bool Wanted() => BlipsWanted || NamesWanted;
 
     internal static bool BlipsWanted =>
-        UserDefaults.MiscShowPlayerBlips.Value && ClientPermissions.IsAllowed(MiscSettingsPermissions.PlayerBlips);
+        UserDefaults.DisplayShowPlayerBlips.Value && ClientPermissions.IsAllowed(DisplaySettingsPermissions.PlayerBlips);
 
     private static bool NamesWanted =>
-        UserDefaults.MiscShowOverheadNames.Value && ClientPermissions.IsAllowed(MiscSettingsPermissions.OverheadNames);
+        UserDefaults.DisplayShowOverheadNames.Value && ClientPermissions.IsAllowed(DisplaySettingsPermissions.OverheadNames);
 
     // This decides nothing about whether either feature runs. Both loops start and stop on their own
     // preferences alone, and this only changes who they draw once they are running.
     internal static bool SeesHiddenPlayers =>
-        UserDefaults.AdminSeeNoClipPlayers.Value && ClientPermissions.IsAllowed(AdminPermissions.SeeNoClipPlayers);
+        UserDefaults.DisplaySeeNoClipPlayers.Value && ClientPermissions.IsAllowed(DisplaySettingsPermissions.SeeNoClipPlayers);
 
     // Opt in, so a server where nobody has blips switched on sends nothing at all. Only the blips want
     // it: name tags are drawn on peds, and a ped you have not got is a ped you cannot label.

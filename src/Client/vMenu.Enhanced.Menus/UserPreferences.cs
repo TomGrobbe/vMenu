@@ -23,7 +23,7 @@ public static class UserPreferences
     {
         RestoreLanguage();
 
-        ApplyRightAligned(UserDefaults.MiscRightAlignMenu.Value, persist: false);
+        ApplyRightAligned(UserDefaults.DisplayRightAlignMenu.Value, persist: false);
 
         SetIdleCameraDisabled(UserDefaults.MiscDisableIdleCamera.Value);
         SetVehicleIdleCameraDisabled(UserDefaults.MiscDisableVehicleIdleCamera.Value);
@@ -52,15 +52,15 @@ public static class UserPreferences
 
     public static bool IsVehicleIdleCameraDisabled => UserDefaults.MiscDisableVehicleIdleCamera.Value;
 
-    public static bool AreDeathNotificationsEnabled => UserDefaults.MiscDeathNotifications.Value;
+    public static bool AreDeathNotificationsEnabled => UserDefaults.DisplayDeathNotifications.Value;
 
     public static void SetDeathNotificationsEnabled(bool enabled) =>
-        UserDefaults.MiscDeathNotifications.Value = enabled;
+        UserDefaults.DisplayDeathNotifications.Value = enabled;
 
-    public static bool AreJoinLeaveNotificationsEnabled => UserDefaults.MiscJoinLeaveNotifications.Value;
+    public static bool AreJoinLeaveNotificationsEnabled => UserDefaults.DisplayJoinLeaveNotifications.Value;
 
     public static void SetJoinLeaveNotificationsEnabled(bool enabled) =>
-        UserDefaults.MiscJoinLeaveNotifications.Value = enabled;
+        UserDefaults.DisplayJoinLeaveNotifications.Value = enabled;
 
     // Both natives are plain flags the game remembers, so they are set when the value moves rather than
     // held down by a tick.
@@ -120,16 +120,16 @@ public static class UserPreferences
             // is skipped and it shows straight away.
             _ = Notifications.ShowWhenVisibleAsync(
                 NotificationStyle.Error,
-                MenuText.Key(Loc.MiscSettings.MenuRightAlignmentUnsupported));
+                MenuText.Key(Loc.DisplaySettings.MenuRightAlignmentUnsupported));
 
-            UserDefaults.MiscRightAlignMenu.Value = false;
+            UserDefaults.DisplayRightAlignMenu.Value = false;
 
             return;
         }
 
         if (persist)
         {
-            UserDefaults.MiscRightAlignMenu.Value = rightAligned;
+            UserDefaults.DisplayRightAlignMenu.Value = rightAligned;
         }
     }
 }

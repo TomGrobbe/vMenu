@@ -38,10 +38,6 @@ public static partial class Loc
 
         public const string StillJoining = "admin.stilljoining";
 
-        public const string SeeNoClipPlayers = "admin.seenoclipplayers";
-
-        public const string SeeNoClipPlayersDescription = "admin.seenoclipplayers.desc";
-
         public const string ClearArea = "admin.cleararea";
 
         public const string ClearAreaDescription = "admin.cleararea.desc";

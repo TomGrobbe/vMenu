@@ -1,16 +1,10 @@
 namespace vMenu.Enhanced.Data.Permissions.Menus;
 
 // There is no Menu entry: the menu itself is deliberately ungated, because everything on it changes
-// how vMenu presents itself to one player. Only the tools reached from it are grantable.
+// how vMenu presents itself to one player. All is kept as the container grant plugins hang their own
+// permissions under.
 [PermissionCategory]
 public static class MiscSettings
 {
     public const string All = "vMenu.Enhanced.Menus.MiscSettings.All";
-
-    public const string PlayerBlips = "vMenu.Enhanced.Menus.MiscSettings.PlayerBlips";
-
-    public const string OverheadNames = "vMenu.Enhanced.Menus.MiscSettings.OverheadNames";
-
-    [StaffOnly]
-    public const string SeeLeaveReasons = "vMenu.Enhanced.Menus.MiscSettings.SeeLeaveReasons";
 }

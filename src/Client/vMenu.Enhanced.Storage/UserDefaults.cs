@@ -13,9 +13,6 @@ public static class UserDefaults
 
     #region Misc Settings
 
-    public static BoolDefault MiscRightAlignMenu { get; } =
-        new("miscRightAlignMenu") { Default = true };
-
     public static StringDefault Language { get; } =
         new("language") { Default = "en" };
 
@@ -25,23 +22,8 @@ public static class UserDefaults
     public static BoolDefault MiscDisableVehicleIdleCamera { get; } =
         new("miscDisableVehicleIdleCamera") { Default = false };
 
-    public static BoolDefault MiscDeathNotifications { get; } =
-        new("miscDeathNotifications") { Default = true };
-
-    public static BoolDefault MiscJoinLeaveNotifications { get; } =
-        new("miscJoinLeaveNotifications") { Default = true };
-
     public static BoolDefault MiscFingerPointing { get; } =
         new("miscFingerPointing") { Default = true };
-
-    public static BoolDefault MiscShowPlayerBlips { get; } =
-        new("miscShowPlayerBlips") { Default = false };
-
-    public static BoolDefault MiscShowOverheadNames { get; } =
-        new("miscShowOverheadNames") { Default = false };
-
-    public static BoolDefault AdminSeeNoClipPlayers { get; } =
-        new("adminSeeNoClipPlayers") { Default = true };
 
     public static BoolDefault MiscHideStaffAlerts { get; } =
         new("miscHideStaffAlerts") { Default = false };
@@ -49,6 +31,24 @@ public static class UserDefaults
     #endregion
 
     #region Display Settings
+
+    public static BoolDefault DisplayRightAlignMenu { get; } =
+        new("displayRightAlignMenu") { Default = true };
+
+    public static BoolDefault DisplayDeathNotifications { get; } =
+        new("displayDeathNotifications") { Default = true };
+
+    public static BoolDefault DisplayJoinLeaveNotifications { get; } =
+        new("displayJoinLeaveNotifications") { Default = true };
+
+    public static BoolDefault DisplayShowPlayerBlips { get; } =
+        new("displayShowPlayerBlips") { Default = false };
+
+    public static BoolDefault DisplayShowOverheadNames { get; } =
+        new("displayShowOverheadNames") { Default = false };
+
+    public static BoolDefault DisplaySeeNoClipPlayers { get; } =
+        new("displaySeeNoClipPlayers") { Default = true };
 
     public static IntDefault DisplayMinimapAction { get; } =
         new("displayMinimapAction") { Default = 0 };
@@ -346,19 +346,19 @@ public static class UserDefaults
         DefaultCharacterName,
         CharacterCreatorFitTorso,
         CharacterCreatorDisableAutoCamera,
-        MiscRightAlignMenu,
+        DisplayRightAlignMenu,
         Language,
         MiscDisableIdleCamera,
         MiscDisableVehicleIdleCamera,
-        MiscDeathNotifications,
-        MiscJoinLeaveNotifications,
+        DisplayDeathNotifications,
+        DisplayJoinLeaveNotifications,
         DisplayMinimapAction,
         DisplayMinimapZoom,
         DisplayMinimapAlwaysOn,
         MiscFingerPointing,
-        MiscShowPlayerBlips,
-        MiscShowOverheadNames,
-        AdminSeeNoClipPlayers,
+        DisplayShowPlayerBlips,
+        DisplayShowOverheadNames,
+        DisplaySeeNoClipPlayers,
         MiscHideStaffAlerts,
         DisplaySpeedometer,
         DisplaySpeedometerPosition,

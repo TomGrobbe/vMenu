@@ -16,23 +16,9 @@ public static partial class Loc
 
         public const string LanguageUnavailable = "miscsettings.language.unavailable";
 
-        public const string MenuRightAlignment = "miscsettings.rightaligned";
-
-        public const string MenuRightAlignmentDescription = "miscsettings.rightaligned.desc";
-
-        public const string MenuRightAlignmentUnsupported = "miscsettings.rightaligned.unsupported";
-
         public const string DisableIdleCamera = "miscsettings.idlecam";
 
         public const string DisableIdleCameraDescription = "miscsettings.idlecam.desc";
-
-        public const string DeathNotifications = "miscsettings.deathnotifications";
-
-        public const string DeathNotificationsDescription = "miscsettings.deathnotifications.desc";
-
-        public const string JoinLeaveNotifications = "miscsettings.joinleavenotifications";
-
-        public const string JoinLeaveNotificationsDescription = "miscsettings.joinleavenotifications.desc";
 
         public const string DisableVehicleIdleCamera = "miscsettings.idlecam.vehicle";
 
@@ -41,14 +27,6 @@ public static partial class Loc
         public const string FingerPointing = "miscsettings.pointing";
 
         public const string FingerPointingDescription = "miscsettings.pointing.desc";
-
-        public const string PlayerBlips = "miscsettings.playerblips";
-
-        public const string PlayerBlipsDescription = "miscsettings.playerblips.desc";
-
-        public const string OverheadNames = "miscsettings.overheadnames";
-
-        public const string OverheadNamesDescription = "miscsettings.overheadnames.desc";
 
         public const string AlertStaff = "miscsettings.alertstaff";
 

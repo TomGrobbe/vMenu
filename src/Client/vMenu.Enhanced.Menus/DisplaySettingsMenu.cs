@@ -19,6 +19,30 @@ public sealed class DisplaySettingsMenu : MenuDefinition
         // The sliders are gated on state the submenu changes, and opening a menu re-gates nothing.
         TimecycleState.Changed += () => MenuRegistry.Refresh(menu.Menu);
 
+        menu.Entries.Add(new CheckboxEntry
+        {
+            Text = MenuText.Key(Loc.DisplaySettings.MenuRightAlignment),
+            Description = MenuText.Key(Loc.DisplaySettings.MenuRightAlignmentDescription),
+            ReadState = () => UserPreferences.IsRightAligned,
+            OnChanged = changed => UserPreferences.SetRightAligned(changed.Checked),
+        });
+
+        menu.Entries.Add(new CheckboxEntry
+        {
+            Text = MenuText.Key(Loc.DisplaySettings.DeathNotifications),
+            Description = MenuText.Key(Loc.DisplaySettings.DeathNotificationsDescription),
+            ReadState = () => UserPreferences.AreDeathNotificationsEnabled,
+            OnChanged = changed => UserPreferences.SetDeathNotificationsEnabled(changed.Checked),
+        });
+
+        menu.Entries.Add(new CheckboxEntry
+        {
+            Text = MenuText.Key(Loc.DisplaySettings.JoinLeaveNotifications),
+            Description = MenuText.Key(Loc.DisplaySettings.JoinLeaveNotificationsDescription),
+            ReadState = () => UserPreferences.AreJoinLeaveNotificationsEnabled,
+            OnChanged = changed => UserPreferences.SetJoinLeaveNotificationsEnabled(changed.Checked),
+        });
+
         menu.Entries.Add(new ListEntry
         {
             Text = MenuText.Key(Loc.DisplaySettings.Speedometer),
@@ -224,6 +248,44 @@ public sealed class DisplaySettingsMenu : MenuDefinition
             Gate = DisplaySettingsPermissions.LocationBlips,
             ReadState = () => LocationBlips.ToggleableShown,
             OnChanged = changed => LocationBlips.SetToggleableShown(changed.Checked),
+        });
+
+        menu.Entries.Add(new CheckboxEntry
+        {
+            Text = MenuText.Key(Loc.DisplaySettings.PlayerBlips),
+            Description = MenuText.Key(Loc.DisplaySettings.PlayerBlipsDescription),
+            Gate = DisplaySettingsPermissions.PlayerBlips,
+            ReadState = () => UserDefaults.DisplayShowPlayerBlips.Value,
+            OnChanged = changed =>
+            {
+                UserDefaults.DisplayShowPlayerBlips.Value = changed.Checked;
+
+                PlayerPresence.Reevaluate();
+            },
+        });
+
+        menu.Entries.Add(new CheckboxEntry
+        {
+            Text = MenuText.Key(Loc.DisplaySettings.OverheadNames),
+            Description = MenuText.Key(Loc.DisplaySettings.OverheadNamesDescription),
+            Gate = DisplaySettingsPermissions.OverheadNames,
+            ReadState = () => UserDefaults.DisplayShowOverheadNames.Value,
+            OnChanged = changed =>
+            {
+                UserDefaults.DisplayShowOverheadNames.Value = changed.Checked;
+
+                PlayerPresence.Reevaluate();
+            },
+        });
+
+        menu.Entries.Add(new CheckboxEntry
+        {
+            Text = MenuText.Key(Loc.DisplaySettings.SeeNoClipPlayers),
+            Description = MenuText.Key(Loc.DisplaySettings.SeeNoClipPlayersDescription),
+            Gate = DisplaySettingsPermissions.SeeNoClipPlayers,
+            Behaviour = GateBehaviour.Hide,
+            ReadState = () => UserDefaults.DisplaySeeNoClipPlayers.Value,
+            OnChanged = changed => UserDefaults.DisplaySeeNoClipPlayers.Value = changed.Checked,
         });
 
         menu.Entries.Add(new SubmenuEntry

@@ -152,7 +152,7 @@ public static class PlayerBlipsDebugCommands
         {
             Log.Warning(
                 "[Blips] Player blips are switched off, so none of them will be drawn. Turn them on "
-                + "under Misc Settings, or check you have permission for them.");
+                + "under Display Settings, or check you have permission for them.");
         }
 
         Log.Info($"[Blips] {Command} off takes them away again.");

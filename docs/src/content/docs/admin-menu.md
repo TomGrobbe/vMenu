@@ -204,7 +204,6 @@ These go in your `configuration.cfg`. They are all listed in the `configuration.
 | `...Admin.Menu` | Seeing the menu at all |
 | `...Admin.FreezePlayer` | Freezing and unfreezing the closest player |
 | `...Admin.GrabPlayer` | Picking the closest player up and putting them down |
-| `...Admin.SeeNoClipPlayers` | Seeing players who are hidden because they are in noclip |
 | `...Admin.DeleteVehicle` | Deleting the vehicle in front of you, or the one you are sat in |
 | `...Admin.DeleteEmptyVehicles` | Wiping every empty vehicle on the server |
 | `...Admin.DeleteAllVehicles` | Wiping every vehicle on the server, occupied ones included |
@@ -223,6 +222,12 @@ Two more live with the Online Players menu rather than here:
 | `...OnlinePlayers.RefreshPermissions` | Refreshing one player's permissions from their row in Online Players |
 | `...OnlinePlayers.NoClip` | Lending a player noclip, and putting them into or out of it, from their row in Online Players |
 
+And one that used to be here now lives with Display Settings, because it only changes what you see on your own screen rather than doing anything to the server:
+
+| Permission | What it allows |
+| --- | --- |
+| `...DisplaySettings.SeeNoClipPlayers` | Seeing players who are hidden because they are in noclip |
+
 ## If you are updating from an older version
 
 Two permissions moved, and their names moved with them:
@@ -230,9 +235,11 @@ Two permissions moved, and their names moved with them:
 | Old name | New name |
 | --- | --- |
 | `vMenu.Enhanced.Menus.MiscSettings.ClearArea` | `vMenu.Enhanced.Menus.Admin.ClearArea` |
-| `vMenu.Enhanced.Menus.MiscSettings.SeeNoClipPlayers` | `vMenu.Enhanced.Menus.Admin.SeeNoClipPlayers` |
+| `vMenu.Enhanced.Menus.MiscSettings.SeeNoClipPlayers` | `vMenu.Enhanced.Menus.DisplaySettings.SeeNoClipPlayers` |
 
 If your `permissions.cfg` still has the old lines, those two tools stop being granted until you update them. Nothing breaks, they simply stop appearing for the people who used to have them.
+
+Seeing players in noclip has moved twice. It started in Misc Settings, spent a while in this menu, and now sits in Display Settings. So if your `permissions.cfg` has the middle name, `vMenu.Enhanced.Menus.Admin.SeeNoClipPlayers`, that one needs updating to the Display Settings name as well.
 
 One setting moved as well:
 

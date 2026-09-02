@@ -10,6 +10,20 @@ public static partial class Loc
 
         public const string LinkDescription = "displaysettings.link.desc";
 
+        public const string MenuRightAlignment = "displaysettings.rightaligned";
+
+        public const string MenuRightAlignmentDescription = "displaysettings.rightaligned.desc";
+
+        public const string MenuRightAlignmentUnsupported = "displaysettings.rightaligned.unsupported";
+
+        public const string DeathNotifications = "displaysettings.deathnotifications";
+
+        public const string DeathNotificationsDescription = "displaysettings.deathnotifications.desc";
+
+        public const string JoinLeaveNotifications = "displaysettings.joinleavenotifications";
+
+        public const string JoinLeaveNotificationsDescription = "displaysettings.joinleavenotifications.desc";
+
         public const string Speedometer = "displaysettings.speedometer";
 
         public const string SpeedometerDescription = "displaysettings.speedometer.desc";
@@ -161,6 +175,18 @@ public static partial class Loc
         public const string LocationBlips = "displaysettings.locationblips";
 
         public const string LocationBlipsDescription = "displaysettings.locationblips.desc";
+
+        public const string PlayerBlips = "displaysettings.playerblips";
+
+        public const string PlayerBlipsDescription = "displaysettings.playerblips.desc";
+
+        public const string OverheadNames = "displaysettings.overheadnames";
+
+        public const string OverheadNamesDescription = "displaysettings.overheadnames.desc";
+
+        public const string SeeNoClipPlayers = "displaysettings.seenoclipplayers";
+
+        public const string SeeNoClipPlayersDescription = "displaysettings.seenoclipplayers.desc";
 
         public const string ManageBlips = "displaysettings.blips.manage";
 
