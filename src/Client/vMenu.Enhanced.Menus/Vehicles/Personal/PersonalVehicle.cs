@@ -18,7 +18,15 @@ namespace vMenu.Enhanced.Menus.Vehicles.Personal;
 
 public static class PersonalVehicle
 {
-    private const int LeaveImmediately = 16;
+    private const int ResumeIfInterrupted = 1;
+
+    private const int DontWaitForVehicleToStop = 64;
+
+    private const int DontCloseDoor = 256;
+
+    private const int JumpOut = 4096;
+
+    private const int ForceOut = ResumeIfInterrupted | DontWaitForVehicleToStop | DontCloseDoor | JumpOut;
 
     private const int ForceOutChecks = 10;
 
@@ -474,7 +482,7 @@ public static class PersonalVehicle
             return;
         }
 
-        Native.TaskLeaveVehicle(ped, vehicle, LeaveImmediately);
+        Native.TaskLeaveVehicle(ped, vehicle, ForceOut);
 
         Notifications.Warning(MenuText.Key(Loc.PersonalVehicle.ThrownOut));
 
