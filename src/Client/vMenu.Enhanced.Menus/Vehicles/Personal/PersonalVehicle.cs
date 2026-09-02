@@ -62,8 +62,12 @@ public static class PersonalVehicle
 
         ClientPermissions.PermissionsChanged += PersonalVehicleBlip.Reevaluate;
 
+        LocalVehicleTicks.VehicleChanged += OnVehicleChanged;
+
         ResourceShutdown.Stopping += PersonalVehicleBlip.RemoveAll;
     }
+
+    private static void OnVehicleChanged(VehicleChanged changed) => PersonalVehicleBlip.Reevaluate();
 
     public static bool Owns(int entity) =>
         NetworkId != 0

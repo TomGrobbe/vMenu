@@ -22,6 +22,8 @@ public static class PersonalVehicleBlip
 
     private static int _sprite;
 
+    private static int _heading;
+
     public static void Reevaluate()
     {
         if (!PersonalVehicle.IsMarked || !PersonalVehicle.BlipWanted)
@@ -31,12 +33,17 @@ public static class PersonalVehicleBlip
             return;
         }
 
-        Apply(0);
+        Apply(_heading);
     }
 
     public static void Apply(int heading)
     {
-        if (!PersonalVehicle.IsMarked || !PersonalVehicle.BlipWanted || !PersonalVehicle.InRange)
+        _heading = heading;
+
+        if (!PersonalVehicle.IsMarked
+            || !PersonalVehicle.BlipWanted
+            || !PersonalVehicle.InRange
+            || LocalPlayerIsInside())
         {
             RemoveAll();
 
@@ -82,6 +89,9 @@ public static class PersonalVehicleBlip
         _entity = 0;
         _sprite = 0;
     }
+
+    private static bool LocalPlayerIsInside() =>
+        PersonalVehicle.Owns(Native.GetVehiclePedIsIn(Native.PlayerPedId(), false));
 
     private static int Streamed()
     {
