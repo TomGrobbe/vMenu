@@ -14,7 +14,9 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <Configurations>Release;Debug;NativeHooks</Configurations>
-    <DebugType>embedded</DebugType>
+    <DebugType>none</DebugType>
+    <DebugSymbols>false</DebugSymbols>
+
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
 
     <Authors>Tom Grobbe</Authors>
@@ -47,13 +49,14 @@
     <OutputPath>$(MSBuildThisFileDirectory)..\build\vMenu.Enhanced\</OutputPath>
   </PropertyGroup>
 
-  <!--
-    NativeHooks is Release with the native call interception turned on, so whatever the
-    hooks measure comes out of optimized code. The SDK only turns optimization on for a
-    configuration it knows by name, so a third one has to ask for it itself.
-  -->
+  
   <PropertyGroup Condition="'$(Configuration)' == 'NativeHooks'">
     <Optimize>true</Optimize>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <DebugType>embedded</DebugType>
+    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
 
 </Project>
