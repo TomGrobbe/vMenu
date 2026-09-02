@@ -1,4 +1,4 @@
-namespace vMenu.Enhanced.MenuFramework.Localization;
+﻿namespace vMenu.Enhanced.MenuFramework.Localization;
 
 public static partial class Loc
 {
@@ -40,6 +40,8 @@ public static partial class Loc
 
         public const string SpawnInsideButtonOff = "vehiclespawner.spawninside.button.off";
 
+        public const string SpawnInsideBinding = "vehiclespawner.spawninside.binding";
+
         public const string ReplacePrevious = "vehiclespawner.replaceprevious";
 
         public const string ReplacePreviousDescription = "vehiclespawner.replaceprevious.desc";
@@ -49,6 +51,8 @@ public static partial class Loc
         public const string ReplacePreviousButtonOn = "vehiclespawner.replaceprevious.button.on";
 
         public const string ReplacePreviousButtonOff = "vehiclespawner.replaceprevious.button.off";
+
+        public const string ReplacePreviousBinding = "vehiclespawner.replaceprevious.binding";
 
         public const string OldVehicleRemoved = "vehiclespawner.oldvehicleremoved";
 

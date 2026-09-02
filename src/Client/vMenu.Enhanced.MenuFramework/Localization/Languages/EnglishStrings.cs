@@ -340,6 +340,8 @@ internal static class EnglishStrings
             [Loc.VehicleSpawner.SpawnInsideButtonOff] = "Spawn Inside: Off",
             [Loc.VehicleSpawner.ReplacePreviousButtonOn] = "Replace Previous: On",
             [Loc.VehicleSpawner.ReplacePreviousButtonOff] = "Replace Previous: Off",
+            [Loc.VehicleSpawner.SpawnInsideBinding] = "Spawn vehicles inside or outside",
+            [Loc.VehicleSpawner.ReplacePreviousBinding] = "Keep or replace the previous vehicle",
             [Loc.VehicleSpawner.OldVehicleRemoved] = "Your old vehicle was removed. Turn off ~y~Replace Previous Vehicle~s~ if you want to keep it next time.",
             [Loc.VehicleSpawner.TooManySpawns] = "You are spawning vehicles too quickly. Try again in ~y~{seconds}~s~ second(s).",
 
