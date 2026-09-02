@@ -2,6 +2,7 @@ using CitizenFX.FiveM.Client;
 
 using vMenu.Enhanced.Data.VehicleData;
 using vMenu.Enhanced.MenuFramework.Localization;
+using vMenu.Enhanced.Menus.Misc;
 
 namespace vMenu.Enhanced.Menus.Vehicles.Personal;
 
@@ -63,7 +64,7 @@ public static class PersonalVehicleBlip
             var position = PersonalVehicle.Position;
 
             Native.SetBlipCoords(_handle, position.X, position.Y, position.Z);
-            Native.SetBlipRotation(_handle, heading);
+            Native.SetBlipRotation(_handle, BlipRotation.WantedForModel(PersonalVehicle.Model) ? heading : 0);
         }
 
         Native.SetBlipAlpha(_handle, FullAlpha);

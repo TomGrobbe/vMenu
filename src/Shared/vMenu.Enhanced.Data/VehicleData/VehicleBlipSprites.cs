@@ -20,8 +20,6 @@ public static class VehicleBlipSprites
 
     public const int PersonalVehicleBikeSprite = 226;
 
-    // The two sprites the game already turns to face the right way by itself. Setting a rotation on
-    // these fights the engine and makes them jitter.
     public const int SubmarineSprite = 760;
 
     private static readonly Dictionary<uint, int> ByModel = Build();
@@ -70,7 +68,6 @@ public static class VehicleBlipSprites
         Add(426, "insurgent", "insurgent2", "insurgent3", "technical", "technical3");
         Add(460, "limo2");
 
-        // Anything that goes underwater but is not one of the two named submarines.
         Add(BoatSprite, "submersible", "submersible2");
 
         Add(421, "rhino");

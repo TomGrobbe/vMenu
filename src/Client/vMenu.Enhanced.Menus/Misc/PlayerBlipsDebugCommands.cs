@@ -56,6 +56,7 @@ public static class PlayerBlipsDebugCommands
         "taxi",
         "oppressor2",
         "bmx",
+        "blazer",
     ];
 
     private static readonly List<Fake> Fakes = [];
@@ -181,8 +182,6 @@ public static class PlayerBlipsDebugCommands
 
         foreach (var fake in Fakes)
         {
-            // Turned a little on every push, which is what makes it obvious whether blip rotation is working and
-            // whether the sprites that spin themselves are being left alone.
             fake.Heading = (fake.Heading + fake.Spin) % 360;
 
             PresenceRow.Append(

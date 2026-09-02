@@ -112,7 +112,9 @@ public static class PlayerBlips
             ? OnFootSprite
             : BlipSprites.ForVehicleModel(player.VehicleModel);
 
-        var blip = Ensure(player, sprite);
+        var rotates = BlipRotation.WantedForModel(player.VehicleModel);
+
+        var blip = Ensure(player, sprite, rotates);
 
         if (blip is null)
         {
@@ -124,12 +126,21 @@ public static class PlayerBlips
             Native.SetBlipSprite(blip.Handle, sprite);
 
             blip.Sprite = sprite;
+            blip.Rotates = rotates;
 
             // The game resets these when the sprite changes, so they are put back rather than assumed.
             Reapply(blip, player);
         }
         else
         {
+            // A car and a bicycle are both the plain dot, so this can change without the sprite changing.
+            if (blip.Rotates != rotates)
+            {
+                blip.Rotates = rotates;
+
+                Native.ShowHeadingIndicatorOnBlip(blip.Handle, ConeWanted(blip));
+            }
+
             if (blip.Outlined != player.IsStaff)
             {
                 Outline(blip, player.IsStaff);
@@ -149,7 +160,7 @@ public static class PlayerBlips
             Native.SetBlipCoords(blip.Handle, player.Position.X, player.Position.Y, player.Position.Z);
         }
 
-        Rotate(blip, sprite, player.Heading);
+        Rotate(blip, player.Heading);
 
         Native.SetBlipScale(blip.Handle, ScaleFor(distance));
         Native.SetBlipAlpha(blip.Handle, paused ? FullAlpha : AlphaFor(distance));
@@ -165,17 +176,24 @@ public static class PlayerBlips
         }
     }
 
-    private static void Rotate(TrackedBlip blip, int sprite, int heading)
+    private static void Rotate(TrackedBlip blip, int heading)
     {
-        if (blip.IsOnPed || sprite != OnFootSprite)
+        if (blip.Rotates)
         {
+            if (!blip.IsOnPed)
+            {
+                Native.SetBlipRotation(blip.Handle, heading);
+            }
+
             return;
         }
 
-        Native.SetBlipRotation(blip.Handle, heading);
+        Native.SetBlipRotation(blip.Handle, 0);
     }
 
-    private static TrackedBlip? Ensure(PresenceView player, int sprite)
+    private static bool ConeWanted(TrackedBlip blip) => blip.Sprite == OnFootSprite && blip.Rotates;
+
+    private static TrackedBlip? Ensure(PresenceView player, int sprite, bool rotates)
     {
         if (Blips.TryGetValue(player.ServerId, out var existing))
         {
@@ -217,7 +235,7 @@ public static class PlayerBlips
             return null;
         }
 
-        var blip = new TrackedBlip(handle, player.IsStreamed ? player.Ped : 0, sprite);
+        var blip = new TrackedBlip(handle, player.IsStreamed ? player.Ped : 0, sprite, rotates);
 
         Native.SetBlipSprite(handle, sprite);
 
@@ -239,8 +257,7 @@ public static class PlayerBlips
 
         Outline(blip, player.IsStaff);
 
-        // Rockstar's rule, not an arbitrary one: the cone is drawn around the dot and looks wrong on a vehicle.
-        Native.ShowHeadingIndicatorOnBlip(blip.Handle, blip.Sprite == OnFootSprite);
+        Native.ShowHeadingIndicatorOnBlip(blip.Handle, ConeWanted(blip));
 
         // Only worth knowing while flying, which is the one case Rockstar turns it on for as well.
         Native.ShowHeightOnBlip(blip.Handle, IsLocalPlayerFlying());
@@ -383,7 +400,7 @@ public static class PlayerBlips
 
     // A class rather than a record: generated equality routes through
     // EqualityComparer<string>.Default, which the sandbox refuses to load.
-    private sealed class TrackedBlip(int handle, int ped, int sprite)
+    private sealed class TrackedBlip(int handle, int ped, int sprite, bool rotates)
     {
         public int Handle { get; } = handle;
 
@@ -392,6 +409,8 @@ public static class PlayerBlips
         public bool IsOnPed => Ped != 0;
 
         public int Sprite { get; set; } = sprite;
+
+        public bool Rotates { get; set; } = rotates;
 
         public int Colour { get; set; } = DefaultColour;
 
