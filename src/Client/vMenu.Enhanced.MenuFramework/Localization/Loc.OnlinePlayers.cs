@@ -64,6 +64,8 @@ public static partial class Loc
 
         public const string SummonedBy = "onlineplayers.summon.by";
 
+        public const string SummonNearby = "onlineplayers.summon.nearby";
+
         public const string SummonRiding = "onlineplayers.summon.riding";
 
         public const string SummonIntoVehicle = "onlineplayers.summonvehicle";

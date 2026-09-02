@@ -46,6 +46,8 @@ public sealed class OnlinePlayersMenu : MenuDefinition
 
     private const string SummonMoved = "0";
 
+    private const string SummonNearby = "1";
+
     private const string SummonRiding = "2";
 
     private const string SummonNoVehicle = "3";
@@ -330,7 +332,7 @@ public sealed class OnlinePlayersMenu : MenuDefinition
             Text = MenuText.Key(Loc.OnlinePlayers.Summon),
             Description = MenuText.Key(Loc.OnlinePlayers.SummonDescription),
             Gate = OnlinePlayersPermissions.Summon,
-            OnSelectedAsync = _ => SendAsync(ActionIds.OnlinePlayers.Summon, Loc.OnlinePlayers.SummonDone, allowSelf: false),
+            OnSelectedAsync = _ => SummonAsync(),
         });
 
         actions.Entries.Add(new ButtonEntry
@@ -785,6 +787,43 @@ public sealed class OnlinePlayersMenu : MenuDefinition
         }
 
         Notifications.Success(MenuText.Key(Loc.OnlinePlayers.TeleportIntoVehicleDone, ("player", name)));
+    }
+
+    private async Task SummonAsync()
+    {
+        if (Target() is not { } player)
+        {
+            return;
+        }
+
+        var name = MenuText.Literal(player.Name);
+
+        var result = await ServerActions.InvokeAsync(ActionIds.OnlinePlayers.Summon, Id(player));
+
+        if (result.Status != ActionStatus.Ok || result.Data.Length < 1)
+        {
+            Report(result, name);
+
+            return;
+        }
+
+        switch (result.Data[0])
+        {
+            case SummonNearby:
+                Notifications.Info(MenuText.Key(Loc.OnlinePlayers.SummonNearby, ("player", name)));
+
+                break;
+
+            case SummonRiding:
+                Notifications.Info(MenuText.Key(Loc.OnlinePlayers.SummonRiding, ("player", name)));
+
+                break;
+
+            default:
+                Notifications.Success(MenuText.Key(Loc.OnlinePlayers.SummonDone, ("player", name)));
+
+                break;
+        }
     }
 
     private async Task SummonIntoVehicleAsync()

@@ -1,4 +1,4 @@
-namespace vMenu.Enhanced.MenuFramework.Localization.Languages;
+﻿namespace vMenu.Enhanced.MenuFramework.Localization.Languages;
 
 /// <summary>The English strings, and the fallback for every other language.</summary>
 /// <remarks>Every other language lives in a JSON file under <c>assets/enhanced/language/</c>. If you
@@ -373,6 +373,7 @@ internal static class EnglishStrings
             [Loc.OnlinePlayers.SummonDescription] = "Bring this player to where you are standing.",
             [Loc.OnlinePlayers.SummonDone] = "Summoned ~g~{player}~s~.",
             [Loc.OnlinePlayers.SummonedBy] = "You have been summoned by ~y~{player}~s~.",
+            [Loc.OnlinePlayers.SummonNearby] = "~y~{player}~s~ is already standing right next to you.",
             [Loc.OnlinePlayers.SummonRiding] = "~y~{player}~s~ is already in your vehicle.",
             [Loc.OnlinePlayers.SummonIntoVehicle] = "Summon Player Into Vehicle",
             [Loc.OnlinePlayers.SummonIntoVehicleDescription] = "Bring this player straight into a free seat of the vehicle you are in. Nothing happens if you are not in a vehicle, or if every seat is taken.",

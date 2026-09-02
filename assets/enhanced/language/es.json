@@ -876,6 +876,7 @@
     "onlineplayers.summon.by": "~y~{player}~s~ te ha traído hasta él.",
     "onlineplayers.summon.desc": "Trae a este jugador hasta donde estás.",
     "onlineplayers.summon.done": "Has traído a ~g~{player}~s~.",
+    "onlineplayers.summon.nearby": "~y~{player}~s~ ya está justo a tu lado.",
     "onlineplayers.summon.riding": "~y~{player}~s~ ya está en tu vehículo.",
     "onlineplayers.summonvehicle": "Traer jugador al vehículo",
     "onlineplayers.summonvehicle.by": "~y~{player}~s~ te ha traído a su vehículo.",

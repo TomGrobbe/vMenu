@@ -876,6 +876,7 @@
     "onlineplayers.summon.by": "Je bent opgeroepen door ~y~{player}~s~.",
     "onlineplayers.summon.desc": "Haalt deze speler naar de plek waar jij staat.",
     "onlineplayers.summon.done": "~g~{player}~s~ opgeroepen.",
+    "onlineplayers.summon.nearby": "~y~{player}~s~ staat al vlak naast je.",
     "onlineplayers.summon.riding": "~y~{player}~s~ zit al in je voertuig.",
     "onlineplayers.summonvehicle": "Speler in voertuig oproepen",
     "onlineplayers.summonvehicle.by": "Je bent in het voertuig van ~y~{player}~s~ geplaatst.",

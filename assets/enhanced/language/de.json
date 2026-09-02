@@ -876,6 +876,7 @@
     "onlineplayers.summon.by": "Du wurdest von ~y~{player}~s~ herbeigerufen.",
     "onlineplayers.summon.desc": "Holt diesen Spieler dorthin, wo du stehst.",
     "onlineplayers.summon.done": "~g~{player}~s~ herbeigerufen.",
+    "onlineplayers.summon.nearby": "~y~{player}~s~ steht schon direkt neben dir.",
     "onlineplayers.summon.riding": "~y~{player}~s~ sitzt schon in deinem Fahrzeug.",
     "onlineplayers.summonvehicle": "Spieler ins Fahrzeug holen",
     "onlineplayers.summonvehicle.by": "Du wurdest ins Fahrzeug von ~y~{player}~s~ geholt.",

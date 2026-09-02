@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Numerics;
 
 using CitizenFX.FiveM.Server;
 using CitizenFX.FiveM.Server.Entities;
@@ -57,9 +58,13 @@ public static class OnlinePlayerActions
 
     private const string StatusUnknown = "?";
 
+    private const float NearbyDistance = 5f;
+
     private const int MaxSeat = 16;
 
     private const string SummonMoved = "0";
+
+    private const string SummonNearby = "1";
 
     private const string SummonRiding = "2";
 
@@ -582,19 +587,27 @@ public static class OnlinePlayerActions
 
         // Somebody still on the loading screen has no character to move, and their client is not listening
         // for this yet either.
-        if (PedOf(target) is null)
+        if (PedOf(target) is not { } targetPed)
         {
             return ActionResponse.NotReady();
         }
 
-        var ped = source.PedIndex;
-
-        if (ped <= 0 || !Native.DoesEntityExist(ped))
+        if (SourcePedOf(source) is not { } ped)
         {
             return ActionResponse.NotFound();
         }
 
+        if (SharesVehicle(ped, targetPed))
+        {
+            return ActionResponse.Ok(SummonRiding);
+        }
+
         var coords = Native.GetEntityCoords(ped);
+
+        if (IsNearby(coords, Native.GetEntityCoords(targetPed)))
+        {
+            return ActionResponse.Ok(SummonNearby);
+        }
 
         MatchBucket(target, source.Handle);
 
@@ -610,7 +623,7 @@ public static class OnlinePlayerActions
             coords.Y.ToString(CultureInfo.InvariantCulture),
             coords.Z.ToString(CultureInfo.InvariantCulture));
 
-        return ActionResponse.Ok();
+        return ActionResponse.Ok(SummonMoved);
     }
 
     private static ActionResponse SummonIntoVehicle(Player source, string[] args)
@@ -685,6 +698,16 @@ public static class OnlinePlayerActions
 
         return ped > 0 && Native.DoesEntityExist(ped) ? ped : null;
     }
+
+    private static bool SharesVehicle(int ped, int other)
+    {
+        var vehicle = Native.GetVehiclePedIsIn(ped, false);
+
+        return vehicle != 0 && Native.DoesEntityExist(vehicle) && Native.GetVehiclePedIsIn(other, false) == vehicle;
+    }
+
+    private static bool IsNearby(Vector3 from, Vector3 to) =>
+        Vector3.DistanceSquared(from, to) <= NearbyDistance * NearbyDistance;
 
     // The sender is not answered until the other player's client says it put the message on screen.
     // "Sent" when the other end never showed it is the one thing a sender actually wants to know.

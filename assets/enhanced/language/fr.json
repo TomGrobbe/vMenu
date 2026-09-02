@@ -876,6 +876,7 @@
     "onlineplayers.summon.by": "Vous avez été amené par ~y~{player}~s~.",
     "onlineplayers.summon.desc": "Amène ce joueur là où vous vous trouvez.",
     "onlineplayers.summon.done": "~g~{player}~s~ a été amené.",
+    "onlineplayers.summon.nearby": "~y~{player}~s~ se tient déjà juste à côté de vous.",
     "onlineplayers.summon.riding": "~y~{player}~s~ est déjà dans votre véhicule.",
     "onlineplayers.summonvehicle": "Faire venir le joueur dans le véhicule",
     "onlineplayers.summonvehicle.by": "Vous avez été amené dans le véhicule de ~y~{player}~s~.",
