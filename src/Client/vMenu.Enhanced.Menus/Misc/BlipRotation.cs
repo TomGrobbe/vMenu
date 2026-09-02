@@ -1,13 +1,24 @@
 using CitizenFX.FiveM.Client;
 
+using vMenu.Enhanced.Data.VehicleData;
+
 namespace vMenu.Enhanced.Menus.Misc;
 
 public static class BlipRotation
 {
+    private const int MotorcycleClass = 8;
+
+    private const int BicycleClass = 13;
+
     private static readonly Dictionary<uint, bool> ByModel = [];
 
-    public static bool WantedForModel(uint model)
+    public static bool Wanted(uint model, int sprite)
     {
+        if (!VehicleBlipSprites.Rotates(sprite))
+        {
+            return false;
+        }
+
         if (model == 0)
         {
             return true;
@@ -18,9 +29,10 @@ public static class BlipRotation
             return wanted;
         }
 
-        wanted = !Native.IsThisModelAHeli(model)
-            && !Native.IsThisModelABicycle(model)
-            && !Native.IsThisModelABike(model)
+        var vehicleClass = Native.GetVehicleClassFromName(model);
+
+        wanted = vehicleClass != MotorcycleClass
+            && vehicleClass != BicycleClass
             && !Native.IsThisModelAQuadbike(model)
             && !Native.IsThisModelAnAmphibiousQuadbike(model);
 

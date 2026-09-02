@@ -26,6 +26,9 @@ public static class VehicleBlipSprites
 
     public static int? ForModel(uint model) => ByModel.TryGetValue(model, out var sprite) ? sprite : null;
 
+    public static bool Rotates(int sprite) =>
+        sprite == StandardSprite || sprite == PlaneSprite || sprite == BoatSprite || sprite == SubmarineSprite;
+
     // Written out here rather than taken from GetHashKey so this whole file stays free of natives and
     // can live in the shared assembly. It is the same "joaat" the game uses, lowercased first.
     public static uint Hash(string model)

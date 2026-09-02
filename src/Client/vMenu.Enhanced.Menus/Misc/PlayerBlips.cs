@@ -112,7 +112,7 @@ public static class PlayerBlips
             ? OnFootSprite
             : BlipSprites.ForVehicleModel(player.VehicleModel);
 
-        var rotates = BlipRotation.WantedForModel(player.VehicleModel);
+        var rotates = BlipRotation.Wanted(player.VehicleModel, sprite);
 
         var blip = Ensure(player, sprite, rotates);
 

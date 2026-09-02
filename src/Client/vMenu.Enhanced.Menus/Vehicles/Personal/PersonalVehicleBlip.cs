@@ -71,7 +71,7 @@ public static class PersonalVehicleBlip
             var position = PersonalVehicle.Position;
 
             Native.SetBlipCoords(_handle, position.X, position.Y, position.Z);
-            Native.SetBlipRotation(_handle, BlipRotation.WantedForModel(PersonalVehicle.Model) ? heading : 0);
+            Native.SetBlipRotation(_handle, BlipRotation.Wanted(PersonalVehicle.Model, sprite) ? heading : 0);
         }
 
         Native.SetBlipAlpha(_handle, FullAlpha);
