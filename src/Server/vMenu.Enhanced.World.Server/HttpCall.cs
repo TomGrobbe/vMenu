@@ -1,22 +1,32 @@
 using CitizenFX.FiveM.Shared.FuncRef;
+using CitizenFX.FiveM.Shared.Serialization;
 
 using vMenu.Enhanced.Logging;
 
 namespace vMenu.Enhanced.World.Server;
 
-// The request and response the host hands the handler. The native takes a plain function reference,
-// so both arrive as loosely typed bags and every read here may come back empty.
+// The request and response the host hands the handler. Both arrive as raw MessagePack, because the
+// runtime cannot turn a bag holding function references into a plain object, so every field is read
+// out by hand here and may come back empty.
 internal sealed class HttpCall
 {
-    private readonly object? _response;
+    private readonly IReadOnlyDictionary<string, MessagePackBuffer> _response;
 
-    private HttpCall(string method, string path, string query, string address, object? headers, object? response)
+    private readonly IReadOnlyDictionary<string, MessagePackBuffer> _headers;
+
+    private HttpCall(
+        string method,
+        string path,
+        string query,
+        string address,
+        IReadOnlyDictionary<string, MessagePackBuffer> headers,
+        IReadOnlyDictionary<string, MessagePackBuffer> response)
     {
         Method = method;
         Path = path;
         Query = query;
         Address = address;
-        Headers = headers;
+        _headers = headers;
         _response = response;
     }
 
@@ -28,30 +38,29 @@ internal sealed class HttpCall
 
     public string Address { get; }
 
-    private object? Headers { get; }
-
-    public static HttpCall From(object? request, object? response)
+    public static HttpCall From(MessagePackBuffer? request, MessagePackBuffer? response)
     {
-        var raw = Text(Member(request, "path"));
+        var fields = Bag(request);
+        var raw = Field(fields, "path");
         var split = raw.IndexOf('?');
 
         return new HttpCall(
-            Text(Member(request, "method")).ToUpperInvariant(),
+            Field(fields, "method").ToUpperInvariant(),
             split < 0 ? raw : raw[..split],
             split < 0 ? string.Empty : raw[(split + 1)..],
-            Text(Member(request, "address")),
-            Member(request, "headers"),
-            response);
+            Field(fields, "address"),
+            fields.TryGetValue("headers", out var headers) ? Bag(headers) : new Dictionary<string, MessagePackBuffer>(),
+            Bag(response));
     }
 
     // Header names are not case sensitive, so this walks the bag rather than looking the name up.
     public string Header(string name)
     {
-        foreach (var (key, value) in Pairs(Headers))
+        foreach (var pair in _headers)
         {
-            if (string.Equals(key, name, StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(pair.Key, name, StringComparison.OrdinalIgnoreCase))
             {
-                return Text(value);
+                return Text(pair.Value);
             }
         }
 
@@ -82,71 +91,54 @@ internal sealed class HttpCall
             ["Cache-Control"] = "no-store",
         };
 
-        if (!Invoke(_response, "writeHead", status, headers) || !Invoke(_response, "send", body))
+        if (!Invoke("writeHead", status, headers) || !Invoke("send", body))
         {
             Log.Error(
                 "[WorldApi] The host handed back a response object this cannot answer through, so the " +
-                $"caller is left hanging. It arrived as {Describe(_response)}. See " +
-                "https://github.com/citizenfx/rfc/discussions/257 for why a function reference may not " +
-                "survive the trip.");
+                $"caller is left hanging. It carries {string.Join(", ", _response.Keys)}.");
         }
     }
 
-    private static bool Invoke(object? target, string name, params object?[] args)
+    private bool Invoke(string name, params object?[] args)
     {
-        switch (Member(target, name))
+        if (!_response.TryGetValue(name, out var member))
         {
-            case FunctionReference reference:
-                reference.CallVoid(args);
-
-                return true;
-
-            case Delegate method:
-                method.DynamicInvoke(args);
-
-                return true;
-
-            default:
-                return false;
+            return false;
         }
+
+        var reference = Read<FunctionReference>(member);
+
+        if (reference is null)
+        {
+            return false;
+        }
+
+        reference.CallVoid(args);
+
+        return true;
     }
 
-    private static object? Member(object? target, string name)
+    private static IReadOnlyDictionary<string, MessagePackBuffer> Bag(MessagePackBuffer? value) =>
+        (value is null ? null : Read<Dictionary<string, MessagePackBuffer>>(value)) ??
+        new Dictionary<string, MessagePackBuffer>();
+
+    private static string Field(IReadOnlyDictionary<string, MessagePackBuffer> bag, string name) =>
+        bag.TryGetValue(name, out var value) ? Text(value) : string.Empty;
+
+    // A header the caller sent more than once arrives as a list, so both shapes are read here.
+    private static string Text(MessagePackBuffer value) =>
+        Read<string>(value) ?? (Read<string[]>(value) is { } many ? string.Join(", ", many) : string.Empty);
+
+    private static T? Read<T>(MessagePackBuffer value)
+        where T : class
     {
-        foreach (var (key, value) in Pairs(target))
+        try
         {
-            if (key == name)
-            {
-                return value;
-            }
+            return value.DeserializeTo<T>(true);
         }
-
-        return null;
-    }
-
-    private static IEnumerable<(string Key, object? Value)> Pairs(object? target)
-    {
-        switch (target)
+        catch (Exception)
         {
-            case IDictionary<string, object?> typed:
-                foreach (var pair in typed)
-                {
-                    yield return (pair.Key, pair.Value);
-                }
-
-                break;
-
-            case System.Collections.IDictionary loose:
-                foreach (System.Collections.DictionaryEntry pair in loose)
-                {
-                    yield return (pair.Key as string ?? pair.Key.ToString() ?? string.Empty, pair.Value);
-                }
-
-                break;
+            return null;
         }
     }
-
-    private static string Text(object? value) => value as string ?? value?.ToString() ?? string.Empty;
-
-    private static string Describe(object? value) => value?.GetType().FullName ?? "null";
 }

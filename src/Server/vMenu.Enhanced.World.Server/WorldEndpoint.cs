@@ -1,5 +1,7 @@
 using System.Globalization;
 
+using CitizenFX.FiveM.Shared.Serialization;
+
 using vMenu.Enhanced.BrokenNatives.Server;
 using vMenu.Enhanced.Configuration.Server;
 using vMenu.Enhanced.Logging;
@@ -42,7 +44,7 @@ public static class WorldEndpoint
 
     private static string Token => ServerConfig.Value(WorldApiSettings.Token);
 
-    private static void Handle(object? request, object? response)
+    private static void Handle(MessagePackBuffer? request, MessagePackBuffer? response)
     {
         var call = HttpCall.From(request, response);
 

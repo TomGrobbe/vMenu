@@ -1,6 +1,7 @@
 using CitizenFX.Base;
 using CitizenFX.FiveM.Server;
 using CitizenFX.FiveM.Shared;
+using CitizenFX.FiveM.Shared.Serialization;
 
 using MessagePack;
 
@@ -40,8 +41,10 @@ public static class NativeFixer
     }
 
     // SetHttpHandler's handler parameter is generated as a raw int for the same reason, and the
-    // reference has to come from the same manager or the host answers "Invalid function".
-    public static void SetHttpHandler(Action<object?, object?> handler)
+    // reference has to come from the same manager or the host answers "Invalid function". The request
+    // and response are taken as raw MessagePack because both bags carry function references, and the
+    // runtime cannot deserialize one of those into an object.
+    public static void SetHttpHandler(Action<MessagePackBuffer?, MessagePackBuffer?> handler)
     {
 #pragma warning disable FIVEM001
         var reference = SharedAPI.GetCore().FuncRefManager.Register(handler);
