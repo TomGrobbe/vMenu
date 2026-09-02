@@ -17,5 +17,6 @@ public static class TeleportMenu
     public const string Category = "vMenu.Enhanced.Menus.TeleportMenu.Category";
 
     // Adding or removing a category or a location, which writes the config file for everybody.
+    [StaffOnly]
     public const string Manage = "vMenu.Enhanced.Menus.TeleportMenu.Manage";
 }

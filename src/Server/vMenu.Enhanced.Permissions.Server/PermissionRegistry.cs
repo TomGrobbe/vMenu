@@ -31,13 +31,14 @@ public static class PermissionRegistry
         var discovered = Discover(assembly);
 
         // Metadata order is stable per build but not contractual, so sort for a deterministic tree.
-        foreach (var (name, extraParents, isStaffOnly) in discovered.OrderBy(entry => entry.Name, StringComparer.Ordinal))
+        foreach (var (name, extraParents, isStaffOnly, cascades) in discovered.OrderBy(entry => entry.Name, StringComparer.Ordinal))
         {
             Nodes[name] = new PermissionNode
             {
                 Name = name,
                 ExtraParents = extraParents,
                 IsStaffOnly = isStaffOnly,
+                CascadesStaffOnly = cascades,
             };
         }
 
@@ -74,7 +75,7 @@ public static class PermissionRegistry
         {
             Name = permission,
             Source = source,
-            IsStaffOnly = parent.IsStaffOnly || staffOnly,
+            IsStaffOnly = (parent.IsStaffOnly && parent.CascadesStaffOnly) || staffOnly,
             ExtraParents = parent.ExtraParents,
             StructuralParent = parent,
         };
@@ -204,9 +205,9 @@ public static class PermissionRegistry
         }
     }
 
-    private static List<(string Name, string[] ExtraParents, bool IsStaffOnly)> Discover(Assembly assembly)
+    private static List<(string Name, string[] ExtraParents, bool IsStaffOnly, bool Cascades)> Discover(Assembly assembly)
     {
-        var discovered = new List<(string Name, string[] ExtraParents, bool IsStaffOnly)>();
+        var discovered = new List<(string Name, string[] ExtraParents, bool IsStaffOnly, bool Cascades)>();
         var owners = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
         foreach (var type in TypesIn(assembly))
@@ -219,7 +220,7 @@ public static class PermissionRegistry
             }
 
             var prefix = category.Prefix ?? DerivePrefix(type);
-            var categoryIsStaffOnly = type.GetCustomAttribute<StaffOnlyAttribute>() is not null;
+            var categoryStaffOnly = type.GetCustomAttribute<StaffOnlyAttribute>();
             var hasContainerGrant = false;
             var declaredInCategory = 0;
 
@@ -258,8 +259,8 @@ public static class PermissionRegistry
                 hasContainerGrant |= PermissionPath.IsContainerGrant(value);
                 declaredInCategory++;
 
-                var isStaffOnly = categoryIsStaffOnly || field.GetCustomAttribute<StaffOnlyAttribute>() is not null;
-                discovered.Add((value, category.AdditionalParents, isStaffOnly));
+                var staffOnly = field.GetCustomAttribute<StaffOnlyAttribute>() ?? categoryStaffOnly;
+                discovered.Add((value, category.AdditionalParents, staffOnly is not null, staffOnly?.Cascades ?? true));
             }
 
             // A single-permission category has nothing to group, so no container grant is expected. Neither does
@@ -321,7 +322,7 @@ public static class PermissionRegistry
         {
             foreach (var child in node.StructuralChildren)
             {
-                child.IsStaffOnly |= node.IsStaffOnly;
+                child.IsStaffOnly |= node.IsStaffOnly && node.CascadesStaffOnly;
                 MarkStaffOnlyBelow(child);
             }
         }

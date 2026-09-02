@@ -7,7 +7,9 @@ public static class Plugins
 {
     public const string Prefix = "vMenu.Enhanced.Plugins";
 
-    // Grants every permission of every plugin.
+    // Grants every permission of every plugin, including ones installed later, so it stays with staff.
+    // Each plugin's own permissions keep whatever its author suggested.
+    [StaffOnly(Cascades = false)]
     public const string All = Prefix + PermissionPath.AllSuffix;
 
     public static string AllFor(string pluginId) =>

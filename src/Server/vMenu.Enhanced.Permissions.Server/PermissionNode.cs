@@ -13,6 +13,9 @@ public sealed class PermissionNode
     // Only steers which principal the generated example suggests, never a live check.
     public bool IsStaffOnly { get; internal set; }
 
+    // Whether being staff only carries down to everything nested underneath.
+    public bool CascadesStaffOnly { get; init; } = true;
+
     public required IReadOnlyList<string> ExtraParents { get; init; }
 
     public PermissionNode? StructuralParent { get; internal set; }

@@ -14,7 +14,9 @@ public static class VehicleSpawner
 
     public const string SpawnLimitTier1 = "vMenu.Enhanced.Menus.VehicleSpawner.SpawnLimitTier1";
 
+    [StaffOnly]
     public const string SpawnLimitTier2 = "vMenu.Enhanced.Menus.VehicleSpawner.SpawnLimitTier2";
 
+    [StaffOnly]
     public const string SpawnLimitTier3 = "vMenu.Enhanced.Menus.VehicleSpawner.SpawnLimitTier3";
 }
