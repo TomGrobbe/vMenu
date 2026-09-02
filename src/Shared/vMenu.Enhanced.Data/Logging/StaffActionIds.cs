@@ -1,4 +1,4 @@
-using vMenu.Enhanced.Data.Actions;
+﻿using vMenu.Enhanced.Data.Actions;
 
 namespace vMenu.Enhanced.Data.Logging;
 
@@ -9,6 +9,7 @@ public static class StaffActionIds
         [ActionIds.OnlinePlayers.Kick] = "kicked",
         [ActionIds.OnlinePlayers.Kill] = "killed",
         [ActionIds.OnlinePlayers.Summon] = "summoned",
+        [ActionIds.OnlinePlayers.SummonIntoVehicle] = "summoned into their vehicle",
         [ActionIds.OnlinePlayers.SendMessage] = "messaged",
         [ActionIds.OnlinePlayers.SetWantedLevel] = "set the wanted level of",
         [ActionIds.OnlinePlayers.DeleteVehicle] = "deleted the vehicle of",

@@ -1,4 +1,4 @@
-namespace vMenu.Enhanced.Data.OnlinePlayers;
+﻿namespace vMenu.Enhanced.Data.OnlinePlayers;
 
 public static class PlayerEvents
 {
@@ -9,6 +9,8 @@ public static class PlayerEvents
     public const string MessageAck = "vMenu.Enhanced:OnlinePlayers:MessageAck";
 
     public const string Teleport = "vMenu.Enhanced:OnlinePlayers:Teleport";
+
+    public const string TeleportIntoVehicle = "vMenu.Enhanced:OnlinePlayers:TeleportIntoVehicle";
 
     public const string SetWantedLevel = "vMenu.Enhanced:OnlinePlayers:SetWantedLevel";
 

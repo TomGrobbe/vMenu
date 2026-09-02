@@ -16,7 +16,8 @@ internal static class PlayerTeleport
 
     private const int FadeMs = 500;
 
-    private const int DriverSeat = -1;
+
+    private const int AnyFreeSeat = -2;
 
     public static Task ToCoordsAsync(Vector3 destination, float? heading = null) =>
         GoAsync(destination, findGround: false, heading);
@@ -24,7 +25,7 @@ internal static class PlayerTeleport
     public static Task<bool> ToGroundAsync(float x, float y, float? heading = null) =>
         GoAsync(new Vector3(x, y, 0f), findGround: true, heading);
 
-    public static async Task<bool> IntoVehicleAsync(int networkId, Vector3 destination)
+    public static async Task<bool> IntoVehicleAsync(int networkId, Vector3 destination, int seat = AnyFreeSeat)
     {
         await ToCoordsAsync(destination);
 
@@ -40,12 +41,16 @@ internal static class PlayerTeleport
             return false;
         }
 
-        if (!Native.AreAnyVehicleSeatsFree(vehicle))
+        var free = seat == AnyFreeSeat
+            ? Native.AreAnyVehicleSeatsFree(vehicle)
+            : Native.IsVehicleSeatFree(vehicle, seat, false);
+
+        if (!free)
         {
             return false;
         }
 
-        Native.SetPedIntoVehicle(ped.Handle, vehicle, -2);
+        Native.SetPedIntoVehicle(ped.Handle, vehicle, seat);
 
         return true;
     }

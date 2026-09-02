@@ -1,4 +1,4 @@
-namespace vMenu.Enhanced.Data.Permissions.Menus;
+﻿namespace vMenu.Enhanced.Data.Permissions.Menus;
 
 // The online players menu and the things you can do to a player from it.
 [PermissionCategory]
@@ -20,6 +20,9 @@ public static class OnlinePlayers
 
     [StaffOnly]
     public const string Summon = "vMenu.Enhanced.Menus.OnlinePlayers.Summon";
+
+    [StaffOnly]
+    public const string SummonIntoVehicle = "vMenu.Enhanced.Menus.OnlinePlayers.SummonIntoVehicle";
 
     [StaffOnly]
     public const string TeleportIntoVehicle = "vMenu.Enhanced.Menus.OnlinePlayers.TeleportIntoVehicle";

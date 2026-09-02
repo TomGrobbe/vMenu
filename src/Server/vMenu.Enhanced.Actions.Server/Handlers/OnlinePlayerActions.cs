@@ -57,6 +57,16 @@ public static class OnlinePlayerActions
 
     private const string StatusUnknown = "?";
 
+    private const int MaxSeat = 16;
+
+    private const string SummonMoved = "0";
+
+    private const string SummonRiding = "2";
+
+    private const string SummonNoVehicle = "3";
+
+    private const string SummonNoSeat = "4";
+
     private static readonly HashSet<int> Connected = [];
 
     private static readonly Dictionary<int, PendingMessage> Unacknowledged = [];
@@ -113,6 +123,12 @@ public static class OnlinePlayerActions
         ActionRegistry.Register(ActionIds.OnlinePlayers.Kick, OnlinePlayersPermissions.Kick, Kick, Limit);
         ActionRegistry.Register(ActionIds.OnlinePlayers.Kill, OnlinePlayersPermissions.Kill, Kill, Limit);
         ActionRegistry.Register(ActionIds.OnlinePlayers.Summon, OnlinePlayersPermissions.Summon, Summon, Limit);
+
+        ActionRegistry.Register(
+            ActionIds.OnlinePlayers.SummonIntoVehicle,
+            OnlinePlayersPermissions.SummonIntoVehicle,
+            SummonIntoVehicle,
+            Limit);
 
         ActionRegistry.Register(
             ActionIds.OnlinePlayers.SendMessage,
@@ -595,6 +611,79 @@ public static class OnlinePlayerActions
             coords.Z.ToString(CultureInfo.InvariantCulture));
 
         return ActionResponse.Ok();
+    }
+
+    private static ActionResponse SummonIntoVehicle(Player source, string[] args)
+    {
+        if (!TryResolveTarget(args, out var target))
+        {
+            return ActionResponse.NotFound();
+        }
+
+        if (target == source.Handle)
+        {
+            return ActionResponse.Refused();
+        }
+
+        if (args.Length < 2
+            || !int.TryParse(args[1], NumberStyles.Integer, CultureInfo.InvariantCulture, out var seat)
+            || seat < DriverSeat
+            || seat > MaxSeat)
+        {
+            return ActionResponse.InvalidRequest();
+        }
+
+        if (PedOf(target) is not { } targetPed)
+        {
+            return ActionResponse.NotReady();
+        }
+
+        if (SourcePedOf(source) is not { } ped)
+        {
+            return ActionResponse.NotFound();
+        }
+
+        var vehicle = Native.GetVehiclePedIsIn(ped, false);
+
+        if (vehicle == 0 || !Native.DoesEntityExist(vehicle))
+        {
+            return ActionResponse.Ok(SummonNoVehicle);
+        }
+
+        if (Native.GetVehiclePedIsIn(targetPed, false) == vehicle)
+        {
+            return ActionResponse.Ok(SummonRiding);
+        }
+
+        if (Native.GetPedInVehicleSeat(vehicle, seat) != 0)
+        {
+            return ActionResponse.Ok(SummonNoSeat);
+        }
+
+        MatchBucket(target, source.Handle);
+
+        var coords = Native.GetEntityCoords(vehicle);
+
+        Log.Info($"[OnlinePlayers] {source.Name} summoned {Native.GetPlayerName(target.ToString())} into their vehicle.");
+
+        API.EmitClient(
+            target,
+            PlayerEvents.TeleportIntoVehicle,
+            source.Name,
+            Native.NetworkGetNetworkIdFromEntity(vehicle).ToString(CultureInfo.InvariantCulture),
+            seat.ToString(CultureInfo.InvariantCulture),
+            coords.X.ToString(CultureInfo.InvariantCulture),
+            coords.Y.ToString(CultureInfo.InvariantCulture),
+            coords.Z.ToString(CultureInfo.InvariantCulture));
+
+        return ActionResponse.Ok(SummonMoved);
+    }
+
+    private static int? SourcePedOf(Player source)
+    {
+        var ped = source.PedIndex;
+
+        return ped > 0 && Native.DoesEntityExist(ped) ? ped : null;
     }
 
     // The sender is not answered until the other player's client says it put the message on screen.

@@ -1,4 +1,4 @@
-using System.Globalization;
+﻿using System.Globalization;
 using System.Numerics;
 
 using CitizenFX.FiveM.Client;
@@ -36,6 +36,11 @@ public static class PlayerPushEvents
         API.OnNetEvent(PlayerEvents.Kill, new Action<string>(OnKilled), false);
         API.OnNetEvent(PlayerEvents.Message, new Action<string, string, string>(OnMessage), false);
         API.OnNetEvent(PlayerEvents.Teleport, new Action<string, string, string, string>(OnSummoned), false);
+
+        API.OnNetEvent(
+            PlayerEvents.TeleportIntoVehicle,
+            new Action<string, string, string, string, string, string>(OnSummonedIntoVehicle),
+            false);
         API.OnNetEvent(PlayerEvents.SetWantedLevel, new Action<string, string>(OnWantedLevelRequested), false);
         API.OnNetEvent(PlayerEvents.GetGodMode, new Action<string>(OnGodModeRequested), false);
         API.OnNetEvent(PlayerEvents.SetNoClip, new Action<string>(OnNoClipSet), false);
@@ -124,6 +129,28 @@ public static class PlayerPushEvents
         Notifications.Info(MenuText.Key(Loc.OnlinePlayers.SummonedBy, ("player", MenuText.Literal(by))));
 
         _ = PlayerTeleport.ToCoordsAsync(new Vector3(px, py, pz));
+    }
+
+    private static void OnSummonedIntoVehicle(string by, string networkId, string seat, string x, string y, string z)
+    {
+        if (!int.TryParse(networkId, NumberStyles.Integer, CultureInfo.InvariantCulture, out var vehicle)
+            || !int.TryParse(seat, NumberStyles.Integer, CultureInfo.InvariantCulture, out var index))
+        {
+            Log.Error($"[OnlinePlayers] Ignoring a summon into a vehicle that did not parse: {networkId}, {seat}");
+
+            return;
+        }
+
+        if (!TryParse(x, out var px) || !TryParse(y, out var py) || !TryParse(z, out var pz))
+        {
+            Log.Error($"[OnlinePlayers] Ignoring a summon to coordinates that did not parse: {x}, {y}, {z}");
+
+            return;
+        }
+
+        Notifications.Info(MenuText.Key(Loc.OnlinePlayers.SummonedIntoVehicleBy, ("player", MenuText.Literal(by))));
+
+        _ = PlayerTeleport.IntoVehicleAsync(vehicle, new Vector3(px, py, pz), index);
     }
 
     private static bool TryParse(string value, out float result) =>

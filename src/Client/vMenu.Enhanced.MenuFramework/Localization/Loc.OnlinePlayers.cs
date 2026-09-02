@@ -1,4 +1,4 @@
-namespace vMenu.Enhanced.MenuFramework.Localization;
+﻿namespace vMenu.Enhanced.MenuFramework.Localization;
 
 public static partial class Loc
 {
@@ -63,6 +63,20 @@ public static partial class Loc
         public const string SummonDone = "onlineplayers.summon.done";
 
         public const string SummonedBy = "onlineplayers.summon.by";
+
+        public const string SummonRiding = "onlineplayers.summon.riding";
+
+        public const string SummonIntoVehicle = "onlineplayers.summonvehicle";
+
+        public const string SummonIntoVehicleDescription = "onlineplayers.summonvehicle.desc";
+
+        public const string SummonIntoVehicleDone = "onlineplayers.summonvehicle.done";
+
+        public const string SummonIntoVehicleNoVehicle = "onlineplayers.summonvehicle.novehicle";
+
+        public const string SummonIntoVehicleFull = "onlineplayers.summonvehicle.full";
+
+        public const string SummonedIntoVehicleBy = "onlineplayers.summonvehicle.by";
 
         public const string TeleportIntoVehicle = "onlineplayers.teleportvehicle";
 

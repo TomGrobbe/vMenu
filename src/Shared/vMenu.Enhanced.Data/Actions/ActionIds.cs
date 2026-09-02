@@ -1,4 +1,4 @@
-namespace vMenu.Enhanced.Data.Actions;
+﻿namespace vMenu.Enhanced.Data.Actions;
 
 public static class ActionIds
 {
@@ -80,6 +80,8 @@ public static class ActionIds
         public const string Kill = "OnlinePlayers.Kill";
 
         public const string Summon = "OnlinePlayers.Summon";
+
+        public const string SummonIntoVehicle = "OnlinePlayers.SummonIntoVehicle";
 
         public const string GetVehicleForTeleport = "OnlinePlayers.GetVehicleForTeleport";
 

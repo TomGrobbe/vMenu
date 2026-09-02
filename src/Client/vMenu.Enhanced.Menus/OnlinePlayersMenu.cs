@@ -44,6 +44,14 @@ public sealed class OnlinePlayersMenu : MenuDefinition
 
     private const string PassengerOnly = "2";
 
+    private const string SummonMoved = "0";
+
+    private const string SummonRiding = "2";
+
+    private const string SummonNoVehicle = "3";
+
+    private const int DriverSeat = -1;
+
     private const string StatusOn = "1";
 
     private const string StatusOff = "0";
@@ -323,6 +331,14 @@ public sealed class OnlinePlayersMenu : MenuDefinition
             Description = MenuText.Key(Loc.OnlinePlayers.SummonDescription),
             Gate = OnlinePlayersPermissions.Summon,
             OnSelectedAsync = _ => SendAsync(ActionIds.OnlinePlayers.Summon, Loc.OnlinePlayers.SummonDone, allowSelf: false),
+        });
+
+        actions.Entries.Add(new ButtonEntry
+        {
+            Text = MenuText.Key(Loc.OnlinePlayers.SummonIntoVehicle),
+            Description = MenuText.Key(Loc.OnlinePlayers.SummonIntoVehicleDescription),
+            Gate = OnlinePlayersPermissions.SummonIntoVehicle,
+            OnSelectedAsync = _ => SummonIntoVehicleAsync(),
         });
 
         actions.Entries.Add(new ListEntry
@@ -769,6 +785,82 @@ public sealed class OnlinePlayersMenu : MenuDefinition
         }
 
         Notifications.Success(MenuText.Key(Loc.OnlinePlayers.TeleportIntoVehicleDone, ("player", name)));
+    }
+
+    private async Task SummonIntoVehicleAsync()
+    {
+        if (Target() is not { } player)
+        {
+            return;
+        }
+
+        var name = MenuText.Literal(player.Name);
+
+        var vehicle = Native.GetVehiclePedIsIn(Native.PlayerPedId(), false);
+
+        if (vehicle == 0 || !Native.DoesEntityExist(vehicle))
+        {
+            Notifications.Warning(MenuText.Key(Loc.OnlinePlayers.SummonIntoVehicleNoVehicle, ("player", name)));
+
+            return;
+        }
+
+        if (FreeSeat(vehicle) is not { } seat)
+        {
+            Notifications.Warning(MenuText.Key(Loc.OnlinePlayers.SummonIntoVehicleFull, ("player", name)));
+
+            return;
+        }
+
+        var result = await ServerActions.InvokeAsync(
+            ActionIds.OnlinePlayers.SummonIntoVehicle,
+            Id(player),
+            seat.ToString(CultureInfo.InvariantCulture));
+
+        if (result.Status != ActionStatus.Ok || result.Data.Length < 1)
+        {
+            Report(result, name);
+
+            return;
+        }
+
+        switch (result.Data[0])
+        {
+            case SummonMoved:
+                Notifications.Success(MenuText.Key(Loc.OnlinePlayers.SummonIntoVehicleDone, ("player", name)));
+
+                break;
+
+            case SummonRiding:
+                Notifications.Info(MenuText.Key(Loc.OnlinePlayers.SummonRiding, ("player", name)));
+
+                break;
+
+            case SummonNoVehicle:
+                Notifications.Warning(MenuText.Key(Loc.OnlinePlayers.SummonIntoVehicleNoVehicle, ("player", name)));
+
+                break;
+
+            default:
+                Notifications.Warning(MenuText.Key(Loc.OnlinePlayers.SummonIntoVehicleFull, ("player", name)));
+
+                break;
+        }
+    }
+
+    private static int? FreeSeat(int vehicle)
+    {
+        var seats = Native.GetVehicleModelNumberOfSeats((uint)Native.GetEntityModel(vehicle));
+
+        for (var seat = 0; seat <= seats - 2; seat++)
+        {
+            if (Native.IsVehicleSeatFree(vehicle, seat, false))
+            {
+                return seat;
+            }
+        }
+
+        return Native.IsVehicleSeatFree(vehicle, DriverSeat, false) ? DriverSeat : null;
     }
 
     private async Task SetWantedLevelAsync(int stars)
