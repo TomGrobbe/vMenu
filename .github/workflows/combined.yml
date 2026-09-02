@@ -10,7 +10,14 @@ name: Combined Release (vMenu + vMenu Enhanced)
 # containing two zips: vMenu-v<x>.zip and vMenu-Enhanced-v<y>.zip.
 #
 # Right now only `workflow_dispatch` is active, so this never fires on a commit
-# and can be tested manually from the Actions tab. To ACTIVATE later:
+# and can be tested manually from the Actions tab.
+#
+# The branch that was pushed is pinned to `github.sha` below rather than left as a branch
+# name. A branch name is re-resolved by each job at its own checkout time, so a push landing
+# mid-run moves the run onto the newer commit for the jobs that have not started yet, and the
+# release ends up versioned from one commit and tagged on another.
+#
+# To ACTIVATE later:
 #   1. Uncomment the `push:` block below.
 #   2. Turn off the `release` job in enhanced.yml (and the legacy build.yml
 #      release) so a release is not cut twice for the same commit.
@@ -31,6 +38,9 @@ on:
 permissions:
   contents: write
 
+# A run here cuts a tag and a release, so it is never cancelled once started. GitHub keeps
+# only ONE run pending per group, so a third push cancels the second while it is still
+# queued and leaves the one already running alone.
 concurrency:
   group: combined-release
   cancel-in-progress: false
@@ -57,7 +67,7 @@ jobs:
       - name: Checkout legacy branch
         uses: actions/checkout@v4
         with:
-          ref: ${{ env.LEGACY_BRANCH }}
+          ref: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/master') && github.sha || env.LEGACY_BRANCH }}
           fetch-depth: 0
 
       - name: Install GitVersion
@@ -115,7 +125,7 @@ jobs:
       - name: Checkout enhanced branch
         uses: actions/checkout@v4
         with:
-          ref: ${{ env.ENHANCED_BRANCH }}
+          ref: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/enhanced') && github.sha || env.ENHANCED_BRANCH }}
           fetch-depth: 0
 
       - name: Setup .NET
@@ -188,7 +198,7 @@ jobs:
           {
             echo "Combined release bundling vMenu v${LEGACY_VER} and vMenu Enhanced v${ENHANCED_VER}."
           } > release_notes.md
-          gh release create "$TAG" \
+          gh release create "$TAG"             --target "$GITHUB_SHA" \
             --title "vMenu v${LEGACY_VER} & vMenu Enhanced v${ENHANCED_VER}" \
             --notes-file release_notes.md \
             "release-assets/${{ needs.build-legacy.outputs.zip_name }}" \

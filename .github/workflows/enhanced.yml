@@ -28,10 +28,14 @@ permissions:
   # So the build can leave its translation coverage table on a pull request.
   pull-requests: write
 
-# Cancel any in-progress run on the same branch
+# A run that only validates is cancelled as soon as a newer push replaces it, there being
+# no point checking a commit that has already been superseded. A run on `enhanced` cuts a
+# release, a tag and a NuGet package, so it is left alone once started: cancelling it halfway
+# loses a version that then never ships. GitHub still only keeps ONE run pending per group,
+# so a third push cancels the second while it is still queued and never touches the first.
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ !(github.event_name == 'push' && github.ref == 'refs/heads/enhanced') }}
 
 env:
   DOTNET_NOLOGO: true
