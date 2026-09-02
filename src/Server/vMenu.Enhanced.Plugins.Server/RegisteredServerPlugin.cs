@@ -15,4 +15,7 @@ public sealed class RegisteredServerPlugin
     public required IReadOnlyList<Setting> Settings { get; init; }
 
     public required IReadOnlyList<string> Permissions { get; init; }
+
+    // Item id to the phrase the owner's log uses for it.
+    public required IReadOnlyDictionary<string, string> LoggedItems { get; init; }
 }

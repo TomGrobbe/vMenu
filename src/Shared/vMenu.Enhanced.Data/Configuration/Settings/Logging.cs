@@ -40,6 +40,17 @@ public static class Logging
         ServerOnly = true,
     };
 
+    public static readonly StringSetting SecurityWebhook = new("vMenu.Enhanced.Logging.Webhook.Security")
+    {
+        Description =
+            "A Discord webhook URL for people trying to use the menu in ways a normal game cannot: " +
+            "firing actions they do not have the permission for, asking for actions that do not exist, " +
+            "sending arguments the menu would never send, and hammering an action far past its limit. " +
+            "Leave it empty and these go to the staff webhook instead. Uses 'set' and not 'setr': the " +
+            "URL is a secret.",
+        ServerOnly = true,
+    };
+
     public static readonly StringSetting GenericWebhook = new("vMenu.Enhanced.Logging.Webhook.Generic")
     {
         Description =
@@ -82,6 +93,22 @@ public static class Logging
     {
         Description = "How long the menu action window above lasts, in seconds.",
         Default = 10,
+    };
+
+    public static readonly IntSetting SecurityLimit = new("vMenu.Enhanced.Logging.SecurityLimit")
+    {
+        Description =
+            "How many security lines one player may have logged per window. Somebody running a modified " +
+            "client can try thousands of things a second, and this is what stops that filling your " +
+            "channel. The next line that gets through says how many were left out. Set it to 0 to turn " +
+            "the limit off, which is not recommended.",
+        Default = 10,
+    };
+
+    public static readonly IntSetting SecurityLimitSeconds = new("vMenu.Enhanced.Logging.SecurityLimitSeconds")
+    {
+        Description = "How long the security window above lasts, in seconds.",
+        Default = 60,
     };
 
     public const int MinFlushSeconds = 1;

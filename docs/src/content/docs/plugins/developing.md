@@ -226,6 +226,55 @@ if (VMenuServer.IsPlayerAllowed(source, "Poke")) { ... }
 
 Use this rather than FiveM's `IsPlayerAceAllowed`, because it checks parent permissions too. An owner who granted the whole plugin instead of each individual permission then works out of the box.
 
+There is a second version of that check for the case where a refusal means somebody is up to no good:
+
+```csharp
+if (!VMenuServer.RequirePermission(source, "Poke")) { return; }
+```
+
+It answers exactly the same, and it also tells vMenu, which puts a line in the server owner's security log naming the player and the permission they were missing. Only reach for it when a normal, unmodified client could not possibly have sent you the thing you are handling, which is the usual case for an event behind a menu row you gated. Keep `IsPlayerAllowed` for everything else, such as deciding which of two things to do, or the owner ends up with a log full of ordinary play and stops reading it.
+
+### Logging what a row does
+
+A server owner can have vMenu write a line to their Discord log whenever somebody uses one of your rows. It takes both halves of your plugin, and that is on purpose:
+
+```csharp
+// Server
+new ServerPluginDeclaration("My Plugin")
+    .AddLoggedItem("shield", "their shield")
+    .AddLoggedItem("payout", "paid everybody out");
+
+// Client
+var shield = plugin.RootMenu.AddCheckbox("Shield");
+shield.Log = true;
+
+var payout = plugin.RootMenu.AddButton("Pay everyone");
+payout.Log = true;
+```
+
+Setting `Log` on its own does nothing. The list your server half declares is the one vMenu actually trusts, because the client half runs on the player's own machine, and somebody with a modified copy of it could otherwise choose what text appears in the owner's Discord channel. Declaring it on the server means the worst a modified client can do is replay a row you already said was fine to log.
+
+The description is not the row's name, and for most rows it is not a whole sentence either. vMenu builds the sentence around it, so the shape it needs depends on the kind of row.
+
+A checkbox, list or slider gets wrapped, as in "turned X on", "set X to 5" or "changed X". Write those as a thing, with its own "the" or "their" if it wants one, and no verb.
+
+A button is not wrapped at all. Its description becomes the whole sentence, so write those as something the player did, in the past tense.
+
+Get it the wrong way round and the line reads badly, because vMenu adds no words of its own beyond the ones shown above.
+
+```
+• 02/09/2026 21:04:11 Vespura (1) turned their shield on.
+   plugin: MyPlugin
+• 02/09/2026 21:04:19 Vespura (1) paid everybody out.
+   plugin: MyPlugin
+```
+
+Lines land in the owner's **Actions** channel, and they share the same per player allowance as vMenu's own rows, so a chatty plugin cannot crowd everything else out.
+
+Only interactions that commit to something are logged: pressing a button, confirming a confirm button, ticking a checkbox, and choosing a value on a list, slider or dynamic list. Scrolling through a list and dragging a slider are not, since those fire on every press of an arrow key and would tell the owner nothing except that somebody was browsing.
+
+You can turn `Log` on and off at any time like any other row property, and none of this needs a newer vMenu than the one you already target. An older vMenu simply ignores the flag and logs nothing.
+
 ### What the server owner ends up with
 
 You never ship a config file. vMenu writes one for the owner out of what you declared, and rewrites it every time your plugin registers. Both files land in `vMenu.Enhanced/config/plugins/`, named after your resource:

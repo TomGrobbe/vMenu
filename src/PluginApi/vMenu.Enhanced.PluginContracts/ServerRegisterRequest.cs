@@ -11,6 +11,17 @@ public class PermissionDeclaration
     public bool StaffOnly { get; set; }
 }
 
+/// <summary>One row whose use the server owner may see logged. The server half declares these so vMenu
+/// has a list of its own: without it a modified client would choose what appears in the owner's log.</summary>
+public class LoggedItemDeclaration
+{
+    /// <summary>The item id the client half gave the row.</summary>
+    public string ItemId { get; set; } = string.Empty;
+
+    /// <summary>A noun phrase slotted into vMenu's own wording, as in "turned &lt;description&gt; on".</summary>
+    public string Description { get; set; } = string.Empty;
+}
+
 /// <summary>The server side registration payload: the permission names and convar settings a plugin
 /// brings. Sent once at plugin startup, and again whenever vMenu announces it restarted.
 /// Registration is idempotent.</summary>
@@ -24,4 +35,6 @@ public class ServerRegisterRequest
     public List<PermissionDeclaration>? Permissions { get; set; }
 
     public List<SettingNode>? Settings { get; set; }
+
+    public List<LoggedItemDeclaration>? LoggedItems { get; set; }
 }

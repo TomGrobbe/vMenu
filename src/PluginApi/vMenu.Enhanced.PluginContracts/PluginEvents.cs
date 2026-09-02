@@ -24,6 +24,7 @@ public static class PluginEvents
     // Server side, plugin to vMenu.
     public const string ServerProbe = Prefix + ":Server:Probe";
     public const string ServerRegister = Prefix + ":Server:Register";
+    public const string ServerDenied = Prefix + ":Server:Denied";
 
     // Server side, vMenu broadcast.
     public const string ServerReady = Prefix + ":Server:Ready";

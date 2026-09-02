@@ -158,6 +158,14 @@ internal static class PluginUpdateOps
 
                     break;
 
+                case UpdateOps.SetLog:
+                    if (TryItem(state, op, out node))
+                    {
+                        node.Log = op.Flag ?? false;
+                    }
+
+                    break;
+
                 case UpdateOps.SetGate:
                     if (TryItem(state, op, out node))
                     {

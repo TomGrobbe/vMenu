@@ -87,6 +87,8 @@ public static class ActionRegistry
             {
                 Log.Warning($"[Actions] {source} asked for '{actionId}', which nothing is registered for.");
 
+                SecurityLog.UnknownAction(source, actionId);
+
                 Reply(source, requestId, ActionStatus.UnknownAction, []);
 
                 return;
@@ -100,6 +102,8 @@ public static class ActionRegistry
 
                 Audit(source, actionId, Target(actionId, args), ActionStatus.Denied);
 
+                SecurityLog.Denied(source, actionId, action.Permission);
+
                 Reply(source, requestId, ActionStatus.Denied, []);
 
                 return;
@@ -107,6 +111,8 @@ public static class ActionRegistry
 
             if (action.RateLimit is { } rateLimit && !rateLimit.TryTake(source, out var retryAfter))
             {
+                SecurityLog.RateLimited(source, actionId, rateLimit.Allowance);
+
                 Reply(
                     source,
                     requestId,
@@ -133,6 +139,11 @@ public static class ActionRegistry
             }
 
             Audit(source, actionId, target, response.Status);
+
+            if (response.Status == ActionStatus.InvalidRequest)
+            {
+                SecurityLog.MalformedRequest(source, actionId);
+            }
 
             Reply(source, requestId, response.Status, response.Data);
         }
@@ -187,6 +198,8 @@ public static class ActionRegistry
         {
             return;
         }
+
+        SecurityLog.Forget(source);
 
         foreach (var action in Actions.Values)
         {

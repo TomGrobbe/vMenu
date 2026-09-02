@@ -37,6 +37,10 @@ public class ItemNode
     /// <summary>Whether the row can be used. Null means enabled. A disabled row is greyed out.</summary>
     public bool? Enabled { get; set; }
 
+    /// <summary>Ask vMenu to log use of this row to the server owner's webhook. Only honoured for an id
+    /// the plugin's server half declared with <c>AddLoggedItem</c>.</summary>
+    public bool? Log { get; set; }
+
     // Checkbox.
     public bool? Checked { get; set; }
 

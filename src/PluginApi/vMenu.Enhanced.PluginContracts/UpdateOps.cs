@@ -22,6 +22,7 @@ public static class UpdateOps
     public const string SetVisible = "setVisible";
     public const string SetEnabled = "setEnabled";
     public const string SetGate = "setGate";
+    public const string SetLog = "setLog";
 
     // Structure.
     public const string AddItems = "addItems";

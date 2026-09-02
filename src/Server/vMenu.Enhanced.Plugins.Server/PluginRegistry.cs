@@ -23,6 +23,10 @@ public static class PluginRegistry
 
     private const string StopEvent = "onResourceStop";
 
+    private const int MaxLoggedItems = 100;
+
+    private const int MaxLoggedDescription = 96;
+
     private static readonly Dictionary<string, RegisteredServerPlugin> Registered = new(StringComparer.OrdinalIgnoreCase);
 
     // Sanitized id to owning resource, so two resources cannot claim the same names.
@@ -48,6 +52,7 @@ public static class PluginRegistry
 
         API.OnEvent(PluginEvents.ServerProbe, new Action(OnProbe), false);
         API.OnEvent(PluginEvents.ServerRegister, new Action<string>(OnRegister), false);
+        API.OnEvent(PluginEvents.ServerDenied, new Action<string, string>(OnDenied), false);
         API.OnEvent(StopEvent, new Action<string>(OnResourceStop), false);
     }
 
@@ -148,6 +153,7 @@ public static class PluginRegistry
 
         var permissions = RegisterPermissions(resource, id, request.Permissions, result);
         var settings = BuildSettings(id, request.Settings, result);
+        var loggedItems = BuildLoggedItems(request.LoggedItems, result);
 
         var plugin = new RegisteredServerPlugin
         {
@@ -156,6 +162,7 @@ public static class PluginRegistry
             DisplayName = displayName,
             Settings = settings,
             Permissions = permissions,
+            LoggedItems = loggedItems,
         };
 
         var firstRegistration = !Registered.ContainsKey(resource);
@@ -171,13 +178,15 @@ public static class PluginRegistry
         {
             Log.Info(
                 $"[Plugins] Registered '{displayName}' from resource '{resource}' with "
-                + $"{permissions.Count} permission(s) and {settings.Count} setting(s).");
+                + $"{permissions.Count} permission(s), {settings.Count} setting(s) and "
+                + $"{loggedItems.Count} logged item(s).");
         }
         else
         {
             Log.Debug(
                 $"[Plugins] '{displayName}' re-registered from resource '{resource}' with "
-                + $"{permissions.Count} permission(s) and {settings.Count} setting(s).");
+                + $"{permissions.Count} permission(s), {settings.Count} setting(s) and "
+                + $"{loggedItems.Count} logged item(s).");
         }
 
         if (firstRegistration)
@@ -241,6 +250,66 @@ public static class PluginRegistry
         }
 
         return permissions;
+    }
+
+    // vMenu's own list of what a plugin may log. A client saying a row is loggable is not enough, or a
+    // modified one would pick what lands in the owner's channel.
+    public static bool TryLoggedItem(string resource, string itemId, out string description)
+    {
+        description = string.Empty;
+
+        return Registered.TryGetValue(resource, out var plugin)
+            && plugin.LoggedItems.TryGetValue(itemId, out description!);
+    }
+
+    private static Dictionary<string, string> BuildLoggedItems(
+        List<LoggedItemDeclaration>? declarations,
+        RegisterResult result)
+    {
+        var items = new Dictionary<string, string>(StringComparer.Ordinal);
+
+        if (declarations is null || declarations.Count == 0)
+        {
+            return items;
+        }
+
+        foreach (var declaration in declarations)
+        {
+            var itemId = declaration.ItemId?.Trim() ?? string.Empty;
+
+            if (itemId.Length == 0)
+            {
+                result.Warnings.Add("A logged item without an id was skipped.");
+                continue;
+            }
+
+            if (items.Count >= MaxLoggedItems)
+            {
+                result.Warnings.Add(
+                    $"Logged item '{itemId}' was skipped: a plugin may declare {MaxLoggedItems} of them.");
+                continue;
+            }
+
+            var description = (declaration.Description ?? string.Empty).Trim();
+
+            if (description.Length == 0)
+            {
+                result.Warnings.Add($"Logged item '{itemId}' was skipped: it needs a description to log.");
+                continue;
+            }
+
+            if (description.Length > MaxLoggedDescription)
+            {
+                description = description[..MaxLoggedDescription];
+            }
+
+            if (!items.TryAdd(itemId, description))
+            {
+                result.Warnings.Add($"Logged item '{itemId}' was declared twice, the second one was skipped.");
+            }
+        }
+
+        return items;
     }
 
     private static List<Setting> BuildSettings(string id, List<SettingNode>? nodes, RegisterResult result)
@@ -315,6 +384,35 @@ public static class PluginRegistry
         result.Errors.Add(reason);
 
         return result;
+    }
+
+    // A plugin calling RequirePermission has said this is a check a legitimate client could not fail, so
+    // the refusal is worth a security line rather than being the plugin's own business.
+    private static void OnDenied(string playerSource, string permissionName)
+    {
+        if (Sender() is not { } resource
+            || !Registered.TryGetValue(resource, out var plugin)
+            || !int.TryParse(playerSource, NumberStyles.Integer, CultureInfo.InvariantCulture, out var serverId)
+            || serverId <= 0)
+        {
+            return;
+        }
+
+        var permission = PluginPermissions.For(plugin.Id, permissionName);
+
+        if (!plugin.Permissions.Contains(permission))
+        {
+            Log.Warning(
+                $"[Plugins] '{resource}' reported a refusal for '{permissionName}', which it never declared.");
+
+            return;
+        }
+
+        WebhookLog.Security(
+            WebhookActor.For(serverId),
+            "was refused something a plugin only offers to people allowed to use it.",
+            ("plugin", resource),
+            ("missing", permission));
     }
 
     private static string? Sender()

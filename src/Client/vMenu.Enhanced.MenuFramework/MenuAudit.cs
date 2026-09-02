@@ -61,6 +61,16 @@ public static class MenuAudit
         API.EmitServer(AuditEvents.Action, action, value, detail);
     }
 
+    public static void ReportPluginItem(string resource, string itemId, string kind, string value)
+    {
+        if (!_wanted || !Allowed())
+        {
+            return;
+        }
+
+        API.EmitServer(AuditEvents.Plugin, resource, itemId, kind, value);
+    }
+
     internal static void ReportTheme(string resource, string id, string name)
     {
         if (!_wanted)

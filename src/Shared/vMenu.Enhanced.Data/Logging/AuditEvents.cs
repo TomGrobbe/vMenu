@@ -7,6 +7,8 @@ public static class AuditEvents
     public const string Theme = "vMenu.Enhanced:Audit:Theme";
 
     public const string Action = "vMenu.Enhanced:Audit:Action";
+
+    public const string Plugin = "vMenu.Enhanced:Audit:Plugin";
 }
 
 public static class MenuActionKinds

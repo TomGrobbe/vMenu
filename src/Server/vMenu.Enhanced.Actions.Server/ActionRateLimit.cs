@@ -14,6 +14,8 @@ public sealed class ActionRateLimit(string name, IntSetting allowance, IntSettin
 
     public string Name { get; } = name;
 
+    public int Allowance => ServerConfig.Value(allowance);
+
     public bool TryTake(Player source, out int retryAfterSeconds)
     {
         retryAfterSeconds = 0;

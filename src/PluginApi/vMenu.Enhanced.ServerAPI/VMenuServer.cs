@@ -61,6 +61,25 @@ public static class VMenuServer
             || Native.IsPlayerAceAllowed(playerSource, Everything);
     }
 
+    /// <summary>The same check as <see cref="IsPlayerAllowed"/>, but a refusal is also reported to vMenu's
+    /// security webhook. Use it where a legitimate client could only ever have sent the thing you are
+    /// handling while allowed, and keep <see cref="IsPlayerAllowed"/> for ordinary branching, or a server
+    /// owner ends up with a log full of normal play.</summary>
+    public static bool RequirePermission(string playerSource, string permissionName)
+    {
+        if (IsPlayerAllowed(playerSource, permissionName))
+        {
+            return true;
+        }
+
+        if (!string.IsNullOrEmpty(playerSource))
+        {
+            PluginEmit.Local(PluginEvents.ServerDenied, playerSource, permissionName);
+        }
+
+        return false;
+    }
+
     private static void EnsureIdentity()
     {
         if (_resource.Length == 0)

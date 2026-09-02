@@ -94,8 +94,12 @@ public static class PluginHost
 
     internal static void AttachPluginsMenu(MenuBuilder builder) => _pluginsBuilder = builder;
 
-    internal static void Emit(PluginState state, PluginCallback callback) =>
+    internal static void Emit(PluginState state, PluginCallback callback)
+    {
+        PluginAudit.Report(state, callback);
+
         NativeFixer.EmitLocal(state.EventName, ClientJson.Serialize(callback));
+    }
 
     private static void OnProbe()
     {

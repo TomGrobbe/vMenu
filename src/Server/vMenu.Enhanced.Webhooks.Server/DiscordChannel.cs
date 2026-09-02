@@ -11,7 +11,10 @@ using vMenu.Enhanced.Logging;
 
 namespace vMenu.Enhanced.Webhooks.Server;
 
-internal sealed class DiscordChannel(LogCategory category, StringSetting urlSetting)
+internal sealed class DiscordChannel(
+    LogCategory category,
+    StringSetting urlSetting,
+    StringSetting? fallbackSetting = null)
 {
     private const int TimeoutMs = 10000;
 
@@ -195,7 +198,7 @@ internal sealed class DiscordChannel(LogCategory category, StringSetting urlSett
         if (reply.Outcome == HttpOutcome.Answered && reply.Status is >= 400 and < 500)
         {
             Report(
-                $"[Webhooks] {urlSetting.Name} was refused with status {reply.Status}. "
+                $"[Webhooks] {Name()} was refused with status {reply.Status}. "
                 + $"Dropping {sent} line(s). Body: {WebhookText.Truncate(reply.Body, 300)}");
 
             Drop();
@@ -208,7 +211,7 @@ internal sealed class DiscordChannel(LogCategory category, StringSetting urlSett
         if (_attempts >= MaxAttempts)
         {
             Report(
-                $"[Webhooks] {urlSetting.Name} failed {_attempts} time(s) in a row "
+                $"[Webhooks] {Name()} failed {_attempts} time(s) in a row "
                 + $"({Why(reply)}). Dropping {sent} line(s) and carrying on.");
 
             Drop();
@@ -220,7 +223,7 @@ internal sealed class DiscordChannel(LogCategory category, StringSetting urlSett
 
         _nextAttemptAt = Native.GetGameTimer() + backoff;
 
-        Report($"[Webhooks] {urlSetting.Name} did not go through ({Why(reply)}). Retrying in {backoff / 1000}s.");
+        Report($"[Webhooks] {Name()} did not go through ({Why(reply)}). Retrying in {backoff / 1000}s.");
     }
 
     private void RateLimited(HttpReply reply)
@@ -230,7 +233,7 @@ internal sealed class DiscordChannel(LogCategory category, StringSetting urlSett
         if (_rateLimitRetries > MaxRateLimitRetries)
         {
             Report(
-                $"[Webhooks] {urlSetting.Name} has been rate limited {_rateLimitRetries} time(s) in a row. "
+                $"[Webhooks] {Name()} has been rate limited {_rateLimitRetries} time(s) in a row. "
                 + "Dropping this batch. Raise vMenu.Enhanced.Logging.FlushSeconds if this keeps happening.");
 
             Drop();
@@ -243,7 +246,7 @@ internal sealed class DiscordChannel(LogCategory category, StringSetting urlSett
 
         _nextAttemptAt = Native.GetGameTimer() + wait;
 
-        Log.Debug($"[Webhooks] {urlSetting.Name} is rate limited, waiting {wait}ms.");
+        Log.Debug($"[Webhooks] {Name()} is rate limited, waiting {wait}ms.");
     }
 
     private void Disable(int status)
@@ -255,7 +258,7 @@ internal sealed class DiscordChannel(LogCategory category, StringSetting urlSett
         _queue.Clear();
 
         Log.Error(
-            $"[Webhooks] Discord answered {status} for {urlSetting.Name}, which means that URL is wrong "
+            $"[Webhooks] Discord answered {status} for {Name()}, which means that URL is wrong "
             + "or the webhook was deleted. Nothing more will be sent to it until you correct the setting.");
     }
 
@@ -294,5 +297,17 @@ internal sealed class DiscordChannel(LogCategory category, StringSetting urlSett
         Log.Warning(message);
     }
 
-    private string Url() => ServerConfig.Value(urlSetting).Trim();
+    private string Url()
+    {
+        var url = ServerConfig.Value(urlSetting).Trim();
+
+        return url.Length > 0 || fallbackSetting is null ? url : ServerConfig.Value(fallbackSetting).Trim();
+    }
+
+    // Names whichever setting actually supplied the URL, so a failing fallback does not blame the
+    // convar the owner left empty.
+    private string Name() =>
+        fallbackSetting is null || ServerConfig.Value(urlSetting).Trim().Length > 0
+            ? urlSetting.Name
+            : fallbackSetting.Name;
 }

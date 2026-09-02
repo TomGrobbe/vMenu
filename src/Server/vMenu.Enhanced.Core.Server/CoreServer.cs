@@ -39,6 +39,7 @@ public class CoreServer : IScript
         ServerPermissions.Initialize();
         ServerConfig.Initialize();
         WebhookLog.Initialize();
+        SecurityLog.Initialize();
 
         DebugCommands.Source(
             () => ServerConfig.Value(Debugging.Server),
@@ -86,6 +87,7 @@ public class CoreServer : IScript
         JoinLeaveBroadcast.Register();
 
         PluginRegistry.RegisterEventHandlers();
+        PluginAuditHandler.Register();
         PluginRegistry.AnnounceReady();
 
         WebhookLog.Event("vMenu Enhanced started.");

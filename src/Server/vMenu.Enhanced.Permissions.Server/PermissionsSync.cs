@@ -17,10 +17,14 @@ public static class PermissionsSync
 {
     private const string RefreshCommand = "vmenu_refresh_permissions";
 
+    private const string DroppedEvent = "playerDropped";
+
     // Call after ServerPermissions.Initialize.
     public static void RegisterEventHandlers()
     {
         API.OnNetEvent(PermissionEvents.Request, new Action<Player>(OnPermissionsRequested), false);
+
+        API.OnEvent(DroppedEvent, new Action<int, string?>(OnPlayerDropped), false);
 
         SharedAPI.Commands.RegisterCommand(RefreshCommand, true, new Action<int, MessagePackBuffer, string>(OnRefreshCommand));
     }
@@ -97,4 +101,12 @@ public static class PermissionsSync
 
     private static void OnPermissionsRequested([FromSource] Player source) =>
         ServerPermissions.SendPermissions(source);
+
+    private static void OnPlayerDropped([FromSource] int source, string? reason = null)
+    {
+        if (source > 0)
+        {
+            ServerPermissions.ForgetSync(source);
+        }
+    }
 }

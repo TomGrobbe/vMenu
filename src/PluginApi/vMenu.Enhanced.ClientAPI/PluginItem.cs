@@ -115,6 +115,18 @@ public abstract class PluginItem
         }
     }
 
+    /// <summary>Ask vMenu to log use of this row to the server owner's webhook. Does nothing on its own:
+    /// the plugin's server half has to declare the same id with <c>AddLoggedItem</c>.</summary>
+    public bool Log
+    {
+        get => Node.Log == true;
+        set
+        {
+            Node.Log = value;
+            Emit(new UpdateOp { Op = UpdateOps.SetLog, ItemId = Id, Flag = value });
+        }
+    }
+
     /// <summary>Icon names from the vMenu icon set, for example "LOCK" or "STAR".</summary>
     public void SetIcons(string? leftIcon, string? rightIcon)
     {

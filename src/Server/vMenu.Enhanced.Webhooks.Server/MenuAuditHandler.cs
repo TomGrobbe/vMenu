@@ -50,16 +50,38 @@ public static class MenuAuditHandler
         API.OnEvent(DroppedEvent, new Action<int, string?>(OnPlayerDropped), false);
     }
 
+    // Shared with the plugin audit handler, so a plugin's rows cannot hand a player a second allowance.
+    public static bool TryTakeAuditSlot(int serverId) => Limit.TryTake(serverId);
+
+    public static string PhraseFor(string kind, string label, string value) => Phrase(kind, label, value);
+
     private static void OnMenuAction([FromSource] Player source, string menu, string item, string kind, string value)
     {
-        if (!WebhookLog.WantsMenuActions || !Limit.TryTake(source.Handle))
+        if ((!WebhookLog.WantsMenuActions && !WebhookLog.WantsSecurity) || !Limit.TryTake(source.Handle))
         {
             return;
         }
 
         var itemKey = WebhookText.Clean(item, MaxItemLength);
 
-        if (itemKey.Length == 0 || !AuditedMenuItems.Includes(itemKey))
+        if (itemKey.Length == 0)
+        {
+            return;
+        }
+
+        // The player's own game filters against this same table in this same build, so a key it would
+        // never send can only have come from a modified client.
+        if (!AuditedMenuItems.Includes(itemKey))
+        {
+            WebhookLog.Security(
+                WebhookActor.For(source),
+                "reported a menu action that vMenu never logs.",
+                ("item", itemKey));
+
+            return;
+        }
+
+        if (!WebhookLog.WantsMenuActions)
         {
             return;
         }
@@ -74,12 +96,23 @@ public static class MenuAuditHandler
 
     private static void OnClientAction([FromSource] Player source, string action, string value, string detail)
     {
-        if (!WebhookLog.WantsMenuActions || !Limit.TryTake(source.Handle))
+        if ((!WebhookLog.WantsMenuActions && !WebhookLog.WantsSecurity) || !Limit.TryTake(source.Handle))
         {
             return;
         }
 
+        // Every call site passes an AuditActions constant, so anything else is a modified client.
         if (PhraseAction(action, WebhookText.Clean(value, MaxValueLength)) is not { } message)
+        {
+            WebhookLog.Security(
+                WebhookActor.For(source),
+                "reported an action that vMenu never logs.",
+                ("action", WebhookText.Clean(action, MaxItemLength)));
+
+            return;
+        }
+
+        if (!WebhookLog.WantsMenuActions)
         {
             return;
         }
@@ -200,6 +233,7 @@ public static class MenuAuditHandler
         if (source > 0)
         {
             Limit.Forget(source);
+            SecurityThrottle.Forget(source);
         }
     }
 

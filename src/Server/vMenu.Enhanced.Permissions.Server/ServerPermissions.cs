@@ -12,7 +12,14 @@ namespace vMenu.Enhanced.Permissions.Server;
 
 public static class ServerPermissions
 {
+    private static readonly Dictionary<int, int> SyncedAt = [];
+
     public static bool IsReady { get; private set; }
+
+    public static bool SyncedWithin(int serverId, int milliseconds) =>
+        !SyncedAt.TryGetValue(serverId, out var at) || Native.GetGameTimer() - at < milliseconds;
+
+    public static void ForgetSync(int serverId) => SyncedAt.Remove(serverId);
 
     // Call once, first, from the server entry point.
     public static void Initialize()
@@ -113,6 +120,8 @@ public static class ServerPermissions
         {
             API.EmitClient(handle, PermissionEvents.Set, granted, whitelistedVehicles, categorisedVehicles, vehicleCategories, whitelistedPeds, whitelistedWeapons);
         }
+
+        SyncedAt[handle] = Native.GetGameTimer();
 
         Log.Debug($"[Permissions] Sent {granted.Length} permission(s) to {Native.GetPlayerName(source)}: {string.Join(", ", granted)}");
     }

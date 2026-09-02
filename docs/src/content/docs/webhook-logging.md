@@ -7,9 +7,9 @@ vMenu can post a running record of what happens on your server to Discord, so it
 
 It is off by default. Nothing is sent until you fill in a webhook URL.
 
-## The three channels
+## The four channels
 
-Each goes to its own webhook. Point them all at one channel, use one, or use none. An empty URL means that channel is not logged.
+Each goes to its own webhook. Point them all at one channel, use one, or use none. An empty URL means that channel is not logged, with one exception noted under Security below.
 
 **Events**, things that happen to the server:
 
@@ -45,6 +45,20 @@ Refused attempts are logged here too. If somebody without the kick permission tr
 
 The player on the receiving end is read before the action runs rather than after, so somebody who was kicked is still named properly in the line that says they were kicked.
 
+**Security**, people reaching past the menu instead of using it. A modified client can send the server anything it likes, and this is where that shows up:
+
+- Firing an action they are not allowed to use, after vMenu has already told their game that row is locked
+- Asking for an action that does not exist
+- Sending arguments the menu would never send
+- Carrying on firing an action long after the server started refusing it
+- Reporting a menu action that vMenu does not log at all
+
+Leave this webhook empty and these lines go to your staff webhook instead, so you still get them without setting up a fourth channel.
+
+Every one of these lines carries the player's identifiers, rather than only the join line doing so. When you are looking at one of these you usually want to ban somebody, and their join line may be hours further up the channel.
+
+Just as important is what never appears here. Clicking a row you are not allowed to use does not, because a row you may not use is greyed out or hidden and pressing it never leaves your own game. Neither does an action the server turned down for an ordinary reason, such as the player being too far away, the target having left, or the feature being switched off. Nor does simply going over a rate limit, because somebody clicking quickly does that. Only a client doing something a normal game cannot do ends up in this channel.
+
 ## Setup
 
 **1. Make a webhook.** In Discord: **Edit Channel** → **Integrations** → **Webhooks** → **New Webhook** → **Copy Webhook URL**.
@@ -59,6 +73,7 @@ setr vMenu.Enhanced.Logging.Enabled true
 set vMenu.Enhanced.Logging.Webhook.Events "https://discord.com/api/webhooks/..."
 set vMenu.Enhanced.Logging.Webhook.Actions "https://discord.com/api/webhooks/..."
 set vMenu.Enhanced.Logging.Webhook.Staff "https://discord.com/api/webhooks/..."
+set vMenu.Enhanced.Logging.Webhook.Security "https://discord.com/api/webhooks/..."
 ```
 
 :::caution[`set`, not `setr`]
@@ -66,6 +81,10 @@ set vMenu.Enhanced.Logging.Webhook.Staff "https://discord.com/api/webhooks/..."
 :::
 
 **3. Restart, then run `vmenu_webhook_test`** in the server console. It puts one test line in each channel.
+
+:::tip[Two channels, one webhook]
+Pointing two of these at the same webhook URL works, and it is a reasonable thing to do with Staff and Security. Discord is being posted to twice as often when you do, so if it starts complaining about the pace, raise `vMenu.Enhanced.Logging.FlushSeconds` a little.
+:::
 
 ## Generic webhook
 
@@ -103,7 +122,7 @@ Events are posted in batches:
 }
 ```
 
-`category` is `event`, `action` or `staff`. `targets` is empty when nobody was targeted. Missing identifiers are `null`.
+`category` is `event`, `action`, `staff` or `security`. `targets` is empty when nobody was targeted. Missing identifiers are `null`.
 
 ## What a line looks like
 
@@ -122,7 +141,7 @@ The time is sent as a Discord timestamp, which means everybody reading the chann
 
 Every line names the player and their server id, like `Vespura (1)`. Server ids get reused, so the id alone is not enough to find somebody tomorrow.
 
-That is what the identifiers are for, and they are attached to the join and leave lines only:
+That is what the identifiers are for, and they are attached to the join and leave lines, and to every security line:
 
 ```
 • 31/08/2026 22:39:58 Vespura (1) joined the server.
@@ -130,6 +149,8 @@ That is what the identifiers are for, and they are attached to the join and leav
 ```
 
 One line at the top of somebody's session ties their name and server id to their identifiers, and everything they do afterwards stays short and readable. Only the identifiers that exist are shown.
+
+Security lines repeat the identifiers every time rather than making you scroll back for them, because those are the lines you are most likely to be acting on.
 
 :::danger[Personal information]
 Everyone who can read the channel can read these identifiers. Keep these channels staff only.
@@ -143,13 +164,16 @@ Everyone who can read the channel can read these identifiers. Keep these channel
 | `vMenu.Enhanced.Logging.Webhook.Events` | Events webhook URL. |
 | `vMenu.Enhanced.Logging.Webhook.Actions` | Actions webhook URL. |
 | `vMenu.Enhanced.Logging.Webhook.Staff` | Staff webhook URL. |
+| `vMenu.Enhanced.Logging.Webhook.Security` | Security webhook URL. Falls back to the staff one when empty. |
 | `vMenu.Enhanced.Logging.Webhook.Generic` | Plain JSON endpoint. Certificates are not checked. |
 | `vMenu.Enhanced.Logging.FlushSeconds` | How often queued lines are sent. Default 2, clamped to 1 to 60. |
 | `vMenu.Enhanced.Logging.QueueLimit` | Lines held per webhook while waiting. Default 500. |
 | `vMenu.Enhanced.Logging.MenuActionLimit` | Menu actions logged per player per window. Default 30, `0` disables the limit. |
 | `vMenu.Enhanced.Logging.MenuActionLimitSeconds` | Length of that window. Default 10. |
+| `vMenu.Enhanced.Logging.SecurityLimit` | Security lines logged per player per window. Default 10, `0` disables the limit. |
+| `vMenu.Enhanced.Logging.SecurityLimitSeconds` | Length of that window. Default 60. |
 
-The four `Webhook.*` options use `set`. Everything else uses `setr`.
+The five `Webhook.*` options use `set`. Everything else uses `setr`.
 
 ## Behaviour
 
@@ -162,11 +186,14 @@ The four `Webhook.*` options use `set`. Everything else uses `setr`.
 - **Scrolling is not an action.** Only committing to something logs. Browsing menus, arrowing through lists and dragging sliders do not.
 - **Vehicle mods are summed up, not counted.** Parts go on the car as you scroll past them, so logging each one would fill the channel with things the player only glanced at. Instead you get a single line when they leave the mods menu, listing every slot that ended up different from how they found it.
 - **Filtered before it is sent.** A player's game only reports the handful of actions listed above, so the rest never crosses the network to begin with.
+- **A menu that is merely out of date is put right, not reported.** If you edit permissions by hand and do not run `vmenu_refresh_permissions`, players carry on seeing rows that no longer work. The first time somebody presses one, vMenu quietly resends their permissions and says nothing, and their menu locks the row a moment later. Only a client that fires the same row again, after being told it is locked, ends up in the security channel. So an honest player costs you one silent correction, and a cheat still gets caught.
+- **Nothing is logged for the first half minute after a restart.** vMenu is still rebuilding its permission list then, and everybody looks like they are not allowed to do anything.
+- **A flood is collapsed into one line.** Somebody running a script can try thousands of things a second. Only `SecurityLimit` lines per player get through per window, and the next one that does says how many were left out.
 
 ## Nothing arriving?
 
 - Is `vMenu.Enhanced.Logging.Enabled` set to `true`?
 - Is your `configuration.cfg` `exec`d **above** the line that starts vMenu?
-- Run `vmenu_webhook_test` and read the output.
+- Run `vmenu_webhook_test` and read the output. It sends one line to each of the four channels.
 - Run `vmenu_config`. The webhook options should say `set (hidden)`. `unset` means the server never read them.
 - Look for `[Webhooks]` lines in the server console.

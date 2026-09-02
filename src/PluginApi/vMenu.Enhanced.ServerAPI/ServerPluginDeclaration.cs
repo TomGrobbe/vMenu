@@ -14,6 +14,8 @@ public sealed class ServerPluginDeclaration
 
     private readonly List<SettingNode> _settings = new();
 
+    private readonly List<LoggedItemDeclaration> _loggedItems = new();
+
     public ServerPluginDeclaration(string displayName)
     {
         DisplayName = displayName;
@@ -24,6 +26,16 @@ public sealed class ServerPluginDeclaration
     public ServerPluginDeclaration AddPermission(string name, string description, bool staffOnly = false)
     {
         _permissions.Add(new PermissionDeclaration { Name = name, Description = description, StaffOnly = staffOnly });
+
+        return this;
+    }
+
+    /// <summary>Lets the server owner see a line in their webhook whenever somebody uses this row. The
+    /// client half still has to set <c>Log</c> on it. <paramref name="description"/> is a noun phrase
+    /// dropped into vMenu's own wording, as in "turned the anti-grief shield on".</summary>
+    public ServerPluginDeclaration AddLoggedItem(string itemId, string description)
+    {
+        _loggedItems.Add(new LoggedItemDeclaration { ItemId = itemId, Description = description });
 
         return this;
     }
@@ -86,5 +98,6 @@ public sealed class ServerPluginDeclaration
         DisplayName = DisplayName,
         Permissions = new List<PermissionDeclaration>(_permissions),
         Settings = new List<SettingNode>(_settings),
+        LoggedItems = new List<LoggedItemDeclaration>(_loggedItems),
     };
 }

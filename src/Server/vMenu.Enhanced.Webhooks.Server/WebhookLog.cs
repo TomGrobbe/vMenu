@@ -1,3 +1,5 @@
+using System.Globalization;
+
 using CitizenFX.FiveM.Server;
 using CitizenFX.FiveM.Server.Entities;
 using CitizenFX.FiveM.Shared;
@@ -30,6 +32,7 @@ public static class WebhookLog
         LoggingSettings.EventsWebhook,
         LoggingSettings.ActionsWebhook,
         LoggingSettings.StaffWebhook,
+        LoggingSettings.SecurityWebhook,
         LoggingSettings.GenericWebhook,
     ];
 
@@ -39,6 +42,11 @@ public static class WebhookLog
 
     private static readonly DiscordChannel StaffChannel = new(LogCategory.Staff, LoggingSettings.StaffWebhook);
 
+    // Falls back to the staff webhook, so an owner who never sets this one still sees security lines
+    // rather than silently losing them.
+    private static readonly DiscordChannel SecurityChannel =
+        new(LogCategory.Security, LoggingSettings.SecurityWebhook, LoggingSettings.StaffWebhook);
+
     private static readonly GenericChannel Generic = new();
 
     private static bool _initialized;
@@ -47,6 +55,8 @@ public static class WebhookLog
         IsOn && (Channel(category).IsConfigured || Generic.IsConfigured);
 
     public static bool WantsMenuActions => IsOn && (ActionsChannel.IsConfigured || Generic.IsConfigured);
+
+    public static bool WantsSecurity => IsOn && (SecurityChannel.IsConfigured || Generic.IsConfigured);
 
     private static bool IsOn => ServerConfig.Value(LoggingSettings.Enabled);
 
@@ -93,6 +103,23 @@ public static class WebhookLog
     public static void Staff(Player source, WebhookActor? target, string message, params (string Key, string Value)[] data) =>
         Queue(LogCategory.Staff, WebhookActor.For(source), target, message, false, data);
 
+    public static void Security(WebhookActor actor, string message, params (string Key, string Value)[] data)
+    {
+        if (!WantsSecurity || !SecurityThrottle.TryTake(actor.ServerId))
+        {
+            return;
+        }
+
+        var suppressed = SecurityThrottle.TakeSuppressed(actor.ServerId);
+
+        if (suppressed > 0)
+        {
+            data = [.. data, ("suppressed", suppressed.ToString(CultureInfo.InvariantCulture) + " earlier line(s)")];
+        }
+
+        Queue(LogCategory.Security, actor, null, message, true, data, warning: true);
+    }
+
     private static void Queue(
         LogCategory category,
         WebhookActor actor,
@@ -132,6 +159,7 @@ public static class WebhookLog
     {
         LogCategory.Action => ActionsChannel,
         LogCategory.Staff => StaffChannel,
+        LogCategory.Security => SecurityChannel,
         _ => EventsChannel,
     };
 
@@ -145,6 +173,7 @@ public static class WebhookLog
         await EventsChannel.FlushAsync();
         await ActionsChannel.FlushAsync();
         await StaffChannel.FlushAsync();
+        await SecurityChannel.FlushAsync();
         await Generic.FlushAsync();
     }
 
@@ -156,6 +185,7 @@ public static class WebhookLog
         EventsChannel.Reset();
         ActionsChannel.Reset();
         StaffChannel.Reset();
+        SecurityChannel.Reset();
         Generic.Reset();
 
         Publish();
@@ -164,7 +194,7 @@ public static class WebhookLog
     private static void Publish() =>
         Native.SetConvarReplicated(
             AuditStateConvars.MenuReporting,
-            WantsMenuActions ? AuditStateConvars.On : AuditStateConvars.Off);
+            WantsMenuActions || WantsSecurity ? AuditStateConvars.On : AuditStateConvars.Off);
 
     private static void OnResourceStop(string stopped)
     {
@@ -210,6 +240,7 @@ public static class WebhookLog
         Event("Webhook test from the server console.");
         Action(WebhookActor.Server, "This is a test player action.");
         Staff(WebhookActor.Server, null, "This is a test staff action.");
+        Security(WebhookActor.Server, "This is a test security line.");
 
         Log.Info(
             "[Webhooks] Queued one test line per category. Anything you configured should see it within "
