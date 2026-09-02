@@ -42,6 +42,10 @@ public sealed class OnlinePlayersMenu : MenuDefinition
 
     private const string DeletedVehicle = "1";
 
+    private const string ExplodedVehicle = "1";
+
+    private const string ExplodeFailed = "3";
+
     private const string PassengerOnly = "2";
 
     private const string SummonMoved = "0";
@@ -379,6 +383,17 @@ public sealed class OnlinePlayersMenu : MenuDefinition
             OnConfirmedAsync = _ => DeleteVehicleAsync(),
         });
 
+        actions.Entries.Add(new ConfirmButtonEntry
+        {
+            Text = MenuText.Key(Loc.OnlinePlayers.ExplodeVehicle),
+            Description = MenuText.Key(Loc.OnlinePlayers.ExplodeVehicleDescription),
+            ConfirmationDescription = MenuText.From(() => MenuText
+                .Key(Loc.OnlinePlayers.ExplodeVehicleConfirm, ("player", MenuText.Literal(_selected?.Name ?? string.Empty)))
+                .Resolve(Localizer.Current)),
+            Gate = OnlinePlayersPermissions.ExplodeVehicle,
+            OnConfirmedAsync = _ => ExplodeVehicleAsync(),
+        });
+
         actions.Entries.Add(new ButtonEntry
         {
             Text = MenuText.Key(Loc.OnlinePlayers.CheckStatus),
@@ -503,6 +518,48 @@ public sealed class OnlinePlayersMenu : MenuDefinition
 
             default:
                 Notifications.Info(MenuText.Key(Loc.OnlinePlayers.DeleteVehicleOnFoot, ("player", name)));
+
+                break;
+        }
+    }
+
+    private async Task ExplodeVehicleAsync()
+    {
+        if (Target(allowSelf: true) is not { } player)
+        {
+            return;
+        }
+
+        var name = MenuText.Literal(player.Name);
+
+        var result = await ServerActions.InvokeAsync(ActionIds.OnlinePlayers.ExplodeVehicle, Id(player));
+
+        if (result.Status != ActionStatus.Ok || result.Data.Length < 1)
+        {
+            Report(result, name);
+
+            return;
+        }
+
+        switch (result.Data[0])
+        {
+            case ExplodedVehicle:
+                Notifications.Success(MenuText.Key(Loc.OnlinePlayers.ExplodeVehicleDone, ("player", name)));
+
+                break;
+
+            case PassengerOnly:
+                Notifications.Warning(MenuText.Key(Loc.OnlinePlayers.ExplodeVehicleNotDriving, ("player", name)));
+
+                break;
+
+            case ExplodeFailed:
+                Notifications.Error(MenuText.Key(Loc.OnlinePlayers.ExplodeVehicleFailed, ("player", name)));
+
+                break;
+
+            default:
+                Notifications.Info(MenuText.Key(Loc.OnlinePlayers.ExplodeVehicleOnFoot, ("player", name)));
 
                 break;
         }

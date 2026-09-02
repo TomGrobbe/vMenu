@@ -13,6 +13,7 @@ public static class StaffActionIds
         [ActionIds.OnlinePlayers.SendMessage] = "messaged",
         [ActionIds.OnlinePlayers.SetWantedLevel] = "set the wanted level of",
         [ActionIds.OnlinePlayers.DeleteVehicle] = "deleted the vehicle of",
+        [ActionIds.OnlinePlayers.ExplodeVehicle] = "blew up the vehicle of",
         [ActionIds.OnlinePlayers.GetIdentifiers] = "looked up the identifiers of",
         [ActionIds.OnlinePlayers.GetStatus] = "checked the status of",
         [ActionIds.OnlinePlayers.RefreshPermissions] = "refreshed the permissions of",

@@ -11,6 +11,7 @@ using vMenu.Enhanced.Data.Actions;
 using vMenu.Enhanced.Data.OnlinePlayers;
 using vMenu.Enhanced.Data.Permissions;
 using vMenu.Enhanced.Data.Ticks;
+using vMenu.Enhanced.Data.VehicleData;
 using vMenu.Enhanced.Logging;
 using vMenu.Enhanced.Permissions.Server;
 using vMenu.Enhanced.Players.Server;
@@ -48,9 +49,13 @@ public static class OnlinePlayerActions
 
     private const string Deleted = "1";
 
+    private const string Exploded = "1";
+
     private const string OnFoot = "0";
 
     private const string NotDriving = "2";
+
+    private const string ExplodeFailed = "3";
 
     private const string StatusOn = "1";
 
@@ -151,6 +156,12 @@ public static class OnlinePlayerActions
             ActionIds.OnlinePlayers.DeleteVehicle,
             OnlinePlayersPermissions.DeleteVehicle,
             DeleteVehicle,
+            Limit);
+
+        ActionRegistry.Register(
+            ActionIds.OnlinePlayers.ExplodeVehicle,
+            OnlinePlayersPermissions.ExplodeVehicle,
+            ExplodeVehicle,
             Limit);
 
         ActionRegistry.Register(
@@ -815,6 +826,46 @@ public static class OnlinePlayerActions
         Native.DeleteEntity(vehicle);
 
         return ActionResponse.Ok(Deleted);
+    }
+
+    private static async Task<ActionResponse> ExplodeVehicle(Player source, string[] args)
+    {
+        if (!TryResolveTarget(args, out var target))
+        {
+            return ActionResponse.NotFound();
+        }
+
+        if (PedOf(target) is not { } ped)
+        {
+            return ActionResponse.NotReady();
+        }
+
+        var vehicle = Native.GetVehiclePedIsIn(ped, false);
+
+        if (vehicle == 0 || !Native.DoesEntityExist(vehicle) || Native.GetEntityType(vehicle) != VehicleEntityType)
+        {
+            return ActionResponse.Ok(OnFoot);
+        }
+
+        if (Native.GetPedInVehicleSeat(vehicle, DriverSeat) != ped)
+        {
+            return ActionResponse.Ok(NotDriving);
+        }
+
+        var response = await RemoteVehicleControl.PerformAsync(
+            source,
+            Native.NetworkGetNetworkIdFromEntity(vehicle),
+            vehicle,
+            RemoteVehicleAction.Explode);
+
+        if (response.Status != ActionStatus.Ok)
+        {
+            return ActionResponse.Ok(ExplodeFailed);
+        }
+
+        Log.Info($"[OnlinePlayers] {source.Name} blew up the vehicle {Native.GetPlayerName(target.ToString())} was driving.");
+
+        return ActionResponse.Ok(Exploded);
     }
 
     private static async Task<ActionResponse> GetStatus(Player source, string[] args)

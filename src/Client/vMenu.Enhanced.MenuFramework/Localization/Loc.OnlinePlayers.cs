@@ -128,6 +128,20 @@ public static partial class Loc
 
         public const string DeleteVehicleNotDriving = "onlineplayers.deletevehicle.notdriving";
 
+        public const string ExplodeVehicle = "onlineplayers.explodevehicle";
+
+        public const string ExplodeVehicleDescription = "onlineplayers.explodevehicle.desc";
+
+        public const string ExplodeVehicleConfirm = "onlineplayers.explodevehicle.confirm";
+
+        public const string ExplodeVehicleDone = "onlineplayers.explodevehicle.done";
+
+        public const string ExplodeVehicleOnFoot = "onlineplayers.explodevehicle.onfoot";
+
+        public const string ExplodeVehicleNotDriving = "onlineplayers.explodevehicle.notdriving";
+
+        public const string ExplodeVehicleFailed = "onlineplayers.explodevehicle.failed";
+
         public const string CheckStatus = "onlineplayers.status";
 
         public const string CheckStatusDescription = "onlineplayers.status.desc";

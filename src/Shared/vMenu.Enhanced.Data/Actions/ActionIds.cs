@@ -93,6 +93,8 @@ public static class ActionIds
 
         public const string DeleteVehicle = "OnlinePlayers.DeleteVehicle";
 
+        public const string ExplodeVehicle = "OnlinePlayers.ExplodeVehicle";
+
         public const string GetStatus = "OnlinePlayers.GetStatus";
 
         public const string RefreshPermissions = "OnlinePlayers.RefreshPermissions";
