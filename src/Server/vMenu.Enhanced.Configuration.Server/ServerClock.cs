@@ -49,7 +49,7 @@ public static class ServerClock
     // would use its own slightly older idea of what time it is.
     public static int RealTimeOffset() => (int)GameClock.RealTimeOffset(Now(), Speed());
 
-    internal static double Now() => DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() / 1000.0;
+    public static double Now() => DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() / 1000.0;
 
     // The console side of the menu's reset button.
     public static void ResetToRealTime()
@@ -92,56 +92,43 @@ public static class ServerClock
             return;
         }
 
-        if (!TryPublishedUnixSeconds(out var now))
+        if (!TryPublishedUnixSeconds(out _))
         {
             Log.Warning($"[Clock] Nothing has been published to {WorldStateConvars.Utc} yet.");
 
             return;
         }
 
-        var speed = Speed();
-        var offset = Offset();
-        var utcSecondOfDay = (int)(now % 86400L);
-
-        var clock = ServerState.FrozenAtUnix ?? now;
-        var secondOfDay = GameClock.Mod(GameClock.SecondOfDay(clock, speed) + offset, GameClock.SecondsPerGameDay);
-
-        // Live clock, not the pinned one: the weather keeps cycling while the time of day is held.
-        var cycle = GameClock.CycleGameHours(now, speed);
-        var resolved = WeatherCycle.Resolve(cycle);
+        var world = WorldSnapshot.Capture(0);
+        var utcSecondOfDay = (int)(world.Utc % 86400L);
 
         Log.Info(
-            $"[Clock] UTC {now} ({utcSecondOfDay / 3600:00}:{utcSecondOfDay % 3600 / 60:00}:{utcSecondOfDay % 60:00})"
-            + (ServerState.FrozenAtUnix is { } pinned ? $", FROZEN at unix {pinned:0.000}" : string.Empty));
+            $"[Clock] UTC {world.Utc} ({utcSecondOfDay / 3600:00}:{utcSecondOfDay % 3600 / 60:00}:{utcSecondOfDay % 60:00})"
+            + (world.Clock.FrozenAtUnix is { } pinned ? $", FROZEN at unix {pinned:0.000}" : string.Empty));
         Log.Info(
-            $"[Clock]   in-game {(int)(secondOfDay / 3600):00}:{(int)(secondOfDay % 3600 / 60):00} " +
-            $"(offset {offset}s), " +
-            $"cycle {cycle.ToString("0.##", CultureInfo.InvariantCulture)} of {GameClock.GameHoursPerCycle} hours, " +
-            $"at {speed.ToString("0.###", CultureInfo.InvariantCulture)}x speed");
+            $"[Clock]   in-game {world.Clock.Hour:00}:{world.Clock.Minute:00} " +
+            $"(offset {world.Clock.OffsetSeconds}s), " +
+            $"cycle {world.Weather.CycleGameHours.ToString("0.##", CultureInfo.InvariantCulture)} of {world.Weather.CycleLengthGameHours} hours, " +
+            $"at {world.Clock.Speed.ToString("0.###", CultureInfo.InvariantCulture)}x speed");
         Log.Info(
-            $"[Clock]   weather {WeatherTypes.NameOf(resolved.Current)}, then " +
-            $"{WeatherTypes.NameOf(resolved.Next)} in " +
-            $"{(resolved.GameHoursUntilNext * GameClock.RealSecondsPerGameHourAt(speed) / 60.0).ToString("0.#", CultureInfo.InvariantCulture)} real minutes");
+            $"[Clock]   weather {world.Weather.Current}, then " +
+            $"{world.Weather.Next} in " +
+            $"{(world.Weather.RealSecondsUntilNext / 60.0).ToString("0.#", CultureInfo.InvariantCulture)} real minutes");
 
-        DumpDate(clock, speed, offset, secondOfDay);
+        DumpDate(world);
     }
 
-    private static void DumpDate(double now, double speed, int offset, double secondOfDay)
+    private static void DumpDate(WorldSnapshot world)
     {
-        var day = (long)GameClock.Mod(GameClock.GameDay(now, offset, speed), MoonCycle.PeriodDays);
-        var cycleDays = day + (secondOfDay / GameClock.SecondsPerGameDay);
-
-        CivilTime.FromDays(MoonCycle.EpochDay + day, out var year, out var month, out var dayOfMonth);
-
         Log.Info(
-            $"[Clock]   day {day} of the {MoonCycle.PeriodDays} day loop, " +
-            $"{MoonCycle.WeekdayOf(MoonCycle.EpochDay + day)} {dayOfMonth:00}/{month:00}/{year}");
+            $"[Clock]   day {world.Date.DayOfLoop} of the {world.Date.LoopDays} day loop, " +
+            $"{world.Date.Weekday} {world.Date.Day:00}/{world.Date.Month:00}/{world.Date.Year}");
         Log.Info(
-            $"[Clock]   moon {MoonCycle.DayOfCycle(cycleDays).ToString("0.##", CultureInfo.InvariantCulture)} of " +
-            $"{MoonCycle.CycleDays.ToString("0", CultureInfo.InvariantCulture)} days through the cycle, " +
-            $"{MoonCycle.NameOf(cycleDays)}, " +
-            $"{(MoonCycle.Illumination(cycleDays) * 100.0).ToString("0", CultureInfo.InvariantCulture)}% lit, " +
-            $"angle {MoonCycle.Degrees(cycleDays).ToString("0.#", CultureInfo.InvariantCulture)} degrees");
+            $"[Clock]   moon {world.Moon.DayOfCycle.ToString("0.##", CultureInfo.InvariantCulture)} of " +
+            $"{world.Moon.CycleDays.ToString("0", CultureInfo.InvariantCulture)} days through the cycle, " +
+            $"{world.Moon.Phase}, " +
+            $"{(world.Moon.Illumination * 100.0).ToString("0", CultureInfo.InvariantCulture)}% lit, " +
+            $"angle {world.Moon.AngleDegrees.ToString("0.#", CultureInfo.InvariantCulture)} degrees");
     }
 
     private static int Offset() =>
@@ -149,7 +136,7 @@ public static class ServerClock
             ? seconds
             : 0;
 
-    private static double Speed() =>
+    public static double Speed() =>
         GameClock.ClampSpeed(ServerConfig.Value(TimeOptionsSettings.SpeedMultiplier));
 
     // The clock feeds both features, so it runs while either one wants it.

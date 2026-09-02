@@ -15,6 +15,7 @@ using vMenu.Enhanced.Serialization.Server;
 using vMenu.Enhanced.Ticks.Server;
 using vMenu.Enhanced.Updates.Server;
 using vMenu.Enhanced.Webhooks.Server;
+using vMenu.Enhanced.World.Server;
 
 namespace vMenu.Enhanced.Core.Server;
 
@@ -50,6 +51,7 @@ public class CoreServer : IScript
 
         ServerClock.Initialize();
         ServerState.Initialize();
+        WorldEndpoint.Initialize();
         UpdateChecker.Initialize();
 
         ConfigurationExampleFile.Write();

@@ -38,4 +38,15 @@ public static class NativeFixer
 
         return Native.AddConvarChangeListener(convar, (int)reference);
     }
+
+    // SetHttpHandler's handler parameter is generated as a raw int for the same reason, and the
+    // reference has to come from the same manager or the host answers "Invalid function".
+    public static void SetHttpHandler(Action<object?, object?> handler)
+    {
+#pragma warning disable FIVEM001
+        var reference = SharedAPI.GetCore().FuncRefManager.Register(handler);
+#pragma warning restore FIVEM001
+
+        Native.SetHttpHandler((int)reference);
+    }
 }

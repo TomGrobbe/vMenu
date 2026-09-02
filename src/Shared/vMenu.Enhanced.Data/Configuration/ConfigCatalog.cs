@@ -119,6 +119,7 @@ public static class ConfigCatalog
             TimeOptions.Presets,
             TimeOptions.TransitionSeconds,
         ]),
+        new("World API", [WorldApi.Token]),
         new("Developer Features", [DeveloperFeatures.Enabled]),
         new("Debugging",
         [
