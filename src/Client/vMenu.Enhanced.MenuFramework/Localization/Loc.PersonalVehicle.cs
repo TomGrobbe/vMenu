@@ -48,7 +48,7 @@ public static partial class Loc
 
         public const string KickFailed = "personalvehicle.kick.failed";
 
-        public const string AskedToLeave = "personalvehicle.kick.asked";
+        public const string ThrownOut = "personalvehicle.kick.thrownout";
 
         public const string Delete = "personalvehicle.delete";
 

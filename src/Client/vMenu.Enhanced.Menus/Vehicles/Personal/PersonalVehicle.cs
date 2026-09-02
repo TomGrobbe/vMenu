@@ -18,7 +18,13 @@ namespace vMenu.Enhanced.Menus.Vehicles.Personal;
 
 public static class PersonalVehicle
 {
-    private const int LeaveNormally = 0;
+    private const int LeaveImmediately = 16;
+
+    private const int ForceOutChecks = 10;
+
+    private const int ForceOutCheckMs = 100;
+
+    private const float ForceOutSideOffset = 2.5f;
 
     private static readonly List<string> NoOccupants = [];
 
@@ -452,7 +458,7 @@ public static class PersonalVehicle
         Notifications.Warning(MenuText.Key(Loc.PersonalVehicle.Gone));
     }
 
-    private static void OnLeave(int networkId)
+    private static async void OnLeave(int networkId)
     {
         var vehicle = Native.NetworkGetEntityFromNetworkId(networkId);
 
@@ -468,9 +474,24 @@ public static class PersonalVehicle
             return;
         }
 
-        Native.TaskLeaveVehicle(ped, vehicle, LeaveNormally);
+        Native.TaskLeaveVehicle(ped, vehicle, LeaveImmediately);
 
-        Notifications.Warning(MenuText.Key(Loc.PersonalVehicle.AskedToLeave));
+        Notifications.Warning(MenuText.Key(Loc.PersonalVehicle.ThrownOut));
+
+        for (var check = 0; check < ForceOutChecks; check++)
+        {
+            await API.Delay(ForceOutCheckMs);
+
+            if (Native.GetVehiclePedIsIn(ped, false) != vehicle)
+            {
+                return;
+            }
+        }
+
+        var beside = Native.GetOffsetFromEntityInWorldCoords(vehicle, ForceOutSideOffset, 0f, 0f);
+
+        Native.ClearPedTasksImmediately(ped);
+        Native.SetEntityCoords(ped, beside.X, beside.Y, beside.Z, false, false, false, true);
     }
 
     private static void Notify(ActionStatus status, string missingKey, string failedKey) =>
