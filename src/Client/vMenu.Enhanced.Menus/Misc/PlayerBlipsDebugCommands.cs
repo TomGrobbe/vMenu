@@ -78,40 +78,43 @@ public static class PlayerBlipsDebugCommands
 
     private static void Run(string? argument)
     {
-        var text = argument?.Trim() ?? string.Empty;
-
-        if (text.Length == 0)
+        API.RunOnMainThread(() =>
         {
-            Report();
+            var text = argument?.Trim() ?? string.Empty;
 
-            return;
-        }
+            if (text.Length == 0)
+            {
+                Report();
 
-        if (text.Equals("off", StringComparison.OrdinalIgnoreCase)
-            || text.Equals("clear", StringComparison.OrdinalIgnoreCase)
-            || text.Equals("0", StringComparison.Ordinal))
-        {
-            var had = Fakes.Count;
+                return;
+            }
 
-            Clear();
+            if (text.Equals("off", StringComparison.OrdinalIgnoreCase)
+                || text.Equals("clear", StringComparison.OrdinalIgnoreCase)
+                || text.Equals("0", StringComparison.Ordinal))
+            {
+                var had = Fakes.Count;
 
-            Log.Info($"[Blips] {had} fake player(s) removed.");
+                Clear();
 
-            return;
-        }
+                Log.Info($"[Blips] {had} fake player(s) removed.");
 
-        if (!int.TryParse(text, NumberStyles.Integer, CultureInfo.InvariantCulture, out var count)
-            || count < 1
-            || count > MaxFakes)
-        {
-            Log.Warning($"[Blips] '{text}' is not a number of players between 1 and {MaxFakes}.");
+                return;
+            }
 
-            Report();
+            if (!int.TryParse(text, NumberStyles.Integer, CultureInfo.InvariantCulture, out var count)
+                || count < 1
+                || count > MaxFakes)
+            {
+                Log.Warning($"[Blips] '{text}' is not a number of players between 1 and {MaxFakes}.");
 
-            return;
-        }
+                Report();
 
-        Spawn(count);
+                return;
+            }
+
+            Spawn(count);
+        });
     }
 
     private static void Spawn(int count)

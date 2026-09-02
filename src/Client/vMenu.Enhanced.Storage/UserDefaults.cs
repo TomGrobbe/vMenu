@@ -1,3 +1,4 @@
+using CitizenFX.FiveM.Client;
 using CitizenFX.FiveM.Shared;
 
 using vMenu.Enhanced.Data.Diagnostics;
@@ -465,34 +466,40 @@ public static class UserDefaults
 
     public static void Dump()
     {
-        Log.Info("[Defaults] Declared:");
-
-        foreach (var preference in All)
+        API.RunOnMainThread(() =>
         {
-            Log.Info($"[Defaults]   {preference.Name} = {preference.CurrentText} (default {preference.DefaultText})");
-        }
+            Log.Info("[Defaults] Declared:");
 
-        Log.Info("[Defaults] Stored:");
+            foreach (var preference in All)
+            {
+                Log.Info($"[Defaults]   {preference.Name} = {preference.CurrentText} (default {preference.DefaultText})");
+            }
 
-        foreach (var line in KvpStore.Describe(UserDefault.KeyPrefix))
-        {
-            Log.Info("[Defaults]   " + line);
-        }
+            Log.Info("[Defaults] Stored:");
+
+            foreach (var line in KvpStore.Describe(UserDefault.KeyPrefix))
+            {
+                Log.Info("[Defaults]   " + line);
+            }
+        });
     }
 
     // Forgets every declared preference, and anything under the prefix no longer declared.
     public static void ResetAll()
     {
-        foreach (var preference in All)
+        API.RunOnMainThread(() =>
         {
-            preference.Reset();
-        }
+            foreach (var preference in All)
+            {
+                preference.Reset();
+            }
 
-        foreach (var key in KvpStore.Keys(UserDefault.KeyPrefix))
-        {
-            KvpStore.Delete(key);
-        }
+            foreach (var key in KvpStore.Keys(UserDefault.KeyPrefix))
+            {
+                KvpStore.Delete(key);
+            }
 
-        Log.Info("[Defaults] Every stored preference has been reset.");
+            Log.Info("[Defaults] Every stored preference has been reset.");
+        });
     }
 }

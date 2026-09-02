@@ -133,6 +133,8 @@ public static class VehicleCommands
         // A command handler cannot await, so this is the fire and forget boundary.
         private async void Run()
         {
+            await API.JumpToMainThread();
+
             try
             {
                 // Registration follows the permission, but a revoke can land between the two.

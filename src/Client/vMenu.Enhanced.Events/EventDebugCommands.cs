@@ -72,38 +72,41 @@ public static class EventDebugCommands
 
     private static void Toggle(string? argument)
     {
-        var target = argument?.Trim() ?? string.Empty;
-
-        if (target.Length == 0)
+        API.RunOnMainThread(() =>
         {
-            Report();
+            var target = argument?.Trim() ?? string.Empty;
 
-            return;
-        }
+            if (target.Length == 0)
+            {
+                Report();
 
-        // Prefix rather than exact, so "vehicle" switches the whole group and "vehicle.seat" one of it.
-        var matches = target.Equals("all", StringComparison.OrdinalIgnoreCase)
-            ? Hooks
-            : Array.FindAll(Hooks, hook => hook.Name.StartsWith(target, StringComparison.OrdinalIgnoreCase));
+                return;
+            }
 
-        if (matches.Length == 0)
-        {
-            Log.Warning($"[Events] Nothing here is called '{target}'.");
+            // Prefix rather than exact, so "vehicle" switches the whole group and "vehicle.seat" one of it.
+            var matches = target.Equals("all", StringComparison.OrdinalIgnoreCase)
+                ? Hooks
+                : Array.FindAll(Hooks, hook => hook.Name.StartsWith(target, StringComparison.OrdinalIgnoreCase));
 
-            Report();
+            if (matches.Length == 0)
+            {
+                Log.Warning($"[Events] Nothing here is called '{target}'.");
 
-            return;
-        }
+                Report();
 
-        // On unless every match is already on, so toggling a group can never leave half of it running.
-        var on = Array.Exists(matches, hook => !hook.Attached);
+                return;
+            }
 
-        foreach (var hook in matches)
-        {
-            hook.Set(on);
-        }
+            // On unless every match is already on, so toggling a group can never leave half of it running.
+            var on = Array.Exists(matches, hook => !hook.Attached);
 
-        Log.Info($"[Events] Logging {(on ? "on" : "off")} for {matches.Length} event(s).");
+            foreach (var hook in matches)
+            {
+                hook.Set(on);
+            }
+
+            Log.Info($"[Events] Logging {(on ? "on" : "off")} for {matches.Length} event(s).");
+        });
     }
 
     private static void Report()

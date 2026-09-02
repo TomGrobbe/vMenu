@@ -58,12 +58,15 @@ public static class ClientConfig
 
     public static void Dump()
     {
-        Log.Info("[Config] Current values:");
-
-        foreach (var line in Store.Describe())
+        API.RunOnMainThread(() =>
         {
-            Log.Info("[Config]   " + line);
-        }
+            Log.Info("[Config] Current values:");
+
+            foreach (var line in Store.Describe())
+            {
+                Log.Info("[Config]   " + line);
+            }
+        });
     }
 
     public static bool? GetBool(string convar) => Store.GetBool(convar);

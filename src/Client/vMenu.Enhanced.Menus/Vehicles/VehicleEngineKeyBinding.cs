@@ -1,3 +1,4 @@
+using CitizenFX.FiveM.Client;
 using CitizenFX.FiveM.Shared;
 
 namespace vMenu.Enhanced.Menus.Vehicles;
@@ -19,7 +20,8 @@ public static class VehicleEngineKeyBinding
 
         _registered = true;
 
-        SharedAPI.Commands.RegisterCommand(Command, false, new Action(VehicleEngine.Toggle));
+        // Wrapped here and not inside Toggle, because the menu already calls that from the main thread.
+        SharedAPI.Commands.RegisterCommand(Command, false, new Action(() => API.RunOnMainThread(VehicleEngine.Toggle)));
 
         KeyMapping.Register(Command, null, "vMenu: Toggle vehicle engine", DefaultKey, null);
     }

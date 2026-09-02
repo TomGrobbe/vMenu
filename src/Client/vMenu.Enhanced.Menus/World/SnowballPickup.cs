@@ -62,12 +62,17 @@ public static class SnowballPickup
 
     private static void OnPressed()
     {
-        if (_running || !CanPickUp())
+        // Before the guard: CanPickUp is all natives, and off the game thread they answer as though
+        // the world is empty.
+        SharedAPI.RunOnMainThread(() =>
         {
-            return;
-        }
+            if (_running || !CanPickUp())
+            {
+                return;
+            }
 
-        SharedAPI.RunOnMainThread(Dispatch);
+            Dispatch();
+        });
     }
 
     private static async void Dispatch() => await PickUpAsync();

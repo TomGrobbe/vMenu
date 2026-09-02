@@ -177,42 +177,54 @@ internal sealed class TimecycleFilterMenu
 
     private void Nudge(int by)
     {
-        if (!_open || !Native.IsUsingKeyboardAndMouse(KeyboardGroup))
+        API.RunOnMainThread(() =>
         {
-            return;
-        }
+            if (!_open || !Native.IsUsingKeyboardAndMouse(KeyboardGroup))
+            {
+                return;
+            }
 
-        TimecycleState.SetIntensity(TimecycleState.Intensity + by);
+            TimecycleState.SetIntensity(TimecycleState.Intensity + by);
+        });
     }
 
     private void Search()
     {
-        if (!_open || !Native.IsUsingKeyboardAndMouse(KeyboardGroup))
+        API.RunOnMainThread(() =>
         {
-            return;
-        }
+            if (!_open || !Native.IsUsingKeyboardAndMouse(KeyboardGroup))
+            {
+                return;
+            }
 
-        _ = PromptAsync();
+            _ = PromptAsync();
+        });
     }
 
     private void BackToTop()
     {
-        if (!_open || !Native.IsUsingKeyboardAndMouse(KeyboardGroup) || _menu is not { } menu)
+        API.RunOnMainThread(() =>
         {
-            return;
-        }
+            if (!_open || !Native.IsUsingKeyboardAndMouse(KeyboardGroup) || _menu is not { } menu)
+            {
+                return;
+            }
 
-        menu.Menu.RefreshIndex(0, 0);
+            menu.Menu.RefreshIndex(0, 0);
+        });
     }
 
     private void ClearAll()
     {
-        if (!_open || !Native.IsUsingKeyboardAndMouse(KeyboardGroup))
+        API.RunOnMainThread(() =>
         {
-            return;
-        }
+            if (!_open || !Native.IsUsingKeyboardAndMouse(KeyboardGroup))
+            {
+                return;
+            }
 
-        TimecycleState.ClearAll();
+            TimecycleState.ClearAll();
+        });
     }
 
     private static string? Original(string data)

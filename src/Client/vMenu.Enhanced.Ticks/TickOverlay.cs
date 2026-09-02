@@ -55,7 +55,7 @@ public static class TickOverlay
     // and the page would miss the first snapshot.
     public static void Restore() => Apply(UserDefaults.TicksOverlay.Value, persist: false);
 
-    public static void Toggle() => Set(!_visible);
+    public static void Toggle() => API.RunOnMainThread(() => Set(!_visible));
 
     public static void Set(bool visible) => Apply(visible, persist: true);
 

@@ -177,9 +177,12 @@ public static class FingerPointing
 
     private static void ToggleDebug()
     {
-        SetDebug(!_debug);
+        API.RunOnMainThread(() =>
+        {
+            SetDebug(!_debug);
 
-        Log.Info($"[vMenu] Pointing probe overlay: {(_debug ? "on" : "off")}");
+            Log.Info($"[vMenu] Pointing probe overlay: {(_debug ? "on" : "off")}");
+        });
     }
 
     private static void OnPressed() => SharedAPI.RunOnMainThread(Toggle);

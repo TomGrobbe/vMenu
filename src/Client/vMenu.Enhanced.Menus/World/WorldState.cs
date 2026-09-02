@@ -130,39 +130,42 @@ public static class WorldState
 
     public static void Dump()
     {
-        if (!IsNeeded())
+        API.RunOnMainThread(() =>
         {
-            Log.Info("[World] Both weather and time sync are off on this server, so nothing is being synced.");
-            return;
-        }
+            if (!IsNeeded())
+            {
+                Log.Info("[World] Both weather and time sync are off on this server, so nothing is being synced.");
+                return;
+            }
 
-        Log.Info($"[World] {WorldStateConvars.Utc} = '{Native.GetConvar(WorldStateConvars.Utc, string.Empty)}'");
-        Log.Info($"[World] {WorldStateConvars.Weather} = '{Native.GetConvar(WorldStateConvars.Weather, string.Empty)}'");
-        Log.Info(
-            $"[World] {WorldStateConvars.TimeOffset} = '{Native.GetConvar(WorldStateConvars.TimeOffset, string.Empty)}'");
+            Log.Info($"[World] {WorldStateConvars.Utc} = '{Native.GetConvar(WorldStateConvars.Utc, string.Empty)}'");
+            Log.Info($"[World] {WorldStateConvars.Weather} = '{Native.GetConvar(WorldStateConvars.Weather, string.Empty)}'");
+            Log.Info(
+                $"[World] {WorldStateConvars.TimeOffset} = '{Native.GetConvar(WorldStateConvars.TimeOffset, string.Empty)}'");
 
-        Log.Info(
-            "[World] clock: " + (_anchored
-                ? _heardFromServer ? "anchored to the server" : "anchored to THIS MACHINE, no server time has arrived"
-                : "not anchored") +
-            $", running at {TimeSpeed.ToString("0.###", CultureInfo.InvariantCulture)}x speed");
-        Log.Info(
-            $"[World] override: {(WeatherOverride is { } forced ? WeatherTypes.NameOf(forced) : "none")}, " +
-            $"schedule: {WeatherTypes.NameOf(Schedule.Current)}, " +
-            $"in force: {WeatherTypes.NameOf(Weather)}, time offset: {TimeOffsetSeconds}s, " +
-            $"clock: {(FrozenAtUnix is { } pinned ? $"frozen at unix {pinned:0.000}" : "running")}");
-        Log.Info(
-            $"[World] blackout: {BlackoutModes.NameOf(Blackout)}, " +
-            $"snow: {SnowModes.NameOf(SnowSetting)} (wanted right now: {SnowWanted})");
+            Log.Info(
+                "[World] clock: " + (_anchored
+                    ? _heardFromServer ? "anchored to the server" : "anchored to THIS MACHINE, no server time has arrived"
+                    : "not anchored") +
+                $", running at {TimeSpeed.ToString("0.###", CultureInfo.InvariantCulture)}x speed");
+            Log.Info(
+                $"[World] override: {(WeatherOverride is { } forced ? WeatherTypes.NameOf(forced) : "none")}, " +
+                $"schedule: {WeatherTypes.NameOf(Schedule.Current)}, " +
+                $"in force: {WeatherTypes.NameOf(Weather)}, time offset: {TimeOffsetSeconds}s, " +
+                $"clock: {(FrozenAtUnix is { } pinned ? $"frozen at unix {pinned:0.000}" : "running")}");
+            Log.Info(
+                $"[World] blackout: {BlackoutModes.NameOf(Blackout)}, " +
+                $"snow: {SnowModes.NameOf(SnowSetting)} (wanted right now: {SnowWanted})");
 
-        // Everything above is what vMenu believes. This is what the game actually has.
-        Log.Info($"[World] game reports: {WorldWeather.Describe()}");
-        Log.Info($"[World] clouds: {WorldClouds.Describe()}");
-        Log.Info($"[World] snow: {WorldSnow.Describe()}");
-        Log.Info($"[World] blackout: {WorldBlackout.Describe()}");
-        Log.Info($"[World] game clock: {WorldTime.Describe()}");
-        Log.Info($"[World] date: {WorldTime.DescribeDate()}");
-        Log.Info($"[World] moon: {WorldTime.DescribeMoon()}");
+            // Everything above is what vMenu believes. This is what the game actually has.
+            Log.Info($"[World] game reports: {WorldWeather.Describe()}");
+            Log.Info($"[World] clouds: {WorldClouds.Describe()}");
+            Log.Info($"[World] snow: {WorldSnow.Describe()}");
+            Log.Info($"[World] blackout: {WorldBlackout.Describe()}");
+            Log.Info($"[World] game clock: {WorldTime.Describe()}");
+            Log.Info($"[World] date: {WorldTime.DescribeDate()}");
+            Log.Info($"[World] moon: {WorldTime.DescribeMoon()}");
+        });
     }
 
     private static void ReadSettings()

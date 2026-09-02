@@ -298,20 +298,23 @@ public static class StaffAlerts
 
     private static void Dismiss()
     {
-        var cleared = OnScreen.Count;
-
-        if (cleared == 0)
+        API.RunOnMainThread(() =>
         {
-            Notifications.Info(MenuText.Key(Loc.MiscSettings.AlertDismissNothing));
+            var cleared = OnScreen.Count;
 
-            return;
-        }
+            if (cleared == 0)
+            {
+                Notifications.Info(MenuText.Key(Loc.MiscSettings.AlertDismissNothing));
 
-        Clear();
+                return;
+            }
 
-        Notifications.Success(MenuText.Key(
-            Loc.MiscSettings.AlertDismissed,
-            ("count", MenuText.Literal(cleared.ToString(CultureInfo.InvariantCulture)))));
+            Clear();
+
+            Notifications.Success(MenuText.Key(
+                Loc.MiscSettings.AlertDismissed,
+                ("count", MenuText.Literal(cleared.ToString(CultureInfo.InvariantCulture)))));
+        });
     }
 
     private static void Clear()
@@ -340,6 +343,7 @@ public static class StaffAlerts
 
     private static async void Respond(string raw)
     {
+        await API.JumpToMainThread();
         try
         {
             if (Argument(raw) is not { } token)

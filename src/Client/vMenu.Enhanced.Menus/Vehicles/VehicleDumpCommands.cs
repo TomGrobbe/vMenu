@@ -51,66 +51,72 @@ public static class VehicleDumpCommands
 
     private static void Dump()
     {
-        if (CurrentVehicle() is not { } handle)
+        API.RunOnMainThread(() =>
         {
-            return;
-        }
+            if (CurrentVehicle() is not { } handle)
+            {
+                return;
+            }
 
-        var appearance = VehicleAppearanceReader.Read(handle);
+            var appearance = VehicleAppearanceReader.Read(handle);
 
-        Log.Info("[Vehicle] Live state, read from the game:");
+            Log.Info("[Vehicle] Live state, read from the game:");
 
-        foreach (var line in VehicleAppearanceReport.Describe(appearance, handle))
-        {
-            Log.Info("[Vehicle] " + line);
-        }
+            foreach (var line in VehicleAppearanceReport.Describe(appearance, handle))
+            {
+                Log.Info("[Vehicle] " + line);
+            }
 
-        Log.Info("[Vehicle] As stored:");
-        Log.Info(ClientJson.SerializeIndented(appearance));
+            Log.Info("[Vehicle] As stored:");
+            Log.Info(ClientJson.SerializeIndented(appearance));
+        });
     }
 
     private static void Labels()
     {
-        if (CurrentVehicle() is not { } handle)
+        API.RunOnMainThread(() =>
         {
-            return;
-        }
-
-        Native.SetVehicleModKit(handle, 0);
-
-        Log.Debug($"[Vehicle] Mod kit {Native.GetVehicleModKit(handle)}, type {Native.GetVehicleModKitType(handle)}.");
-        Log.Debug($"[Vehicle] Mods streamed in: {Native.HaveVehicleModsStreamedIn(handle)}.");
-
-        foreach (var slot in VehicleModSlots.All)
-        {
-            var count = Native.GetNumVehicleMods(handle, (int)slot);
-
-            if (count <= 0 && !VehicleModSlots.IsToggle(slot))
+            if (CurrentVehicle() is not { } handle)
             {
-                continue;
+                return;
             }
 
-            var slotKey = Native.GetModSlotName(handle, (int)slot);
+            Native.SetVehicleModKit(handle, 0);
 
-            Log.Debug(
-                $"[Vehicle] Slot {(int)slot} ({VehicleModSlots.TechnicalName(slot)}): {count} part(s), "
-                + $"slot name key '{slotKey}' {Reports(slotKey)}");
+            Log.Debug($"[Vehicle] Mod kit {Native.GetVehicleModKit(handle)}, type {Native.GetVehicleModKitType(handle)}.");
+            Log.Debug($"[Vehicle] Mods streamed in: {Native.HaveVehicleModsStreamedIn(handle)}.");
 
-            for (var index = 0; index < count; index++)
+            foreach (var slot in VehicleModSlots.All)
             {
-                var raw = Native.GetModTextLabel(handle, (int)slot, index);
-                var used = VehicleModLabels.NameKey(handle, slot, index, count);
+                var count = Native.GetNumVehicleMods(handle, (int)slot);
 
-                // The identifier hash is what names a horn, and is the only handle a developer has on a part whose
-                // artist supplied no label at all. Unsigned, so it reads the same way round as the hashes
-                // VehicleHornLabels matches on.
-                var identifier = (uint)Native.GetVehicleModIdentifierHash(handle, (int)slot, index);
+                if (count <= 0 && !VehicleModSlots.IsToggle(slot))
+                {
+                    continue;
+                }
+
+                var slotKey = Native.GetModSlotName(handle, (int)slot);
 
                 Log.Debug(
-                    $"[Vehicle]   [{index}] id {identifier}, GetModTextLabel '{raw}' {Reports(raw)}"
-                    + $", vMenu uses '{used ?? "<numbered fallback>"}' {Reports(used ?? string.Empty)}");
+                    $"[Vehicle] Slot {(int)slot} ({VehicleModSlots.TechnicalName(slot)}): {count} part(s), "
+                    + $"slot name key '{slotKey}' {Reports(slotKey)}");
+
+                for (var index = 0; index < count; index++)
+                {
+                    var raw = Native.GetModTextLabel(handle, (int)slot, index);
+                    var used = VehicleModLabels.NameKey(handle, slot, index, count);
+
+                    // The identifier hash is what names a horn, and is the only handle a developer has on a part whose
+                    // artist supplied no label at all. Unsigned, so it reads the same way round as the hashes
+                    // VehicleHornLabels matches on.
+                    var identifier = (uint)Native.GetVehicleModIdentifierHash(handle, (int)slot, index);
+
+                    Log.Debug(
+                        $"[Vehicle]   [{index}] id {identifier}, GetModTextLabel '{raw}' {Reports(raw)}"
+                        + $", vMenu uses '{used ?? "<numbered fallback>"}' {Reports(used ?? string.Empty)}");
+                }
             }
-        }
+        });
     }
 
     private static string Reports(string key) =>
@@ -120,47 +126,50 @@ public static class VehicleDumpCommands
     // faithful rather than merely plausible.
     private static void Diff(string? name)
     {
-        if (string.IsNullOrWhiteSpace(name))
+        API.RunOnMainThread(() =>
         {
-            Log.Info($"[Vehicle] Usage: {DiffCommand} <saved vehicle name>");
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                Log.Info($"[Vehicle] Usage: {DiffCommand} <saved vehicle name>");
 
-            return;
-        }
+                return;
+            }
 
-        if (SavedVehicleStore.Load(name.Trim()) is not { } entry)
-        {
-            Log.Info($"[Vehicle] There is no saved vehicle called '{name}'.");
+            if (SavedVehicleStore.Load(name.Trim()) is not { } entry)
+            {
+                Log.Info($"[Vehicle] There is no saved vehicle called '{name}'.");
 
-            return;
-        }
+                return;
+            }
 
-        if (CurrentVehicle() is not { } handle)
-        {
-            return;
-        }
+            if (CurrentVehicle() is not { } handle)
+            {
+                return;
+            }
 
-        if (entry.IsFromNewerBuild)
-        {
-            Log.Warning(
-                $"[Vehicle] '{entry.Vehicle.Name}' was saved by a newer version of vMenu (version "
-                + $"{entry.StoredVersion}, this build understands {SavedVehicle.SchemaVersion}). Anything "
-                + "that version added is not in the comparison below.");
-        }
+            if (entry.IsFromNewerBuild)
+            {
+                Log.Warning(
+                    $"[Vehicle] '{entry.Vehicle.Name}' was saved by a newer version of vMenu (version "
+                    + $"{entry.StoredVersion}, this build understands {SavedVehicle.SchemaVersion}). Anything "
+                    + "that version added is not in the comparison below.");
+            }
 
-        var differences = VehicleAppearanceDiff.Compare(entry.Vehicle.Appearance, VehicleAppearanceReader.Read(handle));
+            var differences = VehicleAppearanceDiff.Compare(entry.Vehicle.Appearance, VehicleAppearanceReader.Read(handle));
 
-        if (differences.Count == 0)
-        {
-            Log.Info($"[Vehicle] The vehicle you are in is identical to '{entry.Vehicle.Name}'.");
+            if (differences.Count == 0)
+            {
+                Log.Info($"[Vehicle] The vehicle you are in is identical to '{entry.Vehicle.Name}'.");
 
-            return;
-        }
+                return;
+            }
 
-        Log.Info($"[Vehicle] {differences.Count} difference(s) from '{entry.Vehicle.Name}':");
+            Log.Info($"[Vehicle] {differences.Count} difference(s) from '{entry.Vehicle.Name}':");
 
-        foreach (var difference in differences)
-        {
-            Log.Info("[Vehicle]   " + difference);
-        }
+            foreach (var difference in differences)
+            {
+                Log.Info("[Vehicle]   " + difference);
+            }
+        });
     }
 }

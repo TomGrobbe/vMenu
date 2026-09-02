@@ -60,12 +60,15 @@ public static class TickRegistry
 
     public static void Dump()
     {
-        Log.Info($"[Tick] {Engine.Handles.Count} registered:");
-
-        foreach (var line in Engine.Describe())
+        API.RunOnMainThread(() =>
         {
-            Log.Info("[Tick]   " + line);
-        }
+            Log.Info($"[Tick] {Engine.Handles.Count} registered:");
+
+            foreach (var line in Engine.Describe())
+            {
+                Log.Info("[Tick]   " + line);
+            }
+        });
     }
 
     private static bool IsMainThread() => API.JumpToMainThread().GetAwaiter().IsCompleted;

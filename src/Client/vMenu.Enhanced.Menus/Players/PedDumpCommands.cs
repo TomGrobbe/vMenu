@@ -26,62 +26,68 @@ public static class PedDumpCommands
 
     private static void Dump()
     {
-        var ped = Native.PlayerPedId();
-        var appearance = PedAppearanceReader.Read(ped);
-
-        Log.Info("[Ped] Live state, read from the game:");
-
-        foreach (var line in PedAppearanceReport.Describe(appearance, ped))
+        API.RunOnMainThread(() =>
         {
-            Log.Info("[Ped] " + line);
-        }
+            var ped = Native.PlayerPedId();
+            var appearance = PedAppearanceReader.Read(ped);
 
-        Log.Info("[Ped] As stored:");
-        Log.Info(ClientJson.SerializeIndented(appearance));
+            Log.Info("[Ped] Live state, read from the game:");
+
+            foreach (var line in PedAppearanceReport.Describe(appearance, ped))
+            {
+                Log.Info("[Ped] " + line);
+            }
+
+            Log.Info("[Ped] As stored:");
+            Log.Info(ClientJson.SerializeIndented(appearance));
+        });
     }
 
     // Says how the ped being worn differs from a saved one, which is what proves a restore was faithful
     // rather than merely plausible.
     private static void Diff(string? name)
     {
-        if (string.IsNullOrWhiteSpace(name))
+        API.RunOnMainThread(() =>
         {
-            Log.Info($"[Ped] Usage: {DiffCommand} <saved ped name>");
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                Log.Info($"[Ped] Usage: {DiffCommand} <saved ped name>");
 
-            return;
-        }
+                return;
+            }
 
-        if (SavedPedStore.Load(name.Trim()) is not { } entry)
-        {
-            Log.Info($"[Ped] There is no saved ped called '{name}'.");
+            if (SavedPedStore.Load(name.Trim()) is not { } entry)
+            {
+                Log.Info($"[Ped] There is no saved ped called '{name}'.");
 
-            return;
-        }
+                return;
+            }
 
-        if (entry.IsFromNewerBuild)
-        {
-            Log.Warning(
-                $"[Ped] '{entry.Ped.Name}' was saved by a newer version of vMenu (version "
-                + $"{entry.StoredVersion}, this build understands {SavedPed.SchemaVersion}). Anything "
-                + "that version added is not in the comparison below.");
-        }
+            if (entry.IsFromNewerBuild)
+            {
+                Log.Warning(
+                    $"[Ped] '{entry.Ped.Name}' was saved by a newer version of vMenu (version "
+                    + $"{entry.StoredVersion}, this build understands {SavedPed.SchemaVersion}). Anything "
+                    + "that version added is not in the comparison below.");
+            }
 
-        var differences = PedAppearanceDiff.Compare(
-            entry.Ped.Appearance,
-            PedAppearanceReader.Read(Native.PlayerPedId()));
+            var differences = PedAppearanceDiff.Compare(
+                entry.Ped.Appearance,
+                PedAppearanceReader.Read(Native.PlayerPedId()));
 
-        if (differences.Count == 0)
-        {
-            Log.Info($"[Ped] The ped you are wearing is identical to '{entry.Ped.Name}'.");
+            if (differences.Count == 0)
+            {
+                Log.Info($"[Ped] The ped you are wearing is identical to '{entry.Ped.Name}'.");
 
-            return;
-        }
+                return;
+            }
 
-        Log.Info($"[Ped] {differences.Count} difference(s) from '{entry.Ped.Name}':");
+            Log.Info($"[Ped] {differences.Count} difference(s) from '{entry.Ped.Name}':");
 
-        foreach (var difference in differences)
-        {
-            Log.Info("[Ped]   " + difference);
-        }
+            foreach (var difference in differences)
+            {
+                Log.Info("[Ped]   " + difference);
+            }
+        });
     }
 }

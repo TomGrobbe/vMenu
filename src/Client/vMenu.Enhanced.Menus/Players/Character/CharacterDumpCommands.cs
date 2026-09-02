@@ -32,6 +32,8 @@ public static class CharacterDumpCommands
 
     private static async Task DumpAsync()
     {
+        await API.JumpToMainThread();
+
         var ped = Native.PlayerPedId();
 
         if (await FreemodeReader.ReadCoreAsync(ped) is not { } core)
@@ -55,25 +57,30 @@ public static class CharacterDumpCommands
 
     private static void Store()
     {
-        Log.Info($"[Character] Keys under '{MpCharacterStore.CharacterPrefix}':");
-
-        foreach (var line in KvpStore.Describe(MpCharacterStore.CharacterPrefix))
+        API.RunOnMainThread(() =>
         {
-            Log.Info("[Character]   " + line);
-        }
+            Log.Info($"[Character] Keys under '{MpCharacterStore.CharacterPrefix}':");
 
-        Log.Info($"[Character] Keys under '{MpCharacterStore.CategoryPrefix}':");
+            foreach (var line in KvpStore.Describe(MpCharacterStore.CharacterPrefix))
+            {
+                Log.Info("[Character]   " + line);
+            }
 
-        foreach (var line in KvpStore.Describe(MpCharacterStore.CategoryPrefix))
-        {
-            Log.Info("[Character]   " + line);
-        }
+            Log.Info($"[Character] Keys under '{MpCharacterStore.CategoryPrefix}':");
 
-        Log.Info($"[Character] Read back: {MpCharacterStore.All().Count} character(s), {MpCharacterStore.Categories().Count} category/categories.");
+            foreach (var line in KvpStore.Describe(MpCharacterStore.CategoryPrefix))
+            {
+                Log.Info("[Character]   " + line);
+            }
+
+            Log.Info($"[Character] Read back: {MpCharacterStore.All().Count} character(s), {MpCharacterStore.Categories().Count} category/categories.");
+        });
     }
 
     private static async Task OutfitsAsync(string? filter)
     {
+        await API.JumpToMainThread();
+
         var ped = Native.PlayerPedId();
 
         if (!PedSpawning.IsWearingFreemode())
@@ -184,28 +191,31 @@ public static class CharacterDumpCommands
 
     private static void Tattoos()
     {
-        var ped = Native.PlayerPedId();
-        var decorations = BrokenNatives.NativeFixer.GetPedDecorations(ped);
-
-        if (decorations.Count == 0)
+        API.RunOnMainThread(() =>
         {
-            Log.Info("[Character] This ped has no decorations on it at all.");
+            var ped = Native.PlayerPedId();
+            var decorations = BrokenNatives.NativeFixer.GetPedDecorations(ped);
 
-            return;
-        }
-
-        Log.Info($"[Character] {decorations.Count} decoration(s) on this ped:");
-
-        foreach (var (collection, overlay) in decorations)
-        {
-            if (TattooCatalogue.Resolve(collection, overlay) is { } known)
+            if (decorations.Count == 0)
             {
-                Log.Info($"[Character]   {known.Collection} / {known.Name} ({known.Zone})");
+                Log.Info("[Character] This ped has no decorations on it at all.");
 
-                continue;
+                return;
             }
 
-            Log.Info($"[Character]   unknown, collection hash {collection}, overlay hash {overlay}");
-        }
+            Log.Info($"[Character] {decorations.Count} decoration(s) on this ped:");
+
+            foreach (var (collection, overlay) in decorations)
+            {
+                if (TattooCatalogue.Resolve(collection, overlay) is { } known)
+                {
+                    Log.Info($"[Character]   {known.Collection} / {known.Name} ({known.Zone})");
+
+                    continue;
+                }
+
+                Log.Info($"[Character]   unknown, collection hash {collection}, overlay hash {overlay}");
+            }
+        });
     }
 }

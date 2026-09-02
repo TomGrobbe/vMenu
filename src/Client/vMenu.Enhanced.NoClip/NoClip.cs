@@ -79,15 +79,10 @@ public static class NoClip
 
         NoClipKeyBindings.Register(
             isActive: () => NoclipActive,
-            onToggle: new Action(() =>
-            {
-                // Requesting a scaleform inside a thread run by a command or keybind handler fails, and one is
-                // requested somewhere down the line of SetNoclipActive(true), so this goes through the main thread.
-                SharedAPI.RunOnMainThread(ToggleRequested);
-            }),
+            onToggle: ToggleRequested,
             onSpeedUp: () => AdjustSpeed(1),
             onSpeedDown: () => AdjustSpeed(-1),
-            onFollowCam: () =>
+            onFollowCam: () => API.RunOnMainThread(() =>
             {
                 if (Native.IsPauseMenuActive())
                 {
@@ -96,7 +91,7 @@ public static class NoClip
 
                 FollowCamMode = !FollowCamMode;
                 _rebuildInstructionalButtons = true;
-            });
+            }));
 
         _move = TickRegistry.Register(
             "NoClip.Move",
@@ -259,30 +254,38 @@ public static class NoClip
         return true;
     }
 
+    // Requesting a scaleform inside a thread run by a command or keybind handler fails, and one is
+    // requested somewhere down the line of SetNoclipActive(true), so this goes through the main thread.
     private static void ToggleRequested()
     {
-        if (!IsAllowed && !NoclipActive)
+        API.RunOnMainThread(() =>
         {
-            Notifications.Warning(MenuText.Key(Loc.NoClip.ToggleDenied));
+            if (!IsAllowed && !NoclipActive)
+            {
+                Notifications.Warning(MenuText.Key(Loc.NoClip.ToggleDenied));
 
-            return;
-        }
+                return;
+            }
 
-        if (!Native.IsPauseMenuActive())
-        {
-            SetNoclipActive(!NoclipActive);
-        }
+            if (!Native.IsPauseMenuActive())
+            {
+                SetNoclipActive(!NoclipActive);
+            }
+        });
     }
 
     private static void AdjustSpeed(int steps)
     {
-        if (Native.IsPauseMenuActive())
+        API.RunOnMainThread(() =>
         {
-            return;
-        }
+            if (Native.IsPauseMenuActive())
+            {
+                return;
+            }
 
-        MovingSpeed = (MovingSpeed + steps + MoveSpeeds.Length) % MoveSpeeds.Length;
-        _rebuildInstructionalButtons = true;
+            MovingSpeed = (MovingSpeed + steps + MoveSpeeds.Length) % MoveSpeeds.Length;
+            _rebuildInstructionalButtons = true;
+        });
     }
 
     private static void OnPermissionsChanged()
