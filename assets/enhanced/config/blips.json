@@ -47,6 +47,26 @@
       "colour": 0,
       "scaleOffset": 0,
       "shortRange": true,
+      "x": 2566.69,
+      "y": 292.37,
+      "z": 109.73
+    },
+    {
+      "name": "Ammunation",
+      "sprite": 110,
+      "colour": 0,
+      "scaleOffset": 0,
+      "shortRange": true,
+      "x": 843.73,
+      "y": -1029.56,
+      "z": 27.84
+    },
+    {
+      "name": "Ammunation",
+      "sprite": 110,
+      "colour": 0,
+      "scaleOffset": 0,
+      "shortRange": true,
       "x": -662.57,
       "y": -936.32,
       "z": 21.82
@@ -164,7 +184,7 @@
     {
       "name": "Convenience Store",
       "sprite": 52,
-      "colour": 0,
+      "colour": 82,
       "scaleOffset": 0,
       "shortRange": true,
       "x": -48.1,
@@ -174,7 +194,7 @@
     {
       "name": "Convenience Store",
       "sprite": 52,
-      "colour": 0,
+      "colour": 82,
       "scaleOffset": 0,
       "shortRange": true,
       "x": -1223.77,
@@ -184,7 +204,7 @@
     {
       "name": "Convenience Store",
       "sprite": 52,
-      "colour": 0,
+      "colour": 82,
       "scaleOffset": 0,
       "shortRange": true,
       "x": -1487.69,
@@ -194,7 +214,7 @@
     {
       "name": "Convenience Store",
       "sprite": 52,
-      "colour": 0,
+      "colour": 82,
       "scaleOffset": 0,
       "shortRange": true,
       "x": -708.14,
@@ -204,7 +224,7 @@
     {
       "name": "Convenience Store",
       "sprite": 52,
-      "colour": 0,
+      "colour": 82,
       "scaleOffset": 0,
       "shortRange": true,
       "x": 26.13,
@@ -214,7 +234,7 @@
     {
       "name": "Convenience Store",
       "sprite": 52,
-      "colour": 0,
+      "colour": 82,
       "scaleOffset": 0,
       "shortRange": true,
       "x": 547.12,
@@ -224,7 +244,7 @@
     {
       "name": "Convenience Store",
       "sprite": 52,
-      "colour": 0,
+      "colour": 82,
       "scaleOffset": 0,
       "shortRange": true,
       "x": 2556.66,
@@ -234,7 +254,7 @@
     {
       "name": "Convenience Store",
       "sprite": 52,
-      "colour": 0,
+      "colour": 82,
       "scaleOffset": 0,
       "shortRange": true,
       "x": 1162.75,
@@ -244,7 +264,7 @@
     {
       "name": "Convenience Store",
       "sprite": 52,
-      "colour": 0,
+      "colour": 82,
       "scaleOffset": 0,
       "shortRange": true,
       "x": 1961.42,
@@ -254,7 +274,7 @@
     {
       "name": "Convenience Store",
       "sprite": 52,
-      "colour": 0,
+      "colour": 82,
       "scaleOffset": 0,
       "shortRange": true,
       "x": 2678.53,
@@ -264,7 +284,7 @@
     {
       "name": "Convenience Store",
       "sprite": 52,
-      "colour": 0,
+      "colour": 82,
       "scaleOffset": 0,
       "shortRange": true,
       "x": 1730.15,
@@ -274,7 +294,7 @@
     {
       "name": "Convenience Store",
       "sprite": 52,
-      "colour": 0,
+      "colour": 82,
       "scaleOffset": 0,
       "shortRange": true,
       "x": 1699.07,
@@ -284,7 +304,7 @@
     {
       "name": "Convenience Store",
       "sprite": 52,
-      "colour": 0,
+      "colour": 82,
       "scaleOffset": 0,
       "shortRange": true,
       "x": -3243.35,
@@ -294,7 +314,7 @@
     {
       "name": "Convenience Store",
       "sprite": 52,
-      "colour": 0,
+      "colour": 82,
       "scaleOffset": 0,
       "shortRange": true,
       "x": -2968.78,
@@ -304,7 +324,7 @@
     {
       "name": "Convenience Store",
       "sprite": 52,
-      "colour": 0,
+      "colour": 82,
       "scaleOffset": 0,
       "shortRange": true,
       "x": -3040.43,
@@ -314,7 +334,7 @@
     {
       "name": "Convenience Store",
       "sprite": 52,
-      "colour": 0,
+      "colour": 82,
       "scaleOffset": 0,
       "shortRange": true,
       "x": -1822.23,
@@ -324,7 +344,7 @@
     {
       "name": "Convenience Store",
       "sprite": 52,
-      "colour": 0,
+      "colour": 82,
       "scaleOffset": 0,
       "shortRange": true,
       "x": 1136.96,
@@ -334,7 +354,7 @@
     {
       "name": "Convenience Store",
       "sprite": 52,
-      "colour": 0,
+      "colour": 82,
       "scaleOffset": 0,
       "shortRange": true,
       "x": 374.66,
@@ -344,7 +364,7 @@
     {
       "name": "Convenience Store",
       "sprite": 52,
-      "colour": 0,
+      "colour": 82,
       "scaleOffset": 0,
       "shortRange": true,
       "x": 1166.07,
@@ -354,7 +374,7 @@
     {
       "name": "Convenience Store",
       "sprite": 52,
-      "colour": 0,
+      "colour": 82,
       "scaleOffset": 0,
       "shortRange": true,
       "x": 1392.85,
@@ -494,7 +514,7 @@
     {
       "name": "Clothing Store",
       "sprite": 73,
-      "colour": 0,
+      "colour": 12,
       "scaleOffset": 0,
       "shortRange": true,
       "x": 78.69,
@@ -504,7 +524,7 @@
     {
       "name": "Clothing Store",
       "sprite": 73,
-      "colour": 0,
+      "colour": 12,
       "scaleOffset": 0,
       "shortRange": true,
       "x": -818.7,
@@ -514,7 +534,7 @@
     {
       "name": "Clothing Store",
       "sprite": 73,
-      "colour": 0,
+      "colour": 12,
       "scaleOffset": 0,
       "shortRange": true,
       "x": -1197.98,
@@ -524,7 +544,7 @@
     {
       "name": "Clothing Store",
       "sprite": 73,
-      "colour": 0,
+      "colour": 12,
       "scaleOffset": 0,
       "shortRange": true,
       "x": -1453.05,
@@ -534,7 +554,7 @@
     {
       "name": "Clothing Store",
       "sprite": 73,
-      "colour": 0,
+      "colour": 12,
       "scaleOffset": 0,
       "shortRange": true,
       "x": -713.39,
@@ -544,7 +564,7 @@
     {
       "name": "Clothing Store",
       "sprite": 73,
-      "colour": 0,
+      "colour": 12,
       "scaleOffset": 0,
       "shortRange": true,
       "x": -160.03,
@@ -554,7 +574,7 @@
     {
       "name": "Clothing Store",
       "sprite": 73,
-      "colour": 0,
+      "colour": 12,
       "scaleOffset": 0,
       "shortRange": true,
       "x": 125.8,
@@ -564,7 +584,7 @@
     {
       "name": "Clothing Store",
       "sprite": 73,
-      "colour": 0,
+      "colour": 12,
       "scaleOffset": 0,
       "shortRange": true,
       "x": 422.64,
@@ -574,7 +594,7 @@
     {
       "name": "Clothing Store",
       "sprite": 73,
-      "colour": 0,
+      "colour": 12,
       "scaleOffset": 0,
       "shortRange": true,
       "x": -3170.11,
@@ -584,7 +604,7 @@
     {
       "name": "Clothing Store",
       "sprite": 73,
-      "colour": 0,
+      "colour": 12,
       "scaleOffset": 0,
       "shortRange": true,
       "x": -1097.29,
@@ -594,7 +614,7 @@
     {
       "name": "Clothing Store",
       "sprite": 73,
-      "colour": 0,
+      "colour": 12,
       "scaleOffset": 0,
       "shortRange": true,
       "x": 617.96,
@@ -604,7 +624,7 @@
     {
       "name": "Clothing Store",
       "sprite": 73,
-      "colour": 0,
+      "colour": 12,
       "scaleOffset": 0,
       "shortRange": true,
       "x": 1198.29,
@@ -614,7 +634,7 @@
     {
       "name": "Clothing Store",
       "sprite": 73,
-      "colour": 0,
+      "colour": 12,
       "scaleOffset": 0,
       "shortRange": true,
       "x": 1690.22,
@@ -624,7 +644,7 @@
     {
       "name": "Clothing Store",
       "sprite": 73,
-      "colour": 0,
+      "colour": 12,
       "scaleOffset": 0,
       "shortRange": true,
       "x": 1.26,
@@ -650,6 +670,276 @@
       "x": -1663.57,
       "y": -1126.33,
       "z": 13.21
+    },
+    {
+      "name": "Gas Station",
+      "sprite": 361,
+      "colour": 6,
+      "scaleOffset": 0,
+      "shortRange": true,
+      "x": 1246.52,
+      "y": -1485.25,
+      "z": 34.9
+    },
+    {
+      "name": "Gas Station",
+      "sprite": 361,
+      "colour": 6,
+      "scaleOffset": 0,
+      "shortRange": true,
+      "x": 1208.19,
+      "y": -1402.23,
+      "z": 35.38
+    },
+    {
+      "name": "Gas Station",
+      "sprite": 361,
+      "colour": 6,
+      "scaleOffset": 0,
+      "shortRange": true,
+      "x": 175.47,
+      "y": -1561.64,
+      "z": 29.26
+    },
+    {
+      "name": "Gas Station",
+      "sprite": 361,
+      "colour": 6,
+      "scaleOffset": 0,
+      "shortRange": true,
+      "x": -74.26,
+      "y": -1759.54,
+      "z": 29.63
+    },
+    {
+      "name": "Gas Station",
+      "sprite": 361,
+      "colour": 6,
+      "scaleOffset": 0,
+      "shortRange": true,
+      "x": 264.89,
+      "y": -1260.57,
+      "z": 29.8
+    },
+    {
+      "name": "Gas Station",
+      "sprite": 361,
+      "colour": 6,
+      "scaleOffset": 0,
+      "shortRange": true,
+      "x": -724.12,
+      "y": -935.18,
+      "z": 19.36
+    },
+    {
+      "name": "Gas Station",
+      "sprite": 361,
+      "colour": 6,
+      "scaleOffset": 0,
+      "shortRange": true,
+      "x": -1436.4,
+      "y": -276.65,
+      "z": 46.25
+    },
+    {
+      "name": "Gas Station",
+      "sprite": 361,
+      "colour": 6,
+      "scaleOffset": 0,
+      "shortRange": true,
+      "x": 621.34,
+      "y": 269.34,
+      "z": 103.7
+    },
+    {
+      "name": "Gas Station",
+      "sprite": 361,
+      "colour": 6,
+      "scaleOffset": 0,
+      "shortRange": true,
+      "x": 1181.4,
+      "y": -330.44,
+      "z": 69.69
+    },
+    {
+      "name": "Gas Station",
+      "sprite": 361,
+      "colour": 6,
+      "scaleOffset": 0,
+      "shortRange": true,
+      "x": -1799.27,
+      "y": 803.51,
+      "z": 138.72
+    },
+    {
+      "name": "Gas Station",
+      "sprite": 361,
+      "colour": 6,
+      "scaleOffset": 0,
+      "shortRange": true,
+      "x": 2580.93,
+      "y": 360.83,
+      "z": 109.69
+    },
+    {
+      "name": "Gas Station",
+      "sprite": 361,
+      "colour": 6,
+      "scaleOffset": 0,
+      "shortRange": true,
+      "x": 2679.62,
+      "y": 3264.78,
+      "z": 55.25
+    },
+    {
+      "name": "Gas Station",
+      "sprite": 361,
+      "colour": 6,
+      "scaleOffset": 0,
+      "shortRange": true,
+      "x": 1785.63,
+      "y": 3330.59,
+      "z": 41.61
+    },
+    {
+      "name": "Gas Station",
+      "sprite": 361,
+      "colour": 6,
+      "scaleOffset": 0,
+      "shortRange": true,
+      "x": 2006.37,
+      "y": 3775.11,
+      "z": 32.98
+    },
+    {
+      "name": "Gas Station",
+      "sprite": 361,
+      "colour": 6,
+      "scaleOffset": 0,
+      "shortRange": true,
+      "x": 1687.68,
+      "y": 4930.18,
+      "z": 42.74
+    },
+    {
+      "name": "Gas Station",
+      "sprite": 361,
+      "colour": 6,
+      "scaleOffset": 0,
+      "shortRange": true,
+      "x": 1207.66,
+      "y": 2659.92,
+      "z": 38.35
+    },
+    {
+      "name": "Gas Station",
+      "sprite": 361,
+      "colour": 6,
+      "scaleOffset": 0,
+      "shortRange": true,
+      "x": 263.9,
+      "y": 2606.92,
+      "z": 45.51
+    },
+    {
+      "name": "Gas Station",
+      "sprite": 361,
+      "colour": 6,
+      "scaleOffset": 0,
+      "shortRange": true,
+      "x": 179.98,
+      "y": 6603.07,
+      "z": 32.33
+    },
+    {
+      "name": "Gas Station",
+      "sprite": 361,
+      "colour": 6,
+      "scaleOffset": 0,
+      "shortRange": true,
+      "x": -94.4,
+      "y": 6419.46,
+      "z": 31.42
+    },
+    {
+      "name": "Gas Station",
+      "sprite": 361,
+      "colour": 6,
+      "scaleOffset": 0,
+      "shortRange": true,
+      "x": 1701.21,
+      "y": 6415.97,
+      "z": 33.74
+    },
+    {
+      "name": "Gas Station",
+      "sprite": 361,
+      "colour": 6,
+      "scaleOffset": 0,
+      "shortRange": true,
+      "x": -525.52,
+      "y": -1211.03,
+      "z": 18.73
+    },
+    {
+      "name": "Gas Station",
+      "sprite": 361,
+      "colour": 6,
+      "scaleOffset": 0,
+      "shortRange": true,
+      "x": -319.78,
+      "y": -1471.68,
+      "z": 31.13
+    },
+    {
+      "name": "Gas Station",
+      "sprite": 361,
+      "colour": 6,
+      "scaleOffset": 0,
+      "shortRange": true,
+      "x": -67.81,
+      "y": -2531.67,
+      "z": 5.96
+    },
+    {
+      "name": "Gas Station",
+      "sprite": 361,
+      "colour": 6,
+      "scaleOffset": 0,
+      "shortRange": true,
+      "x": -2096.75,
+      "y": -318.67,
+      "z": 13.07
+    },
+    {
+      "name": "Gas Station",
+      "sprite": 361,
+      "colour": 6,
+      "scaleOffset": 0,
+      "shortRange": true,
+      "x": -2555.38,
+      "y": 2334.53,
+      "z": 33
+    },
+    {
+      "name": "Gas Station",
+      "sprite": 361,
+      "colour": 6,
+      "scaleOffset": 0,
+      "shortRange": true,
+      "x": 49.89,
+      "y": 2778.76,
+      "z": 58.26
+    },
+    {
+      "name": "Gas Station",
+      "sprite": 361,
+      "colour": 6,
+      "scaleOffset": 0,
+      "shortRange": true,
+      "x": 818.88,
+      "y": -1028.88,
+      "z": 26.37
     }
   ]
 }
