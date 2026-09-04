@@ -1822,8 +1822,8 @@ namespace vMenuClient.menus
             ["csb_drugdealer"] = "DrugDealerCutscene", // mptuner
             ["csb_englishdave"] = "EnglishDaveCutscene",
             ["csb_englishdave_02"] = "EnglishDave02Cutscene", // mpheist4
-            ["csb_faber_02 "] = "FaberCutscene", // mp2025_02
-            ["csb_faber_03 "] = "FaberCutscene", // mp2026_01
+            ["csb_faber_02"] = "FaberCutscene", // mp2025_02
+            ["csb_faber_03"] = "FaberCutscene_03", // mp2026_01
             ["csb_fos_rep"] = "FosRepCutscene",
             ["csb_g"] = "GCutscene",
             ["csb_georginacheng"] = "GeorginaChengCutscene", // mpheist3
