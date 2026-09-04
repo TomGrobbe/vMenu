@@ -414,6 +414,7 @@ namespace vMenuClient.data
                 "INGOT",
                 "INTRUDER",
                 "LIMO2",
+                "MERULA", // KORTZ CENTER HEIST (MP2026_01) DLC - Requires b3889
                 "MINIMUS", // MONEY FRONTS (MP2025_01) DLC - Requires b3570
                 "PREMIER",
                 "PRIMO",
@@ -461,6 +462,7 @@ namespace vMenuClient.data
                 "DORADO", // CHOP SHOP (MP2023_02) DLC - Requires b3095
                 "DUBSTA",
                 "DUBSTA2",
+                "ESTRIDE", // KORTZ CENTER HEIST (MP2026_01) DLC - Requires b3889
                 "EVERON3", // MONEY FRONTS (MP2025_01) DLC - Requires b3570
                 "FQ2",
                 "GRANGER",
@@ -487,6 +489,7 @@ namespace vMenuClient.data
                 "SQUADDIE", // CAYO PERICO (MPHEIST4) DLC - Requires b2189
                 "TOROS",
                 "VIVANITE", // CHOP SHOP (MP2023_02) DLC - Requires b3095
+                "WARDEN", // KORTZ CENTER HEIST (MP2026_01) DLC - Requires b3889
                 "WOODLANDER", // MONEY FRONTS (MP2025_01) DLC - Requires b3570
                 "XLS",
                 "XLS2",
@@ -544,6 +547,7 @@ namespace vMenuClient.data
                 "DOMINATOR7", // LS TUNERS (MPTUNER) DLC - Requires b2372
                 "DOMINATOR8", // LS TUNERS (MPTUNER) DLC - Requires b2372
                 "DOMINATOR9", // CHOP SHOP (MP2023_02) DLC - Requires b3095
+                "DRIFTDOMINATOR8", // KORTZ CENTER HEIST (MP2026_01) DLC - Requires b3889
                 "DRIFTDOMINATOR9", // A SAFEHOUSE IN THE HILLS (MP2025_02) DLC - Requires b3717
                 "DRIFTDOMINATOR10", // MONEY FRONTS (MP2025_01) DLC - Requires b3570
                 "DRIFTGAUNTLET4", // MONEY FRONTS (MP2025_01) DLC - Requires b3570
@@ -691,6 +695,7 @@ namespace vMenuClient.data
                 "BUFFALO3",
                 "CALICO", // LS TUNERS (MPTUNER) DLC - Requires b2372
                 "CARBONIZZARE",
+                "CARTUCCIA", // KORTZ CENTER HEIST (MP2026_01) DLC - Requires b3889
                 "COMET2",
                 "COMET3",
                 "COMET4",
@@ -703,8 +708,10 @@ namespace vMenuClient.data
                 "CORSITA", // CRIMINAL ENTERPRISES (MPSUM2) DLC - Requires b2699
                 "COUREUR", // SA MERCENARIES (MP2023_01) DLC - Requires b2944
                 "CYPHER", // LS TUNERS (MPTUNER) DLC - Requires b2372
+                "DRIFTCOQUETTE", // KORTZ CENTER HEIST (MP2026_01) DLC - Requires b3889
                 "DRIFTCYPHER", // BOTTOM DOLLAR BOUNTIES (MP2024_01) DLC - Requires b3258
                 "DRAFTER", // CASINO AND RESORT (MPVINEWOOD) DLC - Requires b2060
+                "DRIFTELEGY", // KORTZ CENTER HEIST (MP2026_01) DLC - Requires b3889
                 "DRIFTEUROS", // CHOP SHOP (MP2023_02) DLC - Requires b3095
                 "DRIFTFUTO", // CHOP SHOP (MP2023_02) DLC - Requires b3095
                 "DRIFTFUTO2", // AGENTS OF SABOTAGE (MP2024_02) DLC - Requires b3407
@@ -823,6 +830,7 @@ namespace vMenuClient.data
                 "FMJ2", // A SAFEHOUSE IN THE HILLS (MP2025_02) DLC - Requires b3717
                 "FURIA", // CASINO HEIST (MPHEIST3) DLC - Requires b2060
                 "GP1",
+                "HORUS", // KORTZ CENTER HEIST (MP2026_01) DLC - Requires b3889
                 "IGNUS", // THE CONTRACT (MPSECURITY) DLC - Requires b2545
                 "INFERNUS",
                 "ITALIGTB",
@@ -830,6 +838,7 @@ namespace vMenuClient.data
                 "KRIEGER", // CASINO AND RESORT (MPVINEWOOD) DLC - Requires b2060
                 "LE7B",
                 "LM87", // CRIMINAL ENTERPRISES (MPSUM2) DLC - Requires b2699
+                "LRCGT", // KORTZ CENTER HEIST (MP2026_01) DLC - Requires b3889
                 "LUIVA", // A SAFEHOUSE IN THE HILLS (MP2025_02) DLC - Requires b3717
                 "NERO",
                 "NERO2",
@@ -858,6 +867,7 @@ namespace vMenuClient.data
                 "TYRUS",
                 "VACCA",
                 "VAGNER",
+                "VELENOGT", // KORTZ CENTER HEIST (MP2026_01) DLC - Requires b3889
                 "VIGILANTE",
                 "VIRTUE", // DRUG WARS (MPCHRISTMAS3) DLC - Requires b2802
                 "VISIONE",
@@ -955,6 +965,7 @@ namespace vMenuClient.data
                 "BRUTUS3",
                 "CARACARA",
                 "CARACARA2", // CASINO AND RESORT (MPVINEWOOD) DLC - Requires b2060
+                "CARACARA3", // KORTZ CENTER HEIST (MP2026_01) DLC - Requires b3889
                 "DLOADER",
                 "DRAUGUR", // CRIMINAL ENTERPRISES (MPSUM2) DLC - Requires b2699
                 "DRIFTL352", // MONEY FRONTS (MP2025_01) DLC - Requires b3570
@@ -1118,6 +1129,7 @@ namespace vMenuClient.data
                 "GBURRITO2",
                 "JOURNEY",
                 "JOURNEY2", // DRUG WARS (MPCHRISTMAS3) DLC - Requires b2802
+                "LAUFER", // KORTZ CENTER HEIST (MP2026_01) DLC - Requires b3889
                 "MINIVAN",
                 "MINIVAN2",
                 "PARADISE",
@@ -1321,6 +1333,7 @@ namespace vMenuClient.data
                 "POLICEOLD2",
                 "POLICET",
                 "POLICET3", // BOTTOM DOLLAR BOUNTIES (MP2024_01) DLC - Requires b3258
+                "POLIGNUS", // KORTZ CENTER HEIST (MP2026_01) DLC - Requires b3889
                 "POLIMPALER5", // BOTTOM DOLLAR BOUNTIES (MP2024_01) DLC - Requires b3258
                 "POLIMPALER6", // BOTTOM DOLLAR BOUNTIES (MP2024_01) DLC - Requires b3258
                 "POLMAV",
