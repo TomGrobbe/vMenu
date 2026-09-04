@@ -1080,6 +1080,7 @@ namespace vMenuClient.data
                 "TR2", // Large Vehicle Trailer
                 "TR4", // Large Vehicle Trailer (Mission Cars)
                 "TRFLAT", // Large Flatbed Empty Trailer
+                "TRFLAT2", // KORTZ CENTER HEIST (MP2026_01) DLC - Requires b3889
                 "TRAILERS", // Container/Curtain Trailer
                 "TRAILERS4", // White Container Trailer
                 "TRAILERS2", // Box Trailer
