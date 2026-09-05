@@ -1,8 +1,10 @@
-using CitizenFX.FiveM.Client;
+﻿using CitizenFX.FiveM.Client;
 
+using vMenu.Enhanced.Data.Ticks;
 using vMenu.Enhanced.Events;
 using vMenu.Enhanced.Permissions;
 using vMenu.Enhanced.Storage;
+using vMenu.Enhanced.Ticks;
 
 using VehicleOptionsPermissions = vMenu.Enhanced.Data.Permissions.Menus.VehicleOptions;
 
@@ -12,7 +14,13 @@ namespace vMenu.Enhanced.Menus.Vehicles;
 // same distinction VehicleWash makes.
 public static class VehicleKeepClean
 {
+    // The dirt watcher only reports a gain big enough to be worth an event, so a slow drizzle of dirt can
+    // sit under it. This sweep is what catches that.
+    private const long SweepIntervalMs = 10000;
+
     private static bool _watching;
+
+    private static TickHandle? _sweep;
 
     public static bool Enabled => UserDefaults.VehicleKeepClean.Value && IsAllowed;
 
@@ -22,6 +30,8 @@ public static class VehicleKeepClean
     public static void Initialize()
     {
         ClientPermissions.PermissionsChanged += Apply;
+
+        _sweep = TickRegistry.Register("Vehicle.KeepClean", Sweep, TickRate.Every(SweepIntervalMs), () => Enabled);
 
         Apply();
     }
@@ -44,6 +54,8 @@ public static class VehicleKeepClean
         var on = Enabled;
 
         Watch(on);
+
+        _sweep?.Reevaluate();
 
         if (!on)
         {
@@ -73,6 +85,8 @@ public static class VehicleKeepClean
         LocalVehicleTicks.VehicleDirtied -= OnDirtied;
         LocalVehicleTicks.VehicleChanged -= OnChanged;
     }
+
+    private static void Sweep() => Wash(OwnVehicle.Driven());
 
     private static void OnDirtied(VehicleDirtied _) => Wash(OwnVehicle.Driven());
 

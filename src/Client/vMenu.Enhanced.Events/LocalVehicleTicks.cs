@@ -1,4 +1,4 @@
-using CitizenFX.FiveM.Client;
+﻿using CitizenFX.FiveM.Client;
 
 using vMenu.Enhanced.Data.Ticks;
 using vMenu.Enhanced.Ticks;
@@ -456,13 +456,20 @@ public static class LocalVehicleTicks
 
         var gained = dirt - _dirt;
 
-        _dirt = dirt;
-
         // Washing moves the same number downwards, which is not getting dirty.
         if (vehicle == 0 || gained < DirtThreshold)
         {
+            // Dirt builds up slower than the threshold per poll, so the baseline only moves once a gain is
+            // reported. Moving it every poll would lose the whole build up a fraction at a time.
+            if (gained < 0f)
+            {
+                _dirt = dirt;
+            }
+
             return;
         }
+
+        _dirt = dirt;
 
         var dirtied = new VehicleDirtied(vehicle, dirt, gained);
 
