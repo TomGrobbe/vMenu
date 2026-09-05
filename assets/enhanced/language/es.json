@@ -1877,6 +1877,7 @@
     "vehiclespawner.category.subtitle": "Menú del generador de vehículos",
     "vehiclespawner.link.desc": "Genera un vehículo.",
     "vehiclespawner.oldvehicleremoved": "Se ha eliminado tu vehículo anterior. Desactiva ~y~Reemplazar el vehículo anterior~s~ si la próxima vez quieres conservarlo.",
+    "vehiclespawner.personalvehiclereplaced": "Tu vehículo personal se ha eliminado y olvidado. Este servidor solo te permite tener un vehículo a la vez.",
     "vehiclespawner.replaceprevious": "Reemplazar el vehículo anterior",
     "vehiclespawner.replaceprevious.binding": "Conservar o reemplazar el vehículo anterior",
     "vehiclespawner.replaceprevious.button.off": "Reemplazar el anterior: no",

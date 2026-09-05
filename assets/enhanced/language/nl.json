@@ -1877,6 +1877,7 @@
     "vehiclespawner.category.subtitle": "Voertuigspawnermenu",
     "vehiclespawner.link.desc": "Spawn een voertuig.",
     "vehiclespawner.oldvehicleremoved": "Je oude voertuig is verwijderd. Zet ~y~Vorig voertuig vervangen~s~ uit als je het de volgende keer wilt houden.",
+    "vehiclespawner.personalvehiclereplaced": "Je persoonlijke voertuig is verwijderd en vergeten. Op deze server mag je maar één voertuig tegelijk hebben.",
     "vehiclespawner.replaceprevious": "Vorig voertuig vervangen",
     "vehiclespawner.replaceprevious.binding": "Vorig voertuig behouden of vervangen",
     "vehiclespawner.replaceprevious.button.off": "Vorige vervangen: uit",

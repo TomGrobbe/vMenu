@@ -18,6 +18,8 @@ public static class VehicleSpawnOptions
     public static bool CanKeepPrevious =>
         ClientPermissions.IsAllowed(VehicleSpawnerPermissions.AllowKeepPreviousVehicle);
 
+    public static bool ForcedReplace => !CanKeepPrevious;
+
     public static void SetReplacePrevious(bool replace)
     {
         if (!replace && !CanKeepPrevious)

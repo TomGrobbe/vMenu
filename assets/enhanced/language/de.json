@@ -1877,6 +1877,7 @@
     "vehiclespawner.category.subtitle": "Fahrzeug-Spawner-Menü",
     "vehiclespawner.link.desc": "Ein Fahrzeug spawnen.",
     "vehiclespawner.oldvehicleremoved": "Dein altes Fahrzeug wurde entfernt. Schalte ~y~Vorheriges Fahrzeug ersetzen~s~ aus, wenn du es beim nächsten Mal behalten willst.",
+    "vehiclespawner.personalvehiclereplaced": "Dein persönliches Fahrzeug wurde entfernt und vergessen. Auf diesem Server darfst du nur ein Fahrzeug gleichzeitig haben.",
     "vehiclespawner.replaceprevious": "Vorheriges Fahrzeug ersetzen",
     "vehiclespawner.replaceprevious.binding": "Vorheriges Fahrzeug behalten oder ersetzen",
     "vehiclespawner.replaceprevious.button.off": "Vorheriges ersetzen: Aus",

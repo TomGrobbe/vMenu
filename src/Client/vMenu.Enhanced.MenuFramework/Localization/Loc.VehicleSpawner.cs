@@ -56,6 +56,8 @@ public static partial class Loc
 
         public const string OldVehicleRemoved = "vehiclespawner.oldvehicleremoved";
 
+        public const string PersonalVehicleReplaced = "vehiclespawner.personalvehiclereplaced";
+
         public const string TooManySpawns = "vehiclespawner.toomanyspawns";
     }
 }

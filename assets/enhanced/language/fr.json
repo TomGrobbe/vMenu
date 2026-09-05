@@ -1877,6 +1877,7 @@
     "vehiclespawner.category.subtitle": "Menu du générateur de véhicules",
     "vehiclespawner.link.desc": "Faire apparaître un véhicule.",
     "vehiclespawner.oldvehicleremoved": "Votre ancien véhicule a été supprimé. Désactivez ~y~Remplacer le véhicule précédent~s~ si vous voulez le garder la prochaine fois.",
+    "vehiclespawner.personalvehiclereplaced": "Votre véhicule personnel a été supprimé et oublié. Ce serveur ne vous autorise qu'un seul véhicule à la fois.",
     "vehiclespawner.replaceprevious": "Remplacer le véhicule précédent",
     "vehiclespawner.replaceprevious.binding": "Garder ou remplacer le véhicule précédent",
     "vehiclespawner.replaceprevious.button.off": "Remplacer le précédent : non",

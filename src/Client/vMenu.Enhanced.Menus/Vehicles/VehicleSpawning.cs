@@ -60,11 +60,13 @@ public static class VehicleSpawning
             rpm = Native.GetVehicleCurrentRpm(currentVehicle.Handle);
         }
 
-        var position = SpawnPosition(ped, currentVehicle, hash, spawnInside);
+        var removingCurrent = WillRemoveCurrent(ped.Handle, currentVehicle?.Handle ?? 0);
+
+        var position = SpawnPosition(ped, currentVehicle, hash, spawnInside, removingCurrent);
 
         var heading = spawnInside ? ped.Heading : ped.Heading + 90f;
 
-        RemovePrevious(ped.Handle, currentVehicle?.Handle ?? 0);
+        await RemovePreviousAsync(ped.Handle, currentVehicle?.Handle ?? 0, removingCurrent);
 
         var orphanMode = VehicleSpawnerSettings.NormaliseOrphanMode(ClientConfig.Value(VehicleSpawnerSettings.OrphanMode));
 
@@ -128,7 +130,7 @@ public static class VehicleSpawning
         API.EmitServer(VehicleEvents.Spawned, Native.NetworkGetNetworkIdFromEntity(entity));
     }
 
-    private static Vector3 SpawnPosition(Ped ped, Vehicle? currentVehicle, uint hash, bool spawnInside)
+    private static Vector3 SpawnPosition(Ped ped, Vehicle? currentVehicle, uint hash, bool spawnInside, bool removingCurrent)
     {
         if (spawnInside && currentVehicle is null)
         {
@@ -139,9 +141,7 @@ public static class VehicleSpawning
 
         var clearance = (Math.Abs((spawnedMin - spawnedMax).Y) / 2) + 1f;
 
-        var replace = VehicleSpawnOptions.ReplacePrevious;
-
-        if (currentVehicle is not null && replace && currentVehicle.GetPedInVehicleSeat(-1, false) == ped.Handle)
+        if (currentVehicle is not null && removingCurrent)
         {
             return currentVehicle.Position;
         }
@@ -158,7 +158,7 @@ public static class VehicleSpawning
         return Native.GetOffsetFromEntityInWorldCoords(currentVehicle.Handle, 0f, clearance, 0f);
     }
 
-    private static void RemovePrevious(int ped, int currentVehicle)
+    private static async Task RemovePreviousAsync(int ped, int currentVehicle, bool removingCurrent)
     {
         var replace = VehicleSpawnOptions.ReplacePrevious;
 
@@ -166,7 +166,7 @@ public static class VehicleSpawning
         {
             if (replace)
             {
-                VehicleDeletion.DeleteLocally(_previousVehicle);
+                await RemoveAsync(_previousVehicle, notify: false);
             }
             else if (!ClientConfig.Value(VehicleSpawnerSettings.KeepSpawnedVehiclesPersistent))
             {
@@ -177,26 +177,60 @@ public static class VehicleSpawning
             _previousVehicle = 0;
         }
 
-        if (!replace || currentVehicle == 0 || !Native.DoesEntityExist(currentVehicle))
-        {
-            return;
-        }
-
-        if (PersonalVehicle.Owns(currentVehicle))
-        {
-            return;
-        }
-
-        if (Native.GetPedInVehicleSeat(currentVehicle, DriverSeat, false) != ped)
+        if (!removingCurrent)
         {
             return;
         }
 
         _previousVehicle = _previousVehicle == currentVehicle ? 0 : _previousVehicle;
 
-        VehicleDeletion.DeleteLocally(currentVehicle);
+        await RemoveAsync(currentVehicle, notify: true);
+    }
 
-        Notifications.Info(MenuText.Key(Loc.VehicleSpawner.OldVehicleRemoved));
+    private static async Task RemoveAsync(int vehicle, bool notify)
+    {
+        if (vehicle == 0 || !Native.DoesEntityExist(vehicle))
+        {
+            return;
+        }
+
+        var personal = PersonalVehicle.Owns(vehicle);
+
+        if (personal)
+        {
+            await PersonalVehicle.SurrenderAsync();
+        }
+
+        VehicleDeletion.DeleteLocally(vehicle);
+
+        if (personal)
+        {
+            Notifications.Info(MenuText.Key(Loc.VehicleSpawner.PersonalVehicleReplaced));
+
+            return;
+        }
+
+        if (notify)
+        {
+            Notifications.Info(MenuText.Key(Loc.VehicleSpawner.OldVehicleRemoved));
+        }
+    }
+
+    private static bool WillRemoveCurrent(int ped, int currentVehicle)
+    {
+        if (!VehicleSpawnOptions.ReplacePrevious
+            || currentVehicle == 0
+            || !Native.DoesEntityExist(currentVehicle))
+        {
+            return false;
+        }
+
+        if (PersonalVehicle.Owns(currentVehicle) && !VehicleSpawnOptions.ForcedReplace)
+        {
+            return false;
+        }
+
+        return Native.GetPedInVehicleSeat(currentVehicle, DriverSeat, false) == ped;
     }
 
     private static bool MayRemove(int vehicle, int ped)
@@ -206,7 +240,7 @@ public static class VehicleSpawning
             return false;
         }
 
-        if (PersonalVehicle.Owns(vehicle))
+        if (PersonalVehicle.Owns(vehicle) && !VehicleSpawnOptions.ForcedReplace)
         {
             return false;
         }

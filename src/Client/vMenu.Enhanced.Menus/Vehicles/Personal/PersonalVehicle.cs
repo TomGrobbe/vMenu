@@ -170,6 +170,18 @@ public static class PersonalVehicle
         }
     }
 
+    public static async Task SurrenderAsync()
+    {
+        if (!IsMarked)
+        {
+            return;
+        }
+
+        await ServerActions.InvokeAsync(ActionIds.PersonalVehicle.Forget);
+
+        Release();
+    }
+
     public static async Task DeleteAsync()
     {
         if (_busy || !Guarded())
