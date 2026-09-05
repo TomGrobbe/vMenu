@@ -43,16 +43,16 @@ public static class UserDefaults
         new("displayJoinLeaveNotifications") { Default = true };
 
     public static BoolDefault DisplayShowPlayerBlips { get; } =
-        new("displayShowPlayerBlips") { Default = false };
+        new("displayShowPlayerBlips") { Default = true };
 
     public static BoolDefault DisplayShowOverheadNames { get; } =
-        new("displayShowOverheadNames") { Default = false };
+        new("displayShowOverheadNames") { Default = true };
 
     public static BoolDefault DisplaySeeNoClipPlayers { get; } =
         new("displaySeeNoClipPlayers") { Default = true };
 
     public static IntDefault DisplayMinimapAction { get; } =
-        new("displayMinimapAction") { Default = 0 };
+        new("displayMinimapAction") { Default = 1 };
 
     public static IntDefault DisplayMinimapZoom { get; } =
         new("displayMinimapZoom") { Default = 5 };
@@ -61,13 +61,13 @@ public static class UserDefaults
         new("displayMinimapAlwaysOn") { Default = false };
 
     public static IntDefault DisplaySpeedometer { get; } =
-        new("displaySpeedometer") { Default = 0 };
+        new("displaySpeedometer") { Default = 3 };
 
     public static IntDefault DisplaySpeedometerPosition { get; } =
         new("displaySpeedometerPosition") { Default = 0 };
 
     public static BoolDefault DisplayShowLocation { get; } =
-        new("displayShowLocation") { Default = false };
+        new("displayShowLocation") { Default = true };
 
     public static BoolDefault DisplayShowCoordinates { get; } =
         new("displayShowCoordinates") { Default = false };
@@ -76,16 +76,16 @@ public static class UserDefaults
         new("displayVehicleHealth") { Default = false };
 
     public static BoolDefault DisplayWeatherForecast { get; } =
-        new("displayWeatherForecast") { Default = false };
+        new("displayWeatherForecast") { Default = true };
 
     public static BoolDefault DisplayShowTime { get; } =
-        new("displayShowTime") { Default = false };
+        new("displayShowTime") { Default = true };
 
     public static BoolDefault DisplayLocationBlips { get; } =
-        new("displayLocationBlips") { Default = false };
+        new("displayLocationBlips") { Default = true };
 
     public static IntDefault DisplayWeatherForecastStyle { get; } =
-        new("displayWeatherForecastStyle") { Default = 0 };
+        new("displayWeatherForecastStyle") { Default = 1 };
 
     #endregion
 
