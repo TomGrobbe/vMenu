@@ -186,6 +186,16 @@ public static partial class Loc
 
         public const string NoClipOffByStaff = "onlineplayers.noclip.off.received";
 
+        public const string WaypointByStaff = "onlineplayers.waypoint.received";
+
+        public const string TeleportedByStaff = "onlineplayers.teleport.received";
+
+        public const string HealedByStaff = "onlineplayers.heal.received";
+
+        public const string ArmorByStaff = "onlineplayers.armor.received";
+
+        public const string VehicleSpawnedByStaff = "onlineplayers.spawnvehicle.received";
+
         public const string NoClipAccess = "onlineplayers.noclipaccess";
 
         public const string NoClipAccessDescription = "onlineplayers.noclipaccess.desc";

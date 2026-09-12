@@ -1,4 +1,4 @@
-﻿using System.Globalization;
+using System.Globalization;
 using System.Numerics;
 
 using CitizenFX.FiveM.Client;
@@ -11,15 +11,15 @@ using vMenu.Enhanced.Menus.Vehicles;
 
 namespace vMenu.Enhanced.Menus.Players;
 
-// The action layer only ever answers whoever asked, so being killed, summoned or messaged arrives on
-// its own events. Registered imperatively, because attribute discovery only scans the assembly named
-// as the client_script and this one is a project reference.
+// Registered imperatively: attribute discovery only scans the client_script assembly, and this is a
+// project reference.
 public static class PlayerPushEvents
 {
     private const string On = "1";
 
-    // Nearly twice the usual, because a message from another player is something to read rather than
-    // something to glance at.
+    private const int DriverSeat = -1;
+
+    // Longer than usual, because a player message is meant to be read, not glanced at.
     public const int MessageDurationMs = 15000;
 
     private static bool _registered;
@@ -45,6 +45,100 @@ public static class PlayerPushEvents
         API.OnNetEvent(PlayerEvents.GetGodMode, new Action<string>(OnGodModeRequested), false);
         API.OnNetEvent(PlayerEvents.SetNoClip, new Action<string>(OnNoClipSet), false);
         API.OnNetEvent(PlayerEvents.SetNoClipAccess, new Action<string>(OnNoClipAccessSet), false);
+        API.OnNetEvent(PlayerEvents.SetWaypoint, new Action<string, string>(OnWaypointSet), false);
+        API.OnNetEvent(PlayerEvents.TeleportToGround, new Action<string, string>(OnTeleportedToGround), false);
+        API.OnNetEvent(PlayerEvents.Restore, new Action<string>(OnRestore), false);
+        API.OnNetEvent(PlayerEvents.SpawnVehicle, new Action<string>(OnSpawnVehicle), false);
+        API.OnNetEvent(PlayerEvents.Notify, new Action<string, string, string>(OnNotify), false);
+    }
+
+    private static void OnWaypointSet(string x, string y)
+    {
+        if (!TryParse(x, out var px) || !TryParse(y, out var py))
+        {
+            Log.Error($"[OnlinePlayers] Ignoring a waypoint that did not parse: {x}, {y}");
+
+            return;
+        }
+
+        Native.SetNewWaypoint(px, py);
+
+        Notifications.Info(MenuText.Key(Loc.OnlinePlayers.WaypointByStaff));
+    }
+
+    private static async void OnTeleportedToGround(string x, string y)
+    {
+        if (!TryParse(x, out var px) || !TryParse(y, out var py))
+        {
+            Log.Error($"[OnlinePlayers] Ignoring a teleport that did not parse: {x}, {y}");
+
+            return;
+        }
+
+        Notifications.Info(MenuText.Key(Loc.OnlinePlayers.TeleportedByStaff));
+
+        await PlayerTeleport.ToGroundAsync(px, py);
+    }
+
+    private static void OnRestore(string mode)
+    {
+        if (string.Equals(mode, "armor", StringComparison.OrdinalIgnoreCase))
+        {
+            PlayerActions.SetArmorTier(PlayerActions.ArmorTiers);
+
+            Notifications.Info(MenuText.Key(Loc.OnlinePlayers.ArmorByStaff));
+
+            return;
+        }
+
+        var ped = Native.PlayerPedId();
+        Native.SetEntityHealth(ped, Native.GetEntityMaxHealth(ped), 0, 0);
+
+        Notifications.Info(MenuText.Key(Loc.OnlinePlayers.HealedByStaff));
+    }
+
+    private static async void OnSpawnVehicle(string model)
+    {
+        if (string.IsNullOrWhiteSpace(model))
+        {
+            return;
+        }
+
+        var vehicle = await VehicleSpawning.SpawnAsync(model.Trim());
+
+        if (vehicle is null)
+        {
+            Log.Warning($"[OnlinePlayers] A staff vehicle spawn for '{model}' did not produce a vehicle.");
+
+            return;
+        }
+
+        if (API.Players.Local.Ped is { } ped)
+        {
+            Native.SetPedIntoVehicle(ped.Handle, vehicle.Handle, DriverSeat);
+        }
+
+        Notifications.Info(MenuText.Key(Loc.OnlinePlayers.VehicleSpawnedByStaff));
+    }
+
+    private static void OnNotify(string style, string text, string footer)
+    {
+        if (string.IsNullOrWhiteSpace(text))
+        {
+            return;
+        }
+
+        var notificationStyle = style?.ToLowerInvariant() switch
+        {
+            "success" => NotificationStyle.Success,
+            "warning" => NotificationStyle.Warning,
+            "error" => NotificationStyle.Error,
+            _ => NotificationStyle.Info,
+        };
+
+        var source = string.IsNullOrWhiteSpace(footer) ? null : footer;
+
+        Notifications.Show(notificationStyle, MenuText.Literal(text), MessageDurationMs, source);
     }
 
     private static void OnNoClipSet(string state)
@@ -112,8 +206,7 @@ public static class PlayerPushEvents
                 ("message", MenuText.Literal(message))),
             MessageDurationMs);
 
-        // After it is on screen, not before: the sender is waiting on this to hear that their message
-        // arrived, so it has to mean the message was actually shown.
+        // Acked only after it is on screen, since the sender waits on this to know it was shown.
         API.EmitServer(PlayerEvents.MessageAck, messageId);
     }
 

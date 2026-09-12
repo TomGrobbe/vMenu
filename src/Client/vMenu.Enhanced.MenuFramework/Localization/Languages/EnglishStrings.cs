@@ -1,9 +1,8 @@
 ﻿namespace vMenu.Enhanced.MenuFramework.Localization.Languages;
 
 /// <summary>The English strings, and the fallback for every other language.</summary>
-/// <remarks>Every other language lives in a JSON file under <c>assets/enhanced/language/</c>. If you
-/// change a string here, please update those files too where you can. Machine translation is fine,
-/// they are a best effort and the community is very welcome to improve them.</remarks>
+/// <remarks>Other languages live in JSON under <c>assets/enhanced/language/</c>; update those too when
+/// you change a string here.</remarks>
 // Required to be complete. Anything missing renders as a marker in game and is reported at startup.
 internal static class EnglishStrings
 {
@@ -443,6 +442,11 @@ internal static class EnglishStrings
             [Loc.OnlinePlayers.NoClipOffDone] = "~y~{player}~s~ is no longer in noclip.",
             [Loc.OnlinePlayers.NoClipOnByStaff] = "A staff member has put you into ~y~noclip~s~.",
             [Loc.OnlinePlayers.NoClipOffByStaff] = "A staff member has taken you out of ~y~noclip~s~.",
+            [Loc.OnlinePlayers.WaypointByStaff] = "A staff member has set a ~y~waypoint~s~ on your map.",
+            [Loc.OnlinePlayers.TeleportedByStaff] = "You have been ~y~teleported~s~ by a staff member.",
+            [Loc.OnlinePlayers.HealedByStaff] = "A staff member has ~g~healed~s~ you.",
+            [Loc.OnlinePlayers.ArmorByStaff] = "A staff member has given you ~g~body armor~s~.",
+            [Loc.OnlinePlayers.VehicleSpawnedByStaff] = "A staff member has spawned a ~g~vehicle~s~ for you.",
             [Loc.OnlinePlayers.RefreshPermissions] = "Refresh Permissions",
             [Loc.OnlinePlayers.RefreshPermissionsDescription] = "Hand this player a fresh copy of what they are allowed to do. Use it once you have actually changed their permissions on the server, so their menu catches up without them having to rejoin.",
             [Loc.OnlinePlayers.RefreshPermissionsDone] = "Refreshed permissions for ~g~{player}~s~.",

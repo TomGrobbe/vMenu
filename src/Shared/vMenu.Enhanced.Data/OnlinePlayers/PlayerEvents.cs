@@ -24,5 +24,16 @@ public static class PlayerEvents
 
     public const string SetNoClipAccess = "vMenu.Enhanced:OnlinePlayers:SetNoClipAccess";
 
+    // Pushed by the web integration rather than the in-game menu. The target's own client does the work.
+    public const string SetWaypoint = "vMenu.Enhanced:OnlinePlayers:SetWaypoint";
+
+    public const string TeleportToGround = "vMenu.Enhanced:OnlinePlayers:TeleportToGround";
+
+    public const string Restore = "vMenu.Enhanced:OnlinePlayers:Restore";
+
+    public const string SpawnVehicle = "vMenu.Enhanced:OnlinePlayers:SpawnVehicle";
+
+    public const string Notify = "vMenu.Enhanced:OnlinePlayers:Notify";
+
     public const string RevisionConvar = "vMenu.Enhanced.State.PlayersRevision";
 }
