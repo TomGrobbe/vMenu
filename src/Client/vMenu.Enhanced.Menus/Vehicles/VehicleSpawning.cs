@@ -16,8 +16,7 @@ using VehicleSpawnerSettings = vMenu.Enhanced.Data.Configuration.Settings.Vehicl
 
 namespace vMenu.Enhanced.Menus.Vehicles;
 
-// Neither caller checks permissions here. Each one has its own wording for a refusal, so the check
-// stays with them and this only does the work.
+// Callers check permissions themselves, each with its own refusal wording; this only does the work.
 public static class VehicleSpawning
 {
     private const int DriverSeat = -1;
@@ -30,8 +29,7 @@ public static class VehicleSpawning
 
     public static async Task<Vehicle?> SpawnAsync(uint hash)
     {
-        // Checked and requested by hand because API.Vehicles.RequestAndCreate uses DateTime, which is
-        // currently broken and crashes the game.
+        // Validated by hand: API.Vehicles.RequestAndCreate uses DateTime, currently broken and crashes.
         // https://github.com/citizenfx/rfc/discussions/328
         if (!Native.IsModelValid(hash))
         {
@@ -85,7 +83,7 @@ public static class VehicleSpawning
 
         ReportSpawn(newVehicle.Handle);
 
-        MenuAudit.ReportAction(AuditActions.VehicleSpawned, DisplayName(hash));
+        MenuAudit.ReportAction(AuditActions.VehicleSpawned, VehicleModelNames.Resolve(hash));
 
         if (!spawnInside)
         {
