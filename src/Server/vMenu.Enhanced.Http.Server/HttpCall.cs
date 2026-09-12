@@ -3,12 +3,9 @@ using CitizenFX.FiveM.Shared.Serialization;
 
 using vMenu.Enhanced.Logging;
 
-namespace vMenu.Enhanced.World.Server;
+namespace vMenu.Enhanced.Http.Server;
 
-// The request and response the host hands the handler. Both arrive as raw MessagePack, because the
-// runtime cannot turn a bag holding function references into a plain object, so every field is read
-// out by hand here and may come back empty.
-internal sealed class HttpCall
+public sealed class HttpCall
 {
     private readonly IReadOnlyDictionary<string, MessagePackBuffer> _response;
 
@@ -53,7 +50,6 @@ internal sealed class HttpCall
             Bag(response));
     }
 
-    // Header names are not case sensitive, so this walks the bag rather than looking the name up.
     public string Header(string name)
     {
         foreach (var pair in _headers)
@@ -94,7 +90,7 @@ internal sealed class HttpCall
         if (!Invoke("writeHead", status, headers) || !Invoke("send", body))
         {
             Log.Error(
-                "[WorldApi] The host handed back a response object this cannot answer through, so the " +
+                "[Http] The host handed back a response object this cannot answer through, so the " +
                 $"caller is left hanging. It carries {string.Join(", ", _response.Keys)}.");
         }
     }
@@ -125,7 +121,6 @@ internal sealed class HttpCall
     private static string Field(IReadOnlyDictionary<string, MessagePackBuffer> bag, string name) =>
         bag.TryGetValue(name, out var value) ? Text(value) : string.Empty;
 
-    // A header the caller sent more than once arrives as a list, so both shapes are read here.
     private static string Text(MessagePackBuffer value) =>
         Read<string>(value) ?? (Read<string[]>(value) is { } many ? string.Join(", ", many) : string.Empty);
 

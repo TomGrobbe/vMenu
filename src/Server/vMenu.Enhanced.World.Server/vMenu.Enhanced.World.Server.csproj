@@ -6,8 +6,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Shared\vMenu.Enhanced.Logging\vMenu.Enhanced.Logging.csproj" />
-    <ProjectReference Include="..\vMenu.Enhanced.BrokenNatives.Server\vMenu.Enhanced.BrokenNatives.Server.csproj" />
     <ProjectReference Include="..\vMenu.Enhanced.Configuration.Server\vMenu.Enhanced.Configuration.Server.csproj" />
+    <ProjectReference Include="..\vMenu.Enhanced.Http.Server\vMenu.Enhanced.Http.Server.csproj" />
     <ProjectReference Include="..\vMenu.Enhanced.Serialization.Server\vMenu.Enhanced.Serialization.Server.csproj" />
   </ItemGroup>
 

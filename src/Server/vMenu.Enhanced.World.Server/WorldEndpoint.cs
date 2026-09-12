@@ -1,9 +1,7 @@
 using System.Globalization;
 
-using CitizenFX.FiveM.Shared.Serialization;
-
-using vMenu.Enhanced.BrokenNatives.Server;
 using vMenu.Enhanced.Configuration.Server;
+using vMenu.Enhanced.Http.Server;
 using vMenu.Enhanced.Logging;
 using vMenu.Enhanced.Serialization.Server;
 
@@ -11,8 +9,7 @@ using WorldApiSettings = vMenu.Enhanced.Data.Configuration.Settings.WorldApi;
 
 namespace vMenu.Enhanced.World.Server;
 
-// A read only view of the world over HTTP, on the port the server already listens on, so a Discord
-// bot or a website can ask what the sky is doing without reimplementing the weather table.
+// A read-only HTTP view of the world, so a bot or website can read weather and time without rebuilding it.
 public static class WorldEndpoint
 {
     private const string Path = "/world";
@@ -32,7 +29,7 @@ public static class WorldEndpoint
 
     public static void Initialize()
     {
-        NativeFixer.SetHttpHandler(Handle);
+        HttpRouter.Map(Path, Serve);
 
         Log.Debug(
             IsConfigured
@@ -44,32 +41,8 @@ public static class WorldEndpoint
 
     private static string Token => ServerConfig.Value(WorldApiSettings.Token);
 
-    private static void Handle(MessagePackBuffer? request, MessagePackBuffer? response)
+    private static void Serve(HttpCall call)
     {
-        var call = HttpCall.From(request, response);
-
-        try
-        {
-            Route(call);
-        }
-        catch (Exception exception)
-        {
-            // An escaping exception would leave the caller on a socket that never answers.
-            Log.Error($"[WorldApi] {exception.GetType().Name} answering {call.Path}: {exception.Message}");
-
-            call.Reply(500, "text/plain", "vMenu Enhanced could not work out the world state.\n");
-        }
-    }
-
-    private static void Route(HttpCall call)
-    {
-        if (call.Path is not (Path or Path + "/"))
-        {
-            call.Reply(404, "text/plain", $"vMenu Enhanced serves {Path} and nothing else.\n");
-
-            return;
-        }
-
         if (call.Method != "GET")
         {
             call.Reply(405, "text/plain", "vMenu Enhanced only answers GET here.\n");
