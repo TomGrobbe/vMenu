@@ -13,7 +13,7 @@ public sealed class PermissionExampleEntry(
 
     public int Depth { get; } = depth;
 
-    // The config file this permission came from, or null when vMenu declares it itself.
+    // Null when vMenu declares the permission itself.
     public string? Source { get; } = source;
 
     public bool IsStaffOnly { get; } = isStaffOnly;
@@ -29,12 +29,11 @@ public static class PermissionsExample
 
     private const string StaffGroup = "group.admin";
 
-    // Entries at or above this depth get a blank line before them, so each menu block stands apart.
+    // Entries at or above this depth get a blank line before them.
     private const int SpacedDepth = 1;
 
     public static string ResourcePath => $"{ExampleFile.ConfigDirectory}/{CopyName}{ExampleFile.Extension}";
 
-    // Where one plugin's own permission template lives.
     public static string PluginResourcePath(string resource) =>
         $"{ExampleFile.PluginsDirectory}/{ExampleFile.PluginCopyName(resource, CopyName)}{ExampleFile.Extension}";
 
@@ -57,17 +56,21 @@ public static class PermissionsExample
         file.Append('\n');
         file.Append(ExampleFile.Comment(
             "Give a player a group by one of their identifiers. "
-            + "Use whichever you can look up most easily. These two stay commented out because the "
-            + "identifiers in them are made up examples, and running them would hand admin to "
-            + "whoever those actually belong to. Put your own identifier in and remove the #."));
-        file.Append("# add_principal identifier.steam:110000105959047 group.admin\n");
-        file.Append("# add_principal identifier.license:4510587c13e0b645eb8d24bc104601792277ab98 group.admin\n");
+            + "Use whichever you can look up most easily. Note, Steam "
+            + "identifiers no longer work in FiveM Enhanced, so use either "
+            + "license, license2, discord or fivem identifiers. (You can also use "
+            + "the IP identifier, but I don't really recommended that one). "
+            + "!!! Make sure you replace these with your own identifiers !!!"));
+        file.Append($"add_principal identifier.license2:94b6dfaed9a0aff3e77a91243ee9ed28f4a22d0d {StaffGroup}\n");
+        file.Append($"add_principal identifier.license:94b6dfaed9a0aff3e77a91243ee9ed28f4a22d0d {StaffGroup}\n");
+        file.Append($"add_principal identifier.discord:223799456162775043 {StaffGroup}\n");
+        file.Append($"add_principal identifier.fivem:25104 {StaffGroup}\n");
 
         file.Append('\n');
         file.Append(ExampleFile.Comment(
-            "Groups inherit from each other (if you set it up correctly). This one gives everybody in group.admin everything "
-            + "group.mod may do, on top of whatever group.admin is granted below."));
-        file.Append("add_principal group.admin group.mod\n");
+            $"Groups inherit from each other (if you set it up correctly). This one gives everybody in {StaffGroup} everything "
+            + $"group.mod may do, on top of whatever {StaffGroup} is granted below."));
+        file.Append($"add_principal {StaffGroup} group.mod\n");
 
         file.Append('\n');
         file.Append(ExampleFile.Comment(
@@ -110,7 +113,6 @@ public static class PermissionsExample
         return file.ToString();
     }
 
-    // One plugin's permissions on their own, for its own example file in the shared plugins folder.
     public static string RenderForPlugin(string resource, string displayName, IEnumerable<PermissionExampleEntry> entries)
     {
         var ordered = entries.ToList();
@@ -140,8 +142,7 @@ public static class PermissionsExample
             return file.ToString();
         }
 
-        // Only the plugin's own container gets a blank line above it: everything in this file sits under
-        // that one line, so spacing them all apart would be one blank line per permission.
+        // Only the plugin's own container is spaced; everything else sits under it.
         AppendEntries(file, ordered, spacedDepth: 0, annotate: false);
 
         return file.ToString();
@@ -164,8 +165,7 @@ public static class PermissionsExample
                 file.Append('\n');
             }
 
-            // On its own line above rather than trailing the command, so the command is the whole line and
-            // nothing depends on the console treating a mid line # as a comment.
+            // Above the command, not trailing it: the console does not treat a mid-line # as a comment.
             if (annotate && Annotation(entry) is { Length: > 0 } note)
             {
                 file.Append(' ', entry.Depth * 2).Append("# ").Append(note).Append('\n');
@@ -177,16 +177,13 @@ public static class PermissionsExample
         }
     }
 
-    // A permission grants everything nested underneath it, so one staff only permission anywhere below a
-    // container makes that container staff only too. Without this the file would hand a container to
-    // everybody and quietly undo the restriction on something inside it.
+    // A container grants everything under it, so any staff-only permission below it must make it staff-only
+    // too, else the container would hand out that restricted permission to everybody.
     private static bool[] ResolveStaffOnly(List<PermissionExampleEntry> ordered)
     {
         var staffOnly = new bool[ordered.Count];
 
-        // The tree arrives flattened in pre-order, so everything nested under an entry sits directly after
-        // it while the depth stays greater. Walked backwards, so by the time an entry is reached its own
-        // children already answer for their whole subtree and one pass is enough however deep it goes.
+        // Pre-order flatten walked backwards, so each entry's children are already resolved in one pass.
         for (var index = ordered.Count - 1; index >= 0; index--)
         {
             staffOnly[index] = ordered[index].IsStaffOnly;
