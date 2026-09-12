@@ -1,4 +1,4 @@
-﻿namespace vMenu.Enhanced.Data.Configuration.Settings;
+namespace vMenu.Enhanced.Data.Configuration.Settings;
 
 public static class Admin
 {
@@ -22,17 +22,15 @@ public static class Admin
         new("vMenu.Enhanced.Admin.ClosestPlayerRange")
         {
             Description =
-                "How far away, in metres, the freeze and grab buttons will still find a player. " +
-                "Anybody further away than this is treated as nobody being nearby.",
-            Default = 5,
+                "How far away, in metres, the freeze and grab buttons will find a nearby player.",
+            Default = 3,
         };
 
     public static readonly BoolSetting ScheduledAnnouncements =
         new("vMenu.Enhanced.Admin.ScheduledAnnouncements")
         {
             Description =
-                "Turns the announcement schedule in config/announcements.json on or off. " +
-                "Staff can still send announcements by hand while this is disabled.",
+                "Turns the announcement schedule in config/announcements.json on or off.",
             Default = true,
         };
 
