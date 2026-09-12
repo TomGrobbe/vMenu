@@ -62,7 +62,6 @@ internal sealed class GenericChannel
             {
                 Method = "POST",
                 Body = GenericPayload.Build(batch),
-                AllowInvalidCertificates = true,
             });
 
         if (reply.IsAccepted)
