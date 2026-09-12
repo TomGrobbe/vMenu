@@ -1,13 +1,24 @@
 namespace vMenu.Enhanced.Data.VehicleData;
 
-// Ported from Rockstar's GET_CORRECT_PED_BLIP_SPRITE_FOR_VEHICLE_MODEL, so a player driving a tank
-// shows up as a tank exactly as they do in GTA Online. Most vehicles are not in here, and that is
-// correct: in GTA Online an ordinary car is still a plain dot, which is what legacy vMenu got wrong
-// by falling back to a generic car sprite. Planes, helicopters and boats need natives, so those are
-// decided on the client instead.
+// Client and server derive this differently, then both go through SpriteFor so their blips always match.
+public enum VehicleBlipKind
+{
+    None,
+
+    // Catch-all for cars and bikes, which stay a plain dot.
+    Land,
+
+    Plane,
+
+    Heli,
+
+    Boat,
+}
+
+// Ported from Rockstar's GET_CORRECT_PED_BLIP_SPRITE_FOR_VEHICLE_MODEL. Unlisted models stay a plain
+// dot on purpose, matching GTA Online; legacy vMenu wrongly gave them a generic car sprite.
 public static class VehicleBlipSprites
 {
-    // The plain player dot, which is what anything not listed here stays as.
     public const int StandardSprite = 1;
 
     public const int PlaneSprite = 423;
@@ -26,11 +37,34 @@ public static class VehicleBlipSprites
 
     public static int? ForModel(uint model) => ByModel.TryGetValue(model, out var sprite) ? sprite : null;
 
+    public static int SpriteFor(uint model, VehicleBlipKind kind)
+    {
+        if (model == 0)
+        {
+            return StandardSprite;
+        }
+
+        if (ForModel(model) is { } known)
+        {
+            return known;
+        }
+
+        return SpriteForKind(kind);
+    }
+
+    // Public so a caller that already ruled out a special model skips the second lookup.
+    public static int SpriteForKind(VehicleBlipKind kind) => kind switch
+    {
+        VehicleBlipKind.Plane => PlaneSprite,
+        VehicleBlipKind.Heli => HelicopterSprite,
+        VehicleBlipKind.Boat => BoatSprite,
+        _ => StandardSprite,
+    };
+
     public static bool Rotates(int sprite) =>
         sprite == StandardSprite || sprite == PlaneSprite || sprite == BoatSprite || sprite == SubmarineSprite;
 
-    // Written out here rather than taken from GetHashKey so this whole file stays free of natives and
-    // can live in the shared assembly. It is the same "joaat" the game uses, lowercased first.
+    // Hand-written joaat so the file stays native-free and can live in the shared assembly.
     public static uint Hash(string model)
     {
         var hash = 0u;
@@ -49,8 +83,7 @@ public static class VehicleBlipSprites
         return hash;
     }
 
-    // Built once into a static field. Legacy rebuilt the equivalent dictionary and re-hashed every
-    // string in it on each call, on every frame, for every player on screen.
+    // Built once; legacy rebuilt and re-hashed this every frame, for every player on screen.
     private static Dictionary<uint, int> Build()
     {
         var sprites = new Dictionary<uint, int>();
@@ -63,11 +96,9 @@ public static class VehicleBlipSprites
             }
         }
 
-        // Fighter jets. Listed rather than asked of the game, because the native Rockstar uses for this is
-        // not one FiveM exposes.
+        // Fighter jets, listed because FiveM does not expose the native Rockstar uses for them.
         Add(424, "lazer", "besra", "hydra");
 
-        // Vehicles with a gun turret somebody else can sit behind.
         Add(426, "insurgent", "insurgent2", "insurgent3", "technical", "technical3");
         Add(460, "limo2");
 
@@ -136,7 +167,7 @@ public static class VehicleBlipSprites
         Add(637, "speedo4");
         Add(639, "oppressor2");
 
-        // 640 rather than 638, which is a blimp. The run really does have a hole in it.
+        // 640 not 638: 638 is the blimp, so the numbering genuinely skips one here.
         Add(640, "strikeforce");
 
         Add(646, "rcbandito");
@@ -172,8 +203,7 @@ public static class VehicleBlipSprites
         Add(759, "annihilator2");
         Add(SubmarineSprite, "kosatka");
 
-        // The two motorbikes with artwork of their own. Every other bike stays a plain dot, which is what
-        // GTA Online does and what legacy got wrong by giving all of them the gang bike sprite.
+        // The only two bikes with their own artwork (legacy wrongly gave every bike the gang bike sprite).
         Add(348, "manchez2", "rrocket");
 
         // The Criminal Enterprises and beyond.
@@ -184,8 +214,7 @@ public static class VehicleBlipSprites
         Add(824, "champion");
         Add(825, "buffalo4");
 
-        // Not one of Rockstar's, carried over from legacy vMenu because people liked it. Legacy used sprite
-        // 56, which is the police car, so this is the same idea with the right artwork.
+        // Not a Rockstar mapping; kept from legacy vMenu, but with the taxi sprite rather than its police car one.
         Add(198, "taxi");
 
         return sprites;
