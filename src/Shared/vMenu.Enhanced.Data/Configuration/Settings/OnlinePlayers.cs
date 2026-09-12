@@ -22,9 +22,8 @@ public static class OnlinePlayers
     {
         Description =
             "Whether teleporting to a player, teleporting into their vehicle, and summoning a player " +
-            "should also move somebody into the other player's world. Routing buckets are separate " +
-            "worlds, so without this a teleport lands on the right spot in the wrong world. Turn it " +
-            "off if another resource on your server owns routing buckets.",
+            "should also move somebody into the other player's routing bucket. Routing buckets are separate " +
+            "worlds or dimensions (usually used for interiors).",
         Default = true,
     };
 }

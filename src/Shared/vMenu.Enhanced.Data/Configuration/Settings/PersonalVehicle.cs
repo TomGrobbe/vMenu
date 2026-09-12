@@ -6,10 +6,7 @@ public static class PersonalVehicle
         new("vMenu.Enhanced.PersonalVehicle.ActionLimit")
         {
             Description =
-                "How many times one player may act on their personal vehicle within the time window " +
-                "below. Marking a vehicle, deleting it, emptying it, locking it, starting it, opening " +
-                "its doors and everything else the menu can do to it all count towards the same " +
-                "allowance. Zero means no limit.",
+                "Rate limit of personal vehicle remote actions within the configured time limit. Zero means no limit.",
             Default = 8,
         };
 
@@ -17,8 +14,9 @@ public static class PersonalVehicle
         new("vMenu.Enhanced.PersonalVehicle.ActionLimitSeconds")
         {
             Description =
-                "The stretch of time, in seconds, the allowance above is counted over. Zero switches " +
-                "the limit off entirely.",
+                "Time in seconds for the rate limit from above. " +
+                "With the default values that would be 8 actions within 10 seconds. " +
+                "Zero switches the limit off entirely.",
             Default = 10,
         };
 
@@ -26,12 +24,7 @@ public static class PersonalVehicle
         new("vMenu.Enhanced.PersonalVehicle.ControlRange")
         {
             Description =
-                "How close a player has to be standing to a personal vehicle, in metres, before the " +
-                "server will ask their game to act on it. Locking a car, starting it or opening its " +
-                "doors can only be done by a machine that has the car loaded, so this is a technical " +
-                "reach rather than a rule: the owner themselves can be anywhere on the map. Raising " +
-                "it much past the game's own streaming distance only means asking players who cannot " +
-                "help.",
+                "Leave this as 350.0 for now, this convar only exists for debugging purposes.",
             Default = 350.0f,
         };
 
@@ -39,9 +32,9 @@ public static class PersonalVehicle
         new("vMenu.Enhanced.PersonalVehicle.ControlTimeout")
         {
             Description =
-                "How long the server waits, in milliseconds, for one player's game to report back " +
-                "before asking the next player instead. Three players are tried before giving up, so " +
-                "keep this well under ten seconds.",
+                "Just leave this at 1500 unless you know what you're doing. " +
+                "Timeout for moving on to the next client to try and act on a vehicle within range. " +
+                "Three players are tried before giving up, so keep this under 5 seconds.",
             Default = 1500,
         };
 }

@@ -4,26 +4,24 @@ public static class KeyBindings
 {
     private const string KeyNote =
         "Use a key name from https://docs.fivem.net/docs/game-references/input-mapper-parameter-ids/keyboard/. " +
-        "This only sets the starting key: players can rebind it themselves under Settings, Key Bindings, and " +
-        "once they have, their choice wins and changing this does nothing for them.";
+        "This is only the default key: players can rebind it themselves under Settings, Key Bindings";
 
     public static readonly StringSetting MenuToggleKey = new("vMenu.Enhanced.KeyBindings.MenuToggleKey")
     {
-        Description = "The key that opens and closes the vMenu menu. " + KeyNote,
+        Description = "The default key that opens and closes the menu. " + KeyNote,
         Default = "M",
     };
 
     public static readonly StringSetting NoClipToggleKey = new("vMenu.Enhanced.KeyBindings.NoClipToggleKey")
     {
-        Description = "The key that turns noclip on and off, for players allowed to use it. " + KeyNote,
+        Description = "The default key that turns noclip on and off. " + KeyNote,
         Default = "F2",
     };
 
     public static readonly StringSetting TeleportKey = new("vMenu.Enhanced.KeyBindings.TeleportKey")
     {
         Description =
-            "The key that runs the teleport each player picked for it under the teleport menu. It does " +
-            "nothing until they pick one, and only teleports them if they are allowed to. " + KeyNote,
+            "The default key that runs the 'teleport action' (see teleportation menu in-game) " + KeyNote,
         Default = "F10",
     };
 }
