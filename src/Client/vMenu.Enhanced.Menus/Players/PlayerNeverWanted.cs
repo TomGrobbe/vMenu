@@ -58,7 +58,8 @@ public static class PlayerNeverWanted
             return;
         }
 
-        _restore = Native.GetMaxWantedLevel();
+        var ceiling = Native.GetMaxWantedLevel();
+        _restore = ceiling > NoWanted ? ceiling : DefaultCeiling;
 
         Native.SetMaxWantedLevel(NoWanted);
 
