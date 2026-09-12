@@ -17,4 +17,7 @@ public sealed class HttpRequest(string url, string accept, string userAgent, int
     public string ContentType { get; init; } = "application/json";
 
     public bool AllowInvalidCertificates { get; init; }
+
+    // Extra request headers, e.g. an Authorization bearer token.
+    public IReadOnlyDictionary<string, string>? Headers { get; init; }
 }
