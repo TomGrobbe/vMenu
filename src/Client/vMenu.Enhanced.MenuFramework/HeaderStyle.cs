@@ -10,18 +10,7 @@ namespace vMenu.Enhanced.MenuFramework;
 
 public static class HeaderStyle
 {
-    private static readonly (string Name, int Id)[] Fonts =
-    [
-        ("ChaletLondon", MenuFont.ChaletLondon),
-        ("HouseScript", MenuFont.HouseScript),
-        ("Monospace", MenuFont.Monospace),
-        ("ChaletComprimeCologne", MenuFont.ChaletComprimeCologne),
-        ("Pricedown", MenuFont.Pricedown),
-    ];
-
     private static string? _reportedAlignment;
-
-    private static string? _reportedFont;
 
     // Call after ClientConfig.Initialize, before the menus are built.
     public static void Initialize()
@@ -29,7 +18,6 @@ public static class HeaderStyle
         ClientConfig.AddEventListenerFor(
             [
                 AppearanceSettings.TitleAlignment,
-                AppearanceSettings.TitleFont,
                 AppearanceSettings.HeaderGlare,
             ],
             Apply);
@@ -40,7 +28,7 @@ public static class HeaderStyle
     private static void Apply()
     {
         MenuController.DefaultTitleAlignment = Alignment();
-        MenuController.DefaultTitleFont = Font();
+        MenuController.DefaultTitleFont = MenuFont.ChaletComprimeCologne;
         MenuController.DefaultShowHeaderGlare = ClientConfig.Value(AppearanceSettings.HeaderGlare);
     }
 
@@ -71,33 +59,6 @@ public static class HeaderStyle
             $"{AppearanceSettings.TitleAlignment.Name} is set to '{raw}', which is not left, center or right. Using left.");
 
         return Menu.TitleAlignmentOption.Left;
-    }
-
-    private static int Font()
-    {
-        var raw = ClientConfig.Value(AppearanceSettings.TitleFont);
-        var value = raw.Trim();
-
-        foreach (var font in Fonts)
-        {
-            if (string.Equals(font.Name, value, StringComparison.OrdinalIgnoreCase))
-            {
-                return font.Id;
-            }
-        }
-
-        // A bare id as well as a name, so a font another resource registered at runtime can be used.
-        if (ConvarValue.ParseInt(value) is { } id && id >= 0)
-        {
-            return id;
-        }
-
-        Report(
-            ref _reportedFont,
-            raw,
-            $"{AppearanceSettings.TitleFont.Name} is set to '{raw}', which is not a font vMenu knows about. Using Chalet Comprime Cologne.");
-
-        return MenuFont.ChaletComprimeCologne;
     }
 
     private static void Report(ref string? reported, string raw, string message)

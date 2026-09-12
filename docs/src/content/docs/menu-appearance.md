@@ -53,25 +53,17 @@ Writing one of these yourself is a single event, described on the [plugin develo
 
 ## The banner title
 
-Three more settings control the title written across the picture at the top of each menu. These work with every skin.
+Two more settings control the title written across the picture at the top of each menu. These work with every skin.
 
 | Setting | Default | What it does |
 | --- | --- | --- |
 | `vMenu.Enhanced.MenuAppearance.TitleAlignment` | `left` | Where the title sits on the banner. Use `left`, `center` or `right`. |
-| `vMenu.Enhanced.MenuAppearance.TitleFont` | `chaletcomprimecologne` | Which font the title is written in. |
 | `vMenu.Enhanced.MenuAppearance.HeaderGlare` | `true` | The soft moving glow that drifts across the banner as the player turns the camera, the same one GTA Online has behind its pause menu title. Set it to `false` for a still banner. |
-
-The fonts you can choose from are `chaletlondon`, `housescript`, `monospace`, `chaletcomprimecologne` and `pricedown`, which is the font from the Grand Theft Auto logo. A plain number works too, for a font another resource has added to the game itself.
 
 ```ini
 setr vMenu.Enhanced.MenuAppearance.Skin "dark"
 setr vMenu.Enhanced.MenuAppearance.TitleAlignment "center"
-setr vMenu.Enhanced.MenuAppearance.TitleFont "pricedown"
 setr vMenu.Enhanced.MenuAppearance.HeaderGlare "false"
 ```
 
-Like the skin, all three apply straight away.
-
-:::note[Why the title font is separate]
-Each font is written at its own size and sits at its own height so it lines up on the banner properly. That is why the font is its own setting instead of something a skin picks: a skin that swapped the font would knock the title out of place.
-:::
+Like the skin, both apply straight away.

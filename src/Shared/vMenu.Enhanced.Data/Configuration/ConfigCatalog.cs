@@ -37,7 +37,6 @@ public static class ConfigCatalog
         [
             MenuAppearance.Skin,
             MenuAppearance.TitleAlignment,
-            MenuAppearance.TitleFont,
             MenuAppearance.HeaderGlare,
         ]),
         new("Gameplay", [Gameplay.PvpMode]),
