@@ -1,6 +1,7 @@
 using vMenu.Enhanced.Data.Configuration.Settings;
 
 using AdminSettings = vMenu.Enhanced.Data.Configuration.Settings.Admin;
+using IntegrationSettings = vMenu.Enhanced.Data.Configuration.Settings.Integration;
 using LoggingSettings = vMenu.Enhanced.Data.Configuration.Settings.Logging;
 using JoinLeaveSettings = vMenu.Enhanced.Data.Configuration.Settings.JoinLeave;
 using OnlinePlayerSettings = vMenu.Enhanced.Data.Configuration.Settings.OnlinePlayers;
@@ -16,10 +17,8 @@ public sealed class ConfigSection(string title, IReadOnlyList<Setting> settings)
     public IReadOnlyList<Setting> Settings { get; } = settings;
 }
 
-// Every setting vMenu knows about, in the order the generated example file lists them. An explicit
-// list rather than attribute discovery, for the same reason MainMenuComposition is one: grouping and
-// order are a product decision that belongs in one readable place, and scanning assemblies would be
-// the wrong cost to pay in the client runtime, per player, on script start.
+// An explicit list, not attribute discovery: order and grouping are a product decision, and scanning
+// assemblies would cost too much in the client runtime, per player, on script start.
 public static class ConfigCatalog
 {
     public static IReadOnlyList<ConfigSection> Sections { get; } =
@@ -119,6 +118,12 @@ public static class ConfigCatalog
             TimeOptions.TransitionSeconds,
         ]),
         new("World API", [WorldApi.Token]),
+        new("Integration",
+        [
+            IntegrationSettings.ApiKey,
+            IntegrationSettings.Endpoint,
+            IntegrationSettings.AllowActions,
+        ]),
         new("Developer Features", [DeveloperFeatures.Enabled]),
         new("Debugging",
         [

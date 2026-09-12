@@ -38,6 +38,8 @@ public static class LocationBlipActions
 
     private static string _payload = "{}";
 
+    public static string Payload => _payload;
+
     public static void Register()
     {
         Load();

@@ -74,6 +74,13 @@ export default defineConfig({
         { label: 'Admin Menu', link: '/admin-menu/' },
         { label: 'Webhook Logging', link: '/webhook-logging/' },
         {
+          label: 'Integrations',
+          items: [
+            { label: 'SnowstormBot (Discord)', link: '/integrations/' },
+            { label: 'Custom integrations', link: '/integrations/custom/' },
+          ],
+        },
+        {
           label: 'Configuration',
           items: [
             { label: 'blips.json', link: '/configuration/blips-json/' },

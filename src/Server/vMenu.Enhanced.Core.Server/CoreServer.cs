@@ -8,6 +8,8 @@ using vMenu.Enhanced.Configuration.Server;
 using vMenu.Enhanced.Data;
 using vMenu.Enhanced.Data.Configuration.Settings;
 using vMenu.Enhanced.Data.Diagnostics;
+using vMenu.Enhanced.Http.Server;
+using vMenu.Enhanced.Integration.Server;
 using vMenu.Enhanced.Logging;
 using vMenu.Enhanced.Permissions.Server;
 using vMenu.Enhanced.Plugins.Server;
@@ -51,7 +53,11 @@ public class CoreServer : IScript
 
         ServerClock.Initialize();
         ServerState.Initialize();
+        HttpRouter.Initialize();
         WorldEndpoint.Initialize();
+        IntegrationSocket.Initialize();
+        IntegrationConnectCheck.Initialize();
+        IntegrationPlayersPush.Initialize();
         UpdateChecker.Initialize();
 
         ConfigurationExampleFile.Write();

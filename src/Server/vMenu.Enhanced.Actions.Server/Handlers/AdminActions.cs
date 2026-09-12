@@ -306,8 +306,7 @@ public static class AdminActions
             }
         }
 
-        // Not redundant: a player ped the ped pool has not caught up with yet would have the car deleted
-        // out from under them, which is the one outcome this must never produce.
+        // A player ped the pool has not caught up with yet must never have their car deleted under them.
         foreach (var player in ConnectedPlayers.All())
         {
             var ped = Native.GetPlayerPed(Handle(player.ServerId));
@@ -343,7 +342,7 @@ public static class AdminActions
         return ActionResponse.Ok(reached.ToString(CultureInfo.InvariantCulture));
     }
 
-    internal static int Broadcast(string text)
+    public static int Broadcast(string text)
     {
         var reached = 0;
 
@@ -371,8 +370,7 @@ public static class AdminActions
         return ActionResponse.Ok(refreshed.ToString(CultureInfo.InvariantCulture));
     }
 
-    // Answers with the bucket the player was in, not the one they end up in, so the client can tell
-    // "you have been moved back" from "you were already there" without asking a second time.
+    // Answers with the bucket they were in, so the client can tell "moved back" from "already there".
     private static ActionResponse ResetRoutingBucket(Player source, string[] args)
     {
         var current = Native.GetPlayerRoutingBucket(Handle(source.Handle));
@@ -389,8 +387,7 @@ public static class AdminActions
         return ActionResponse.Ok(current.ToString(CultureInfo.InvariantCulture));
     }
 
-    // Never verify this. The removal only lands on the next server tick, so DoesEntityExist still
-    // reports the vehicle here and every successful delete would answer as a failure.
+    // Never verify: the delete only lands next tick, so DoesEntityExist still sees the vehicle here.
     private static ActionResponse Delete(int entity)
     {
         Native.DeleteEntity(entity);
