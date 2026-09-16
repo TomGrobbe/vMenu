@@ -30,7 +30,13 @@ export default defineConfig({
       logo: { src: './src/assets/logo.png', alt: 'vMenu Enhanced', replacesTitle: false },
       // Prepend a "Back to all docs" pill to the header nav (see SocialIcons.astro),
       // linking back up to the /vmenu/ chooser.
-      components: { SocialIcons: './src/components/SocialIcons.astro' },
+      components: {
+        SocialIcons: './src/components/SocialIcons.astro',
+        // Default the docs to dark mode; the toggle still saves the choice to
+        // localStorage. Both files fall back to dark when nothing is stored.
+        ThemeProvider: './src/components/ThemeProvider.astro',
+        ThemeSelect: './src/components/ThemeSelect.astro',
+      },
       // Retarget the header logo + title link at the site root (see src/routeData.ts).
       routeMiddleware: './src/routeData.ts',
       head: [
