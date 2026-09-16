@@ -23,24 +23,25 @@ const chooser = import.meta.env.BASE_URL.replace(/\/(legacy|enhanced|redm)\/?$/,
     font-weight: 600;
     font-size: 0.85rem;
     line-height: 1;
-    color: #1a1523;
-    background: #fff;
-    border: 2px solid #1a1523;
+    color: var(--ink);
+    background: var(--paper);
+    border: 2px solid var(--line);
     border-radius: 999px;
     padding: 0.4rem 0.9rem;
-    box-shadow: 3px 3px 0 #1a1523;
+    box-shadow: 3px 3px 0 var(--line);
     text-decoration: none;
     white-space: nowrap;
     transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.2s ease;
   }
   .back-nav-link:hover {
     transform: translate(-1px, -2px);
-    box-shadow: 5px 6px 0 #1a1523;
-    background: #7fe0c8;
+    box-shadow: 5px 6px 0 var(--line);
+    background: var(--mint);
+    color: var(--on-accent);
   }
   .back-nav-link:active {
     transform: translate(2px, 2px);
-    box-shadow: 1px 1px 0 #1a1523;
+    box-shadow: 1px 1px 0 var(--ink);
   }
   .back-nav-link svg {
     transition: transform 0.2s ease;
