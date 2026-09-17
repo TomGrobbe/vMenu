@@ -1822,7 +1822,8 @@ namespace vMenuClient.menus
             ["csb_drugdealer"] = "DrugDealerCutscene", // mptuner
             ["csb_englishdave"] = "EnglishDaveCutscene",
             ["csb_englishdave_02"] = "EnglishDave02Cutscene", // mpheist4
-            ["csb_faber_02 "] = "FaberCutscene", // mp2025_02
+            ["csb_faber_02"] = "Faber02Cutscene", // mp2025_02
+            ["csb_faber_03"] = "Faber03Cutscene", // mp2026_01
             ["csb_fos_rep"] = "FosRepCutscene",
             ["csb_g"] = "GCutscene",
             ["csb_georginacheng"] = "GeorginaChengCutscene", // mpheist3
@@ -1876,7 +1877,9 @@ namespace vMenuClient.menus
             ["csb_porndudes"] = "PornDudesCutscene",
             ["csb_prologuedriver"] = "PrologueDriverCutscene",
             ["csb_prolsec"] = "PrologueSec01Cutscene",
+            ["csb_rae"] = "RaeCutscene", // mp2026_01
             ["csb_rafdeangelis"] = "RafDeAngelisCutscene", // mp2025_01
+            ["csb_rafdeangelis_02"] = "RafDeAngelis02Cutscene", // mp2026_01
             ["csb_ramp_gang"] = "RampGangCutscene",
             ["csb_ramp_hic"] = "RampHicCutscene",
             ["csb_ramp_hipster"] = "RampHipsterCutscene",
@@ -1984,6 +1987,7 @@ namespace vMenuClient.menus
             ["ig_agent14_02"] = "Agent1402", // mp2025_01
             ["ig_agent_02"] = "Agent02", //mpsum2
             ["ig_ahronward"] = "AhronWard", // mp2023_02
+            ["ig_alec"] = "Alec", // mp2026_01
             ["ig_amandatownley"] = "AmandaTownley",
             ["ig_amandatownley_02"] = "AmandaTownley02", // mp2025_02
             ["ig_andreas"] = "Andreas",
@@ -2059,6 +2063,7 @@ namespace vMenuClient.menus
             ["ig_entourage_b"] = "EntourageB", // mpsecurity
             ["ig_fabien"] = "Fabien",
             ["ig_faber_02"] = "Faber02", // mp2025_02
+            ["ig_faber_03"] = "Faber03", // mp2026_01
             ["ig_fbisuit_01"] = "FbiSuit01",
             ["ig_fibleader_01"] = "FIBLeader01", // mp2025_02
             ["ig_floyd"] = "Floyd",
@@ -2168,6 +2173,7 @@ namespace vMenuClient.menus
             ["ig_oscar_02"] = "Oscar02", // mp2024_02
             ["ig_paige"] = "Paige",
             ["ig_pernell_moss"] = "PernellMoss", // mp2023_01
+            ["ig_pernell_moss_02"] = "PernellMoss02", // mp2026_01
             ["ig_paper"] = "Paper",
             ["ig_party_promo"] = "PartyPromo", // mpsecurity
             ["ig_patricia"] = "Patricia",
@@ -2177,7 +2183,9 @@ namespace vMenuClient.menus
             ["ig_popov"] = "Popov",
             ["ig_priest"] = "Priest",
             ["ig_prolsec_02"] = "PrologueSec02",
+            ["ig_rae"] = "Rae", // mp2026_01
             ["ig_rafdeangelis"] = "RafDeAngelis", // mp2025_01
+            ["ig_rafdeangelis_02"] = "RafDeAngelis02", // mp2026_01
             ["ig_ramp_gang"] = "RampGang",
             ["ig_ramp_hic"] = "RampHic",
             ["ig_ramp_hipster"] = "RampHipster",
@@ -2340,6 +2348,7 @@ namespace vMenuClient.menus
             ["s_m_m_highsec_05"] = "Highsec05SMM", // mpsecurity
             ["s_m_m_highsec_06"] = "Highsec06SMM", // mp2025_02
             ["s_m_m_janitor"] = "JanitorSMM",
+            ["s_m_m_kortzsecurity_01"] = "KortzSecurity01SMM",  // mp2026_01
             ["s_m_m_lathandy_01"] = "Lathandy01SMM",
             ["s_m_m_lifeinvad_01"] = "Lifeinvad01SMM",
             ["s_m_m_linecook"] = "LinecookSMM",
