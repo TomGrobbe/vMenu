@@ -12,26 +12,64 @@
   --mint-deep: #159e80;
   --mint-tint: #e2f8f2;
   --gold: #f6c453;
+  --gold-tint: #fff6e0;
+  --gold-ink: #a9741a;
   --rose: #ff8f8f;
   --rose-deep: #d64545;
+  --rose-tint: #ffecec;
+
+  /* Text/fill sitting ON a violet or gold cartoon surface stays dark in BOTH
+     themes, since those accent fills stay light-ish even in dark mode. */
+  --on-accent: #1a1523;
+
+  /* Line colour for borders + hard shadows. In light mode it IS the ink, so the
+     look is unchanged; dark mode softens it to a muted grey so the thick cartoon
+     outlines don't glare as bright lines on the dark page. */
+  --line: var(--ink);
 
   /* cartoon primitives */
-  --toon-border: 3px solid var(--ink);
+  --toon-border: 3px solid var(--line);
   --toon-radius: 18px;
   --toon-radius-lg: 26px;
-  --toon-shadow: 6px 6px 0 var(--ink);
-  --toon-shadow-sm: 4px 4px 0 var(--ink);
+  --toon-shadow: 6px 6px 0 var(--line);
+  --toon-shadow-sm: 4px 4px 0 var(--line);
   --toon-pop: cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-/* ---- Starlight variable overrides (applied to every theme state) -------- */
-:root,
-:root[data-theme='light'],
+/* Dark cartoon land: the whole design is "ink lines + text on a cream page", so
+   dark mode just flips those two roles — a warm off-white becomes the line/text
+   colour and a deep plum becomes the page. Every rule below reads the semantic
+   tokens, so redefining the palette here is enough for most of them. */
 :root[data-theme='dark'] {
+  --ink: #e4e1d8;          /* text + headings (soft warm white) */
+  --line: #4c515a;         /* borders + hard shadows: muted grey, not glaring */
+  --cream: #1e2025;        /* page background — soft charcoal, lifted off black */
+  --cream-deep: #262a31;   /* zebra rows / deeper surface */
+  --dot: #2a2e36;
+  --paper: #262930;        /* raised surface (cards, code, inputs) */
+  /* Dark mode drops the purple accent for a conventional blue. Token names stay
+     --violet-* so every styling rule is untouched; only the values change. */
+  --violet: #6f8fc9;       /* accent fills: current-page pill, table header */
+  --violet-deep: #8ab4f8;  /* links: bright blue that pops on the dark page */
+  --violet-ink: #b3ccfb;   /* link hover / inline code */
+  --violet-tint: #242a36;  /* faint accent surface (note asides, hovers) */
+  --mint: #7fe0c8;
+  --mint-deep: #5fe0c4;
+  --mint-tint: #1f3a36;
+  --gold: #f6c453;
+  --gold-tint: #3a301a;
+  --gold-ink: #f6c453;
+  --rose: #ff9d9d;
+  --rose-deep: #ff9d9d;
+  --rose-tint: #3a2028;
+}
+
+/* ---- Starlight variable mapping (reads the palette tokens above) -------- */
+:root {
   --sl-font: 'Fredoka', system-ui, -apple-system, 'Segoe UI', sans-serif;
 
   /* text */
-  --sl-color-white: var(--ink);        /* brightest text -> ink on light bg */
+  --sl-color-white: var(--ink);        /* brightest text -> ink */
   --sl-color-gray-1: #241f2e;
   --sl-color-gray-2: #332d3f;
   --sl-color-gray-3: #574f63;          /* muted body text */
@@ -39,7 +77,7 @@
   --sl-color-gray-5: #b3aabf;
   --sl-color-gray-6: #eadfcd;          /* subtle surface on cream */
   --sl-color-gray-7: #f6eeda;
-  --sl-color-black: var(--cream);      /* darkest bg -> cream in light land */
+  --sl-color-black: var(--cream);      /* darkest bg -> cream */
   --sl-color-text: var(--ink);
   --sl-color-text-invert: var(--cream);
 
@@ -66,6 +104,22 @@
   --sl-text-h1: 2.6rem;
   --sl-text-h2: 1.9rem;
   --sl-text-h3: 1.45rem;
+}
+
+/* Dark mode: flip the grey ramp (dark text tones -> light, light surfaces ->
+   dark) and lighten the hairlines so they stay visible on the plum page. */
+:root[data-theme='dark'] {
+  --sl-color-gray-1: #ecebef;
+  --sl-color-gray-2: #d3d3d9;
+  --sl-color-gray-3: #a6a6b0;          /* muted body text */
+  --sl-color-gray-4: #82828c;
+  --sl-color-gray-5: #55555e;
+  --sl-color-gray-6: #262930;          /* subtle raised surface */
+  --sl-color-gray-7: #1c1e23;
+
+  --sl-color-hairline: rgba(236, 231, 220, 0.13);
+  --sl-color-hairline-shade: rgba(236, 231, 220, 0.09);
+  --sl-color-hairline-light: rgba(236, 231, 220, 0.15);
 }
 
 /* solid cream background (no polka dots behind docs text — keeps it readable) */
@@ -122,9 +176,12 @@ mobile-starlight-toc nav {
   box-shadow: var(--toon-shadow-sm);
 }
 
-/* hide the (now no-op) light/dark toggle — cartoon look is light-only */
-starlight-theme-select {
-  display: none;
+/* light/dark toggle — style it as a cartoon pill to match the search button */
+starlight-theme-select select {
+  border: 2px solid var(--line) !important;
+  border-radius: 999px !important;
+  background: var(--paper) !important;
+  color: var(--ink) !important;
 }
 
 /* social icons */
@@ -165,9 +222,9 @@ site-search button,
 /* current page */
 .sidebar-content a[aria-current='page'] {
   background: var(--violet);
-  color: var(--ink);
+  color: var(--on-accent);
   font-weight: 600;
-  border: 2px solid var(--ink);
+  border: 2px solid var(--line);
   box-shadow: var(--toon-shadow-sm);
 }
 .sidebar-content summary .group-label span {
@@ -185,6 +242,15 @@ site-search button,
   text-underline-offset: 3px;
   font-weight: 600;
 }
+/* footnote markers (the superscript * / ** refs, plus the hand-authored
+   asterisk links pointing at the global-permissions note) read as plain
+   markers, not underlined links. */
+.sl-markdown-content sup a,
+.sl-markdown-content a[data-footnote-ref],
+.sl-markdown-content a[data-footnote-backref],
+.sl-markdown-content a[href='#global-permissions'] {
+  text-decoration: none;
+}
 .sl-markdown-content a:hover {
   color: var(--violet-ink);
 }
@@ -198,13 +264,13 @@ site-search button,
 /* horizontal rules as dotted dividers */
 .sl-markdown-content hr {
   border: none;
-  border-top: 3px dotted var(--ink);
+  border-top: 3px dotted var(--line);
   opacity: 0.35;
 }
 
 /* inline code */
 .sl-markdown-content :not(pre) > code {
-  border: 2px solid var(--ink);
+  border: 2px solid var(--line);
   border-radius: 8px;
   background: var(--paper);
   color: var(--violet-ink);
@@ -250,11 +316,11 @@ site-search button,
   --sl-color-asides-text-accent: var(--mint-deep);
 }
 .starlight-aside--caution {
-  background: #fff6e0;
-  --sl-color-asides-text-accent: #a9741a;
+  background: var(--gold-tint);
+  --sl-color-asides-text-accent: var(--gold-ink);
 }
 .starlight-aside--danger {
-  background: #ffecec;
+  background: var(--rose-tint);
   --sl-color-asides-text-accent: var(--rose-deep);
 }
 
@@ -276,9 +342,16 @@ site-search button,
 }
 .sl-markdown-content th {
   background: var(--violet);
-  color: var(--ink);
+  color: var(--on-accent);
   font-weight: 700;
-  border-bottom: 3px solid var(--ink);
+  border-bottom: 3px solid var(--line);
+}
+/* footnote refs inside the header: an amber accent (warm, so it pops on the cool
+   header fill in both themes) hints they're clickable without an underline. */
+.sl-markdown-content th a {
+  color: var(--gold-ink);
+  font-weight: 700;
+  text-decoration: none;
 }
 .sl-markdown-content th,
 .sl-markdown-content td {
@@ -301,13 +374,13 @@ a.pagination-link {
 .sl-markdown-content .sl-link-button:hover,
 a.pagination-link:hover {
   transform: translate(-2px, -2px);
-  box-shadow: 7px 7px 0 var(--ink);
+  box-shadow: 7px 7px 0 var(--line);
   background: var(--violet-tint);
 }
 .sl-markdown-content .sl-link-button:active,
 a.pagination-link:active {
   transform: translate(3px, 3px);
-  box-shadow: 1px 1px 0 var(--ink);
+  box-shadow: 1px 1px 0 var(--line);
 }
 
 /* right-hand table of contents */

@@ -29,7 +29,13 @@ export default defineConfig({
       expressiveCode: { themes: ['github-dark', 'github-light'] },
       logo: { src: './src/assets/logo.png', alt: 'vMenu', replacesTitle: false },
       // Add an "vMenu Enhanced Docs (coming soon)" link into the header nav.
-      components: { SocialIcons: './src/components/SocialIcons.astro' },
+      components: {
+        SocialIcons: './src/components/SocialIcons.astro',
+        // Default the docs to dark mode; the toggle still saves the choice to
+        // localStorage. Both files fall back to dark when nothing is stored.
+        ThemeProvider: './src/components/ThemeProvider.astro',
+        ThemeSelect: './src/components/ThemeSelect.astro',
+      },
       // Retarget the header logo + title link at the site root (see src/routeData.ts).
       routeMiddleware: './src/routeData.ts',
       head: [
