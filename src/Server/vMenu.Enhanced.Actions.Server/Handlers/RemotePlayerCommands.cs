@@ -65,8 +65,9 @@ public static class RemotePlayerCommands
                 break;
 
             case "kick":
-                var reason = string.IsNullOrWhiteSpace(cmd.Text) ? "Kicked by staff." : cmd.Text.Trim();
-                Native.DropPlayer(target.ToString(CultureInfo.InvariantCulture), reason);
+                var by = string.IsNullOrWhiteSpace(cmd.Operator) ? StaffLabel : cmd.Operator.Trim();
+                PlayerDrops.RecordKick(target, DropOrigin.IntegrationKick, by, cmd.Text);
+                Native.DropPlayer(target.ToString(CultureInfo.InvariantCulture), KickText.For(by, cmd.Text));
                 break;
 
             case "noclip":

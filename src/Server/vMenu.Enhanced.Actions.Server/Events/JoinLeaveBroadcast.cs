@@ -30,10 +30,13 @@ public static class JoinLeaveBroadcast
     // Long enough for a real kick reason, short enough not to fill the notification stack.
     private const int MaxReasonLength = 96;
 
+    // Resource names FiveM reports for its own drops rather than a real resource kicking somebody.
+    private const string InternalResourcePrefix = "__cfx_internal:";
+
     private static readonly Dictionary<int, KnownPlayer> Known = [];
 
-    // Why somebody left, waiting for the pass that notices they are gone.
-    private static readonly Dictionary<int, string> Reasons = [];
+    // What the drop event said about somebody leaving, waiting for the pass that notices they are gone.
+    private static readonly Dictionary<int, DropReport> Drops = [];
 
     private static bool _registered;
 
@@ -52,7 +55,7 @@ public static class JoinLeaveBroadcast
 
         _registered = true;
 
-        API.OnEvent(DroppedEvent, new Action<int, string?>(OnPlayerDropped), false);
+        API.OnEvent(DroppedEvent, new Action<int, string?, string?, int>(OnPlayerDropped), false);
 
         ServerTickRegistry.Register("JoinLeave.Watch", Watch, TickRate.Every(TickMs));
     }
@@ -95,20 +98,21 @@ public static class JoinLeaveBroadcast
             foreach (var serverId in gone)
             {
                 Known.Remove(serverId);
-                Reasons.Remove(serverId);
+                Drops.Remove(serverId);
+                PlayerDrops.Forget(serverId);
             }
         }
 
-        if (Reasons.Count == 0)
+        if (Drops.Count == 0)
         {
             return;
         }
 
-        // A reason belonging to a server id nothing is tracking any more. Nothing will ever come to collect
+        // A report belonging to a server id nothing is tracking any more. Nothing will ever come to collect
         // it, so it goes now rather than attaching itself to whoever inherits the server id.
         List<int>? stale = null;
 
-        foreach (var serverId in Reasons.Keys)
+        foreach (var serverId in Drops.Keys)
         {
             if (!connected.Contains(serverId))
             {
@@ -123,7 +127,8 @@ public static class JoinLeaveBroadcast
 
         foreach (var serverId in stale)
         {
-            Reasons.Remove(serverId);
+            Drops.Remove(serverId);
+            PlayerDrops.Forget(serverId);
         }
     }
 
@@ -134,10 +139,12 @@ public static class JoinLeaveBroadcast
             EmitLeft(players, serverId, known.Name);
         }
 
-        Record(
-            known.Actor,
-            known.Arrived ? "left the server" : "disconnected while connecting",
-            Reasons.GetValueOrDefault(serverId));
+        var kick = PlayerDrops.TakeKick(serverId);
+        var report = Drops.GetValueOrDefault(serverId);
+
+        var (what, data) = Classify(known.Arrived, kick, report);
+
+        Record(known.Actor, what, data);
     }
 
     // Walks a slice of the connected players looking for arrivals and for reused server ids.
@@ -181,8 +188,10 @@ public static class JoinLeaveBroadcast
         if (known is null)
         {
             // Never seen before, or the slot just changed hands. Either way the arrival check decides whether
-            // this is somebody who is here or somebody who is still on their way.
-            Reasons.Remove(player.ServerId);
+            // this is somebody who is here or somebody who is still on their way. A drop noted against the old
+            // holder of this server id must not follow the new one in.
+            Drops.Remove(player.ServerId);
+            PlayerDrops.Forget(player.ServerId);
 
             var arrived = HasArrived(handle);
 
@@ -300,22 +309,103 @@ public static class JoinLeaveBroadcast
         return identity.ToString();
     }
 
-    private static void Record(WebhookActor actor, string what, string? reason = null)
+    // Turns a drop into the words for the line and the structured fields that ride along with it.
+    private static (string What, (string Key, string Value)[] Data) Classify(
+        bool arrived,
+        PendingKick? kick,
+        DropReport? report)
     {
-        WebhookLog.Connection(actor, what + ".", Reason(reason));
+        var reason = report?.Reason ?? string.Empty;
+
+        if (!arrived)
+        {
+            return ("disconnected while connecting", reason.Length > 0 ? [("reason", reason)] : []);
+        }
+
+        if (kick is not null)
+        {
+            var fields = new List<(string, string)>(4)
+            {
+                ("cause", "kick"),
+                ("origin", kick.Origin == DropOrigin.MenuKick ? "menu" : "integration"),
+                ("by", kick.By),
+            };
+
+            if (!string.IsNullOrEmpty(kick.Reason))
+            {
+                fields.Add(("reason", kick.Reason!));
+            }
+
+            return ("was kicked from the server", [.. fields]);
+        }
+
+        var code = report?.Code ?? 0;
+
+        if (code == DropCode.Resource && IsRealResource(report?.Resource))
+        {
+            var fields = new List<(string, string)>(3) { ("cause", "kick"), ("origin", report!.Resource!) };
+
+            if (reason.Length > 0)
+            {
+                fields.Add(("reason", reason));
+            }
+
+            return ("was kicked from the server", [.. fields]);
+        }
+
+        return code switch
+        {
+            DropCode.Client => ("left the server", WithReason("left", reason)),
+            DropCode.ClientReplaced => ("was replaced by a new connection", [("cause", "replaced")]),
+            DropCode.TimedOut or DropCode.TimedOutPending => ("timed out", [("cause", "timeout")]),
+            DropCode.Server or DropCode.ServerShutdown => ("was dropped by the server", WithReason("server", reason)),
+            DropCode.StateBagRateLimit or DropCode.NetEventRateLimit
+                or DropCode.LatentNetEventRateLimit or DropCode.CommandRateLimit
+                => ("was dropped for going over a rate limit", [("cause", "rate limit")]),
+            DropCode.OneSyncMissedFrames => ("was dropped by OneSync", [("cause", "onesync")]),
+
+            // An older build that does not report a drop code lands here, so the line stays exactly as it
+            // used to be rather than gaining a made up cause.
+            _ => ("left the server", reason.Length > 0 ? [("reason", reason)] : []),
+        };
+    }
+
+    private static (string Key, string Value)[] WithReason(string cause, string reason) =>
+        reason.Length > 0 ? [("cause", cause), ("reason", reason)] : [("cause", cause)];
+
+    private static bool IsRealResource(string? resource) =>
+        !string.IsNullOrEmpty(resource)
+        && !resource.StartsWith(InternalResourcePrefix, StringComparison.Ordinal)
+        && !string.Equals(resource, Native.GetCurrentResourceName(), StringComparison.OrdinalIgnoreCase);
+
+    private static void Record(WebhookActor actor, string what, params (string Key, string Value)[] data)
+    {
+        WebhookLog.Connection(actor, what + ".", data);
 
         if (!ServerConfig.Value(JoinLeaveSettings.LogToConsole))
         {
             return;
         }
 
-        var because = string.IsNullOrEmpty(reason) ? string.Empty : $" Reason: {reason}";
-
-        Log.Info($"[JoinLeave] {actor.Name} ({actor.ServerId}) {what}.{because}");
+        Log.Info($"[JoinLeave] {actor.Name} ({actor.ServerId}) {what}.{Describe(data)}");
     }
 
-    private static (string Key, string Value)[] Reason(string? reason) =>
-        string.IsNullOrEmpty(reason) ? [] : [("reason", reason)];
+    private static string Describe((string Key, string Value)[] data)
+    {
+        if (data.Length == 0)
+        {
+            return string.Empty;
+        }
+
+        var parts = new List<string>(data.Length);
+
+        foreach (var (key, value) in data)
+        {
+            parts.Add($"{key}: {value}");
+        }
+
+        return " " + string.Join(", ", parts);
+    }
 
     private static void EmitJoined(List<ConnectedPlayer> players, ConnectedPlayer joiner)
     {
@@ -332,7 +422,7 @@ public static class JoinLeaveBroadcast
 
     private static void EmitLeft(List<ConnectedPlayer> players, int serverId, string name)
     {
-        var reason = Reasons.TryGetValue(serverId, out var stored) ? stored : string.Empty;
+        var reason = Drops.TryGetValue(serverId, out var report) ? report.Reason : string.Empty;
 
         foreach (var player in players)
         {
@@ -350,29 +440,74 @@ public static class JoinLeaveBroadcast
         }
     }
 
-    private static void OnPlayerDropped([FromSource] int source, string? reason = null)
+    private static void OnPlayerDropped(
+        [FromSource] int source,
+        string? reason = null,
+        string? resourceName = null,
+        int clientDropReason = 0)
     {
         if (!_reportedDrop)
         {
             _reportedDrop = true;
 
-            Log.Debug($"[JoinLeave] {DroppedEvent} is firing. First one: source {source}, reason \"{reason}\".");
+            Log.Debug(
+                $"[JoinLeave] {DroppedEvent} is firing. First one: source {source}, reason \"{reason}\", "
+                + $"resource \"{resourceName}\", code {clientDropReason}.");
         }
 
-        // An unparseable source arrives as -1, and there is nobody to record a reason against.
+        // An unparseable source arrives as -1, and there is nobody to record anything against.
         if (source <= 0)
         {
             return;
         }
 
-        if (string.IsNullOrWhiteSpace(reason))
+        var text = string.IsNullOrWhiteSpace(reason) ? string.Empty : reason.Trim();
+
+        if (text.Length > MaxReasonLength)
         {
-            return;
+            text = text[..MaxReasonLength];
         }
 
-        var text = reason.Trim();
+        Drops[source] = new DropReport(text, resourceName, clientDropReason);
+    }
 
-        Reasons[source] = text.Length > MaxReasonLength ? text[..MaxReasonLength] : text;
+    // FiveM's ClientDropReasons.h. Anything not here is treated as an ordinary leave.
+    private static class DropCode
+    {
+        public const int Resource = 1;
+
+        public const int Client = 2;
+
+        public const int Server = 3;
+
+        public const int ClientReplaced = 4;
+
+        public const int TimedOut = 5;
+
+        public const int TimedOutPending = 6;
+
+        public const int ServerShutdown = 7;
+
+        public const int StateBagRateLimit = 8;
+
+        public const int NetEventRateLimit = 9;
+
+        public const int LatentNetEventRateLimit = 10;
+
+        public const int CommandRateLimit = 11;
+
+        public const int OneSyncMissedFrames = 12;
+    }
+
+    // A class rather than a record: generated equality routes through
+    // EqualityComparer<string>.Default, which the sandbox refuses to load.
+    private sealed class DropReport(string reason, string? resource, int code)
+    {
+        public string Reason { get; } = reason;
+
+        public string? Resource { get; } = resource;
+
+        public int Code { get; } = code;
     }
 
     // A class rather than a record: generated equality routes through

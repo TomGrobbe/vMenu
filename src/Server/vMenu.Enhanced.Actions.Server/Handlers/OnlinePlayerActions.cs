@@ -31,8 +31,6 @@ public static class OnlinePlayerActions
     // vMenu has never let an IP address out of the server and is not about to start.
     private const string HiddenIdentifierPrefix = "ip:";
 
-    private const string DefaultKickReason = "You have been kicked.";
-
     // Polled rather than hooked onto a join or leave event, because a second of lag before a subtitle
     // turns red costs nothing and this cannot miss an event it was not listening for.
     private const long RevisionPollMs = 1000;
@@ -459,11 +457,15 @@ public static class OnlinePlayerActions
             return ActionResponse.NotFound();
         }
 
-        var reason = args.Length > 1 && !string.IsNullOrWhiteSpace(args[1]) ? args[1].Trim() : DefaultKickReason;
+        var reason = args.Length > 1 && !string.IsNullOrWhiteSpace(args[1]) ? args[1].Trim() : string.Empty;
 
-        Log.Info($"[OnlinePlayers] {source.Name} kicked {Native.GetPlayerName(target.ToString())}: {reason}");
+        Log.Info(
+            $"[OnlinePlayers] {source.Name} kicked {Native.GetPlayerName(target.ToString(CultureInfo.InvariantCulture))}"
+            + (reason.Length > 0 ? $": {reason}" : "."));
 
-        Native.DropPlayer(target.ToString(CultureInfo.InvariantCulture), reason);
+        PlayerDrops.RecordKick(target, DropOrigin.MenuKick, source.Name, reason);
+
+        Native.DropPlayer(target.ToString(CultureInfo.InvariantCulture), KickText.For(source.Name, reason));
 
         return ActionResponse.Ok();
     }
