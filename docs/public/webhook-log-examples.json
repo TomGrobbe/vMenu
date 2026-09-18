@@ -1,0 +1,371 @@
+{
+  "resource": "vMenu.Enhanced",
+  "version": "1.2.3",
+  "sentAt": "2026-09-13T20:36:00.1200000+00:00",
+  "events": [
+    {
+      "category": "event",
+      "message": "vMenu Enhanced started.",
+      "timestamp": "2026-09-13T20:00:00.0000000+00:00",
+      "actor": { "name": "the server", "serverId": 0, "identifiers": {} },
+      "targets": [],
+      "data": {}
+    },
+    {
+      "category": "event",
+      "message": "vMenu Enhanced stopped.",
+      "timestamp": "2026-09-13T20:59:00.0000000+00:00",
+      "actor": { "name": "the server", "serverId": 0, "identifiers": {} },
+      "targets": [],
+      "data": {}
+    },
+    {
+      "category": "event",
+      "message": "is connecting.",
+      "timestamp": "2026-09-13T20:01:10.0000000+00:00",
+      "actor": { "name": "Bob", "serverId": 9, "identifiers": { "license": "abc123" } },
+      "targets": [],
+      "data": {}
+    },
+    {
+      "category": "event",
+      "message": "joined the server.",
+      "timestamp": "2026-09-13T20:01:14.0000000+00:00",
+      "actor": {
+        "name": "Bob",
+        "serverId": 9,
+        "identifiers": { "discord": "123456789", "license": "abc123", "license2": "def456", "fivem": "1234567" }
+      },
+      "targets": [],
+      "data": {}
+    },
+    {
+      "category": "event",
+      "message": "left the server.",
+      "timestamp": "2026-09-13T20:05:00.0000000+00:00",
+      "actor": { "name": "Bob", "serverId": 9, "identifiers": { "license": "abc123", "license2": "def456" } },
+      "targets": [],
+      "data": { "cause": "left" }
+    },
+    {
+      "category": "event",
+      "message": "timed out.",
+      "timestamp": "2026-09-13T20:06:00.0000000+00:00",
+      "actor": { "name": "Alice", "serverId": 14, "identifiers": { "license": "aaa111" } },
+      "targets": [],
+      "data": { "cause": "timeout" }
+    },
+    {
+      "category": "event",
+      "message": "was kicked from the server.",
+      "timestamp": "2026-09-13T20:07:00.0000000+00:00",
+      "actor": {
+        "name": "Bob",
+        "serverId": 9,
+        "identifiers": { "discord": "123456789", "license": "abc123", "license2": "def456", "fivem": "1234567" }
+      },
+      "targets": [],
+      "data": { "cause": "kick", "origin": "menu", "by": "Tom", "reason": "Breaking the rules." }
+    },
+    {
+      "category": "event",
+      "message": "was kicked from the server.",
+      "timestamp": "2026-09-13T20:07:30.0000000+00:00",
+      "actor": { "name": "Bob", "serverId": 9, "identifiers": { "license": "abc123" } },
+      "targets": [],
+      "data": { "cause": "kick", "origin": "integration", "by": "AdminBot", "reason": "Reported by three players." }
+    },
+    {
+      "category": "event",
+      "message": "was kicked from the server.",
+      "timestamp": "2026-09-13T20:08:00.0000000+00:00",
+      "actor": { "name": "Bob", "serverId": 9, "identifiers": { "license": "abc123" } },
+      "targets": [],
+      "data": { "cause": "kick", "origin": "some_anticheat", "reason": "Detected modified client." }
+    },
+    {
+      "category": "event",
+      "message": "was dropped by the server.",
+      "timestamp": "2026-09-13T20:09:00.0000000+00:00",
+      "actor": { "name": "Alice", "serverId": 14, "identifiers": { "license": "aaa111" } },
+      "targets": [],
+      "data": { "cause": "server" }
+    },
+    {
+      "category": "event",
+      "message": "was dropped for going over a rate limit.",
+      "timestamp": "2026-09-13T20:10:00.0000000+00:00",
+      "actor": { "name": "Eve", "serverId": 21, "identifiers": { "license": "eee555" } },
+      "targets": [],
+      "data": { "cause": "rate limit" }
+    },
+    {
+      "category": "event",
+      "message": "was replaced by a new connection.",
+      "timestamp": "2026-09-13T20:11:00.0000000+00:00",
+      "actor": { "name": "Alice", "serverId": 14, "identifiers": { "license": "aaa111" } },
+      "targets": [],
+      "data": { "cause": "replaced" }
+    },
+    {
+      "category": "event",
+      "message": "was dropped by OneSync.",
+      "timestamp": "2026-09-13T20:12:00.0000000+00:00",
+      "actor": { "name": "Eve", "serverId": 21, "identifiers": { "license": "eee555" } },
+      "targets": [],
+      "data": { "cause": "onesync" }
+    },
+    {
+      "category": "event",
+      "message": "died.",
+      "timestamp": "2026-09-13T20:13:00.0000000+00:00",
+      "actor": { "name": "Bob", "serverId": 9, "identifiers": { "license": "abc123" } },
+      "targets": [],
+      "data": {}
+    },
+    {
+      "category": "event",
+      "message": "was killed by",
+      "timestamp": "2026-09-13T20:13:30.0000000+00:00",
+      "actor": { "name": "Bob", "serverId": 9, "identifiers": { "license": "abc123" } },
+      "targets": [
+        { "name": "Alice", "serverId": 14, "identifiers": { "license": "aaa111" } }
+      ],
+      "data": {}
+    },
+    {
+      "category": "event",
+      "message": "changed the weather.",
+      "timestamp": "2026-09-13T20:14:00.0000000+00:00",
+      "actor": { "name": "Tom", "serverId": 12, "identifiers": { "discord": "999888777", "license": "tom123" } },
+      "targets": [],
+      "data": { "weather": "EXTRASUNNY" }
+    },
+    {
+      "category": "event",
+      "message": "changed the time.",
+      "timestamp": "2026-09-13T20:14:10.0000000+00:00",
+      "actor": { "name": "Tom", "serverId": 12, "identifiers": { "discord": "999888777", "license": "tom123" } },
+      "targets": [],
+      "data": { "offset": "43200s" }
+    },
+    {
+      "category": "event",
+      "message": "changed the blackout.",
+      "timestamp": "2026-09-13T20:14:20.0000000+00:00",
+      "actor": { "name": "Tom", "serverId": 12, "identifiers": { "discord": "999888777", "license": "tom123" } },
+      "targets": [],
+      "data": { "blackout": "On" }
+    },
+    {
+      "category": "event",
+      "message": "changed the snow effects.",
+      "timestamp": "2026-09-13T20:14:30.0000000+00:00",
+      "actor": { "name": "Tom", "serverId": 12, "identifiers": { "discord": "999888777", "license": "tom123" } },
+      "targets": [],
+      "data": { "snow": "Off" }
+    },
+    {
+      "category": "event",
+      "message": "Plugin 'Weather Sync' registered.",
+      "timestamp": "2026-09-13T20:00:05.0000000+00:00",
+      "actor": { "name": "the server", "serverId": 0, "identifiers": {} },
+      "targets": [],
+      "data": { "resource": "weathersync", "permissions": "3", "version": "2.0.0" }
+    },
+    {
+      "category": "event",
+      "message": "Plugin 'Weather Sync' unregistered.",
+      "timestamp": "2026-09-13T20:58:00.0000000+00:00",
+      "actor": { "name": "the server", "serverId": 0, "identifiers": {} },
+      "targets": [],
+      "data": { "resource": "weathersync" }
+    },
+    {
+      "category": "event",
+      "message": "Menu theme 'Midnight' registered.",
+      "timestamp": "2026-09-13T20:00:06.0000000+00:00",
+      "actor": { "name": "the server", "serverId": 0, "identifiers": {} },
+      "targets": [],
+      "data": { "resource": "mythemes", "theme": "midnight" }
+    },
+    {
+      "category": "action",
+      "message": "turned god mode on.",
+      "timestamp": "2026-09-13T20:20:00.0000000+00:00",
+      "actor": { "name": "Bob", "serverId": 9, "identifiers": { "license": "abc123" } },
+      "targets": [],
+      "data": { "menu": "Player options" }
+    },
+    {
+      "category": "action",
+      "message": "spawned the vehicle 'Adder'.",
+      "timestamp": "2026-09-13T20:20:10.0000000+00:00",
+      "actor": { "name": "Bob", "serverId": 9, "identifiers": { "license": "abc123" } },
+      "targets": [],
+      "data": {}
+    },
+    {
+      "category": "action",
+      "message": "changed the mods on their car.",
+      "timestamp": "2026-09-13T20:20:20.0000000+00:00",
+      "actor": { "name": "Bob", "serverId": 9, "identifiers": { "license": "abc123" } },
+      "targets": [],
+      "data": { "mods": "Spoiler, Front bumper, Wheels, Turbo" }
+    },
+    {
+      "category": "action",
+      "message": "equipped the weapon loadout 'Combat'.",
+      "timestamp": "2026-09-13T20:20:30.0000000+00:00",
+      "actor": { "name": "Bob", "serverId": 9, "identifiers": { "license": "abc123" } },
+      "targets": [],
+      "data": { "weapons": "Pistol, Carbine Rifle, Combat Knife" }
+    },
+    {
+      "category": "action",
+      "message": "teleported to their waypoint.",
+      "timestamp": "2026-09-13T20:20:40.0000000+00:00",
+      "actor": { "name": "Bob", "serverId": 9, "identifiers": { "license": "abc123" } },
+      "targets": [],
+      "data": {}
+    },
+    {
+      "category": "action",
+      "message": "turned noclip on.",
+      "timestamp": "2026-09-13T20:20:50.0000000+00:00",
+      "actor": { "name": "Bob", "serverId": 9, "identifiers": { "license": "abc123" } },
+      "targets": [],
+      "data": {}
+    },
+    {
+      "category": "action",
+      "message": "turned aimbot on.",
+      "timestamp": "2026-09-13T20:21:00.0000000+00:00",
+      "actor": { "name": "Bob", "serverId": 9, "identifiers": { "license": "abc123" } },
+      "targets": [],
+      "data": { "plugin": "someplugin" }
+    },
+    {
+      "category": "action",
+      "message": "went over the menu action limit, so the rest of what they do is not being logged.",
+      "timestamp": "2026-09-13T20:21:10.0000000+00:00",
+      "actor": { "name": "Eve", "serverId": 21, "identifiers": { "license": "eee555" } },
+      "targets": [],
+      "data": { "limit": "30 actions per 10s" }
+    },
+    {
+      "category": "staff",
+      "message": "froze",
+      "timestamp": "2026-09-13T20:30:00.0000000+00:00",
+      "actor": { "name": "Tom", "serverId": 12, "identifiers": { "discord": "999888777", "license": "tom123" } },
+      "targets": [
+        { "name": "Bob", "serverId": 9, "identifiers": { "license": "abc123" } }
+      ],
+      "data": {}
+    },
+    {
+      "category": "staff",
+      "message": "tried to kick",
+      "timestamp": "2026-09-13T20:30:10.0000000+00:00",
+      "actor": { "name": "Mallory", "serverId": 18, "identifiers": { "license": "mmm888" } },
+      "targets": [
+        { "name": "Bob", "serverId": 9, "identifiers": { "license": "abc123" } }
+      ],
+      "data": { "outcome": "Denied" }
+    },
+    {
+      "category": "staff",
+      "message": "raised staff alert #7.",
+      "timestamp": "2026-09-13T20:31:00.0000000+00:00",
+      "actor": { "name": "Bob", "serverId": 9, "identifiers": { "license": "abc123" } },
+      "targets": [],
+      "data": { "reason": "Someone is combat logging near the bank." }
+    },
+    {
+      "category": "staff",
+      "message": "answered staff alert #7 from",
+      "timestamp": "2026-09-13T20:31:40.0000000+00:00",
+      "actor": { "name": "Tom", "serverId": 12, "identifiers": { "discord": "999888777", "license": "tom123" } },
+      "targets": [
+        { "name": "Bob", "serverId": 9, "identifiers": { "license": "abc123" } }
+      ],
+      "data": { "reason": "Someone is combat logging near the bank." }
+    },
+    {
+      "category": "staff",
+      "message": "had the 'kick' action used on them by AdminBot from the live map.",
+      "timestamp": "2026-09-13T20:32:00.0000000+00:00",
+      "actor": { "name": "Bob", "serverId": 9, "identifiers": { "license": "abc123" } },
+      "targets": [],
+      "data": {}
+    },
+    {
+      "category": "security",
+      "message": "fired an action they are not allowed to use.",
+      "timestamp": "2026-09-13T20:40:00.0000000+00:00",
+      "actor": {
+        "name": "Mallory",
+        "serverId": 18,
+        "identifiers": { "discord": "555444333", "license": "mmm888", "license2": "nnn999", "fivem": "7654321" }
+      },
+      "targets": [],
+      "data": { "action": "onlineplayers:kick", "missing": "vMenu.OnlinePlayers.Kick" }
+    },
+    {
+      "category": "security",
+      "message": "asked for an action that does not exist.",
+      "timestamp": "2026-09-13T20:40:10.0000000+00:00",
+      "actor": { "name": "Mallory", "serverId": 18, "identifiers": { "license": "mmm888" } },
+      "targets": [],
+      "data": { "action": "does:not:exist" }
+    },
+    {
+      "category": "security",
+      "message": "sent arguments the menu would never send.",
+      "timestamp": "2026-09-13T20:40:20.0000000+00:00",
+      "actor": { "name": "Mallory", "serverId": 18, "identifiers": { "license": "mmm888" } },
+      "targets": [],
+      "data": { "action": "onlineplayers:kick" }
+    },
+    {
+      "category": "security",
+      "message": "kept firing an action long after the server started refusing it.",
+      "timestamp": "2026-09-13T20:40:30.0000000+00:00",
+      "actor": { "name": "Mallory", "serverId": 18, "identifiers": { "license": "mmm888" } },
+      "targets": [],
+      "data": { "action": "onlineplayers:kick", "refused": "5 time(s) in 10s" }
+    },
+    {
+      "category": "security",
+      "message": "reported a menu action that vMenu never logs.",
+      "timestamp": "2026-09-13T20:40:40.0000000+00:00",
+      "actor": { "name": "Mallory", "serverId": 18, "identifiers": { "license": "mmm888" } },
+      "targets": [],
+      "data": { "item": "made up item" }
+    },
+    {
+      "category": "security",
+      "message": "reported an action that vMenu never logs.",
+      "timestamp": "2026-09-13T20:40:50.0000000+00:00",
+      "actor": { "name": "Mallory", "serverId": 18, "identifiers": { "license": "mmm888" } },
+      "targets": [],
+      "data": { "action": "made up action" }
+    },
+    {
+      "category": "security",
+      "message": "was refused something a plugin only offers to people allowed to use it.",
+      "timestamp": "2026-09-13T20:41:00.0000000+00:00",
+      "actor": { "name": "Mallory", "serverId": 18, "identifiers": { "license": "mmm888" } },
+      "targets": [],
+      "data": { "plugin": "someplugin", "missing": "someplugin.Feature" }
+    },
+    {
+      "category": "security",
+      "message": "fired an action they are not allowed to use.",
+      "timestamp": "2026-09-13T20:41:10.0000000+00:00",
+      "actor": { "name": "Mallory", "serverId": 18, "identifiers": { "license": "mmm888" } },
+      "targets": [],
+      "data": { "action": "onlineplayers:kick", "missing": "vMenu.OnlinePlayers.Kick", "suppressed": "3 earlier line(s)" }
+    }
+  ]
+}
