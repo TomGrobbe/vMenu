@@ -43,18 +43,22 @@ public static class GenericPayload
         };
     }
 
-    private static GenericParty Describe(WebhookActor actor) => new()
+    private static GenericParty Describe(WebhookActor actor)
     {
-        Name = actor.Name,
-        ServerId = actor.ServerId,
-        Identifiers = new GenericIdentifiers
+        var identifiers = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+        foreach (var (type, value) in actor.IdentifierList)
         {
-            Discord = actor.Discord,
-            Steam = actor.Steam,
-            License = actor.License,
-            License2 = actor.License2,
-        },
-    };
+            identifiers[type] = value;
+        }
+
+        return new GenericParty
+        {
+            Name = actor.Name,
+            ServerId = actor.ServerId,
+            Identifiers = identifiers,
+        };
+    }
 }
 
 public sealed class GenericBatch
@@ -89,16 +93,5 @@ public sealed class GenericParty
 
     public int ServerId { get; set; }
 
-    public GenericIdentifiers Identifiers { get; set; } = new();
-}
-
-public sealed class GenericIdentifiers
-{
-    public string? Discord { get; set; }
-
-    public string? Steam { get; set; }
-
-    public string? License { get; set; }
-
-    public string? License2 { get; set; }
+    public Dictionary<string, string> Identifiers { get; set; } = new(StringComparer.Ordinal);
 }

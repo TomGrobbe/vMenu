@@ -7,15 +7,13 @@ namespace vMenu.Enhanced.Webhooks.Server;
 
 public sealed class WebhookActor
 {
-    private const string DiscordPrefix = "discord:";
+    private const string IpPrefix = "ip";
 
-    private const string SteamPrefix = "steam:";
-
-    private const string LicensePrefix = "license:";
-
-    private const string License2Prefix = "license2:";
+    private const string DiscordType = "discord";
 
     private const int MaxNameLength = 64;
+
+    private readonly List<(string Type, string Value)> _identifiers = [];
 
     private WebhookActor(string name, int serverId)
     {
@@ -27,13 +25,9 @@ public sealed class WebhookActor
 
     public int ServerId { get; }
 
-    public string? Discord { get; private set; }
+    public string? Discord => Value(DiscordType);
 
-    public string? Steam { get; private set; }
-
-    public string? License { get; private set; }
-
-    public string? License2 { get; private set; }
+    public IReadOnlyList<(string Type, string Value)> IdentifierList => _identifiers;
 
     public static WebhookActor Server { get; } = new("the server", 0);
 
@@ -83,35 +77,38 @@ public sealed class WebhookActor
             return Name;
         }
 
-        return "**" + WebhookText.Clean(Name, MaxNameLength) + "** ("
+        var line = "**" + WebhookText.Clean(Name, MaxNameLength) + "** ("
             + ServerId.ToString(CultureInfo.InvariantCulture) + ")";
+
+        return Mention() is { } mention ? line + " " + mention : line;
     }
+
+    // Empty allowed_mentions on every payload keeps this from pinging, so it just shows the name.
+    private string? Mention() => Discord is { } discord ? "<@" + discord + ">" : null;
 
     public string Identifiers()
     {
-        var parts = new List<string>(4);
+        var parts = new List<string>(_identifiers.Count);
 
-        if (Discord is { } discord)
+        foreach (var (type, value) in _identifiers)
         {
-            parts.Add(DiscordPrefix + discord);
+            parts.Add(type + ":" + value);
         }
 
-        if (Steam is { } steam)
+        return string.Join(" · ", parts);
+    }
+
+    private string? Value(string type)
+    {
+        foreach (var (candidate, value) in _identifiers)
         {
-            parts.Add(SteamPrefix + steam);
+            if (string.Equals(candidate, type, StringComparison.OrdinalIgnoreCase))
+            {
+                return value;
+            }
         }
 
-        if (License is { } license)
-        {
-            parts.Add(LicensePrefix + license);
-        }
-
-        if (License2 is { } license2)
-        {
-            parts.Add(License2Prefix + license2);
-        }
-
-        return string.Join(" \u00b7 ", parts);
+        return null;
     }
 
     private void Take(string? identifier)
@@ -121,21 +118,20 @@ public sealed class WebhookActor
             return;
         }
 
-        if (identifier.StartsWith(DiscordPrefix, StringComparison.OrdinalIgnoreCase))
+        var colon = identifier.IndexOf(':');
+
+        if (colon <= 0 || colon >= identifier.Length - 1)
         {
-            Discord ??= identifier[DiscordPrefix.Length..];
+            return;
         }
-        else if (identifier.StartsWith(SteamPrefix, StringComparison.OrdinalIgnoreCase))
+
+        var type = identifier[..colon];
+
+        if (string.Equals(type, IpPrefix, StringComparison.OrdinalIgnoreCase) || Value(type) is not null)
         {
-            Steam ??= identifier[SteamPrefix.Length..];
+            return;
         }
-        else if (identifier.StartsWith(License2Prefix, StringComparison.OrdinalIgnoreCase))
-        {
-            License2 ??= identifier[License2Prefix.Length..];
-        }
-        else if (identifier.StartsWith(LicensePrefix, StringComparison.OrdinalIgnoreCase))
-        {
-            License ??= identifier[LicensePrefix.Length..];
-        }
+
+        _identifiers.Add((type, identifier[(colon + 1)..]));
     }
 }
