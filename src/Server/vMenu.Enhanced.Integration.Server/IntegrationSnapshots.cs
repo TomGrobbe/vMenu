@@ -33,6 +33,8 @@ public static class IntegrationSnapshots
 
     public static string World => _world;
 
+    public static string Buckets => RoutingBuckets.Payload;
+
     public static string WorldSignature => _worldSignature;
 
     public static string Key => _key;

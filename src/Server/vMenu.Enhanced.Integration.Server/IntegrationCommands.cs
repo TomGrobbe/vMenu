@@ -52,33 +52,31 @@ public static class IntegrationCommands
                 continue;
             }
 
-            CommandReply reply;
-
             try
             {
-                reply = Execute(pending.Body);
+                Execute(pending);
             }
             catch (Exception exception)
             {
                 Log.Error($"[Integration] A command failed: {exception}");
 
-                reply = new CommandReply(500, Fail("error"));
+                pending.Completion.TrySetResult(new CommandReply(500, Fail("error")));
             }
-
-            pending.Completion.TrySetResult(reply);
         }
     }
 
-    private static CommandReply Execute(string body)
+    private static void Execute(Pending pending)
     {
         JsonDocument document;
         try
         {
-            document = JsonDocument.Parse(body);
+            document = JsonDocument.Parse(pending.Body);
         }
         catch (JsonException)
         {
-            return new CommandReply(400, Fail("bad-request"));
+            pending.Completion.TrySetResult(new CommandReply(400, Fail("bad-request")));
+
+            return;
         }
 
         using (document)
@@ -86,40 +84,65 @@ public static class IntegrationCommands
             var root = document.RootElement;
             if (root.ValueKind != JsonValueKind.Object)
             {
-                return new CommandReply(400, Fail("bad-request"));
+                pending.Completion.TrySetResult(new CommandReply(400, Fail("bad-request")));
+
+                return;
             }
 
             var action = IntegrationJson.ReadString(root, "action")?.Trim().ToLowerInvariant() ?? string.Empty;
             if (action.Length == 0)
             {
-                return new CommandReply(400, Fail("bad-request"));
+                pending.Completion.TrySetResult(new CommandReply(400, Fail("bad-request")));
+
+                return;
+            }
+
+            if (RoutingBucketCommands.IsBucketAction(action))
+            {
+                if (!ServerConfig.Value(IntegrationSettings.AllowActions))
+                {
+                    pending.Completion.TrySetResult(new CommandReply(403, Fail("disabled")));
+
+                    return;
+                }
+
+                var bucketParams = root.TryGetProperty("params", out var bp) ? bp : default;
+                RoutingBucketCommands.Dispatch(pending, action, bucketParams);
+
+                return;
             }
 
             if (RemoteServerCommands.IsServerAction(action))
             {
                 // Runs before the document is disposed, so the params element stays valid.
                 var parameters = root.TryGetProperty("params", out var p) ? p : default;
-                return RemoteServerCommands.Run(action, parameters);
+                pending.Completion.TrySetResult(RemoteServerCommands.Run(action, parameters));
+
+                return;
             }
 
             if (!ServerConfig.Value(IntegrationSettings.AllowActions))
             {
-                return new CommandReply(403, Fail("disabled"));
+                pending.Completion.TrySetResult(new CommandReply(403, Fail("disabled")));
+
+                return;
             }
 
             if (!TryParseCommand(root, action, out var command))
             {
-                return new CommandReply(400, Fail("bad-request"));
+                pending.Completion.TrySetResult(new CommandReply(400, Fail("bad-request")));
+
+                return;
             }
 
-            return RemotePlayerCommands.Run(command) switch
+            pending.Completion.TrySetResult(RemotePlayerCommands.Run(command) switch
             {
                 RemoteCommandOutcome.Ok => new CommandReply(200, OkJson),
                 RemoteCommandOutcome.IdentityMismatch => new CommandReply(409, Fail("identity-mismatch")),
                 RemoteCommandOutcome.NotReady => new CommandReply(409, Fail("not-ready")),
                 RemoteCommandOutcome.UnknownAction => new CommandReply(400, Fail("unknown-action")),
                 _ => new CommandReply(400, Fail("bad-request")),
-            };
+            });
         }
     }
 

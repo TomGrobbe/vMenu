@@ -44,8 +44,8 @@ public static class HttpSend
                 message.Content = new StringContent(body, System.Text.Encoding.UTF8, request.ContentType);
             }
 
-            using var cancel = new CancellationTokenSource(request.TimeoutMs);
-            using var response = await client.SendAsync(message, cancel.Token);
+            // Another FiveM bug/crash. So no cancel token: cancelling a socket op calls CancelIoEx, unimplemented in FiveM and crashes the server. HttpWait is the only timeout.
+            using var response = await client.SendAsync(message);
 
             var text = await response.Content.ReadAsStringAsync();
 
@@ -103,8 +103,12 @@ public static class HttpSend
     }
 
     private static HttpClient Client(bool allowInvalidCertificates) => allowInvalidCertificates
-        ? _unverifiedClient ??= new HttpClient(Handler(trustAnything: true))
-        : _client ??= new HttpClient(Handler(trustAnything: false));
+        ? _unverifiedClient ??= Build(trustAnything: true)
+        : _client ??= Build(trustAnything: false);
+
+    // Infinite timeout: HttpClient's timeout cancels the socket via CancelIoEx, unimplemented in FiveM and crashes the server. HttpWait handles timeouts instead.
+    private static HttpClient Build(bool trustAnything) =>
+        new(Handler(trustAnything)) { Timeout = System.Threading.Timeout.InfiniteTimeSpan };
 
     // Proxy off: resolving the Windows proxy loads Microsoft.Win32.Registry, which is not shipped with
     // the resource and throws on load. vMenu talks straight to github.com and nuget.org anyway.

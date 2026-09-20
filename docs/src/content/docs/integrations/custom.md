@@ -66,6 +66,7 @@ vMenu sends you:
 - `world`, whenever the weather or time state changes, and at least once every 15 seconds.
 - `players`, live player positions for the map, only after you ask for them.
 - `blips`, the configured blips, sent once.
+- `buckets`, the named routing bucket worlds from the optional Routing Buckets plugin. Sent once when the stream starts and again when the list changes. Empty without that plugin.
 - `command-ack`, the result of a command you sent.
 
 You send vMenu:
@@ -74,7 +75,11 @@ You send vMenu:
 - `command`, with an `id` and a `payload`, to make something happen.
 - `ping` and `pong`, to keep the connection alive.
 
-A `command` can be server wide (`announce`, `get-world`, `set-weather`, `set-time`, `set-blackout`, `set-snow`, `set-freeze`, `get-config`, `set-convar`) or aimed at one player (`kick`, `kill`, `noclip`, `notify`, `waypoint`, `teleport`, `heal`, `armor`, `spawnvehicle`). The read only ones (`get-world`, `get-config`) always work. Anything that changes the game needs `AllowActions true`.
+A `command` can be server wide (`announce`, `get-world`, `set-weather`, `set-time`, `set-blackout`, `set-snow`, `set-freeze`, `get-config`, `set-convar`, `waypoint-everyone`, `teleport-everyone`) or aimed at one player (`kick`, `kill`, `noclip`, `notify`, `waypoint`, `teleport`, `heal`, `armor`, `spawnvehicle`). The read only ones (`get-world`, `get-config`) always work. Anything that changes the game needs `AllowActions true`.
+
+`waypoint-everyone` and `teleport-everyone` are the server wide versions of `waypoint` and `teleport`, both taking a spot as `params.x` and `params.y`. `teleport-everyone` spreads players out around the spot so a crowd does not stack on one point. Both need `AllowActions true` and answer with `{ "ok": true, "reached": <count> }`.
+
+The routing bucket commands (`world-create`, `world-rename`, `world-settings`, `world-delete`, `world-move-one`, `world-move-all`, `world-move-ids`, `world-empty`, `world-transfer`) manage the named worlds and move players between them. They need `AllowActions true` and the optional Routing Buckets plugin, without it they answer with `plugin-unavailable`.
 
 ## Data models
 
@@ -95,7 +100,15 @@ A player looks like this.
 { "ServerId": 3, "Name": "Some Player", "Ping": 42, "Discord": "123456789" }
 ```
 
-The `players` frame carries live positions for the map. We are not going to walk through the map here.
+The `players` frame carries live positions for the map (not covered here). Each player also has a `RoutingBucket`, the number of the world they are in.
+
+A `buckets` payload lists the named worlds from the Routing Buckets plugin.
+
+```json
+{ "buckets": [ { "id": 0, "name": "Main World" }, { "id": 3, "name": "Race world" } ] }
+```
+
+Only named worlds appear here. Unnamed worlds are left out, but you can still read their number from the players. Empty without the plugin.
 
 ## Just want weather and time
 

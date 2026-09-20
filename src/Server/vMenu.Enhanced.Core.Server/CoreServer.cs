@@ -58,6 +58,8 @@ public class CoreServer : IScript
         IntegrationSocket.Initialize();
         IntegrationConnectCheck.Initialize();
         IntegrationPlayersPush.Initialize();
+        RoutingBuckets.Initialize();
+        RoutingBucketCommands.Initialize();
         UpdateChecker.Initialize();
 
         ConfigurationExampleFile.Write();

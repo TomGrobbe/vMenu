@@ -21,7 +21,8 @@ internal static class RemoteServerCommands
     public static bool IsServerAction(string action) => action switch
     {
         "announce" or "get-world" or "set-weather" or "set-time"
-            or "set-blackout" or "set-snow" or "set-freeze" or "get-config" or "set-convar" => true,
+            or "set-blackout" or "set-snow" or "set-freeze" or "get-config" or "set-convar"
+            or "waypoint-everyone" or "teleport-everyone" => true,
         _ => false,
     };
 
@@ -45,6 +46,8 @@ internal static class RemoteServerCommands
             "set-freeze" => SetFreeze(parameters),
             "get-config" => GetConfig(),
             "set-convar" => SetConvar(parameters),
+            "waypoint-everyone" => WaypointEveryone(parameters),
+            "teleport-everyone" => TeleportEveryone(parameters),
             _ => new IntegrationCommands.CommandReply(400, IntegrationJson.Fail("unknown-action")),
         };
     }
@@ -58,6 +61,34 @@ internal static class RemoteServerCommands
         }
 
         var reached = AdminActions.Broadcast(text.Trim());
+
+        return new IntegrationCommands.CommandReply(
+            200, $"{{\"ok\":true,\"reached\":{reached.ToString(CultureInfo.InvariantCulture)}}}");
+    }
+
+    private static IntegrationCommands.CommandReply WaypointEveryone(JsonElement parameters)
+    {
+        if (!IntegrationJson.TryReadFloat(parameters, "x", out var x)
+            || !IntegrationJson.TryReadFloat(parameters, "y", out var y))
+        {
+            return new IntegrationCommands.CommandReply(400, IntegrationJson.Fail("bad-request"));
+        }
+
+        var reached = AdminActions.BroadcastWaypoint(x, y);
+
+        return new IntegrationCommands.CommandReply(
+            200, $"{{\"ok\":true,\"reached\":{reached.ToString(CultureInfo.InvariantCulture)}}}");
+    }
+
+    private static IntegrationCommands.CommandReply TeleportEveryone(JsonElement parameters)
+    {
+        if (!IntegrationJson.TryReadFloat(parameters, "x", out var x)
+            || !IntegrationJson.TryReadFloat(parameters, "y", out var y))
+        {
+            return new IntegrationCommands.CommandReply(400, IntegrationJson.Fail("bad-request"));
+        }
+
+        var reached = AdminActions.BroadcastTeleport(x, y);
 
         return new IntegrationCommands.CommandReply(
             200, $"{{\"ok\":true,\"reached\":{reached.ToString(CultureInfo.InvariantCulture)}}}");

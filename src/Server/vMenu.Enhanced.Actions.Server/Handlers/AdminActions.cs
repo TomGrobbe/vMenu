@@ -8,6 +8,7 @@ using CitizenFX.FiveM.Shared.Serialization;
 using vMenu.Enhanced.Configuration.Server;
 using vMenu.Enhanced.Data.Actions;
 using vMenu.Enhanced.Data.Admin;
+using vMenu.Enhanced.Data.OnlinePlayers;
 using vMenu.Enhanced.Logging;
 using vMenu.Enhanced.Permissions.Server;
 using vMenu.Enhanced.Players.Server;
@@ -26,6 +27,10 @@ public static class AdminActions
     private const string Off = "0";
 
     private const string DroppedEvent = "playerDropped";
+
+    private const float JitterSpacing = 1.5f;
+
+    private static readonly Random JitterRng = new();
 
     private const int VehicleEntityType = 2;
 
@@ -355,6 +360,57 @@ public static class AdminActions
 
         return reached;
     }
+
+    public static int BroadcastWaypoint(float x, float y)
+    {
+        var reached = 0;
+
+        foreach (var player in ConnectedPlayers.All())
+        {
+            API.EmitClient(player.ServerId, PlayerEvents.SetWaypoint, Coord(x), Coord(y));
+
+            reached++;
+        }
+
+        return reached;
+    }
+
+    public static int BroadcastTeleport(float x, float y)
+    {
+        var players = ConnectedPlayers.All().ToList();
+
+        var radius = JitterSpacing * MathF.Sqrt(Math.Max(0, players.Count - 1));
+
+        var reached = 0;
+
+        foreach (var player in players)
+        {
+            var (jx, jy) = Jitter(x, y, radius);
+
+            API.EmitClient(player.ServerId, PlayerEvents.TeleportToGround, Coord(jx), Coord(jy));
+
+            reached++;
+        }
+
+        return reached;
+    }
+
+    // Prevents everyone being teleported into the exact same spot
+    private static (float x, float y) Jitter(float x, float y, float radius)
+    {
+        if (radius <= 0f)
+        {
+            return (x, y);
+        }
+
+        var angle = JitterRng.NextDouble() * Math.PI * 2.0;
+
+        var distance = radius * Math.Sqrt(JitterRng.NextDouble());
+
+        return (x + (float)(Math.Cos(angle) * distance), y + (float)(Math.Sin(angle) * distance));
+    }
+
+    private static string Coord(float value) => value.ToString("0.###", CultureInfo.InvariantCulture);
 
     private static ActionResponse RefreshPermissions(Player source, string[] args)
     {
