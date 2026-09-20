@@ -91,6 +91,27 @@ jobs:
           echo "is_prerelease=$IS_PRERELEASE" >> "$GITHUB_OUTPUT"
           echo "zip_name=$ZIP_NAME"           >> "$GITHUB_OUTPUT"
 
+      - name: Version summary
+        shell: bash
+        run: |
+          VERSION="${{ steps.version.outputs.semver }}"
+          {
+            echo "## Version"
+            echo ""
+            if [ -n "$VERSION" ]; then
+              echo "This run generated version \`${VERSION}\`."
+              echo ""
+              echo "| | |"
+              echo "| --- | --- |"
+              echo "| Version | \`${VERSION}\` |"
+              echo "| Assembly version | \`${{ steps.version.outputs.assembly_ver }}\` |"
+              echo "| Tag | \`${{ steps.version.outputs.tag }}\` |"
+              echo "| Package | \`${{ steps.version.outputs.zip_name }}\` |"
+            else
+              echo "This branch does not generate a release version. The build artifact is named \`${{ steps.version.outputs.zip_name }}\`."
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
   # ============================================================
   # BUILD — runs on every branch
   # ============================================================
