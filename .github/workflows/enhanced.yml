@@ -75,6 +75,22 @@ jobs:
           echo "tag=$TAG"                   >> "$GITHUB_OUTPUT"
           echo "zip_name=$ZIP_NAME"         >> "$GITHUB_OUTPUT"
 
+      - name: Version summary
+        shell: bash
+        run: |
+          {
+            echo "## Version"
+            echo ""
+            echo "This run generated version \`${{ steps.version.outputs.semver }}\`."
+            echo ""
+            echo "| | |"
+            echo "| --- | --- |"
+            echo "| Version | \`${{ steps.version.outputs.semver }}\` |"
+            echo "| Assembly version | \`${{ steps.version.outputs.assembly_ver }}\` |"
+            echo "| Tag | \`${{ steps.version.outputs.tag }}\` |"
+            echo "| Package | \`${{ steps.version.outputs.zip_name }}\` |"
+          } >> "$GITHUB_STEP_SUMMARY"
+
   # ============================================================
   # BUILD - runs on enhanced pushes and on pull requests
   # ============================================================

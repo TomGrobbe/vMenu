@@ -87,6 +87,15 @@ jobs:
           echo "version=$VERSION"                    >> "$GITHUB_OUTPUT"
           echo "zip_name=vMenu-v${VERSION}.zip"       >> "$GITHUB_OUTPUT"
 
+      - name: Version summary
+        shell: bash
+        run: |
+          {
+            echo "## Legacy version"
+            echo ""
+            echo "This run generated vMenu \`${{ steps.ver.outputs.version }}\`."
+          } >> "$GITHUB_STEP_SUMMARY"
+
       - name: Restore and build
         shell: bash
         run: |
@@ -141,6 +150,15 @@ jobs:
           echo "version=$VERSION"                             >> "$GITHUB_OUTPUT"
           echo "assembly_ver=0.0.1.${{ github.run_number }}"  >> "$GITHUB_OUTPUT"
           echo "zip_name=vMenu-Enhanced-v${VERSION}.zip"      >> "$GITHUB_OUTPUT"
+
+      - name: Version summary
+        shell: bash
+        run: |
+          {
+            echo "## Enhanced version"
+            echo ""
+            echo "This run generated vMenu Enhanced \`${{ steps.ver.outputs.version }}\`."
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Restore and build
         shell: bash
@@ -203,3 +221,11 @@ jobs:
             --notes-file release_notes.md \
             "release-assets/${{ needs.build-legacy.outputs.zip_name }}" \
             "release-assets/${{ needs.build-enhanced.outputs.zip_name }}"
+
+          {
+            echo "## Combined release"
+            echo ""
+            echo "This run generated vMenu \`${LEGACY_VER}\` and vMenu Enhanced \`${ENHANCED_VER}\`."
+            echo ""
+            echo "Tag: \`${TAG}\`"
+          } >> "$GITHUB_STEP_SUMMARY"
