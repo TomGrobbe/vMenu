@@ -14,6 +14,8 @@ public static class VMenuServer
 
     private const string Everything = "vMenu.Enhanced.Everything";
 
+    private const string RefreshPermissionsEvent = "vMenu.Enhanced:Permissions:Refresh";
+
     private static ServerPluginDeclaration? _declaration;
 
     private static TaskCompletionSource<RegisterResult>? _firstResult;
@@ -79,6 +81,10 @@ public static class VMenuServer
 
         return false;
     }
+
+    /// <summary>Refresh permissions for a player or multiple playres. Passing no id's will refresh permissions for all connected players.</summary>
+    public static void RefreshPermissions(params int[] serverIds) =>
+        PluginEmit.Local(RefreshPermissionsEvent, (object)(serverIds ?? []));
 
     private static void EnsureIdentity()
     {

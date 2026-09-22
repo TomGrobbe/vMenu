@@ -234,6 +234,23 @@ if (!VMenuServer.RequirePermission(source, "Poke")) { return; }
 
 It answers exactly the same, and it also tells vMenu, which puts a line in the server owner's security log naming the player and the permission they were missing. Only reach for it when a normal, unmodified client could not possibly have sent you the thing you are handling, which is the usual case for an event behind a menu row you gated. Keep `IsPlayerAllowed` for everything else, such as deciding which of two things to do, or the owner ends up with a log full of ordinary play and stops reading it.
 
+### Refreshing permissions
+
+vMenu sends a player their permissions once and does not send them again on its own, so an ace you add or remove at runtime does not reach a player who already has the menu open. Ask vMenu to send them again from your server code:
+
+```csharp
+VMenuServer.RefreshPermissions();          // every connected player
+VMenuServer.RefreshPermissions(playerId);  // one player, by their server id
+VMenuServer.RefreshPermissions(1, 4, 9);   // several players at once
+```
+
+Any resource can do the same by triggering the event on the server, with no ids for everyone or a list of server ids for specific players:
+
+```lua
+TriggerEvent("vMenu.Enhanced:Permissions:Refresh")
+TriggerEvent("vMenu.Enhanced:Permissions:Refresh", { 4, 9 })
+```
+
 ### Logging what a row does
 
 A server owner can have vMenu write a line to their Discord log whenever somebody uses one of your rows. It takes both halves of your plugin, and that is on purpose:

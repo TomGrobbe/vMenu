@@ -7,4 +7,6 @@ public static class PermissionEvents
     public const string Request = "vMenu.Enhanced:Permissions:Request";
 
     public const string Set = "vMenu.Enhanced:Permissions:Set";
+
+    public const string Refresh = "vMenu.Enhanced:Permissions:Refresh";
 }

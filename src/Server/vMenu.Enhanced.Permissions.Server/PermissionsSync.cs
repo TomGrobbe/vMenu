@@ -24,12 +24,13 @@ public static class PermissionsSync
     {
         API.OnNetEvent(PermissionEvents.Request, new Action<Player>(OnPermissionsRequested), false);
 
+        API.OnEvent(PermissionEvents.Refresh, new Action<int[]?>(OnRefreshRequested), false);
+
         API.OnEvent(DroppedEvent, new Action<int, string?>(OnPlayerDropped), false);
 
         SharedAPI.Commands.RegisterCommand(RefreshCommand, true, new Action<int, MessagePackBuffer, string>(OnRefreshCommand));
     }
 
-    // Recomputes and re-sends permissions to every connected player, so ACL edits apply without a
     public static int RefreshAll()
     {
         if (!ServerPermissions.IsReady)
@@ -96,6 +97,21 @@ public static class PermissionsSync
         if (!RefreshOne(serverId))
         {
             Log.Error($"[Permissions] Nobody on this server has id {serverId}.");
+        }
+    }
+
+    private static void OnRefreshRequested(int[]? serverIds = null)
+    {
+        if (serverIds is null || serverIds.Length == 0)
+        {
+            RefreshAll();
+
+            return;
+        }
+
+        foreach (var serverId in serverIds)
+        {
+            RefreshOne(serverId);
         }
     }
 
