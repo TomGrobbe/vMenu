@@ -24,6 +24,10 @@ public static class IntegrationSocket
 
     private const int ConnectTimeoutMs = 10000;
 
+    private const int BaseReconnectMs = 5000;
+
+    private const int MaxReconnectMs = 300000;
+
     private const int MaxMessageBytes = 64 * 1024;
 
     private const int CommandTimeoutMs = 5000;
@@ -45,6 +49,8 @@ public static class IntegrationSocket
 
     private static readonly TimeSpan WorldHeartbeat = TimeSpan.FromSeconds(15);
 
+    private static readonly TimeSpan MinHealthySession = TimeSpan.FromSeconds(15);
+
     private static readonly Random Jitter = new();
 
     private static readonly ConcurrentQueue<(LogLevel Level, string Message)> Logs = new();
@@ -54,6 +60,10 @@ public static class IntegrationSocket
     private static volatile bool _stopping;
 
     private static volatile bool _streaming;
+
+    // A bad key or an unlinked server keeps refusing forever, so we log the first failure loud, then stay
+    // quiet and back off, instead of warning every 7s and reconnecting on top of a remote that says no.
+    private static int _consecutiveFailures;
 
     private static bool _started;
 
@@ -162,14 +172,30 @@ public static class IntegrationSocket
                 {
                     Emit(LogLevel.Info, "[Integration] Socket connected.");
 
+                    var connectedAt = DateTime.UtcNow;
                     var stream = StreamLoopAsync(ws);
                     await ReceiveLoopAsync(ws);
                     await stream;
+
+                    // A real session outlives this. A link that accepts the upgrade then drops us straight
+                    // away, or flaps, stays counted as a failure so the backoff keeps growing.
+                    if (DateTime.UtcNow - connectedAt >= MinHealthySession)
+                    {
+                        _consecutiveFailures = 0;
+                    }
+                    else
+                    {
+                        NoteFailure("Socket closed right after connecting.");
+                    }
+                }
+                else
+                {
+                    NoteFailure("Socket connect timed out.");
                 }
             }
             catch (Exception exception)
             {
-                Emit(LogLevel.Warning, $"[Integration] Socket error: {exception.Message}");
+                NoteFailure($"Socket error: {exception.Message}");
             }
             finally
             {
@@ -182,7 +208,7 @@ public static class IntegrationSocket
                 break;
             }
 
-            var delay = 5000 + Jitter.Next(0, 5000);
+            var delay = ReconnectDelay();
             Emit(LogLevel.Debug, $"[Integration] Reconnecting socket in {delay / 1000.0:0.0}s.");
             await Task.Delay(delay);
         }
@@ -196,7 +222,6 @@ public static class IntegrationSocket
         var finished = await Task.WhenAny(connect, Task.Delay(ConnectTimeoutMs));
         if (finished != connect)
         {
-            Emit(LogLevel.Warning, "[Integration] Socket connect timed out.");
             ws.Abort();
 
             Observe(connect);
@@ -450,6 +475,28 @@ public static class IntegrationSocket
                     break;
             }
         }
+    }
+
+    // First failure of a run is loud so a genuine outage or a bad key is visible once; the repeats that
+    // follow drop to Debug so a persistently refused connect never floods the console.
+    private static void NoteFailure(string detail)
+    {
+        var level = _consecutiveFailures == 0 ? LogLevel.Warning : LogLevel.Debug;
+        _consecutiveFailures++;
+
+        Emit(level, $"[Integration] {detail}");
+    }
+
+    private static int ReconnectDelay()
+    {
+        var backoff = BaseReconnectMs;
+        if (_consecutiveFailures > 1)
+        {
+            var shift = Math.Min(_consecutiveFailures - 1, 6);
+            backoff = (int)Math.Min((long)BaseReconnectMs << shift, MaxReconnectMs);
+        }
+
+        return backoff + Jitter.Next(0, 5000);
     }
 
     private static void Emit(LogLevel level, string message) => Logs.Enqueue((level, message));
