@@ -30,6 +30,13 @@ FiveM Enhanced blocks resources from writing to disk unless you allow it, and vM
 The permission has to come before `ensure`. The other way round and vMenu cannot save anything, and you get filesystem errors in your console.
 :::
 
+If you use an [integration](/vmenu/enhanced/integrations/) with role sync, vMenu also needs these two lines. Role sync means your integration decides which permission groups a player is in, and vMenu adds them to or removes them from those groups for you. FiveM only lets a resource do that when you allow it, which is what these lines do. They are already at the top of the example `permissions.cfg`, so if you copy that file you have them.
+
+```ini
+add_ace resource.vMenu.Enhanced command.add_principal allow
+add_ace resource.vMenu.Enhanced command.remove_principal allow
+```
+
 ## 3. Start your server once
 
 Start it, wait for vMenu to boot, then shut it down. This first run exists so vMenu can create its example files. You will now have:

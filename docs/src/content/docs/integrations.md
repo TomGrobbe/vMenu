@@ -17,14 +17,14 @@ vMenu Enhanced can be linked to outside tools that watch and manage the resource
 - Spawn vehicles
 - Manage weather and time
 - Send in-game announcements
+- Discord role based allowlist, so only members with the right roles can join
+- Join queue with priority queues, spike protection, a bypass and a reconnect window, plus a live queue embed in Discord
+- Discord role sync to in-game permission groups (needs `AllowActions` and the two `add_ace` lines from [Getting started](/vmenu/enhanced/getting-started/))
 
 ### Coming soon
 
 - Live player map split into different views per Discord role (eg. Admins can see everyone, Dispatchers can only see certain people)
-- Discord role sync to in-game permission groups
-- Discord role based whitelisting system
 - Lockdown/maintenance mode, which requires a password to join the server
-- Queue system for join spike protection, plus a priority queue
 
 Setting it up is done entirely on SnowstormBot's side, so follow their guide:
 

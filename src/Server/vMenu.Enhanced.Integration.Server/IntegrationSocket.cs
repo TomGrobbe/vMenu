@@ -44,6 +44,11 @@ public static class IntegrationSocket
     private const string TypeWorld = "world";
     private const string TypeBuckets = "buckets";
     private const string TypeCommandAck = "command-ack";
+    private const string TypeGate = "gate";
+    private const string TypeRoleSync = "role-sync";
+    internal const string TypeRoleSyncRequest = "role-sync-request";
+
+    internal const string SocketDropped = "The connection to the server manager dropped. Please try joining again.";
 
     private static readonly TimeSpan StreamInterval = TimeSpan.FromSeconds(1);
 
@@ -61,8 +66,10 @@ public static class IntegrationSocket
 
     private static volatile bool _streaming;
 
-    // A bad key or an unlinked server keeps refusing forever, so we log the first failure loud, then stay
-    // quiet and back off, instead of warning every 7s and reconnecting on top of a remote that says no.
+    private static volatile bool _connected;
+
+    private static volatile string[] _requestedIdentifiers = ["discord"];
+
     private static int _consecutiveFailures;
 
     private static bool _started;
@@ -70,6 +77,19 @@ public static class IntegrationSocket
     private static ClientWebSocket? _socket;
 
     private static string _url = "";
+
+    public static bool IsConnected => _connected;
+
+    public static IReadOnlyCollection<string> RequestedIdentifiers => _requestedIdentifiers;
+
+    public static void TrySend(string type, string payloadJson)
+    {
+        var ws = _socket;
+        if (ws is not null && ws.State == WebSocketState.Open)
+        {
+            _ = SendAsync(ws, Frame(type, payloadJson));
+        }
+    }
 
     public static void Initialize()
     {
@@ -172,6 +192,7 @@ public static class IntegrationSocket
                 {
                     Emit(LogLevel.Info, "[Integration] Socket connected.");
 
+                    _connected = true;
                     var connectedAt = DateTime.UtcNow;
                     var stream = StreamLoopAsync(ws);
                     await ReceiveLoopAsync(ws);
@@ -201,6 +222,13 @@ public static class IntegrationSocket
             {
                 _socket = null;
                 _streaming = false;
+
+                // Anyone still on the loading screen cannot be admitted over a dead socket, so kick them.
+                if (_connected)
+                {
+                    _connected = false;
+                    IntegrationConnections.ReleaseAll(SocketDropped);
+                }
             }
 
             if (_stopping)
@@ -369,8 +397,21 @@ public static class IntegrationSocket
                 break;
 
             case TypeReady:
+                UpdateRequestedIdentifiers(payload);
+                SendFullState(ws);
+                IntegrationRoleSync.RequestAll();
+                break;
+
             case TypeResync:
                 SendFullState(ws);
+                break;
+
+            case TypeGate:
+                IntegrationConnections.Apply(payload);
+                break;
+
+            case TypeRoleSync:
+                IntegrationRoleSync.Submit(payload);
                 break;
 
             case TypeStartStream:
@@ -416,6 +457,43 @@ public static class IntegrationSocket
         catch (Exception exception)
         {
             Emit(LogLevel.Debug, $"[Integration] Socket command failed: {exception.Message}");
+        }
+    }
+
+    // The integration tells vMenu what identifier types it wants for connecting players. Default: Discord only
+    private static void UpdateRequestedIdentifiers(string payload)
+    {
+        if (payload.Length == 0)
+        {
+            return;
+        }
+
+        try
+        {
+            using var doc = JsonDocument.Parse(payload);
+            if (doc.RootElement.ValueKind != JsonValueKind.Object
+                || !doc.RootElement.TryGetProperty("identifiers", out var array)
+                || array.ValueKind != JsonValueKind.Array)
+            {
+                return;
+            }
+
+            var types = new List<string>();
+            foreach (var item in array.EnumerateArray())
+            {
+                // Never allow IP
+                if (item.ValueKind == JsonValueKind.String
+                    && item.GetString() is { Length: > 0 } type
+                    && !type.Equals("ip", StringComparison.OrdinalIgnoreCase))
+                {
+                    types.Add(type);
+                }
+            }
+
+            _requestedIdentifiers = types.Count > 0 ? [.. types] : ["discord"];
+        }
+        catch (JsonException)
+        {
         }
     }
 

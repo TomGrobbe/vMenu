@@ -32,4 +32,33 @@ public static class Integration
         Default = false,
         ServerOnly = true,
     };
+
+    public static readonly BoolSetting Allowlist = new("vMenu.Enhanced.Integration.Allowlist")
+    {
+        Description =
+            "Only lets in players with the 'vMenu.Enhanced.Integration.Allowlist.Bypass' permission, " +
+            "or players a connected integration (like SnowstormBot) allows. Uses 'set', not 'setr'.",
+        Default = false,
+        ServerOnly = true,
+    };
+
+    public static readonly StringSetting AllowlistMessage = new("vMenu.Enhanced.Integration.AllowlistMessage")
+    {
+        Description =
+            "Customize the message someone sees if they're not on the allowlist.",
+        Default = "You are not on the allowlist for this server.",
+        ServerOnly = true,
+    };
+
+    public static readonly BoolSetting Queue = new("vMenu.Enhanced.Integration.Queue")
+    {
+        Description =
+            "If set to true, connecting players are held in a join queue that a connected external tool (like SnowstormBot) manages. " +
+            "Unlike the allowlist, this feature does not work without an external tool managing it! " +
+            "The tool decides the queues, priorities and delays. This convar only turns the queue on or off. " +
+            "A player holding the 'vMenu.Enhanced.Integration.Queue.Bypass' permission can skip the queue if they choose to (there is a button in the join screen they can click to bypass the queue). " +
+            "Uses 'set' and not 'setr'.",
+        Default = false,
+        ServerOnly = true,
+    };
 }

@@ -55,16 +55,23 @@ public static class PermissionsExample
 
         file.Append('\n');
         file.Append(ExampleFile.Comment(
+            "vMenu needs these two lines so an integration's role sync can add and remove permission groups "
+            + "for players. They do nothing if you do not use role sync."));
+        file.Append("add_ace resource.vMenu.Enhanced command.add_principal allow\n");
+        file.Append("add_ace resource.vMenu.Enhanced command.remove_principal allow\n");
+
+        file.Append('\n');
+        file.Append(ExampleFile.Comment(
             "Give a player a group by one of their identifiers. "
             + "Use whichever you can look up most easily. Note, Steam "
             + "identifiers no longer work in FiveM Enhanced, so use either "
             + "license, license2, discord or fivem identifiers. (You can also use "
             + "the IP identifier, but I don't really recommended that one). "
-            + "!!! Make sure you replace these with your own identifiers !!!"));
-        file.Append($"add_principal identifier.license2:94b6dfaed9a0aff3e77a91243ee9ed28f4a22d0d {StaffGroup}\n");
-        file.Append($"add_principal identifier.license:94b6dfaed9a0aff3e77a91243ee9ed28f4a22d0d {StaffGroup}\n");
-        file.Append($"add_principal identifier.discord:223799456162775043 {StaffGroup}\n");
-        file.Append($"add_principal identifier.fivem:25104 {StaffGroup}\n");
+            + "!!! Make sure you replace these with your own identifiers and remove the # !!! "
+            + "If you're using another system to add people to principal groups during runtime "
+            + "(for example TxAdmin for your admins), then you do not need to manually add them here."));
+        file.Append($"# add_principal identifier.discord:223799456162775043 {StaffGroup}\n");
+        file.Append($"# add_principal identifier.fivem:25104 {StaffGroup}\n");
 
         file.Append('\n');
         file.Append(ExampleFile.Comment(

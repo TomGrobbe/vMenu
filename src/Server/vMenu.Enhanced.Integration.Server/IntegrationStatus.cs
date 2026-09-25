@@ -37,7 +37,7 @@ public sealed class IntegrationStatus
         ActionsEnabled = ServerConfig.Value(IntegrationSettings.AllowActions),
     };
 
-    private static int MaxClients() =>
+    internal static int MaxClients() =>
         int.TryParse(
             Native.GetConvar("sv_maxClients", "0"),
             NumberStyles.Integer,

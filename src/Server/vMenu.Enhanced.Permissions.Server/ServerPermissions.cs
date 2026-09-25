@@ -58,6 +58,24 @@ public static class ServerPermissions
     public static bool IsPlayerAllowed(Player player, string permission) =>
         IsPlayerAllowed(ToSource(player), permission);
 
+    public static bool IsConnectingPlayerAllowed(string source, string permission)
+    {
+        if (string.IsNullOrEmpty(source))
+        {
+            return false;
+        }
+
+        foreach (var ace in PermissionRegistry.GetAncestorChain(permission))
+        {
+            if (Native.IsPlayerAceAllowed(source, ace))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     // The smallest set describing what a player may do. The walk stops descending the moment a node is
     // granted, because a granted parent is absolute: nothing below it can take the grant away. That is
     // also why the client can rebuild the same answers from names alone.

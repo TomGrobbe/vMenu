@@ -56,8 +56,10 @@ public class CoreServer : IScript
         HttpRouter.Initialize();
         WorldEndpoint.Initialize();
         IntegrationSocket.Initialize();
+        IntegrationRoleSync.Initialize();
         IntegrationConnectCheck.Initialize();
         IntegrationPlayersPush.Initialize();
+        ConnectionGate.Initialize();
         RoutingBuckets.Initialize();
         RoutingBucketCommands.Initialize();
         UpdateChecker.Initialize();

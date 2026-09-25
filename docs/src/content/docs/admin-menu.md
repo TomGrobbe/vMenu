@@ -99,6 +99,8 @@ vmenu_refresh_permissions 42
 
 If nobody on the server has that id, the console says so rather than quietly doing nothing.
 
+If an [integration](/vmenu/enhanced/integrations/) with role sync changes a player's groups, it refreshes that player's menu by itself, so you do not need to do anything.
+
 None of this is needed for the server to enforce a permission. The server checks the real thing every single time, so a permission you take away stops working immediately whether or not anybody refreshes. Refreshing is about the menu the player is looking at catching up.
 
 ## announcements.json

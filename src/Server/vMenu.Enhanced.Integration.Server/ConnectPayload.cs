@@ -14,6 +14,10 @@ public sealed class ConnectPayload
 
     public required int Count { get; init; }
 
+    public required bool ActionsEnabled { get; init; }
+
+    public required bool PrincipalCommandsAllowed { get; init; }
+
     // Reads natives, so must be built on the tick thread.
     public static ConnectPayload Current()
     {
@@ -26,6 +30,8 @@ public sealed class ConnectPayload
             Name = status.Name,
             MaxPlayers = status.MaxPlayers,
             Count = status.PlayerCount,
+            ActionsEnabled = status.ActionsEnabled,
+            PrincipalCommandsAllowed = IntegrationRoleSync.PrincipalCommandsAllowed(),
         };
     }
 }
