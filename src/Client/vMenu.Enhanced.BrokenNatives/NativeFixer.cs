@@ -95,18 +95,6 @@ public static class NativeFixer
         nativeApi.Invoke(2435909744uL, "TriggerEventInternal");
     }
 
-    // SharedAPI.Commands.RegisterCommand throws away the id UnregisterCommand needs, so a command
-    // registered through it can never be removed. Use the normal one unless it has to come and go.
-    public static int RegisterCommand(string command, bool restricted, Action<int, MessagePackBuffer, string> handler)
-    {
-        // Same registry as AddConvarChangeListener, for the same reason.
-#pragma warning disable FIVEM001
-        var reference = SharedAPI.GetCore().FuncRefManager.Register(handler);
-#pragma warning restore FIVEM001
-
-        return Native.RegisterCommand(command, (int)reference, restricted);
-    }
-
     // AddConvarChangeListener's func parameter is generated as a raw int with no way to produce one.
     // The reference must come from the shared FuncRefManager, because the runtime dispatches every
     // callback through that table and one registered elsewhere comes back as "Invalid function".

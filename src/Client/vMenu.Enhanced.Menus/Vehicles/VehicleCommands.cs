@@ -1,7 +1,6 @@
 using CitizenFX.FiveM.Client;
-using CitizenFX.FiveM.Shared.Serialization;
+using CitizenFX.FiveM.Shared;
 
-using vMenu.Enhanced.BrokenNatives;
 using vMenu.Enhanced.Configuration;
 using vMenu.Enhanced.Data.Configuration;
 using vMenu.Enhanced.Logging;
@@ -81,11 +80,7 @@ public static class VehicleCommands
         private readonly string? _elevatedPermission;
         private readonly Func<Task>? _runElevated;
 
-        // Cached, because the func ref registry keys on the delegate, so a new lambda per cycle leaks.
-        private readonly Action<int, MessagePackBuffer, string> _handler;
-
-        // Null while the command is not registered.
-        private int? _id;
+        private bool _registered;
 
         public ToggledCommand(
             string name,
@@ -103,7 +98,6 @@ public static class VehicleCommands
             _run = run;
             _elevatedPermission = elevatedPermission;
             _runElevated = runElevated;
-            _handler = (_, _, _) => Run();
         }
 
         private bool IsElevated =>
@@ -111,22 +105,15 @@ public static class VehicleCommands
 
         private bool IsAllowed => ClientPermissions.IsAllowed(_permission) || IsElevated;
 
+        // Never unregistered, because UNREGISTER_COMMAND is buggy
         public void Apply()
         {
-            var shouldRegister = ClientConfig.Value(_setting) && IsAllowed;
-
-            if (shouldRegister && _id is null)
+            if (!_registered && ClientConfig.Value(_setting) && IsAllowed)
             {
-                _id = NativeFixer.RegisterCommand(_name, restricted: false, _handler);
+                SharedAPI.Commands.RegisterCommand(_name, false, new Action(Run));
+                _registered = true;
 
                 Log.Debug($"[VehicleOptions] Registered /{_name}.");
-            }
-            else if (!shouldRegister && _id is not null)
-            {
-                Native.UnregisterCommand(_id.Value);
-                _id = null;
-
-                Log.Debug($"[VehicleOptions] Unregistered /{_name}.");
             }
         }
 
@@ -135,9 +122,13 @@ public static class VehicleCommands
         {
             await API.JumpToMainThread();
 
+            if (!ClientConfig.Value(_setting))
+            {
+                return;
+            }
+
             try
             {
-                // Registration follows the permission, but a revoke can land between the two.
                 if (!IsAllowed)
                 {
                     Notifications.Error(MenuText.Key(_deniedKey));

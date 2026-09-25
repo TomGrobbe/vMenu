@@ -2,10 +2,10 @@ using System.Globalization;
 using System.Numerics;
 
 using CitizenFX.FiveM.Client;
+using CitizenFX.FiveM.Shared;
 using CitizenFX.FiveM.Shared.Serialization;
 
 using vMenu.Enhanced.Actions;
-using vMenu.Enhanced.BrokenNatives;
 using vMenu.Enhanced.Configuration;
 using vMenu.Enhanced.Data.Actions;
 using vMenu.Enhanced.Data.Permissions;
@@ -446,24 +446,29 @@ public static class StaffAlerts
 
     private sealed class StaffCommand(string name, Action<string> run)
     {
-        private readonly Action<int, MessagePackBuffer, string> _handler = (_, _, raw) => run(raw);
+        private bool _registered;
 
-        private int? _id;
+        private bool _enabled;
 
+        // Never unregistered, because UNREGISTER_COMMAND is buggy
         public void Apply(bool wanted)
         {
-            if (wanted && _id is null)
+            _enabled = wanted;
+
+            if (wanted && !_registered)
             {
-                _id = NativeFixer.RegisterCommand(name, restricted: false, _handler);
+                SharedAPI.Commands.RegisterCommand(name, false, new Action<int, MessagePackBuffer, string>(Handle));
+                _registered = true;
 
                 Log.Debug($"[StaffAlerts] Registered /{name}.");
             }
-            else if (!wanted && _id is not null)
-            {
-                Native.UnregisterCommand(_id.Value);
-                _id = null;
+        }
 
-                Log.Debug($"[StaffAlerts] Unregistered /{name}.");
+        private void Handle(int source, MessagePackBuffer args, string raw)
+        {
+            if (_enabled)
+            {
+                run(raw);
             }
         }
     }
