@@ -212,6 +212,7 @@ internal sealed class MenuHost : IDisposable
 
         var fallback = Builder.DefaultGateBehaviour ?? MenuFrameworkOptions.DefaultGateBehaviour;
         var visibilityChanged = false;
+        var revealed = false;
 
         foreach (var entry in Builder.Entries)
         {
@@ -228,7 +229,15 @@ internal sealed class MenuHost : IDisposable
 
             var hide = !entry.IsAllowed && behaviour is GateBehaviour.Hide;
 
-            visibilityChanged |= hide ? _hidden.Add(item) : _hidden.Remove(item);
+            if (hide)
+            {
+                visibilityChanged |= _hidden.Add(item);
+            }
+            else if (_hidden.Remove(item))
+            {
+                visibilityChanged = true;
+                revealed = true;
+            }
         }
 
         UpdateNoticeText(localizer);
@@ -239,10 +248,8 @@ internal sealed class MenuHost : IDisposable
             return;
         }
 
-        if (Menu.Visible)
+        if (Menu.Visible && !revealed)
         {
-            // Re-filtering under an open menu would shuffle rows beneath the cursor. Hidden entries are already
-            // disabled above, so deferring is cosmetic only.
             _filterDirty = true;
             return;
         }
