@@ -21,7 +21,7 @@ The package version always matches the vMenu Enhanced release it belongs to, so 
 
 This package is licensed under the **GNU General Public License v3.0 or later**, `GPL-3.0-or-later`, which is the same license vMenu Enhanced itself uses. The full text ships inside the package as `LICENSE.md`, and also lives in the [vMenu repository](https://github.com/TomGrobbe/vMenu/blob/enhanced/LICENSE.md).
 
-**That license comes along with your plugin.** A plugin built on this package is a work based on vMenu, so your plugin has to be licensed `GPL-3.0-or-later` as well. You cannot build on this and then put your own closed license on the result. In practice:
+**That license comes along with your plugin.** A plugin built on this package is a work based on vMenu, so your plugin has to be licensed `GPL-3.0` or `AGPL-3.0`, or the "or later" version of either. You cannot build on this and then put your own closed license on the result. In practice:
 
 - **Running it on your own server, and nowhere else, asks nothing of you.** Using software is not distributing it. Build whatever you like and keep it to yourself.
 - **The moment you hand your plugin to somebody else, you owe them the source.** Giving it away, selling it, listing it on a store, sending it to a friend who runs another server, all of that is distribution, and every one of those means the complete source code goes with it, under this same license.

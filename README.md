@@ -100,7 +100,7 @@ Where to read more:
 - [Making a plugin](https://docs.vespura.com/vmenu/enhanced/plugins/developing/), for developers
 - The [official plugins](#official-plugins) above, all of them complete working plugins to copy from
 
-A plugin built on these packages is a work based on vMenu, so it carries the same license vMenu does. That means open sourcing it if you hand it to anybody else, free or paid. See [License](#license) below, and the [licensing section of the plugin docs](https://docs.vespura.com/vmenu/enhanced/plugins/developing/#license) for what it asks of you in practice.
+A plugin built on these packages is a work based on vMenu, so it has to be licensed GPL-3.0 or AGPL-3.0, just like vMenu is GPL. That means open sourcing it if you hand it to anybody else, free or paid. See [License](#license) below, and the [licensing section of the plugin docs](https://docs.vespura.com/vmenu/enhanced/plugins/developing/#license) for what it asks of you in practice.
 
 ---
 

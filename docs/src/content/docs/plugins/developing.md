@@ -18,7 +18,7 @@ All four are listed on the [plugins page](/vmenu/enhanced/plugins/).
 :::
 
 :::caution[Read the license section]
-Plugins are GPL-3.0-or-later, the same as vMenu. See [License](#license) at the bottom.
+Plugins must be open source, under GPL-3.0 or AGPL-3.0. See [License](#license) at the bottom.
 :::
 
 ## How it fits together
@@ -393,7 +393,9 @@ Once registered, a theme is a theme like any other. It shows up for plugins read
 
 ## License
 
-vMenu and both NuGet packages are **GPL-3.0-or-later**, and so is anything you build with them. **You must use that same license for your plugin.** A plugin built on those packages is a work based on vMenu, so you cannot put a closed license on the result.
+vMenu and both NuGet packages are **GPL-3.0-or-later**. A plugin built on those packages is a work based on vMenu, so you cannot put a closed license on the result. **Your plugin must be licensed GPL-3.0 (or later) or AGPL-3.0 (or later).** The GPL explicitly allows being combined with the AGPL, and the AGPL keeps your code open just as well.
+
+A permissive license such as MIT or Apache is not enough on its own. Those let anyone take the code and close it again, which is exactly what vMenu's license is there to prevent.
 
 - **Running it only on your own servers asks nothing of you.** Using software is not distributing it, so your source may stay private.
 - **Handing it to anybody else means handing them the source too.** Giving it away, selling it, listing it on a store, or sending it to someone running another server are all distribution.
