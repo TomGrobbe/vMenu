@@ -9,6 +9,7 @@ using vMenu.Enhanced.Data;
 using vMenu.Enhanced.Data.Configuration.Settings;
 using vMenu.Enhanced.Data.Diagnostics;
 using vMenu.Enhanced.Http.Server;
+using vMenu.Enhanced.Http.Server.Bridge;
 using vMenu.Enhanced.Integration.Server;
 using vMenu.Enhanced.Logging;
 using vMenu.Enhanced.Permissions.Server;
@@ -41,6 +42,10 @@ public class CoreServer : IScript
 
         ServerPermissions.Initialize();
         ServerConfig.Initialize();
+
+        // Linux TLS bridge
+        NetBridge.Initialize();
+
         WebhookLog.Initialize();
         SecurityLog.Initialize();
 

@@ -88,6 +88,23 @@ ensure vMenu.Enhanced
 
 Restart your server, join, and press `M` to open the menu. For everything else vMenu puts on a key, see [Key Bindings](/vmenu/enhanced/key-bindings/).
 
+## Running on Linux
+
+On a Linux server, vMenu's C# code cannot currently check the security certificates of websites. That breaks everything vMenu sends over the internet, like update checks, webhook logging and integrations. This is a FiveM bug, and it has been reported.
+
+Until it is fixed, vMenu hands that traffic to a small JavaScript helper that ships with it, `server/net_bridge.js`. JavaScript on the same server does not have the bug. This happens by itself, you do not need to set anything up. Your console shows a line saying the net bridge is in use when it starts.
+
+The helper needs a server build that supports Node 22, which is the JavaScript engine FiveM runs. If your console warns that the net bridge never answered, update your server artifacts first.
+
+If you ever need to switch it by hand, add one of these to your `server.cfg`:
+
+```ini
+set vMenu.Enhanced.NetBridge native
+set vMenu.Enhanced.NetBridge js
+```
+
+`native` always uses the normal C# code, and `js` always uses the helper, also on Windows. Leave the line out and vMenu picks by itself.
+
 ## Something not working?
 
 Come say hi on the [Discord](https://vespura.com/discord), or take a look at the [GitHub repository](https://github.com/TomGrobbe/vMenu/).

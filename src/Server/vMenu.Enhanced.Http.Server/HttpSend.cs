@@ -1,5 +1,6 @@
 using System.Globalization;
 
+using vMenu.Enhanced.Http.Server.Bridge;
 using vMenu.Enhanced.Logging;
 
 namespace vMenu.Enhanced.Http.Server;
@@ -14,7 +15,15 @@ public static class HttpSend
     {
         var slot = new HttpSlot();
 
-        _ = RunAsync(request, slot);
+        // Linux TLS bridge
+        if (NetBridge.Active)
+        {
+            NetBridge.Send(request, slot);
+        }
+        else
+        {
+            _ = RunAsync(request, slot);
+        }
 
         return await HttpWait.ForAsync(slot, request.TimeoutMs);
     }

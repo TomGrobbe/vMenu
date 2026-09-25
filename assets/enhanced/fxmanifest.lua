@@ -25,5 +25,11 @@ files {
 -- Client assembly
 client_script 'client/vMenu.Enhanced.Core.dll'
 
+-- Linux TLS bridge: net_bridge.js carries HTTPS and WebSocket traffic on Linux and needs Node 22.
+node_version '22'
+
 -- Server assembly.
-server_script 'server/vMenu.Enhanced.Core.Server.dll'
+server_scripts {
+    'server/net_bridge.js',
+    'server/vMenu.Enhanced.Core.Server.dll',
+}

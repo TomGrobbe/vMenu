@@ -7,6 +7,7 @@ using CitizenFX.FiveM.Server;
 
 using vMenu.Enhanced.Configuration.Server;
 using vMenu.Enhanced.Data.Ticks;
+using vMenu.Enhanced.Http.Server.Bridge;
 using vMenu.Enhanced.Logging;
 using vMenu.Enhanced.Ticks.Server;
 
@@ -74,7 +75,7 @@ public static class IntegrationSocket
 
     private static bool _started;
 
-    private static ClientWebSocket? _socket;
+    private static WebSocket? _socket;
 
     private static string _url = "";
 
@@ -167,12 +168,6 @@ public static class IntegrationSocket
         {
             try
             {
-                using var ws = new ClientWebSocket();
-                ws.Options.KeepAliveInterval = TimeSpan.FromSeconds(15);
-
-                // Proxy off: system-proxy lookup loads Microsoft.Win32.Registry, not shipped, and throws.
-                ws.Options.Proxy = null;
-
                 var key = IntegrationSnapshots.Key;
                 if (key.Length == 0)
                 {
@@ -180,10 +175,10 @@ public static class IntegrationSocket
                     continue;
                 }
 
-                foreach (var header in IntegrationAuth.SignHeaders(IntegrationActions.Socket, key, []))
-                {
-                    ws.Options.SetRequestHeader(header.Key, header.Value);
-                }
+                var headers = IntegrationAuth.SignHeaders(IntegrationActions.Socket, key, []);
+
+                // Linux TLS bridge
+                using WebSocket ws = NetBridge.Active ? new BridgeWebSocket(headers) : NativeSocket(headers);
 
                 _socket = ws;
                 _streaming = false;
@@ -244,9 +239,30 @@ public static class IntegrationSocket
         Emit(LogLevel.Debug, "[Integration] Socket stopped.");
     }
 
-    private static async Task<bool> ConnectAsync(ClientWebSocket ws)
+    private static ClientWebSocket NativeSocket(Dictionary<string, string> headers)
     {
-        var connect = ws.ConnectAsync(new Uri(_url), CancellationToken.None);
+        var ws = new ClientWebSocket();
+        ws.Options.KeepAliveInterval = TimeSpan.FromSeconds(15);
+
+        // Proxy off: system-proxy lookup loads Microsoft.Win32.Registry, not shipped, and throws.
+        ws.Options.Proxy = null;
+
+        foreach (var header in headers)
+        {
+            ws.Options.SetRequestHeader(header.Key, header.Value);
+        }
+
+        return ws;
+    }
+
+    private static async Task<bool> ConnectAsync(WebSocket ws)
+    {
+        var uri = new Uri(_url);
+
+        // Linux TLS bridge
+        var connect = ws is BridgeWebSocket bridge
+            ? bridge.ConnectAsync(uri)
+            : ((ClientWebSocket)ws).ConnectAsync(uri, CancellationToken.None);
         var finished = await Task.WhenAny(connect, Task.Delay(ConnectTimeoutMs));
         if (finished != connect)
         {
@@ -270,7 +286,7 @@ public static class IntegrationSocket
             TaskContinuationOptions.OnlyOnFaulted | TaskContinuationOptions.ExecuteSynchronously,
             TaskScheduler.Default);
 
-    private static async Task StreamLoopAsync(ClientWebSocket ws)
+    private static async Task StreamLoopAsync(WebSocket ws)
     {
         var lastWorldSignature = string.Empty;
         var lastWorldSentAt = DateTime.MinValue;
@@ -309,7 +325,7 @@ public static class IntegrationSocket
         }
     }
 
-    private static async Task ReceiveLoopAsync(ClientWebSocket ws)
+    private static async Task ReceiveLoopAsync(WebSocket ws)
     {
         var buffer = new byte[MaxMessageBytes];
 
@@ -325,7 +341,7 @@ public static class IntegrationSocket
         }
     }
 
-    private static async Task<(bool Ok, int Count)> ReadMessageAsync(ClientWebSocket ws, byte[] buffer)
+    private static async Task<(bool Ok, int Count)> ReadMessageAsync(WebSocket ws, byte[] buffer)
     {
         var total = 0;
 
@@ -359,7 +375,7 @@ public static class IntegrationSocket
         }
     }
 
-    private static void HandleFrame(ClientWebSocket ws, string text)
+    private static void HandleFrame(WebSocket ws, string text)
     {
         string type;
         string? id = null;
@@ -434,7 +450,7 @@ public static class IntegrationSocket
         }
     }
 
-    private static async Task HandleCommandAsync(ClientWebSocket ws, string id, string payload)
+    private static async Task HandleCommandAsync(WebSocket ws, string id, string payload)
     {
         try
         {
@@ -497,7 +513,7 @@ public static class IntegrationSocket
         }
     }
 
-    private static void SendFullState(ClientWebSocket ws)
+    private static void SendFullState(WebSocket ws)
     {
         _ = SendAsync(ws, Frame(TypePlayers, IntegrationSnapshots.Map));
         _ = SendAsync(ws, Frame(TypeBlips, IntegrationSnapshots.Blips));
@@ -512,7 +528,7 @@ public static class IntegrationSocket
     private static string AckFrame(string id, int status, string resultJson) =>
         "{\"type\":\"" + TypeCommandAck + "\",\"id\":\"" + id + "\",\"payload\":{\"status\":" + status + ",\"result\":" + resultJson + "}}";
 
-    private static async Task SendAsync(ClientWebSocket ws, string frame)
+    private static async Task SendAsync(WebSocket ws, string frame)
     {
         var bytes = Encoding.UTF8.GetBytes(frame);
 
