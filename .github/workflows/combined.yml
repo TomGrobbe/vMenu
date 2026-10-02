@@ -2,7 +2,7 @@ name: CI/CD
 
 # This exact file sits on both legacy and enhanced. Keep the two copies identical.
 # A push to either branch builds both lines into one release attached to the Enhanced tag.
-# Only the pushed line gets a new version, the other one is rebuilt from its latest tag.
+# A line only gets a new version when it has new commits, otherwise it is rebuilt from its latest tag.
 
 on:
   push:
@@ -18,7 +18,8 @@ on:
 permissions:
   contents: read
 
-# Never cancelled, a half finished run leaves tags without a release.
+# One run at a time across both branches, never cancelled halfway. GitHub does drop a queued run when
+# a newer one queues behind it, which is why the plan job also picks up commits that never got a run.
 concurrency:
   group: combined-release
   cancel-in-progress: false
@@ -34,63 +35,191 @@ jobs:
     runs-on: ubuntu-latest
 
     outputs:
-      legacy_moved:     ${{ steps.plan.outputs.legacy_moved }}
-      enhanced_moved:   ${{ steps.plan.outputs.enhanced_moved }}
-      legacy_ref:       ${{ steps.plan.outputs.legacy_ref }}
-      enhanced_ref:     ${{ steps.plan.outputs.enhanced_ref }}
-      legacy_version:   ${{ steps.plan.outputs.legacy_version }}
-      enhanced_version: ${{ steps.plan.outputs.enhanced_version }}
+      release:              ${{ steps.plan.outputs.release }}
+      legacy_moved:         ${{ steps.plan.outputs.legacy_moved }}
+      enhanced_moved:       ${{ steps.plan.outputs.enhanced_moved }}
+      legacy_ref:           ${{ steps.plan.outputs.legacy_ref }}
+      enhanced_ref:         ${{ steps.plan.outputs.enhanced_ref }}
+      legacy_version:       ${{ steps.plan.outputs.legacy_version }}
+      enhanced_version:     ${{ steps.plan.outputs.enhanced_version }}
+      legacy_assembly_ver:  ${{ steps.plan.outputs.legacy_assembly_ver }}
+      enhanced_assembly_ver: ${{ steps.plan.outputs.enhanced_assembly_ver }}
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
+          path: repo
           fetch-depth: 0
 
-      - name: Decide what moved
-        id: plan
+      # The pushed line is pinned to its sha, so a push landing mid run cannot move it.
+      # The other line also moves when it has commits since its tag that never got a run of their own,
+      # which happens when GitHub drops a queued run because a newer one queued behind it.
+      - name: Find the lines with unreleased changes
+        id: candidates
+        working-directory: repo
         shell: bash
         run: |
           git fetch origin --tags --prune "+refs/heads/*:refs/remotes/origin/*"
 
-          # The pushed line is pinned to its sha, so a push landing mid run cannot move it.
-          # A line without any tag yet has nothing to carry over and is versioned from its tip.
-          resolve() {
-            local line="$1" branch="$2" glob="$3" prefix="$4"
-            local moved ref version tag
+          releasable_commit() {
+            local sha="$1" files
+            if git log -1 --format=%B "$sha" | grep -qiE '\[(skip ci|ci skip|no ci|skip actions|actions skip)\]|^skip-checks: *true'; then
+              return 1
+            fi
+            if git rev-parse -q --verify "$sha^1" >/dev/null; then
+              files=$(git diff --name-only "$sha^1" "$sha")
+            else
+              files=$(git show --name-only --format= "$sha")
+            fi
+            printf '%s\n' "$files" | grep -vE '^(docs/|\.github/workflows/docs\.yml$)' | grep -q .
+          }
+
+          candidate() {
+            local line="$1" branch="$2" glob="$3"
+            local tag ref sha moved=false
+
+            tag=$(git describe --tags --abbrev=0 --match "$glob" "origin/$branch" 2>/dev/null || true)
 
             if [ "$GITHUB_REF" = "refs/heads/$branch" ]; then
-              moved=true
               ref="$GITHUB_SHA"
-              version=""
+              moved=true
             else
-              tag=$(git describe --tags --abbrev=0 --match "$glob" "origin/$branch" 2>/dev/null || true)
-
-              if [ -n "$tag" ]; then
-                moved=false
-                ref="$tag"
-                version="${tag#"$prefix"}"
-              else
+              ref=$(git rev-parse "origin/$branch")
+              if [ -z "$tag" ]; then
                 moved=true
-                ref=$(git rev-parse "origin/$branch")
-                version=""
+              else
+                for sha in $(git rev-list --first-parent "$tag..$ref"); do
+                  if releasable_commit "$sha"; then
+                    echo "$line has unreleased commit $(git log -1 --format='%h %s' "$sha")"
+                    moved=true
+                    break
+                  fi
+                done
               fi
             fi
 
-            echo "$line: moved=$moved ref=$ref version=${version:-<from GitVersion>}"
+            echo "$line: tag=${tag:-<none>} ref=$ref candidate=$moved"
             {
-              echo "${line}_moved=$moved"
+              echo "${line}_tag=$tag"
               echo "${line}_ref=$ref"
-              echo "${line}_version=$version"
+              echo "${line}_moved=$moved"
             } >> "$GITHUB_OUTPUT"
           }
 
-          resolve legacy   legacy   'v[0-9]*'          'v'
-          resolve enhanced enhanced 'enhanced-v[0-9]*' 'enhanced-v'
+          candidate legacy   legacy   'v[0-9]*'
+          candidate enhanced enhanced 'enhanced-v[0-9]*'
+
+      - name: Checkout legacy
+        if: steps.candidates.outputs.legacy_moved == 'true'
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.candidates.outputs.legacy_ref }}
+          path: legacy
+          fetch-depth: 0
+
+      - name: Checkout enhanced
+        if: steps.candidates.outputs.enhanced_moved == 'true'
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.candidates.outputs.enhanced_ref }}
+          path: enhanced
+          fetch-depth: 0
+
+      - name: Install GitVersion
+        if: steps.candidates.outputs.legacy_moved == 'true' || steps.candidates.outputs.enhanced_moved == 'true'
+        uses: gittools/actions/gitversion/setup@v3.0.0
+        with:
+          versionSpec: '5.x'
+
+      - name: GitVersion legacy
+        if: steps.candidates.outputs.legacy_moved == 'true'
+        id: gv_legacy
+        uses: gittools/actions/gitversion/execute@v3.0.0
+        with:
+          targetPath: legacy
+
+      - name: GitVersion enhanced
+        if: steps.candidates.outputs.enhanced_moved == 'true'
+        id: gv_enhanced
+        uses: gittools/actions/gitversion/execute@v3.0.0
+        with:
+          targetPath: enhanced
+
+      # A +semver: none commit calculates the version that is already tagged on an older commit.
+      # Releasing it would overwrite that release with code its tag does not contain, so the line counts as unchanged.
+      - name: Settle versions
+        id: plan
+        working-directory: repo
+        shell: bash
+        env:
+          LEGACY_MOVED:      ${{ steps.candidates.outputs.legacy_moved }}
+          LEGACY_REF:        ${{ steps.candidates.outputs.legacy_ref }}
+          LEGACY_TAG:        ${{ steps.candidates.outputs.legacy_tag }}
+          LEGACY_SEMVER:     ${{ steps.gv_legacy.outputs.semVer }}
+          LEGACY_ASSEMBLY:   ${{ steps.gv_legacy.outputs.assemblySemVer }}
+          ENHANCED_MOVED:    ${{ steps.candidates.outputs.enhanced_moved }}
+          ENHANCED_REF:      ${{ steps.candidates.outputs.enhanced_ref }}
+          ENHANCED_TAG:      ${{ steps.candidates.outputs.enhanced_tag }}
+          ENHANCED_SEMVER:   ${{ steps.gv_enhanced.outputs.semVer }}
+          ENHANCED_ASSEMBLY: ${{ steps.gv_enhanced.outputs.assemblySemVer }}
+        run: |
+          RELEASE=false
+
+          settle() {
+            local line="$1" title="$2" prefix="$3" moved="$4" ref="$5" tag="$6" semver="$7" assembly="$8"
+            local existing state
+
+            if [ "$moved" = "true" ]; then
+              existing=$(git rev-parse -q --verify "refs/tags/$prefix$semver^{commit}" || true)
+              if [ -n "$existing" ] && [ "$existing" != "$(git rev-parse "$ref^{commit}")" ]; then
+                echo "$line: $prefix$semver is already tagged on ${existing:0:7}, nothing new to release."
+                moved=false
+                tag="$prefix$semver"
+              fi
+            fi
+
+            if [ "$moved" = "true" ]; then
+              RELEASE=true
+              state="new"
+            else
+              ref="$tag"
+              semver="${tag#"$prefix"}"
+              assembly="${semver%%-*}"
+              state="unchanged, rebuilt from its tag"
+            fi
+
+            echo "$line: moved=$moved ref=$ref version=$semver"
+            {
+              echo "${line}_moved=$moved"
+              echo "${line}_ref=$ref"
+              echo "${line}_version=$semver"
+              echo "${line}_assembly_ver=$assembly"
+            } >> "$GITHUB_OUTPUT"
+            {
+              echo "## $title"
+              echo ""
+              echo "| | |"
+              echo "| --- | --- |"
+              echo "| Version | \`${semver}\` (${state}) |"
+              echo "| Assembly version | \`${assembly}\` |"
+              echo "| Tag | \`${prefix}${semver}\` |"
+              echo ""
+            } >> "$GITHUB_STEP_SUMMARY"
+          }
+
+          settle legacy   "vMenu (legacy)"   'v'          "$LEGACY_MOVED"   "$LEGACY_REF"   "$LEGACY_TAG"   "$LEGACY_SEMVER"   "$LEGACY_ASSEMBLY"
+          settle enhanced "vMenu Enhanced" 'enhanced-v' "$ENHANCED_MOVED" "$ENHANCED_REF" "$ENHANCED_TAG" "$ENHANCED_SEMVER" "$ENHANCED_ASSEMBLY"
+
+          if [ "$RELEASE" = "false" ]; then
+            echo "Nothing new to release on either line." | tee -a "$GITHUB_STEP_SUMMARY"
+          fi
+          echo "release=$RELEASE" >> "$GITHUB_OUTPUT"
 
   build-legacy:
     name: Build vMenu (legacy)
     needs: plan
+    if: needs.plan.outputs.release == 'true'
     runs-on: windows-latest
 
     outputs:
@@ -104,46 +233,16 @@ jobs:
           ref: ${{ needs.plan.outputs.legacy_ref }}
           fetch-depth: 0
 
-      - name: Install GitVersion
-        if: needs.plan.outputs.legacy_moved == 'true'
-        uses: gittools/actions/gitversion/setup@v3.0.0
-        with:
-          versionSpec: "5.x"
-
-      - name: Execute GitVersion
-        if: needs.plan.outputs.legacy_moved == 'true'
-        id: gitversion
-        uses: gittools/actions/gitversion/execute@v3.0.0
-
       - name: Set version
         id: version
         shell: bash
         run: |
-          if [ "${{ needs.plan.outputs.legacy_moved }}" = "true" ]; then
-            VERSION="${{ steps.gitversion.outputs.semVer }}"
-            ASSEMBLY_VER="${{ steps.gitversion.outputs.assemblySemVer }}"
-            STATE="new"
-          else
-            VERSION="${{ needs.plan.outputs.legacy_version }}"
-            ASSEMBLY_VER="${VERSION%%-*}"
-            STATE="unchanged, rebuilt from its tag"
-          fi
-          ZIP_NAME="vMenu-${VERSION}.zip"
+          VERSION="${{ needs.plan.outputs.legacy_version }}"
           {
             echo "version=$VERSION"
-            echo "assembly_ver=$ASSEMBLY_VER"
-            echo "zip_name=$ZIP_NAME"
+            echo "assembly_ver=${{ needs.plan.outputs.legacy_assembly_ver }}"
+            echo "zip_name=vMenu-${VERSION}.zip"
           } >> "$GITHUB_OUTPUT"
-          {
-            echo "## vMenu (legacy)"
-            echo ""
-            echo "| | |"
-            echo "| --- | --- |"
-            echo "| Version | \`${VERSION}\` (${STATE}) |"
-            echo "| Assembly version | \`${ASSEMBLY_VER}\` |"
-            echo "| Tag | \`v${VERSION}\` |"
-            echo "| Package | \`${ZIP_NAME}\` |"
-          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Restore NuGet packages
         run: dotnet restore vMenu.sln
@@ -175,6 +274,7 @@ jobs:
   build-enhanced:
     name: Build vMenu Enhanced
     needs: plan
+    if: needs.plan.outputs.release == 'true'
     runs-on: windows-latest
 
     outputs:
@@ -193,46 +293,16 @@ jobs:
         with:
           global-json-file: global.json
 
-      - name: Install GitVersion
-        if: needs.plan.outputs.enhanced_moved == 'true'
-        uses: gittools/actions/gitversion/setup@v3.0.0
-        with:
-          versionSpec: "5.x"
-
-      - name: Execute GitVersion
-        if: needs.plan.outputs.enhanced_moved == 'true'
-        id: gitversion
-        uses: gittools/actions/gitversion/execute@v3.0.0
-
       - name: Set version
         id: version
         shell: bash
         run: |
-          if [ "${{ needs.plan.outputs.enhanced_moved }}" = "true" ]; then
-            VERSION="${{ steps.gitversion.outputs.semVer }}"
-            ASSEMBLY_VER="${{ steps.gitversion.outputs.assemblySemVer }}"
-            STATE="new"
-          else
-            VERSION="${{ needs.plan.outputs.enhanced_version }}"
-            ASSEMBLY_VER="${VERSION%%-*}"
-            STATE="unchanged, rebuilt from its tag"
-          fi
-          ZIP_NAME="vMenu-Enhanced-v${VERSION}.zip"
+          VERSION="${{ needs.plan.outputs.enhanced_version }}"
           {
             echo "version=$VERSION"
-            echo "assembly_ver=$ASSEMBLY_VER"
-            echo "zip_name=$ZIP_NAME"
+            echo "assembly_ver=${{ needs.plan.outputs.enhanced_assembly_ver }}"
+            echo "zip_name=vMenu-Enhanced-v${VERSION}.zip"
           } >> "$GITHUB_OUTPUT"
-          {
-            echo "## vMenu Enhanced"
-            echo ""
-            echo "| | |"
-            echo "| --- | --- |"
-            echo "| Version | \`${VERSION}\` (${STATE}) |"
-            echo "| Assembly version | \`${ASSEMBLY_VER}\` |"
-            echo "| Tag | \`enhanced-v${VERSION}\` |"
-            echo "| Package | \`${ZIP_NAME}\` |"
-          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Restore
         run: dotnet restore vMenu.Enhanced.slnx
@@ -334,8 +404,8 @@ jobs:
     env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       GH_REPO: ${{ github.repository }}
-      LEGACY_VERSION: ${{ needs.build-legacy.outputs.version }}
-      ENHANCED_VERSION: ${{ needs.build-enhanced.outputs.version }}
+      LEGACY_VERSION: ${{ needs.plan.outputs.legacy_version }}
+      ENHANCED_VERSION: ${{ needs.plan.outputs.enhanced_version }}
       LEGACY_REF: ${{ needs.plan.outputs.legacy_ref }}
       ENHANCED_REF: ${{ needs.plan.outputs.enhanced_ref }}
 
@@ -545,8 +615,10 @@ jobs:
           ENHANCED_RESULT: ${{ needs.build-enhanced.result }}
           RELEASE_RESULT: ${{ needs.release.result }}
           NUGET_RESULT: ${{ needs.publish-nuget.result }}
-          LEGACY_VERSION: ${{ needs.build-legacy.outputs.version }}
-          ENHANCED_VERSION: ${{ needs.build-enhanced.outputs.version }}
+          LEGACY_VERSION: ${{ needs.plan.outputs.legacy_version }}
+          ENHANCED_VERSION: ${{ needs.plan.outputs.enhanced_version }}
+          RELEASE: ${{ needs.plan.outputs.release }}
+          PLAN_RESULT: ${{ needs.plan.result }}
           LEGACY_MOVED: ${{ needs.plan.outputs.legacy_moved }}
           ENHANCED_MOVED: ${{ needs.plan.outputs.enhanced_moved }}
           RELEASE_URL: ${{ needs.release.outputs.release_url }}
@@ -580,7 +652,7 @@ jobs:
 
           FAILED=false
           CANCELLED=false
-          for RESULT in "$LEGACY_RESULT" "$ENHANCED_RESULT" "$RELEASE_RESULT" "$NUGET_RESULT"; do
+          for RESULT in "$PLAN_RESULT" "$LEGACY_RESULT" "$ENHANCED_RESULT" "$RELEASE_RESULT" "$NUGET_RESULT"; do
             case "$RESULT" in
               cancelled) CANCELLED=true ;;
               success|skipped) ;;
@@ -588,7 +660,10 @@ jobs:
             esac
           done
 
-          if [ "$CANCELLED" = "true" ]; then
+          if [ "$RELEASE" != "true" ] && [ "$FAILED" = "false" ] && [ "$CANCELLED" = "false" ]; then
+            COLOR=9807270
+            STATUS_TEXT="No new version, nothing was released."
+          elif [ "$CANCELLED" = "true" ]; then
             COLOR=16776960
             STATUS_TEXT="Build cancelled."
           elif [ "$FAILED" = "true" ]; then
