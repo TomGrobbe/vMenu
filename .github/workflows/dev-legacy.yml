@@ -1,0 +1,89 @@
+name: Dev Build (Legacy)
+
+# Branches taken from legacy. Builds a dev version as a run artifact, never tags or releases.
+
+on:
+  push:
+    branches-ignore:
+      - legacy
+      - enhanced
+    paths-ignore:
+      - "docs/**"
+      - ".github/workflows/docs.yml"
+  pull_request:
+    paths-ignore:
+      - "docs/**"
+      - ".github/workflows/docs.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+
+jobs:
+  build:
+    name: Build
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set dev version
+        id: version
+        shell: bash
+        env:
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          TAG=$(git describe --tags --abbrev=0 --match 'v[0-9]*' HEAD 2>/dev/null || true)
+          BASE="${TAG#v}"
+          BASE="${BASE%%-*}"
+          IFS=. read -r MAJOR MINOR PATCH <<< "${BASE:-0.0.0}"
+          NEXT="$MAJOR.$MINOR.$((PATCH + 1))"
+          VERSION="$NEXT-dev.${{ github.run_number }}+${HEAD_SHA:0:7}"
+          ZIP_NAME="vMenu-${VERSION}.zip"
+          {
+            echo "version=$VERSION"
+            echo "assembly_ver=$NEXT"
+            echo "zip_name=$ZIP_NAME"
+          } >> "$GITHUB_OUTPUT"
+          {
+            echo "## Dev version"
+            echo ""
+            echo "This run built vMenu \`${VERSION}\`, based on \`${TAG:-no tag}\`. It is not tagged or released."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Restore NuGet packages
+        run: dotnet restore vMenu.sln
+
+      - name: Build
+        shell: bash
+        run: |
+          dotnet build vMenu.sln -c Release --no-restore \
+            -p:Version="${{ steps.version.outputs.version }}" \
+            -p:AssemblyVersion="${{ steps.version.outputs.assembly_ver }}" \
+            -p:FileVersion="${{ steps.version.outputs.assembly_ver }}"
+
+      - name: Assemble and zip
+        shell: pwsh
+        run: |
+          Copy-Item 'assets/fxmanifest.lua' 'build/vMenu/fxmanifest.lua' -Force
+          (Get-Content 'build/vMenu/fxmanifest.lua') -replace 'versiongoeshere', '${{ steps.version.outputs.version }}' |
+            Set-Content -Encoding ASCII 'build/vMenu/fxmanifest.lua'
+          Copy-Item README.md  build/vMenu/README.md  -Force
+          Copy-Item LICENSE.md build/vMenu/LICENSE.md -Force
+          Compress-Archive -Path 'build/vMenu/*' -DestinationPath '${{ steps.version.outputs.zip_name }}' -Force
+
+      - name: Upload zip
+        uses: actions/upload-artifact@v4
+        with:
+          name: legacy-zip
+          path: ${{ steps.version.outputs.zip_name }}

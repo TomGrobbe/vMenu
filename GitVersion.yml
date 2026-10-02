@@ -1,31 +1,19 @@
-# GitVersion configuration
+# GitVersion configuration (vMenu legacy)
 # Docs: https://gitversion.net/docs/reference/configuration
 #
-# master      → stable releases, patch auto-increments per commit
-# development → version is calculated from master tags; the workflow
-#               appends -dev-{sha} to MajorMinorPatch, so GitVersion's
-#               own pre-release label is intentionally ignored there.
-#
-# Commit message overrides (anywhere in the message):
-#   +semver: major  →  bumps major (e.g. 3.8.6 → 4.0.0)
-#   +semver: minor  →  bumps minor (e.g. 3.8.6 → 3.9.0)
-#   +semver: patch  →  bumps patch (e.g. 3.8.6 → 3.8.7)  ← default
-#   +semver: none   →  no bump on this commit
-#
-# dev- prefixed tags (created by development branch builds) are ignored
-# by GitVersion because they don't match the default tag-prefix [vV].
+# Every commit on legacy bumps the patch version. Put one of these in a commit message to change that:
+#   +semver: major | minor | patch | none
 
 assembly-versioning-scheme: MajorMinorPatch
 assembly-file-versioning-scheme: MajorMinorPatch
 mode: Mainline
 
 branches:
-  master:
-    regex: '^master$'
+  # Both names match because GitVersion trusts GITHUB_REF over the branch that is checked out.
+  # GitVersion has no defaults for a branch called legacy, without these it labels builds 3.8.62-legacy.1.
+  mainline:
+    regex: '^(legacy|enhanced)$'
     increment: Patch
     is-mainline: true
-  development:
-    regex: '^development$'
-    increment: Patch
-    is-mainline: false
-    source-branches: [master]
+    tag: ''
+    source-branches: []
