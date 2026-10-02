@@ -3,6 +3,8 @@ using System.Text.Json;
 
 using CitizenFX.FiveM.Server;
 
+using vMenu.Enhanced.BrokenNatives.Server;
+
 namespace vMenu.Enhanced.Integration.Server;
 
 public static class RoutingBucketCommands
@@ -57,7 +59,7 @@ public static class RoutingBucketCommands
 
         _ = TimeoutAsync(id);
 
-        API.EmitLocal(ServerCommandEvent, id, action, paramsJson);
+        NativeFixer.EmitLocal(ServerCommandEvent, id, action, paramsJson);
     }
 
     private static async Task TimeoutAsync(string id)

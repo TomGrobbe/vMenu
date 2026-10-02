@@ -2,6 +2,8 @@ using System.Text.Json;
 
 using CitizenFX.FiveM.Server;
 
+using vMenu.Enhanced.BrokenNatives.Server;
+
 namespace vMenu.Enhanced.Integration.Server;
 
 public static class RoutingBuckets
@@ -34,7 +36,7 @@ public static class RoutingBuckets
         API.OnEvent(ServerStateEvent, new Action<string>(OnServerState), false);
         API.OnEvent(StopEvent, new Action<string>(OnResourceStop), false);
 
-        API.EmitLocal(RequestStateEvent);
+        NativeFixer.EmitLocal(RequestStateEvent);
     }
 
     private static void OnServerState(string json)
