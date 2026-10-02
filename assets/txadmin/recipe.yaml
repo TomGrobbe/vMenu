@@ -19,8 +19,16 @@ tasks:
 
   # Download server.cfg
   - action: download_file
-    url: __VMENU_RELEASE_URL__/txadmin-vmenu-legacy-server.cfg
-    path: ./server.cfg
+    url: __VMENU_RELEASE_URL__/txadmin-files.zip
+    path: ./tmp/txadmin-files.zip
+
+  - action: unzip
+    src: ./tmp/txadmin-files.zip
+    dest: ./tmp/txadmin-files
+
+  - action: move_path
+    src: ./tmp/txadmin-files/txadmin-vmenu-legacy-server.cfg
+    dest: ./server.cfg
 
   # Download vMenu, the folder name has to be exactly vMenu
   - action: download_file
