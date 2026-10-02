@@ -193,5 +193,7 @@ public static partial class Loc
         public const string Exploded = "personalvehicle.explode.done";
 
         public const string ExplodeFailed = "personalvehicle.explode.failed";
+
+        public const string ExplodeGodMode = "personalvehicle.explode.godmode";
     }
 }

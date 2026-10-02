@@ -311,6 +311,7 @@ internal static class EnglishStrings
             [Loc.PersonalVehicle.ExplodeConfirm] = "~r~Are you sure you want to blow this vehicle up? Press enter again to confirm.",
             [Loc.PersonalVehicle.Exploded] = "~r~Your personal vehicle has been blown up~s~.",
             [Loc.PersonalVehicle.ExplodeFailed] = "Could not blow your vehicle up.",
+            [Loc.PersonalVehicle.ExplodeGodMode] = "Your vehicle has ~y~vehicle god mode~s~ on, so it cannot be blown up.",
 
             [Loc.VehiclesMenu.Title] = "Vehicles Menu",
             [Loc.VehiclesMenu.Subtitle] = "Vehicles Menu",
@@ -413,6 +414,7 @@ internal static class EnglishStrings
             [Loc.OnlinePlayers.ExplodeVehicleDone] = "Blew up the vehicle ~y~{player}~s~ was driving.",
             [Loc.OnlinePlayers.ExplodeVehicleOnFoot] = "~y~{player}~s~ is on foot, so there is no vehicle to blow up.",
             [Loc.OnlinePlayers.ExplodeVehicleNotDriving] = "~y~{player}~s~ is only a passenger, so the vehicle is not theirs to lose.",
+            [Loc.OnlinePlayers.ExplodeVehicleGodMode] = "The vehicle of ~y~{player}~s~ has ~y~vehicle god mode~s~ on, so it cannot be blown up.",
             [Loc.OnlinePlayers.ExplodeVehicleFailed] = "Could not blow up the vehicle ~y~{player}~s~ is driving.",
             [Loc.OnlinePlayers.CheckStatus] = "Check God Mode",
             [Loc.OnlinePlayers.CheckStatusDescription] = "Ask this player's game whether they have player or vehicle god mode switched on.",

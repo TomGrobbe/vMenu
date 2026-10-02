@@ -324,6 +324,13 @@ public static class PersonalVehicle
         {
             var result = await ServerActions.InvokeAsync(ActionIds.PersonalVehicle.Explode);
 
+            if (result.Status == ActionStatus.Refused && result.Data is [RemoteVehicleAction.GodMode, ..])
+            {
+                Notifications.Warning(MenuText.Key(Loc.PersonalVehicle.ExplodeGodMode));
+
+                return;
+            }
+
             if (!result.IsOk)
             {
                 Notify(result.Status, Loc.PersonalVehicle.Gone, Loc.PersonalVehicle.ExplodeFailed);

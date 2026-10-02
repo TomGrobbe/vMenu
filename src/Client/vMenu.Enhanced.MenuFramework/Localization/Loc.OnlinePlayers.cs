@@ -140,6 +140,8 @@ public static partial class Loc
 
         public const string ExplodeVehicleNotDriving = "onlineplayers.explodevehicle.notdriving";
 
+        public const string ExplodeVehicleGodMode = "onlineplayers.explodevehicle.godmode";
+
         public const string ExplodeVehicleFailed = "onlineplayers.explodevehicle.failed";
 
         public const string CheckStatus = "onlineplayers.status";

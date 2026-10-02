@@ -46,6 +46,8 @@ public sealed class OnlinePlayersMenu : MenuDefinition
 
     private const string ExplodeFailed = "3";
 
+    private const string ExplodeGodMode = "4";
+
     private const string PassengerOnly = "2";
 
     private const string SummonMoved = "0";
@@ -555,6 +557,11 @@ public sealed class OnlinePlayersMenu : MenuDefinition
 
             case ExplodeFailed:
                 Notifications.Error(MenuText.Key(Loc.OnlinePlayers.ExplodeVehicleFailed, ("player", name)));
+
+                break;
+
+            case ExplodeGodMode:
+                Notifications.Warning(MenuText.Key(Loc.OnlinePlayers.ExplodeVehicleGodMode, ("player", name)));
 
                 break;
 

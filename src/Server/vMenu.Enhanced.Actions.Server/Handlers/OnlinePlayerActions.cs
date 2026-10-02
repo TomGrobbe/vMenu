@@ -55,6 +55,8 @@ public static class OnlinePlayerActions
 
     private const string ExplodeFailed = "3";
 
+    private const string ExplodeGodMode = "4";
+
     private const string StatusOn = "1";
 
     private const string StatusOff = "0";
@@ -801,17 +803,25 @@ public static class OnlinePlayerActions
 
     private static ActionResponse DeleteVehicle(Player source, string[] args)
     {
+        Log.Warning($"[OnlinePlayers][VehicleDebug] DeleteVehicle requested by {source.Name} with args [{string.Join(", ", args)}].");
+
         if (!TryResolveTarget(args, out var target))
         {
+            Log.Warning("[OnlinePlayers][VehicleDebug] Target did not resolve to a connected player.");
+
             return ActionResponse.NotFound();
         }
 
         if (PedOf(target) is not { } ped)
         {
+            Log.Warning($"[OnlinePlayers][VehicleDebug] Target {target} has no ped (GetPlayerPed={Native.GetPlayerPed(target.ToString(CultureInfo.InvariantCulture))}).");
+
             return ActionResponse.NotReady();
         }
 
         var vehicle = Native.GetVehiclePedIsIn(ped, false);
+
+        LogVehicleLookup(target, ped, vehicle);
 
         if (vehicle == 0 || !Native.DoesEntityExist(vehicle) || Native.GetEntityType(vehicle) != VehicleEntityType)
         {
@@ -832,17 +842,25 @@ public static class OnlinePlayerActions
 
     private static async Task<ActionResponse> ExplodeVehicle(Player source, string[] args)
     {
+        Log.Warning($"[OnlinePlayers][VehicleDebug] ExplodeVehicle requested by {source.Name} with args [{string.Join(", ", args)}].");
+
         if (!TryResolveTarget(args, out var target))
         {
+            Log.Warning("[OnlinePlayers][VehicleDebug] Target did not resolve to a connected player.");
+
             return ActionResponse.NotFound();
         }
 
         if (PedOf(target) is not { } ped)
         {
+            Log.Warning($"[OnlinePlayers][VehicleDebug] Target {target} has no ped (GetPlayerPed={Native.GetPlayerPed(target.ToString(CultureInfo.InvariantCulture))}).");
+
             return ActionResponse.NotReady();
         }
 
         var vehicle = Native.GetVehiclePedIsIn(ped, false);
+
+        LogVehicleLookup(target, ped, vehicle);
 
         if (vehicle == 0 || !Native.DoesEntityExist(vehicle) || Native.GetEntityType(vehicle) != VehicleEntityType)
         {
@@ -860,6 +878,11 @@ public static class OnlinePlayerActions
             vehicle,
             RemoteVehicleAction.Explode);
 
+        if (response.Status == ActionStatus.Refused)
+        {
+            return ActionResponse.Ok(ExplodeGodMode);
+        }
+
         if (response.Status != ActionStatus.Ok)
         {
             return ActionResponse.Ok(ExplodeFailed);
@@ -868,6 +891,20 @@ public static class OnlinePlayerActions
         Log.Info($"[OnlinePlayers] {source.Name} blew up the vehicle {Native.GetPlayerName(target.ToString())} was driving.");
 
         return ActionResponse.Ok(Exploded);
+    }
+
+    private static void LogVehicleLookup(int target, int ped, int vehicle)
+    {
+        var last = Native.GetVehiclePedIsIn(ped, true);
+        var exists = vehicle != 0 && Native.DoesEntityExist(vehicle);
+
+        Log.Warning(
+            $"[OnlinePlayers][VehicleDebug] target={target} ped={ped} pedType={Native.GetEntityType(ped)} "
+            + $"vehicle={vehicle} exists={exists} "
+            + $"type={(exists ? Native.GetEntityType(vehicle) : -1)} "
+            + $"driver={(exists ? Native.GetPedInVehicleSeat(vehicle, DriverSeat) : -1)} "
+            + $"netId={(exists ? Native.NetworkGetNetworkIdFromEntity(vehicle) : -1)} "
+            + $"lastVehicle={last} lastExists={last != 0 && Native.DoesEntityExist(last)}");
     }
 
     private static async Task<ActionResponse> GetStatus(Player source, string[] args)

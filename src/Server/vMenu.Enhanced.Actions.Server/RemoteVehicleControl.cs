@@ -33,17 +33,28 @@ public static class RemoteVehicleControl
 
         _registered = true;
 
-        API.OnNetEvent(PersonalVehicleEvents.Performed, new Action<Player, string, bool>(OnPerformed), false);
+        API.OnNetEvent(PersonalVehicleEvents.Performed, new Action<Player, string, string>(OnPerformed), false);
     }
 
-    public static async Task<ActionResponse> PerformAsync(
+    public static Task<ActionResponse> PerformAsync(
         Player owner,
+        int networkId,
+        int entity,
+        string action,
+        params string[] args) =>
+        PerformAsync(owner.Handle, owner.Name, networkId, entity, action, args);
+
+    // For requests that do not come from a player in game (the web integration). The preferred player is
+    // asked first when they are near the vehicle, the same way the owner is above.
+    public static async Task<ActionResponse> PerformAsync(
+        int preferred,
+        string requester,
         int networkId,
         int entity,
         string action,
         params string[] args)
     {
-        var candidates = Candidates(owner, entity);
+        var candidates = Candidates(preferred, entity);
 
         if (candidates.Count == 0)
         {
@@ -54,25 +65,34 @@ public static class RemoteVehicleControl
 
         foreach (var candidate in candidates)
         {
-            if (await AskAsync(candidate, networkId, action, args, timeoutMs))
+            var outcome = await AskAsync(candidate, networkId, action, args, timeoutMs);
+
+            if (string.Equals(outcome, RemoteVehicleAction.Done, StringComparison.Ordinal))
             {
                 Log.Debug($"[PersonalVehicle] '{action}' on {networkId} was carried out by {candidate}.");
 
                 return ActionResponse.Ok();
             }
+
+            if (string.Equals(outcome, RemoteVehicleAction.GodMode, StringComparison.Ordinal))
+            {
+                Log.Info($"[PersonalVehicle] {requester} asked for '{action}' on {networkId}, which has vehicle god mode on.");
+
+                return ActionResponse.Refused(RemoteVehicleAction.GodMode);
+            }
         }
 
         Log.Info(
-            $"[PersonalVehicle] {owner.Name} asked for '{action}' on {networkId}, "
+            $"[PersonalVehicle] {requester} asked for '{action}' on {networkId}, "
             + $"which none of the {candidates.Count} player(s) near it could carry out.");
 
         return ActionResponse.NotReady();
     }
 
-    private static async Task<bool> AskAsync(int target, int networkId, string action, string[] args, int timeoutMs)
+    private static async Task<string> AskAsync(int target, int networkId, string action, string[] args, int timeoutMs)
     {
         var requestId = ++_lastRequestId;
-        var answered = new TaskCompletionSource<bool>();
+        var answered = new TaskCompletionSource<string>();
 
         Unanswered[requestId] = new PendingPerform(target, answered);
 
@@ -88,7 +108,7 @@ public static class RemoteVehicleControl
         {
             var timeout = API.Delay(timeoutMs);
 
-            return await Task.WhenAny(answered.Task, timeout) != timeout && answered.Task.Result;
+            return await Task.WhenAny(answered.Task, timeout) != timeout ? answered.Task.Result : RemoteVehicleAction.Failed;
         }
         finally
         {
@@ -98,7 +118,7 @@ public static class RemoteVehicleControl
         }
     }
 
-    private static List<int> Candidates(Player owner, int entity)
+    private static List<int> Candidates(int preferred, int entity)
     {
         var position = Native.GetEntityCoords(entity);
         var bucket = Native.GetEntityRoutingBucket(entity);
@@ -132,7 +152,7 @@ public static class RemoteVehicleControl
 
         foreach (var entry in reachable)
         {
-            if (entry.ServerId == owner.Handle)
+            if (entry.ServerId == preferred)
             {
                 picked.Insert(0, entry.ServerId);
 
@@ -153,7 +173,7 @@ public static class RemoteVehicleControl
     private static int ByDistance((int ServerId, float DistanceSquared) left, (int ServerId, float DistanceSquared) right) =>
         left.DistanceSquared.CompareTo(right.DistanceSquared);
 
-    private static void OnPerformed([FromSource] Player source, string requestId, bool carriedOut)
+    private static void OnPerformed([FromSource] Player source, string requestId, string outcome)
     {
         if (!int.TryParse(requestId, NumberStyles.Integer, CultureInfo.InvariantCulture, out var id)
             || !Unanswered.TryGetValue(id, out var pending))
@@ -168,13 +188,13 @@ public static class RemoteVehicleControl
             return;
         }
 
-        pending.Answered.TrySetResult(carriedOut);
+        pending.Answered.TrySetResult(outcome ?? RemoteVehicleAction.Failed);
     }
 
-    private sealed class PendingPerform(int target, TaskCompletionSource<bool> answered)
+    private sealed class PendingPerform(int target, TaskCompletionSource<string> answered)
     {
         public int Target { get; } = target;
 
-        public TaskCompletionSource<bool> Answered { get; } = answered;
+        public TaskCompletionSource<string> Answered { get; } = answered;
     }
 }

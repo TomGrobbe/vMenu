@@ -18,6 +18,12 @@ public static class RemoteVehicleAction
 
     public const string Explode = "explode";
 
+    public const string Done = "done";
+
+    public const string Failed = "failed";
+
+    public const string GodMode = "godmode";
+
     public const string On = "1";
 
     public const string Off = "0";

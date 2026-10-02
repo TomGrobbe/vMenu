@@ -19,11 +19,11 @@ internal static class RemoteVehicleExecutor
 
     private static async void OnPerform(string requestId, string networkId, string action, string[] args)
     {
-        var carriedOut = false;
+        var outcome = RemoteVehicleAction.Failed;
 
         try
         {
-            carriedOut = await CarryOutAsync(networkId, action, args ?? []);
+            outcome = await CarryOutAsync(networkId, action, args ?? []);
         }
         catch (Exception exception)
         {
@@ -32,27 +32,41 @@ internal static class RemoteVehicleExecutor
 
         await API.Delay(0);
 
-        API.EmitServer(PersonalVehicleEvents.Performed, requestId, carriedOut);
+        API.EmitServer(PersonalVehicleEvents.Performed, requestId, outcome);
     }
 
-    private static async Task<bool> CarryOutAsync(string networkId, string action, string[] args)
+    private static async Task<string> CarryOutAsync(string networkId, string action, string[] args)
     {
         if (!int.TryParse(networkId, NumberStyles.Integer, CultureInfo.InvariantCulture, out var id))
         {
-            return false;
+            return RemoteVehicleAction.Failed;
         }
 
         var entity = await NetworkEntity.ResolveAsync(id);
 
-        if (entity == 0 || !await NetworkEntity.TakeControlAsync(entity))
+        if (entity == 0)
         {
-            return false;
+            return RemoteVehicleAction.Failed;
+        }
+
+        if (string.Equals(action, RemoteVehicleAction.Explode, StringComparison.Ordinal) && HasGodMode(entity))
+        {
+            return RemoteVehicleAction.GodMode;
+        }
+
+        if (!await NetworkEntity.TakeControlAsync(entity))
+        {
+            return RemoteVehicleAction.Failed;
         }
 
         await API.Delay(0);
 
-        return Apply(entity, action, args);
+        return Apply(entity, action, args) ? RemoteVehicleAction.Done : RemoteVehicleAction.Failed;
     }
+
+    private static bool HasGodMode(int entity) =>
+        Native.GetEntityProofs(entity, out _, out _, out var explosionProof, out _, out _, out _, out _, out _)
+        && explosionProof;
 
     private static bool Apply(int entity, string action, string[] args)
     {
