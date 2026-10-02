@@ -12,6 +12,8 @@ on:
     paths-ignore:
       - "docs/**"
       - ".github/workflows/docs.yml"
+  # Push filters never fire on an empty commit, this is the way to release without a code change.
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -28,6 +30,7 @@ env:
 jobs:
   plan:
     name: Plan
+    if: github.ref == 'refs/heads/legacy' || github.ref == 'refs/heads/enhanced'
     runs-on: ubuntu-latest
 
     outputs:
@@ -529,7 +532,7 @@ jobs:
   notify:
     name: Discord Notification
     needs: [plan, build-legacy, build-enhanced, release, publish-nuget]
-    if: always()
+    if: always() && needs.plan.result != 'skipped'
     runs-on: ubuntu-latest
 
     steps:
@@ -607,7 +610,7 @@ jobs:
           SHA="${{ github.sha }}"
 
           # Discord rejects field values over 1024 characters, squash merges easily get there.
-          COMMIT_SUBJECT=$(printf '%s' "$COMMIT_MSG" | head -n 1)
+          COMMIT_SUBJECT=$(printf '%s' "${COMMIT_MSG:-Manual run}" | head -n 1)
           if [ "${#COMMIT_SUBJECT}" -gt 256 ]; then
             COMMIT_SUBJECT="${COMMIT_SUBJECT:0:253}..."
           fi
