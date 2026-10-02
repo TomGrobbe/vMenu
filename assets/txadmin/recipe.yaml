@@ -1,0 +1,36 @@
+$engine: 3
+$onesync: on
+
+name: vMenu
+author: Tom Grobbe
+description: A FiveM server with vMenu v__VMENU_VERSION__ ready to go. A server sided trainer/menu with full permission support.
+
+tasks:
+  # Download default resources
+  - action: download_github
+    src: https://github.com/citizenfx/cfx-server-data
+    ref: master
+    subpath: resources
+    dest: ./resources
+
+  # Remove the old chat resource
+  - action: remove_path
+    path: ./resources/[gameplay]/chat
+
+  # Download server.cfg
+  - action: download_file
+    url: __VMENU_RELEASE_URL__/txadmin-vmenu-legacy-server.cfg
+    path: ./server.cfg
+
+  # Download vMenu, the folder name has to be exactly vMenu
+  - action: download_file
+    url: __VMENU_RELEASE_URL__/__VMENU_ZIP__
+    path: ./tmp/vmenu.zip
+
+  - action: unzip
+    src: ./tmp/vmenu.zip
+    dest: ./resources/vMenu
+
+  # Clean up
+  - action: remove_path
+    path: ./tmp

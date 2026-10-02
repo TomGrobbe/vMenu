@@ -44,6 +44,20 @@ Congratulations, you've just installed vMenu in its most basic, plug and play co
 * To learn more about the **configuration options** that vMenu has to offer, check out the [Configuration](/vmenu/legacy/configuration/) page.
 * To learn more about how to **set up the permissions.cfg file**, take a look at the [Permissions Reference](/vmenu/legacy/permissions/) page.
 
+## Installing with txAdmin
+
+txAdmin is the control panel that comes with every FiveM server. When you create a new server in it, it can set everything up for you from a "recipe", which is a list of steps it follows to download and configure your server.
+
+vMenu has its own recipe. It gives you a fresh server with vMenu already installed in the right folder, and a `server.cfg` that already loads the `permissions.cfg`. Whoever you set up as the admin in txAdmin also gets vMenu's staff options.
+
+Pick the vMenu recipe in txAdmin's setup screen if it is listed there. If it is not, choose "Remote URL Template" and paste this link:
+
+```
+https://github.com/TomGrobbe/vMenu/releases/latest/download/txadmin-vmenu-legacy-recipe.yaml
+```
+
+That link always points to the newest release.
+
 ## 1-click installation with Zap Hosting
 [![](https://zap-hosting.com/interface/_images/banner/gameserver/fivem-affiliate-banner-1006x180.png)](https://zap-hosting.com/vespura)
 Zap Hosting provides a simple 1 click installation method for vMenu! Click [this link](https://zap-hosting.com/vespura) to get a Zap server and use code `Vespura-a-3715` at checkout for 20% off your purchase!
