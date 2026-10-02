@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <ManagePackageVersionsCentrally>false</ManagePackageVersionsCentrally>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <!--
+    Compiled from source rather than referenced, so this tool never builds those projects into their
+    shared output folders while the solution build is writing there too.
+  -->
+  <ItemGroup>
+    <Compile Include="..\..\src\Shared\vMenu.Enhanced.Data\**\*.cs"
+             Exclude="..\..\src\Shared\vMenu.Enhanced.Data\obj\**;..\..\src\Shared\vMenu.Enhanced.Data\bin\**"
+             LinkBase="Data" />
+    <Compile Include="..\..\src\Server\vMenu.Enhanced.Permissions.Server\PermissionRegistry.cs;
+                      ..\..\src\Server\vMenu.Enhanced.Permissions.Server\PermissionNode.cs;
+                      ..\..\src\Server\vMenu.Enhanced.Permissions.Server\PermissionsExampleFile.cs;
+                      ..\..\src\Server\vMenu.Enhanced.Permissions.Server\SupplementalModelKind.cs;
+                      ..\..\src\Server\vMenu.Enhanced.Permissions.Server\ModelWhitelist.cs;
+                      ..\..\src\Server\vMenu.Enhanced.Permissions.Server\VehicleCategories.cs;
+                      ..\..\src\Server\vMenu.Enhanced.Permissions.Server\PedCategories.cs;
+                      ..\..\src\Server\vMenu.Enhanced.Permissions.Server\WeaponCatalog.cs"
+             LinkBase="Permissions" />
+  </ItemGroup>
+</Project>

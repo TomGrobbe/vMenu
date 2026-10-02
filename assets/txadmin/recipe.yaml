@@ -1,0 +1,90 @@
+$engine: 3
+$onesync: on
+
+name: vMenu Enhanced
+author: Tom Grobbe
+description: A FiveM Enhanced server with vMenu Enhanced v__VMENU_VERSION__ ready to go, plus the routing buckets, theme picker and custom themes plugins.
+
+tasks:
+  # Download default resources
+  - action: download_github
+    src: https://github.com/citizenfx/cfx-server-data
+    ref: master
+    subpath: resources
+    dest: ./tmp/cfx
+
+  # Copy only the resources we might want
+  - action: ensure_dir
+    path: ./resources
+
+  - action: move_path
+    src: ./tmp/cfx/[gamemodes]/basic-gamemode/
+    dest: ./resources/basic-gamemode/
+
+  - action: move_path
+    src: ./tmp/cfx/[managers]/mapmanager/
+    dest: ./resources/mapmanager/
+
+  - action: move_path
+    src: ./tmp/cfx/[managers]/spawnmanager/
+    dest: ./resources/spawnmanager/
+
+  - action: move_path
+    src: ./tmp/cfx/[gamemodes]/[maps]/fivem-map-hipster/
+    dest: ./resources/[maps]/fivem-map-hipster/
+
+  - action: move_path
+    src: ./tmp/cfx/[gamemodes]/[maps]/fivem-map-skater/
+    dest: ./resources/[maps]/fivem-map-skater/
+
+  # Download server.cfg
+  - action: download_file
+    url: __VMENU_RELEASE_URL__/txadmin-vmenu-enhanced-server.cfg
+    path: ./server.cfg
+
+  # Download vMenu Enhanced, the folder name has to be exactly vMenu.Enhanced
+  - action: download_file
+    url: __VMENU_RELEASE_URL__/__VMENU_ZIP__
+    path: ./tmp/vmenu.zip
+
+  - action: unzip
+    src: ./tmp/vmenu.zip
+    dest: ./resources/vMenu.Enhanced
+
+  # Ready to use permissions and settings for vMenu Enhanced
+  - action: download_file
+    url: __VMENU_RELEASE_URL__/txadmin-vmenu-enhanced-permissions.cfg
+    path: ./resources/vMenu.Enhanced/config/permissions.cfg
+
+  - action: download_file
+    url: __VMENU_RELEASE_URL__/txadmin-vmenu-enhanced-configuration.cfg
+    path: ./resources/vMenu.Enhanced/config/configuration.cfg
+
+  # Download the latest plugins
+  - action: download_file
+    url: https://github.com/TomGrobbe/vMenu.RoutingBucketsPlugin/releases/latest/download/vMenu.RoutingBucketsPlugin.zip
+    path: ./tmp/routing-buckets.zip
+
+  - action: unzip
+    src: ./tmp/routing-buckets.zip
+    dest: ./resources/[vmenu-plugins]
+
+  - action: download_file
+    url: https://github.com/TomGrobbe/vMenu.ThemePicker/releases/latest/download/vMenu.ThemePicker.zip
+    path: ./tmp/theme-picker.zip
+
+  - action: unzip
+    src: ./tmp/theme-picker.zip
+    dest: ./resources/[vmenu-plugins]
+
+  - action: download_file
+    url: https://github.com/TomGrobbe/vMenu.CustomThemesPlugin/releases/latest/download/vMenu.CustomThemesPlugin.zip
+    path: ./tmp/custom-themes.zip
+
+  - action: unzip
+    src: ./tmp/custom-themes.zip
+    dest: ./resources/[vmenu-plugins]
+
+  # Clean up
+  - action: remove_path
+    path: ./tmp

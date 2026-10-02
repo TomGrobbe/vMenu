@@ -1,7 +1,5 @@
 using System.Text.Json;
 
-using CitizenFX.FiveM.Server;
-
 using vMenu.Enhanced.Data.Permissions;
 using vMenu.Enhanced.Data.Permissions.SupplementalPermissions;
 using vMenu.Enhanced.Logging;
@@ -9,9 +7,9 @@ using vMenu.Enhanced.Logging;
 namespace vMenu.Enhanced.Permissions.Server;
 
 // Models held back from the class permissions and given their own permission instead.
-public static class ModelWhitelist
+public static partial class ModelWhitelist
 {
-    private const string ConfigFile = "config/model-whitelists.json";
+    internal const string ConfigFile = "config/model-whitelists.json";
 
     // Tolerant on purpose: server owners hand-edit this file.
     private static readonly JsonDocumentOptions ParseOptions = new()
@@ -31,7 +29,7 @@ public static class ModelWhitelist
     private static readonly Dictionary<SupplementalModelKind, string[]> Ordered = [];
 
     // A missing or unreadable file just means nothing is held back.
-    public static void LoadAndRegister()
+    internal static void Load(string? contents)
     {
         Whitelists.Clear();
         Ordered.Clear();
@@ -41,8 +39,6 @@ public static class ModelWhitelist
             Whitelists[descriptor.Kind] = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             Ordered[descriptor.Kind] = [];
         }
-
-        var contents = Native.LoadResourceFile(Native.GetCurrentResourceName(), ConfigFile);
 
         if (string.IsNullOrWhiteSpace(contents))
         {

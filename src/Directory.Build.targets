@@ -197,4 +197,28 @@
           SkipUnchangedFiles="true" />
   </Target>
 
+  <!--
+    Ships the same .example files a clean server writes on its first start, so an owner can set up
+    permissions and settings before ever starting it. Only the .example files: a real
+    permissions.cfg or configuration.cfg in the output would overwrite an owner's own on deploy.
+  -->
+  <ItemGroup Condition="'$(IsResourceRootProject)' == 'true'">
+    <ConfigExampleInput Include="$(RepoRoot)src\Shared\vMenu.Enhanced.Data\**\*.cs"
+                        Exclude="$(RepoRoot)src\Shared\vMenu.Enhanced.Data\obj\**;$(RepoRoot)src\Shared\vMenu.Enhanced.Data\bin\**" />
+    <ConfigExampleInput Include="$(RepoRoot)src\Server\vMenu.Enhanced.Permissions.Server\*.cs" />
+    <ConfigExampleInput Include="$(RepoRoot)tools\ConfigDefaults\*.cs;$(RepoRoot)tools\ConfigDefaults\*.csproj" />
+    <ConfigExampleInput Include="$(RepoRoot)assets\enhanced\config\*.json" />
+  </ItemGroup>
+
+  <Target Name="GenerateConfigExamples"
+          AfterTargets="Build;CopyResourceConfigFiles"
+          Condition="'$(IsResourceRootProject)' == 'true'"
+          Inputs="@(ConfigExampleInput)"
+          Outputs="$(ResourceRoot)config\permissions.cfg.example;$(ResourceRoot)config\configuration.cfg.example">
+
+    <Exec Command="dotnet run --project &quot;$(RepoRoot)tools\ConfigDefaults\ConfigDefaults.csproj&quot; -c Release --no-launch-profile -- &quot;$(ResourceRoot)config&quot; &quot;$(RepoRoot)assets\enhanced\config&quot;"
+          WorkingDirectory="$(RepoRoot)"
+          StandardOutputImportance="normal" />
+  </Target>
+
 </Project>

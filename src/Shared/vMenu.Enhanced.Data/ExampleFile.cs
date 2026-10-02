@@ -50,6 +50,34 @@ public static class ExampleFile
         return banner.ToString();
     }
 
+    // For a copy handed out ready to use, which vMenu never writes to.
+    public static string ReadyBanner(string copyName, params string[] extraNotes)
+    {
+        var banner = new StringBuilder();
+
+        banner.Append(Rule).Append('\n');
+        banner.Append("#  THIS FILE IS YOURS TO EDIT. vMenu Enhanced NEVER CHANGES IT.\n");
+        banner.Append("#\n");
+        banner.Append("#  It starts out with vMenu's defaults. Every time vMenu starts, it also\n");
+        banner.Append("#  writes '" + copyName + Extension + "' next to this file, listing\n");
+        banner.Append("#  everything that version of vMenu knows about. After an update, compare\n");
+        banner.Append("#  the two to find anything new.\n");
+        banner.Append("#\n");
+        banner.Append("#  Your server.cfg has to exec this file ABOVE the line that starts vMenu:\n");
+        banner.Append("#\n");
+        banner.Append("#         exec @vMenu.Enhanced/" + ConfigDirectory + "/" + copyName + "\n");
+        banner.Append("#         ensure vMenu.Enhanced\n");
+
+        foreach (var note in extraNotes)
+        {
+            banner.Append("#\n").Append(Comment(note, "# "));
+        }
+
+        banner.Append(Rule).Append('\n');
+
+        return banner.ToString();
+    }
+
     // Wraps prose into # comment lines.
     public static string Comment(string text, string prefix = "#", int width = 78)
     {

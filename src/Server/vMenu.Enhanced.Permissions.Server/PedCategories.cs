@@ -1,22 +1,17 @@
 using System.Text.Json;
 
-using CitizenFX.FiveM.Server;
-using CitizenFX.FiveM.Server.Entities;
-using CitizenFX.FiveM.Shared.Serialization;
-
 using vMenu.Enhanced.Data.PedModels;
 using vMenu.Enhanced.Data.Permissions.Menus;
 using vMenu.Enhanced.Logging;
-using vMenu.Enhanced.Serialization.Server;
 
 namespace vMenu.Enhanced.Permissions.Server;
 
 // Unlike vehicles there is no native that lists ped models, so the whole list comes out of the config
 // file. Each category gets a permission of its own, registered the same way the vehicle spawner's
 // custom categories are.
-public static class PedCategories
+public static partial class PedCategories
 {
-    private const string ConfigFile = "config/ped-models.json";
+    internal const string ConfigFile = "config/ped-models.json";
 
     // Tolerant on purpose: server owners hand-edit this file.
     private static readonly JsonDocumentOptions ParseOptions = new()
@@ -27,16 +22,10 @@ public static class PedCategories
 
     private static readonly List<PedModelCategory> Categories = [];
 
-    // The list as the clients receive it, built once when the file is read.
-    private static string _payload = "[]";
-
     // A missing or unreadable file just means the menu has nothing in it.
-    public static void LoadAndRegister()
+    internal static void Load(string? contents)
     {
         Categories.Clear();
-        _payload = "[]";
-
-        var contents = Native.LoadResourceFile(Native.GetCurrentResourceName(), ConfigFile);
 
         if (string.IsNullOrWhiteSpace(contents))
         {
@@ -66,17 +55,7 @@ public static class PedCategories
 
             Register(document.RootElement);
         }
-
-        _payload = ServerJson.Serialize(Categories);
     }
-
-    // Call once the permission registry is ready.
-    public static void RegisterEventHandlers() =>
-        API.OnNetEvent(PedModelEvents.Request, new Action<Player>(OnRequested), false);
-
-    // A named method, not a lambda: the binder reads FromSourceAttribute off the delegate's MethodInfo.
-    private static void OnRequested([FromSource] Player source) =>
-        API.EmitClient(source.Handle, PedModelEvents.Set, _payload);
 
     private static void Register(JsonElement root)
     {

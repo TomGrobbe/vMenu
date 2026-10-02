@@ -37,21 +37,21 @@ public static class PermissionsExample
     public static string PluginResourcePath(string resource) =>
         $"{ExampleFile.PluginsDirectory}/{ExampleFile.PluginCopyName(resource, CopyName)}{ExampleFile.Extension}";
 
-    public static string Render(IEnumerable<PermissionExampleEntry> entries)
+    public static string Render(IEnumerable<PermissionExampleEntry> entries, bool ready = false)
     {
         var ordered = entries.ToList();
 
         var file = new StringBuilder();
 
-        file.Append(ExampleFile.Banner(
-            CopyName,
+        const string LiveNote =
             "Permissions are checked live. HOWEVER, the permissions.cfg does not re-execute itself. You can either " +
             "execute it manually again, but I do not recommend this if you made big changes, because conflicting aces " +
             "and principals will cause issues. Instead, if all you did was add somebody to a group, simply execute that " +
             "one command in the server console manually. Then execute `vmenu_refresh_permissions` in the server console " +
             "and every person should have their menu permissions refreshed automatically. " +
-            "For big permissions.cfg changes I still recommend to restart your server!"
-            ));
+            "For big permissions.cfg changes I still recommend to restart your server!";
+
+        file.Append(ready ? ExampleFile.ReadyBanner(CopyName, LiveNote) : ExampleFile.Banner(CopyName, LiveNote));
 
         file.Append('\n');
         file.Append(ExampleFile.Comment(

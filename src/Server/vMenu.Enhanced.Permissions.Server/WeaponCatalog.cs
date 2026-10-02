@@ -1,20 +1,15 @@
 using System.Text.Json;
 
-using CitizenFX.FiveM.Server;
-using CitizenFX.FiveM.Server.Entities;
-using CitizenFX.FiveM.Shared.Serialization;
-
 using vMenu.Enhanced.Data.Permissions;
 using vMenu.Enhanced.Data.Permissions.Menus;
 using vMenu.Enhanced.Data.Weapons;
 using vMenu.Enhanced.Logging;
-using vMenu.Enhanced.Serialization.Server;
 
 namespace vMenu.Enhanced.Permissions.Server;
 
-public static class WeaponCatalog
+public static partial class WeaponCatalog
 {
-    private const string ConfigFile = "config/weapons.json";
+    internal const string ConfigFile = "config/weapons.json";
 
     private const string Unarmed = "weapon_unarmed";
 
@@ -26,14 +21,9 @@ public static class WeaponCatalog
 
     private static readonly List<WeaponCategory> Categories = [];
 
-    private static string _payload = "[]";
-
-    public static void LoadAndRegister()
+    internal static void Load(string? contents)
     {
         Categories.Clear();
-        _payload = "[]";
-
-        var contents = Native.LoadResourceFile(Native.GetCurrentResourceName(), ConfigFile);
 
         if (string.IsNullOrWhiteSpace(contents))
         {
@@ -63,16 +53,7 @@ public static class WeaponCatalog
 
             Register(document.RootElement);
         }
-
-        _payload = ServerJson.Serialize(Categories);
     }
-
-
-    public static void RegisterEventHandlers() =>
-        API.OnNetEvent(WeaponEvents.Request, new Action<Player>(OnRequested), false);
-
-    private static void OnRequested([FromSource] Player source) =>
-        API.EmitClient(source.Handle, WeaponEvents.Set, _payload, WeaponComponentCatalog.Payload);
 
     private static void Register(JsonElement root)
     {

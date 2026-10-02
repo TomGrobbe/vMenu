@@ -265,11 +265,27 @@ jobs:
           Copy-Item LICENSE.md build/vMenu/LICENSE.md -Force
           Compress-Archive -Path 'build/vMenu/*' -DestinationPath '${{ steps.version.outputs.zip_name }}' -Force
 
+      # Stamped with the release URL by the release job. A tag from before the recipe existed has none.
+      - name: Prepare txAdmin recipe
+        shell: bash
+        run: |
+          mkdir -p txadmin
+
+          if [ ! -d assets/txadmin ]; then
+            echo "No txAdmin recipe on this ref, skipping."
+            exit 0
+          fi
+
+          cp assets/txadmin/recipe.yaml txadmin/txadmin-vmenu-legacy-recipe.yaml
+          cp assets/txadmin/server.cfg  txadmin/txadmin-vmenu-legacy-server.cfg
+
       - name: Upload zip
         uses: actions/upload-artifact@v4
         with:
           name: legacy-zip
-          path: ${{ steps.version.outputs.zip_name }}
+          path: |
+            ${{ steps.version.outputs.zip_name }}
+            txadmin/
 
   build-enhanced:
     name: Build vMenu Enhanced
@@ -384,11 +400,31 @@ jobs:
             Set-Content -Encoding ASCII 'build/vMenu.Enhanced/fxmanifest.lua'
           Compress-Archive -Path 'build/vMenu.Enhanced/*' -DestinationPath '${{ steps.version.outputs.zip_name }}' -Force
 
+      # Stamped with the release URL by the release job. A tag from before the recipe existed has none.
+      - name: Prepare txAdmin recipe
+        shell: bash
+        run: |
+          mkdir -p txadmin
+
+          if [ ! -d assets/txadmin ]; then
+            echo "No txAdmin recipe on this ref, skipping."
+            exit 0
+          fi
+
+          cp assets/txadmin/recipe.yaml txadmin/txadmin-vmenu-enhanced-recipe.yaml
+          cp assets/txadmin/server.cfg  txadmin/txadmin-vmenu-enhanced-server.cfg
+
+          dotnet run --project tools/ConfigDefaults/ConfigDefaults.csproj -c Release --no-launch-profile -- txadmin-ready --ready
+          mv txadmin-ready/permissions.cfg   txadmin/txadmin-vmenu-enhanced-permissions.cfg
+          mv txadmin-ready/configuration.cfg txadmin/txadmin-vmenu-enhanced-configuration.cfg
+
       - name: Upload zip
         uses: actions/upload-artifact@v4
         with:
           name: enhanced-zip
-          path: ${{ steps.version.outputs.zip_name }}
+          path: |
+            ${{ steps.version.outputs.zip_name }}
+            txadmin/
 
   release:
     name: Release
@@ -544,14 +580,35 @@ jobs:
 
           ASSETS=("release-assets/$ENHANCED_ZIP" "release-assets/$LEGACY_ZIP")
 
+          # The recipes keep one name forever, so txAdmin can always find them under /releases/latest/download/.
+          # What they download is pinned to this release, so a recipe and its files always match.
+          RELEASE_URL_BASE="https://github.com/$GH_REPO/releases/download/$TAG"
+
+          for FILE in release-assets/txadmin/txadmin-vmenu-*; do
+            [ -f "$FILE" ] || continue
+
+            case "$(basename "$FILE")" in
+              txadmin-vmenu-enhanced-*) VERSION="$ENHANCED_VERSION"; ZIP="$ENHANCED_ZIP" ;;
+              *)                        VERSION="$LEGACY_VERSION";   ZIP="$LEGACY_ZIP" ;;
+            esac
+
+            sed -i \
+              -e "s|__VMENU_RELEASE_URL__|$RELEASE_URL_BASE|g" \
+              -e "s|__VMENU_VERSION__|$VERSION|g" \
+              -e "s|__VMENU_ZIP__|$ZIP|g" \
+              "$FILE"
+
+            ASSETS+=("$FILE")
+          done
+
           if gh release view "$TAG" >/dev/null 2>&1; then
             echo "Release $TAG already exists, updating it."
             gh release edit "$TAG" --title "$TITLE" --notes-file release_notes.md
             gh release upload "$TAG" "${ASSETS[@]}" --clobber
 
-            # Asset names carry the version, so the previous zip of the line that moved is left behind otherwise.
+            # Zip names carry the version, so the previous zip of the line that moved is left behind otherwise.
             gh release view "$TAG" --json assets --jq '.assets[].name' | while read -r NAME; do
-              if [ "$NAME" != "$ENHANCED_ZIP" ] && [ "$NAME" != "$LEGACY_ZIP" ]; then
+              if [[ "$NAME" == *.zip ]] && [ "$NAME" != "$ENHANCED_ZIP" ] && [ "$NAME" != "$LEGACY_ZIP" ]; then
                 echo "Removing stale asset $NAME."
                 gh release delete-asset "$TAG" "$NAME" --yes
               fi

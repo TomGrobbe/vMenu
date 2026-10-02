@@ -1,7 +1,5 @@
 using System.Text.Json;
 
-using CitizenFX.FiveM.Server;
-
 using vMenu.Enhanced.Data.Permissions.Menus;
 using vMenu.Enhanced.Logging;
 
@@ -10,9 +8,9 @@ namespace vMenu.Enhanced.Permissions.Server;
 // Vehicle categories a server owner defined, which take their models out of the game class they
 // would otherwise fall in. Each one gets a permission of its own, registered next to the built in
 // category permissions so it behaves exactly like them.
-public static class VehicleCategories
+public static partial class VehicleCategories
 {
-    private const string ConfigFile = "config/vehicle-categories.json";
+    internal const string ConfigFile = "config/vehicle-categories.json";
 
     // Tolerant on purpose: server owners hand-edit this file.
     private static readonly JsonDocumentOptions ParseOptions = new()
@@ -27,13 +25,11 @@ public static class VehicleCategories
     private static string[] _categories = [];
 
     // A missing or unreadable file just means every vehicle stays in its game class.
-    public static void LoadAndRegister()
+    internal static void Load(string? contents)
     {
         CategoryByModel.Clear();
         _models = [];
         _categories = [];
-
-        var contents = Native.LoadResourceFile(Native.GetCurrentResourceName(), ConfigFile);
 
         if (string.IsNullOrWhiteSpace(contents))
         {

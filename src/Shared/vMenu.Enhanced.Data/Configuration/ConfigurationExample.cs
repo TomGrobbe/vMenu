@@ -52,12 +52,12 @@ public static class ConfigurationExample
     private static string Describe(Setting setting) =>
         "Default value: \"" + setting.DefaultValue + "\" (" + setting.TypeName + ")";
 
-    public static string Render()
+    public static string Render(bool ready = false)
     {
         var file = new StringBuilder();
 
-        file.Append(ExampleFile.Banner(
-            CopyName,
+        string[] notes =
+        [
             "Most options below use 'setr' so they are replicated to clients. " +
             "A few use plain 'set' instead, which keeps the value on the server where no player can " +
             "read it. Those are the ones holding something secret, such as a webhook URL, and you " +
@@ -65,7 +65,10 @@ public static class ConfigurationExample
             "Deleting an option, or commenting it out, restores vMenu's own default for it. " +
             "Although I do recommend that you manually set it to the default yourself instead of " +
             "commenting it out, because if the default ever changes with an update, you won't be " +
-            "surprised when it's suddenly changed in-game!"));
+            "surprised when it's suddenly changed in-game!",
+        ];
+
+        file.Append(ready ? ExampleFile.ReadyBanner(CopyName, notes) : ExampleFile.Banner(CopyName, notes));
 
         foreach (var section in ConfigCatalog.Sections)
         {
