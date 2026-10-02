@@ -1,30 +1,23 @@
-# GitVersion configuration - vMenu Enhanced branch
+# GitVersion configuration (vMenu Enhanced)
 # Docs: https://gitversion.net/docs/reference/configuration
 #
-# This is the `enhanced` branch copy. It keeps a version lineage that is fully
-# separate from legacy vMenu by only counting tags with the `enhanced-v` prefix
-# (legacy uses the default `v` prefix on its own branch).
-#
-# While the project is in ALPHA the enhanced CI workflow (.github/workflows/
-# enhanced.yml) does NOT use GitVersion: the version is a fixed base plus the
-# build number (0.0.1-alpha.<run_number>). This config is here so that once the
-# project promotes to beta / stable 1.0.0 (and the combined workflow starts
-# computing versions on this branch), the tag prefix and mainline branch are
-# already set up correctly.
-#
-# Commit message overrides (anywhere in the message):
+# Every commit on enhanced bumps the patch version. Put one of these in a commit message to change that:
 #   +semver: major | minor | patch | none
+#
+# The enhanced-v prefix keeps this line apart from the legacy v tags that are also in this history.
+# Never use next-version here, it acts as a floor and freezes the version once it is reached.
 
-tag-prefix: 'enhanced-v'
 assembly-versioning-scheme: MajorMinorPatch
 assembly-file-versioning-scheme: MajorMinorPatch
 mode: Mainline
-
-# Starting point for the stable lineage once alpha/beta is over.
-# next-version: 1.0.0
+tag-prefix: 'enhanced-v'
 
 branches:
-  enhanced:
-    regex: '^enhanced$'
+  # Both names match because GitVersion trusts GITHUB_REF over the branch that is checked out.
+  # The empty tag drops the pre-release label, otherwise builds come out as 1.0.0-enhanced.1.
+  mainline:
+    regex: '^(enhanced|legacy)$'
     increment: Patch
     is-mainline: true
+    tag: ''
+    source-branches: []

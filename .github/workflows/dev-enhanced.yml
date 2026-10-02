@@ -1,0 +1,261 @@
+name: Dev Build (Enhanced)
+
+# Branches taken from enhanced. Builds a dev version and pre-release NuGet packages, never tags or releases.
+
+on:
+  push:
+    branches-ignore:
+      - legacy
+      - enhanced
+    paths-ignore:
+      - "docs/**"
+      - ".github/workflows/docs.yml"
+  pull_request:
+    paths-ignore:
+      - "docs/**"
+      - ".github/workflows/docs.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+
+jobs:
+  build:
+    name: Build
+    runs-on: windows-latest
+
+    permissions:
+      contents: read
+      pull-requests: write
+
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      # Dotted dev.<run> so NuGet compares the run number as a number, dev-123 would sort below dev-57.
+      - name: Set dev version
+        id: version
+        shell: bash
+        env:
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          TAG=$(git describe --tags --abbrev=0 --match 'enhanced-v[0-9]*' HEAD 2>/dev/null || true)
+          BASE="${TAG#enhanced-v}"
+          BASE="${BASE%%-*}"
+          IFS=. read -r MAJOR MINOR PATCH <<< "${BASE:-0.0.0}"
+          NEXT="$MAJOR.$MINOR.$((PATCH + 1))"
+          VERSION="$NEXT-dev.${{ github.run_number }}+${HEAD_SHA:0:7}"
+          ZIP_NAME="vMenu-Enhanced-v${VERSION}.zip"
+          {
+            echo "version=$VERSION"
+            echo "assembly_ver=$NEXT"
+            echo "zip_name=$ZIP_NAME"
+          } >> "$GITHUB_OUTPUT"
+          {
+            echo "## Dev version"
+            echo ""
+            echo "This run built vMenu Enhanced \`${VERSION}\`, based on \`${TAG:-no tag}\`. It is not tagged or released."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Restore
+        run: dotnet restore vMenu.Enhanced.slnx
+
+      - name: Build
+        shell: bash
+        run: |
+          dotnet build vMenu.Enhanced.slnx -c Release --no-restore \
+            -p:Version="${{ steps.version.outputs.version }}" \
+            -p:AssemblyVersion="${{ steps.version.outputs.assembly_ver }}" \
+            -p:FileVersion="${{ steps.version.outputs.assembly_ver }}"
+
+      - name: Pack plugin API packages
+        shell: bash
+        run: |
+          for project in vMenu.Enhanced.PluginContracts vMenu.Enhanced.ClientAPI vMenu.Enhanced.ServerAPI; do
+            dotnet pack "src/PluginApi/$project/$project.csproj" -c Release --no-build \
+              -p:Version="${{ steps.version.outputs.version }}" \
+              -p:PackageVersion="${{ steps.version.outputs.version }}" \
+              -o packages
+          done
+
+      - name: Upload packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: enhanced-packages
+          path: packages/*.nupkg
+
+      - name: Translation coverage
+        if: always()
+        shell: pwsh
+        run: |
+          $path = 'build/intermediate/translation-coverage.json'
+
+          if (-not (Test-Path $path)) {
+            Write-Host 'No translation coverage was produced by this build.'
+            exit 0
+          }
+
+          $report = Get-Content $path -Raw | ConvertFrom-Json
+          $total = $report.totalKeys
+          $behind = @($report.languages | Where-Object { $_.missing -gt 0 -or $_.orphans -gt 0 -or $_.unreadable })
+
+          $lines = @()
+          $lines += "## Translation coverage"
+          $lines += ""
+          $lines += if ($behind.Count -eq 0) {
+            "All languages cover every one of the $total English keys."
+          } else {
+            "$($behind.Count) of $($report.languages.Count) languages are behind the $total English keys."
+          }
+          $lines += ""
+          $lines += "| Language | Translated | Missing | Stale keys |"
+          $lines += "| --- | ---: | ---: | ---: |"
+
+          foreach ($language in $report.languages) {
+            $name = "$($language.nativeName) (``$($language.code)``)"
+
+            if ($language.unreadable) {
+              $lines += "| $name | file could not be read | | |"
+              continue
+            }
+
+            $mark = if ($language.missing -eq 0) { '0' } else { "**$($language.missing)**" }
+            $lines += "| $name | $($language.translated)/$total | $mark | $($language.orphans) |"
+          }
+
+          $shown = 25
+
+          foreach ($language in $behind) {
+            if ($language.unreadable) { continue }
+
+            $missing = @($language.missingKeys)
+            $orphans = @($language.orphanKeys)
+
+            if ($missing.Count -eq 0 -and $orphans.Count -eq 0) { continue }
+
+            $lines += ""
+            $lines += "<details><summary>$($language.nativeName) (``$($language.code)``)</summary>"
+            $lines += ""
+
+            foreach ($set in @(
+              @{ Label = 'Missing'; Keys = $missing },
+              @{ Label = 'No longer in English'; Keys = $orphans })) {
+
+              if ($set.Keys.Count -eq 0) { continue }
+
+              $lines += "$($set.Label) ($($set.Keys.Count)):"
+              $lines += ""
+              $lines += '```'
+              $lines += $set.Keys | Select-Object -First $shown
+
+              if ($set.Keys.Count -gt $shown) {
+                $lines += "... and $($set.Keys.Count - $shown) more"
+              }
+
+              $lines += '```'
+              $lines += ""
+            }
+
+            $lines += "</details>"
+          }
+
+          $lines += ""
+          $lines += "_Missing keys fall back to English, so nothing is broken by a gap here._"
+
+          $summary = $lines -join "`n"
+          $summary | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding utf8
+          $summary | Out-File -FilePath 'build/intermediate/translation-coverage.md' -Encoding utf8
+
+          Write-Host $summary
+
+      # Fork pull requests get a read only token and cannot comment.
+      - name: Comment translation coverage on the PR
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: pwsh
+        run: |
+          $path = 'build/intermediate/translation-coverage.md'
+
+          if (-not (Test-Path $path)) {
+            exit 0
+          }
+
+          $marker = '<!-- vmenu-translation-coverage -->'
+          $body = $marker + "`n" + (Get-Content $path -Raw)
+
+          $file = New-TemporaryFile
+          $body | Out-File -FilePath $file -Encoding utf8
+
+          $existing = gh api "repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments" --paginate |
+            ConvertFrom-Json |
+            Where-Object { $_.body -like "*$marker*" } |
+            Select-Object -First 1
+
+          if ($existing) {
+            gh api --method PATCH "repos/${{ github.repository }}/issues/comments/$($existing.id)" -F "body=@$file"
+          } else {
+            gh api --method POST "repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments" -F "body=@$file"
+          }
+
+      - name: Stamp version and zip
+        shell: pwsh
+        run: |
+          (Get-Content 'build/vMenu.Enhanced/fxmanifest.lua') -replace 'versiongoeshere', '${{ steps.version.outputs.version }}' |
+            Set-Content -Encoding ASCII 'build/vMenu.Enhanced/fxmanifest.lua'
+          Compress-Archive -Path 'build/vMenu.Enhanced/*' -DestinationPath '${{ steps.version.outputs.zip_name }}' -Force
+
+      - name: Upload zip
+        uses: actions/upload-artifact@v4
+        with:
+          name: enhanced-zip
+          path: ${{ steps.version.outputs.zip_name }}
+
+  # Pushes only. Pull requests and dependabot runs have no business publishing, and cannot get an id-token anyway.
+  publish-nuget-prerelease:
+    name: Publish pre-release NuGet packages
+    needs: build
+    if: github.event_name == 'push' && github.actor != 'dependabot[bot]'
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write
+
+    steps:
+      - name: Download packages
+        uses: actions/download-artifact@v4
+        with:
+          name: enhanced-packages
+          path: packages
+
+      - name: NuGet login (trusted publishing)
+        id: login
+        uses: NuGet/login@v1
+        with:
+          user: TomGrobbe
+
+      - name: Push packages
+        shell: bash
+        run: |
+          dotnet nuget push "packages/*.nupkg" \
+            --source https://api.nuget.org/v3/index.json \
+            --api-key "${{ steps.login.outputs.NUGET_API_KEY }}" \
+            --skip-duplicate
