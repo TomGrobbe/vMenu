@@ -110,90 +110,99 @@ jobs:
           candidate legacy   legacy   'v[0-9]*'
           candidate enhanced enhanced 'enhanced-v[0-9]*'
 
-      - name: Checkout legacy
-        if: steps.candidates.outputs.legacy_moved == 'true'
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ steps.candidates.outputs.legacy_ref }}
-          path: legacy
-          fetch-depth: 0
-
-      - name: Checkout enhanced
-        if: steps.candidates.outputs.enhanced_moved == 'true'
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ steps.candidates.outputs.enhanced_ref }}
-          path: enhanced
-          fetch-depth: 0
-
-      - name: Install GitVersion
-        if: steps.candidates.outputs.legacy_moved == 'true' || steps.candidates.outputs.enhanced_moved == 'true'
-        uses: gittools/actions/gitversion/setup@v3.0.0
-        with:
-          versionSpec: '5.x'
-
-      - name: GitVersion legacy
-        if: steps.candidates.outputs.legacy_moved == 'true'
-        id: gv_legacy
-        uses: gittools/actions/gitversion/execute@v3.0.0
-        with:
-          targetPath: legacy
-
-      - name: GitVersion enhanced
-        if: steps.candidates.outputs.enhanced_moved == 'true'
-        id: gv_enhanced
-        uses: gittools/actions/gitversion/execute@v3.0.0
-        with:
-          targetPath: enhanced
-
-      # A +semver: none commit calculates the version that is already tagged on an older commit.
-      # Releasing it would overwrite that release with code its tag does not contain, so the line counts as unchanged.
+      # Always the previous tag plus one, never a count of commits, so a release never skips a number.
+      # A +semver: major or +semver: minor in any commit since the tag bumps that part instead. When every
+      # commit since the tag says +semver: none, the line counts as unchanged and is rebuilt from its tag.
       - name: Settle versions
         id: plan
         working-directory: repo
         shell: bash
         env:
-          LEGACY_MOVED:      ${{ steps.candidates.outputs.legacy_moved }}
-          LEGACY_REF:        ${{ steps.candidates.outputs.legacy_ref }}
-          LEGACY_TAG:        ${{ steps.candidates.outputs.legacy_tag }}
-          LEGACY_SEMVER:     ${{ steps.gv_legacy.outputs.semVer }}
-          LEGACY_ASSEMBLY:   ${{ steps.gv_legacy.outputs.assemblySemVer }}
-          ENHANCED_MOVED:    ${{ steps.candidates.outputs.enhanced_moved }}
-          ENHANCED_REF:      ${{ steps.candidates.outputs.enhanced_ref }}
-          ENHANCED_TAG:      ${{ steps.candidates.outputs.enhanced_tag }}
-          ENHANCED_SEMVER:   ${{ steps.gv_enhanced.outputs.semVer }}
-          ENHANCED_ASSEMBLY: ${{ steps.gv_enhanced.outputs.assemblySemVer }}
+          LEGACY_MOVED:   ${{ steps.candidates.outputs.legacy_moved }}
+          LEGACY_REF:     ${{ steps.candidates.outputs.legacy_ref }}
+          ENHANCED_MOVED: ${{ steps.candidates.outputs.enhanced_moved }}
+          ENHANCED_REF:   ${{ steps.candidates.outputs.enhanced_ref }}
         run: |
           RELEASE=false
 
+          bump_for() {
+            local range="$1" messages sha
+            messages=$(git log --format=%B "$range")
+            if grep -qiE '\+semver:[[:space:]]*(breaking|major)' <<< "$messages"; then
+              echo major
+              return
+            fi
+            if grep -qiE '\+semver:[[:space:]]*(feature|minor)' <<< "$messages"; then
+              echo minor
+              return
+            fi
+            for sha in $(git rev-list "$range"); do
+              if ! git log -1 --format=%B "$sha" | grep -qiE '\+semver:[[:space:]]*(none|skip)'; then
+                echo patch
+                return
+              fi
+            done
+            echo none
+          }
+
+          # A pre-release tag like 0.0.1-alpha.5 is followed by its own release, 0.0.1, on a patch.
+          next_version() {
+            local base="$1" bump="$2" core major minor patch
+            core="${base%%-*}"
+            IFS=. read -r major minor patch <<< "$core"
+            case "$bump" in
+              major) echo "$((major + 1)).0.0" ;;
+              minor) echo "$major.$((minor + 1)).0" ;;
+              *)
+                if [ "$core" != "$base" ]; then
+                  echo "$core"
+                else
+                  echo "$major.$minor.$((patch + 1))"
+                fi
+                ;;
+            esac
+          }
+
           settle() {
-            local line="$1" title="$2" prefix="$3" moved="$4" ref="$5" tag="$6" semver="$7" assembly="$8"
-            local existing state
+            local line="$1" title="$2" prefix="$3" moved="$4" ref="$5"
+            local tag bump version state
+
+            tag=$(git describe --tags --abbrev=0 --match "${prefix}[0-9]*" "$ref" 2>/dev/null || true)
 
             if [ "$moved" = "true" ]; then
-              existing=$(git rev-parse -q --verify "refs/tags/$prefix$semver^{commit}" || true)
-              if [ -n "$existing" ] && [ "$existing" != "$(git rev-parse "$ref^{commit}")" ]; then
-                echo "$line: $prefix$semver is already tagged on ${existing:0:7}, nothing new to release."
+              if [ -n "$tag" ]; then
+                bump=$(bump_for "$tag..$ref")
+                version=$(next_version "${tag#"$prefix"}" "$bump")
+              else
+                bump=$(bump_for "$ref")
+                version=$(next_version "0.0.0" "$bump")
+              fi
+
+              if [ "$bump" = "none" ] && [ -n "$tag" ]; then
+                echo "$line: nothing since $tag needs a new version."
                 moved=false
-                tag="$prefix$semver"
+              elif git rev-parse -q --verify "refs/tags/$prefix$version" >/dev/null; then
+                echo "::error::$line: the next version $prefix$version is already tagged, but $tag is the newest tag on this line."
+                exit 1
               fi
             fi
 
             if [ "$moved" = "true" ]; then
               RELEASE=true
-              state="new"
+              state="new, $bump bump from ${tag:-nothing}"
             else
               ref="$tag"
-              semver="${tag#"$prefix"}"
-              assembly="${semver%%-*}"
+              version="${tag#"$prefix"}"
               state="unchanged, rebuilt from its tag"
             fi
 
-            echo "$line: moved=$moved ref=$ref version=$semver"
+            local assembly="${version%%-*}"
+
+            echo "$line: moved=$moved ref=$ref version=$version"
             {
               echo "${line}_moved=$moved"
               echo "${line}_ref=$ref"
-              echo "${line}_version=$semver"
+              echo "${line}_version=$version"
               echo "${line}_assembly_ver=$assembly"
             } >> "$GITHUB_OUTPUT"
             {
@@ -201,15 +210,15 @@ jobs:
               echo ""
               echo "| | |"
               echo "| --- | --- |"
-              echo "| Version | \`${semver}\` (${state}) |"
+              echo "| Version | \`${version}\` (${state}) |"
               echo "| Assembly version | \`${assembly}\` |"
-              echo "| Tag | \`${prefix}${semver}\` |"
+              echo "| Tag | \`${prefix}${version}\` |"
               echo ""
             } >> "$GITHUB_STEP_SUMMARY"
           }
 
-          settle legacy   "vMenu (legacy)"   'v'          "$LEGACY_MOVED"   "$LEGACY_REF"   "$LEGACY_TAG"   "$LEGACY_SEMVER"   "$LEGACY_ASSEMBLY"
-          settle enhanced "vMenu Enhanced" 'enhanced-v' "$ENHANCED_MOVED" "$ENHANCED_REF" "$ENHANCED_TAG" "$ENHANCED_SEMVER" "$ENHANCED_ASSEMBLY"
+          settle legacy   "vMenu (legacy)"   'v'          "$LEGACY_MOVED"   "$LEGACY_REF"
+          settle enhanced "vMenu Enhanced" 'enhanced-v' "$ENHANCED_MOVED" "$ENHANCED_REF"
 
           if [ "$RELEASE" = "false" ]; then
             echo "Nothing new to release on either line." | tee -a "$GITHUB_STEP_SUMMARY"
@@ -461,8 +470,9 @@ jobs:
           merge-multiple: true
           path: release-assets
 
-      # Before tagging, so the ranges are right. Skipping the tags already on the ref makes a line
-      # that did not move repeat the changelog of the version it carries, instead of an empty list.
+      # Before tagging, so the ranges are right. Every release belongs to an Enhanced tag, so Enhanced
+      # lists what is new since its previous tag. Legacy has no release of its own, so it lists what is new
+      # since the legacy version the previous release shipped. That is nothing when legacy did not move.
       - name: Generate changelogs
         shell: bash
         run: |
@@ -474,7 +484,10 @@ jobs:
           }
 
           changelog() {
-            git log "$1" --pretty=format:'- `%h` (%an) %s' > "$2"
+            : > "$2"
+            if [ -n "$1" ]; then
+              git log "$1" --pretty=format:'- `%h` (%an) %s' > "$2"
+            fi
             cat "$2"
             echo ""
           }
@@ -482,6 +495,7 @@ jobs:
           breaking() {
             local range="$1" out="$2" sha subject note
             : > "$out"
+            [ -n "$range" ] || return 0
             for sha in $(git log "$range" --format='%H'); do
               subject=$(git log -1 "$sha" --format='%s')
               note=$(git log -1 "$sha" --format='%b' \
@@ -498,7 +512,19 @@ jobs:
             done
           }
 
-          LEGACY_RANGE=$(range_for 'v[0-9]*' "$LEGACY_REF")
+          TAG="enhanced-v$ENHANCED_VERSION"
+          PREVIOUS_TITLE=$(gh release list --exclude-drafts --limit 50 --json tagName,name,createdAt \
+            --jq "sort_by(.createdAt) | reverse | map(select(.tagName != \"$TAG\")) | .[0].name // \"\"")
+          PREVIOUS_LEGACY=$(printf '%s' "$PREVIOUS_TITLE" | sed -nE 's/.* & vMenu v([0-9][^ ]*)$/\1/p')
+          echo "Previous release: ${PREVIOUS_TITLE:-<none>}, shipping legacy ${PREVIOUS_LEGACY:-<unknown>}" >&2
+
+          if [ "$PREVIOUS_LEGACY" = "$LEGACY_VERSION" ]; then
+            LEGACY_RANGE=""
+          elif [ -n "$PREVIOUS_LEGACY" ] && git rev-parse -q --verify "refs/tags/v$PREVIOUS_LEGACY" >/dev/null; then
+            LEGACY_RANGE="v$PREVIOUS_LEGACY..$LEGACY_REF"
+          else
+            LEGACY_RANGE=$(range_for 'v[0-9]*' "$LEGACY_REF")
+          fi
           ENHANCED_RANGE=$(range_for 'enhanced-v[0-9]*' "$ENHANCED_REF")
 
           changelog "$LEGACY_RANGE"   changelog-legacy.txt
@@ -572,7 +598,11 @@ jobs:
             echo ""
             echo ""
             echo "## Changes in vMenu v$LEGACY_VERSION"
-            cat changelog-legacy.txt
+            if [ -s changelog-legacy.txt ]; then
+              cat changelog-legacy.txt
+            else
+              echo "No changes since the previous release, this is still vMenu v$LEGACY_VERSION."
+            fi
             echo ""
             echo ""
             echo "Docs: [vMenu Enhanced](https://docs.vespura.com/vmenu/enhanced), [vMenu (legacy)](https://docs.vespura.com/vmenu/legacy)."
@@ -597,9 +627,19 @@ jobs:
               -e "s|__VMENU_VERSION__|$VERSION|g" \
               -e "s|__VMENU_ZIP__|$ZIP|g" \
               "$FILE"
-
-            ASSETS+=("$FILE")
           done
+
+          # Only the recipes are assets of their own, everything they install comes out of one zip.
+          for FILE in release-assets/txadmin/txadmin-vmenu-*-recipe.yaml; do
+            [ -f "$FILE" ] && ASSETS+=("$FILE")
+          done
+
+          TXADMIN_FILES=$(find release-assets/txadmin -maxdepth 1 -type f ! -name '*-recipe.yaml' -printf '%f\n')
+          if [ -n "$TXADMIN_FILES" ]; then
+            (cd release-assets/txadmin && zip -q -X ../txadmin-files.zip $TXADMIN_FILES)
+            unzip -l release-assets/txadmin-files.zip
+            ASSETS+=("release-assets/txadmin-files.zip")
+          fi
 
           if gh release view "$TAG" >/dev/null 2>&1; then
             echo "Release $TAG already exists, updating it."
@@ -608,7 +648,11 @@ jobs:
 
             # Zip names carry the version, so the previous zip of the line that moved is left behind otherwise.
             gh release view "$TAG" --json assets --jq '.assets[].name' | while read -r NAME; do
-              if [[ "$NAME" == *.zip ]] && [ "$NAME" != "$ENHANCED_ZIP" ] && [ "$NAME" != "$LEGACY_ZIP" ]; then
+              KEEP=false
+              for ASSET in "${ASSETS[@]}"; do
+                if [ "$NAME" = "$(basename "$ASSET")" ]; then KEEP=true; fi
+              done
+              if [ "$KEEP" = "false" ]; then
                 echo "Removing stale asset $NAME."
                 gh release delete-asset "$TAG" "$NAME" --yes
               fi

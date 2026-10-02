@@ -37,10 +37,18 @@ tasks:
     src: ./tmp/cfx/[gamemodes]/[maps]/fivem-map-skater/
     dest: ./resources/[maps]/fivem-map-skater/
 
-  # Download server.cfg
+  # Download server.cfg and vMenu's ready to use permissions and settings
   - action: download_file
-    url: __VMENU_RELEASE_URL__/txadmin-vmenu-enhanced-server.cfg
-    path: ./server.cfg
+    url: __VMENU_RELEASE_URL__/txadmin-files.zip
+    path: ./tmp/txadmin-files.zip
+
+  - action: unzip
+    src: ./tmp/txadmin-files.zip
+    dest: ./tmp/txadmin-files
+
+  - action: move_path
+    src: ./tmp/txadmin-files/txadmin-vmenu-enhanced-server.cfg
+    dest: ./server.cfg
 
   # Download vMenu Enhanced, the folder name has to be exactly vMenu.Enhanced
   - action: download_file
@@ -51,14 +59,13 @@ tasks:
     src: ./tmp/vmenu.zip
     dest: ./resources/vMenu.Enhanced
 
-  # Ready to use permissions and settings for vMenu Enhanced
-  - action: download_file
-    url: __VMENU_RELEASE_URL__/txadmin-vmenu-enhanced-permissions.cfg
-    path: ./resources/vMenu.Enhanced/config/permissions.cfg
+  - action: move_path
+    src: ./tmp/txadmin-files/txadmin-vmenu-enhanced-permissions.cfg
+    dest: ./resources/vMenu.Enhanced/config/permissions.cfg
 
-  - action: download_file
-    url: __VMENU_RELEASE_URL__/txadmin-vmenu-enhanced-configuration.cfg
-    path: ./resources/vMenu.Enhanced/config/configuration.cfg
+  - action: move_path
+    src: ./tmp/txadmin-files/txadmin-vmenu-enhanced-configuration.cfg
+    dest: ./resources/vMenu.Enhanced/config/configuration.cfg
 
   # Download the latest plugins
   - action: download_file
