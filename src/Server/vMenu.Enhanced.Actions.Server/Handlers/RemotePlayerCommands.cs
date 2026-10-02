@@ -3,7 +3,9 @@ using System.Globalization;
 using CitizenFX.FiveM.Server;
 
 using vMenu.Enhanced.Actions.Server.Events;
+using vMenu.Enhanced.Data.Actions;
 using vMenu.Enhanced.Data.OnlinePlayers;
+using vMenu.Enhanced.Data.VehicleData;
 using vMenu.Enhanced.Logging;
 using vMenu.Enhanced.Players.Server;
 using vMenu.Enhanced.Webhooks.Server;
@@ -17,7 +19,12 @@ public enum RemoteCommandOutcome
     NotReady,
     UnknownAction,
     BadRequest,
+    NoVehicle,
+    GodMode,
+    Failed,
 }
+
+public readonly record struct RemoteCommandResult(RemoteCommandOutcome Outcome, string? Json = null);
 
 public readonly record struct RemoteCommand(
     string Action,
@@ -31,7 +38,9 @@ public readonly record struct RemoteCommand(
     string? Style,
     string? Model,
     bool HasPoint = false,
-    string? Footer = null);
+    string? Footer = null,
+    float? Z = null,
+    float? Heading = null);
 
 public static class RemotePlayerCommands
 {
@@ -40,6 +49,69 @@ public static class RemotePlayerCommands
     private const string On = "1";
 
     private const string Off = "0";
+
+    private const int VehicleEntityType = 2;
+
+    public static bool IsAsync(string action) => action is "explodevehicle" or "status";
+
+    // Must start on the tick thread.
+    public static async Task<RemoteCommandResult> RunAsync(RemoteCommand cmd)
+    {
+        if (!VerifyIdentity(cmd.ServerId, cmd.Name, cmd.Discord))
+        {
+            return new RemoteCommandResult(RemoteCommandOutcome.IdentityMismatch);
+        }
+
+        if (PedOf(cmd.ServerId) is not { } ped)
+        {
+            return new RemoteCommandResult(RemoteCommandOutcome.NotReady);
+        }
+
+        var target = cmd.ServerId;
+        var targetName = Native.GetPlayerName(target.ToString(CultureInfo.InvariantCulture));
+
+        switch (cmd.Action)
+        {
+            case "status":
+                var json = await RemotePlayerStatus.CaptureAsync(target, ped);
+
+                Log.Info($"[Integration] {OperatorOf(cmd)} checked the status of {targetName} (#{target}) from the live map.");
+
+                return new RemoteCommandResult(RemoteCommandOutcome.Ok, json);
+
+            case "explodevehicle":
+                if (VehicleOf(ped) is not { } vehicle)
+                {
+                    return new RemoteCommandResult(RemoteCommandOutcome.NoVehicle);
+                }
+
+                var actor = WebhookActor.For(target);
+
+                var response = await RemoteVehicleControl.PerformAsync(
+                    target,
+                    OperatorOf(cmd),
+                    Native.NetworkGetNetworkIdFromEntity(vehicle),
+                    vehicle,
+                    RemoteVehicleAction.Explode);
+
+                if (response.Status == ActionStatus.Refused)
+                {
+                    return new RemoteCommandResult(RemoteCommandOutcome.GodMode);
+                }
+
+                if (response.Status != ActionStatus.Ok)
+                {
+                    return new RemoteCommandResult(RemoteCommandOutcome.Failed);
+                }
+
+                Audit(cmd, targetName, actor);
+
+                return new RemoteCommandResult(RemoteCommandOutcome.Ok);
+
+            default:
+                return new RemoteCommandResult(RemoteCommandOutcome.UnknownAction);
+        }
+    }
 
     public static RemoteCommandOutcome Run(RemoteCommand cmd)
     {
@@ -100,7 +172,30 @@ public static class RemotePlayerCommands
                     return RemoteCommandOutcome.BadRequest;
                 }
 
-                API.EmitClient(target, PlayerEvents.TeleportToGround, Coord(cmd.X), Coord(cmd.Y));
+                if (cmd.Z is { } z)
+                {
+                    API.EmitClient(
+                        target,
+                        PlayerEvents.TeleportToCoords,
+                        Coord(cmd.X),
+                        Coord(cmd.Y),
+                        Coord(z),
+                        cmd.Heading is { } heading ? Coord(heading) : string.Empty);
+                }
+                else
+                {
+                    API.EmitClient(target, PlayerEvents.TeleportToGround, Coord(cmd.X), Coord(cmd.Y));
+                }
+
+                break;
+
+            case "deletevehicle":
+                if (PedOf(target) is not { } ped || VehicleOf(ped) is not { } vehicle)
+                {
+                    return RemoteCommandOutcome.NoVehicle;
+                }
+
+                Native.DeleteEntity(vehicle);
                 break;
 
             case "heal":
@@ -167,9 +262,21 @@ public static class RemotePlayerCommands
         return ped != 0 && Native.DoesEntityExist(ped) ? ped : null;
     }
 
+    private static int? VehicleOf(int ped)
+    {
+        var vehicle = Native.GetVehiclePedIsIn(ped, false);
+
+        return vehicle != 0 && Native.DoesEntityExist(vehicle) && Native.GetEntityType(vehicle) == VehicleEntityType
+            ? vehicle
+            : null;
+    }
+
+    private static string OperatorOf(RemoteCommand cmd) =>
+        string.IsNullOrWhiteSpace(cmd.Operator) ? "a linked tool" : cmd.Operator.Trim();
+
     private static void Audit(RemoteCommand cmd, string targetName, WebhookActor actor)
     {
-        var op = string.IsNullOrWhiteSpace(cmd.Operator) ? "a linked tool" : cmd.Operator.Trim();
+        var op = OperatorOf(cmd);
 
         Log.Info($"[Integration] {op} used the '{cmd.Action}' action on {targetName} (#{cmd.ServerId}) from the live map.");
 

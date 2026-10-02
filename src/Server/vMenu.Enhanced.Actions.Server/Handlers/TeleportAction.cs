@@ -27,7 +27,9 @@ public static class TeleportActions
     private static readonly List<Category> Categories = [];
 
     // The list as the clients receive it, rebuilt only when it changes.
-    private static string _payload = "[]";
+    private static volatile string _payload = "[]";
+
+    public static string Payload => _payload;
 
     public static void Register()
     {

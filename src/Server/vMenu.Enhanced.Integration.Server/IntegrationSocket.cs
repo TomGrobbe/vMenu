@@ -31,7 +31,7 @@ public static class IntegrationSocket
 
     private const int MaxMessageBytes = 64 * 1024;
 
-    private const int CommandTimeoutMs = 5000;
+    private const int CommandTimeoutMs = 10000;
 
     private const string TypePing = "ping";
     private const string TypePong = "pong";
@@ -44,6 +44,7 @@ public static class IntegrationSocket
     private const string TypeBlips = "blips";
     private const string TypeWorld = "world";
     private const string TypeBuckets = "buckets";
+    private const string TypeTeleports = "teleports";
     private const string TypeCommandAck = "command-ack";
     private const string TypeGate = "gate";
     private const string TypeRoleSync = "role-sync";
@@ -291,6 +292,7 @@ public static class IntegrationSocket
         var lastWorldSignature = string.Empty;
         var lastWorldSentAt = DateTime.MinValue;
         var lastBuckets = string.Empty;
+        var lastTeleports = string.Empty;
 
         try
         {
@@ -314,6 +316,13 @@ public static class IntegrationSocket
                 {
                     await SendAsync(ws, Frame(TypeBuckets, buckets));
                     lastBuckets = buckets;
+                }
+
+                var teleports = IntegrationSnapshots.Teleports;
+                if (teleports != lastTeleports)
+                {
+                    await SendAsync(ws, Frame(TypeTeleports, teleports));
+                    lastTeleports = teleports;
                 }
 
                 await Task.Delay(StreamInterval);
@@ -434,6 +443,7 @@ public static class IntegrationSocket
                 _streaming = true;
                 _ = SendAsync(ws, Frame(TypeBlips, IntegrationSnapshots.Blips));
                 _ = SendAsync(ws, Frame(TypeBuckets, IntegrationSnapshots.Buckets));
+                _ = SendAsync(ws, Frame(TypeTeleports, IntegrationSnapshots.Teleports));
                 break;
 
             case TypeStopStream:
@@ -519,6 +529,7 @@ public static class IntegrationSocket
         _ = SendAsync(ws, Frame(TypeBlips, IntegrationSnapshots.Blips));
         _ = SendAsync(ws, Frame(TypeWorld, IntegrationSnapshots.World));
         _ = SendAsync(ws, Frame(TypeBuckets, IntegrationSnapshots.Buckets));
+        _ = SendAsync(ws, Frame(TypeTeleports, IntegrationSnapshots.Teleports));
     }
 
     private static string Frame(string type, string payloadJson) =>

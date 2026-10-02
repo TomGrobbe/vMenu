@@ -67,6 +67,7 @@ vMenu sends you:
 - `players`, live player positions for the map, only after you ask for them.
 - `blips`, the configured blips, sent once.
 - `buckets`, the named routing bucket worlds from the optional Routing Buckets plugin. Sent once when the stream starts and again when the list changes. Empty without that plugin.
+- `teleports`, the saved teleport locations from `config/teleport-categories.json`. Sent once when the stream starts and again whenever someone adds or removes a location in game.
 - `command-ack`, the result of a command you sent.
 
 You send vMenu:
@@ -75,9 +76,21 @@ You send vMenu:
 - `command`, with an `id` and a `payload`, to make something happen.
 - `ping` and `pong`, to keep the connection alive.
 
-A `command` can be server wide (`announce`, `get-world`, `set-weather`, `set-time`, `set-blackout`, `set-snow`, `set-freeze`, `get-config`, `set-convar`, `waypoint-everyone`, `teleport-everyone`) or aimed at one player (`kick`, `kill`, `noclip`, `notify`, `waypoint`, `teleport`, `heal`, `armor`, `spawnvehicle`). The read only ones (`get-world`, `get-config`) always work. Anything that changes the game needs `AllowActions true`.
+A `command` can be server wide (`announce`, `get-world`, `set-weather`, `set-time`, `set-blackout`, `set-snow`, `set-freeze`, `get-config`, `set-convar`, `waypoint-everyone`, `teleport-everyone`) or aimed at one player (`kick`, `kill`, `noclip`, `notify`, `waypoint`, `teleport`, `heal`, `armor`, `spawnvehicle`, `deletevehicle`, `explodevehicle`, `status`). The read only ones (`get-world`, `get-config`, `status`) always work. Anything that changes the game needs `AllowActions true`.
 
 `waypoint-everyone` and `teleport-everyone` are the server wide versions of `waypoint` and `teleport`, both taking a spot as `params.x` and `params.y`. `teleport-everyone` spreads players out around the spot so a crowd does not stack on one point. Both need `AllowActions true` and answer with `{ "ok": true, "reached": <count> }`.
+
+A player `teleport` takes the spot as `params.x` and `params.y` and drops the player on the ground there. Add `params.z` to land at that exact height instead (for example inside a building), and `params.heading` to set which way they face.
+
+`deletevehicle` and `explodevehicle` act on the vehicle the player is sitting in, in any seat. When they are on foot the answer is a 409 with the reason `no-vehicle`. A vehicle with vehicle god mode on can't be blown up, so `explodevehicle` answers with a 409 and the reason `god-mode` instead. Blowing a vehicle up is done by a player near it, so the answer can take a few seconds. vMenu gives every command up to 10 seconds before it answers with a 500 and the reason `timeout`, so wait at least that long.
+
+`status` answers with a snapshot of the player, and of their vehicle when they are in one. God mode, the weapon and the vehicle name come from the player's own game, so they are left out when it does not answer within a few seconds.
+
+```json
+{ "ok": true,
+  "player": { "health": 200, "maxHealth": 200, "armor": 100, "position": { "x": 1, "y": 2, "z": 3 }, "rotation": { "x": 0, "y": 0, "z": 90 }, "heading": 90, "god": false, "weapon": "Pistol" },
+  "vehicle": { "name": "Adder", "model": "adder", "bodyHealth": 1000, "engineHealth": 1000, "tankHealth": 1000, "position": { "x": 1, "y": 2, "z": 3 }, "rotation": { "x": 0, "y": 0, "z": 90 }, "heading": 90, "god": false } }
+```
 
 The routing bucket commands (`world-create`, `world-rename`, `world-settings`, `world-delete`, `world-move-one`, `world-move-all`, `world-move-ids`, `world-empty`, `world-transfer`) manage the named worlds and move players between them. They need `AllowActions true` and the optional Routing Buckets plugin, without it they answer with `plugin-unavailable`.
 
@@ -109,6 +122,12 @@ A `buckets` payload lists the named worlds from the Routing Buckets plugin.
 ```
 
 Only named worlds appear here. Unnamed worlds are left out, but you can still read their number from the players. Empty without the plugin.
+
+A `teleports` payload lists the saved teleport locations, grouped by category. `heading` is left out when a location has none.
+
+```json
+{ "categories": [ { "name": "City", "description": "City locations", "locations": [ { "name": "Airport", "description": "", "position": { "x": -1034.65, "y": -2733.21, "z": 20.17 }, "heading": 141.93 } ] } ] }
+```
 
 ## Join gates: allowlist and queue
 

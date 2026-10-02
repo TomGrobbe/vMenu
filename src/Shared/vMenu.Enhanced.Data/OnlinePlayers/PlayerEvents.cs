@@ -1,4 +1,4 @@
-﻿namespace vMenu.Enhanced.Data.OnlinePlayers;
+namespace vMenu.Enhanced.Data.OnlinePlayers;
 
 public static class PlayerEvents
 {
@@ -28,6 +28,12 @@ public static class PlayerEvents
     public const string SetWaypoint = "vMenu.Enhanced:OnlinePlayers:SetWaypoint";
 
     public const string TeleportToGround = "vMenu.Enhanced:OnlinePlayers:TeleportToGround";
+
+    public const string TeleportToCoords = "vMenu.Enhanced:OnlinePlayers:TeleportToCoords";
+
+    public const string GetStatusReport = "vMenu.Enhanced:OnlinePlayers:GetStatusReport";
+
+    public const string StatusReportAck = "vMenu.Enhanced:OnlinePlayers:StatusReportAck";
 
     public const string Restore = "vMenu.Enhanced:OnlinePlayers:Restore";
 

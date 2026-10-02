@@ -15,6 +15,8 @@ public static class IntegrationCommands
 
     private const string OkJson = "{\"ok\":true}";
 
+    private const string StatusAction = "status";
+
     public sealed class Pending(string body)
     {
         private volatile bool _abandoned;
@@ -121,7 +123,7 @@ public static class IntegrationCommands
                 return;
             }
 
-            if (!ServerConfig.Value(IntegrationSettings.AllowActions))
+            if (action != StatusAction && !ServerConfig.Value(IntegrationSettings.AllowActions))
             {
                 pending.Completion.TrySetResult(new CommandReply(403, Fail("disabled")));
 
@@ -135,16 +137,42 @@ public static class IntegrationCommands
                 return;
             }
 
-            pending.Completion.TrySetResult(RemotePlayerCommands.Run(command) switch
+            if (RemotePlayerCommands.IsAsync(action))
             {
-                RemoteCommandOutcome.Ok => new CommandReply(200, OkJson),
-                RemoteCommandOutcome.IdentityMismatch => new CommandReply(409, Fail("identity-mismatch")),
-                RemoteCommandOutcome.NotReady => new CommandReply(409, Fail("not-ready")),
-                RemoteCommandOutcome.UnknownAction => new CommandReply(400, Fail("unknown-action")),
-                _ => new CommandReply(400, Fail("bad-request")),
-            });
+                _ = RunAsync(pending, command);
+
+                return;
+            }
+
+            pending.Completion.TrySetResult(Reply(new RemoteCommandResult(RemotePlayerCommands.Run(command))));
         }
     }
+
+    private static async Task RunAsync(Pending pending, RemoteCommand command)
+    {
+        try
+        {
+            pending.Completion.TrySetResult(Reply(await RemotePlayerCommands.RunAsync(command)));
+        }
+        catch (Exception exception)
+        {
+            Log.Error($"[Integration] A command failed: {exception}");
+
+            pending.Completion.TrySetResult(new CommandReply(500, Fail("error")));
+        }
+    }
+
+    private static CommandReply Reply(RemoteCommandResult result) => result.Outcome switch
+    {
+        RemoteCommandOutcome.Ok => new CommandReply(200, result.Json ?? OkJson),
+        RemoteCommandOutcome.IdentityMismatch => new CommandReply(409, Fail("identity-mismatch")),
+        RemoteCommandOutcome.NotReady => new CommandReply(409, Fail("not-ready")),
+        RemoteCommandOutcome.NoVehicle => new CommandReply(409, Fail("no-vehicle")),
+        RemoteCommandOutcome.GodMode => new CommandReply(409, Fail("god-mode")),
+        RemoteCommandOutcome.Failed => new CommandReply(500, Fail("failed")),
+        RemoteCommandOutcome.UnknownAction => new CommandReply(400, Fail("unknown-action")),
+        _ => new CommandReply(400, Fail("bad-request")),
+    };
 
     private static bool TryParseCommand(JsonElement root, string action, out RemoteCommand command)
     {
@@ -166,6 +194,8 @@ public static class IntegrationCommands
         float x = 0f;
         float y = 0f;
         var hasPoint = false;
+        float? z = null;
+        float? heading = null;
         string? text = null;
         string? style = null;
         string? model = null;
@@ -175,6 +205,8 @@ public static class IntegrationCommands
         {
             hasPoint = IntegrationJson.TryReadFloat(parameters, "x", out x)
                 & IntegrationJson.TryReadFloat(parameters, "y", out y);
+            z = IntegrationJson.TryReadFloat(parameters, "z", out var pz) ? pz : null;
+            heading = IntegrationJson.TryReadFloat(parameters, "heading", out var ph) ? ph : null;
             text = IntegrationJson.ReadString(parameters, "text");
             style = IntegrationJson.ReadString(parameters, "style");
             model = IntegrationJson.ReadString(parameters, "model");
@@ -193,7 +225,9 @@ public static class IntegrationCommands
             style,
             model,
             hasPoint,
-            footer);
+            footer,
+            z,
+            heading);
 
         return true;
     }

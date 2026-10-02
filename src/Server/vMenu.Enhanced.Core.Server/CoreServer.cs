@@ -94,6 +94,7 @@ public class CoreServer : IScript
         AdminActions.Register();
         AnnouncementSchedule.Register();
         RemoteVehicleControl.RegisterEventHandlers();
+        RemotePlayerStatus.RegisterEventHandlers();
         ActionRegistry.RegisterEventHandlers();
         MenuAuditHandler.Register();
 

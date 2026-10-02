@@ -47,6 +47,8 @@ public static class PlayerPushEvents
         API.OnNetEvent(PlayerEvents.SetNoClipAccess, new Action<string>(OnNoClipAccessSet), false);
         API.OnNetEvent(PlayerEvents.SetWaypoint, new Action<string, string>(OnWaypointSet), false);
         API.OnNetEvent(PlayerEvents.TeleportToGround, new Action<string, string>(OnTeleportedToGround), false);
+        API.OnNetEvent(PlayerEvents.TeleportToCoords, new Action<string, string, string, string>(OnTeleportedToCoords), false);
+        API.OnNetEvent(PlayerEvents.GetStatusReport, new Action<string>(PlayerStatusReport.OnRequested), false);
         API.OnNetEvent(PlayerEvents.Restore, new Action<string>(OnRestore), false);
         API.OnNetEvent(PlayerEvents.SpawnVehicle, new Action<string>(OnSpawnVehicle), false);
         API.OnNetEvent(PlayerEvents.Notify, new Action<string, string, string>(OnNotify), false);
@@ -78,6 +80,23 @@ public static class PlayerPushEvents
         Notifications.Info(MenuText.Key(Loc.OnlinePlayers.TeleportedByStaff));
 
         await PlayerTeleport.ToGroundAsync(px, py);
+    }
+
+    // An empty heading keeps the player facing the way they already were.
+    private static async void OnTeleportedToCoords(string x, string y, string z, string heading)
+    {
+        if (!TryParse(x, out var px) || !TryParse(y, out var py) || !TryParse(z, out var pz))
+        {
+            Log.Error($"[OnlinePlayers] Ignoring a teleport that did not parse: {x}, {y}, {z}");
+
+            return;
+        }
+
+        float? facing = TryParse(heading, out var h) ? h : null;
+
+        Notifications.Info(MenuText.Key(Loc.OnlinePlayers.TeleportedByStaff));
+
+        await PlayerTeleport.ToCoordsAsync(new Vector3(px, py, pz), facing);
     }
 
     private static void OnRestore(string mode)

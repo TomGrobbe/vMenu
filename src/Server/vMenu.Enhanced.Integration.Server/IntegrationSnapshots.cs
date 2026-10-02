@@ -1,5 +1,8 @@
+using System.Text;
+
 using vMenu.Enhanced.Actions.Server.Handlers;
 using vMenu.Enhanced.Configuration.Server;
+using vMenu.Enhanced.Logging;
 using vMenu.Enhanced.Serialization.Server;
 
 namespace vMenu.Enhanced.Integration.Server;
@@ -8,6 +11,8 @@ namespace vMenu.Enhanced.Integration.Server;
 public static class IntegrationSnapshots
 {
     private const int ForecastCount = 6;
+
+    private const int MaxTeleportsBytes = 224 * 1024;
 
     private static volatile string _status = "{}";
 
@@ -18,6 +23,10 @@ public static class IntegrationSnapshots
     private static volatile string _blips = "{\"alwaysOn\":[],\"toggleable\":[]}";
 
     private static volatile string _world = "{}";
+
+    private static volatile string _teleports = "{\"categories\":[]}";
+
+    private static string _teleportsSource = "";
 
     private static volatile string _worldSignature = "";
 
@@ -34,6 +43,8 @@ public static class IntegrationSnapshots
     public static string World => _world;
 
     public static string Buckets => RoutingBuckets.Payload;
+
+    public static string Teleports => _teleports;
 
     public static string WorldSignature => _worldSignature;
 
@@ -56,6 +67,26 @@ public static class IntegrationSnapshots
         {
             _blips = blips;
         }
+
+        var teleports = TeleportActions.Payload;
+        if (!ReferenceEquals(teleports, _teleportsSource))
+        {
+            _teleportsSource = teleports;
+            _teleports = Wrap(teleports);
+        }
+    }
+
+    // Capping on size, too big of a list won't be shared.
+    private static string Wrap(string teleports)
+    {
+        if (Encoding.UTF8.GetByteCount(teleports) > MaxTeleportsBytes)
+        {
+            Log.Warning("[Integration] The teleport locations are too large to share with the integration, so its teleport list stays empty.");
+
+            return "{\"categories\":[]}";
+        }
+
+        return "{\"categories\":" + teleports + "}";
     }
 
     private static string Signature(WorldSnapshot world) =>
