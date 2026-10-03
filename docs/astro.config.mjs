@@ -73,6 +73,7 @@ export default defineConfig({
         { label: 'Custom Character Creator', link: '/character-creator/' },
         { label: 'Admin Menu', link: '/admin-menu/' },
         { label: 'Webhook Logging', link: '/webhook-logging/' },
+        { label: 'Exports', link: '/exports/' },
         {
           label: 'Integrations',
           items: [
