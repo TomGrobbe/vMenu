@@ -21,6 +21,10 @@
 
     <Authors>Tom Grobbe</Authors>
     <Copyright>Copyright (C) 2017-2026 Tom Grobbe</Copyright>
+
+    <!-- CI already puts the short commit in the dev version. -->
+    <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
+
     <PackageLicenseExpression>GPL-3.0-or-later</PackageLicenseExpression>
 
     <!--

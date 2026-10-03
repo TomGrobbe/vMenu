@@ -1,3 +1,5 @@
+using System.Reflection;
+
 using CitizenFX.FiveM.Client;
 using CitizenFX.FiveM.Shared.Script;
 
@@ -41,6 +43,11 @@ public sealed class Main : IScript
 {
     public async void Initialize()
     {
+        var core = typeof(Main).Assembly;
+        var version = core.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? core.GetName().Version?.ToString();
+
+        Log.Info($"[Core] Loaded {core.GetName().Name} v{version}.");
+
         var resource = Native.GetCurrentResourceName();
 
         if (!ResourceIdentity.IsCorrectlyNamed(resource))
