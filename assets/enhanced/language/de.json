@@ -610,6 +610,8 @@
     "displaysettings.forecast.next": "Als Nächstes",
     "displaysettings.forecast.noclock": "Warten auf die Uhr des Servers.",
     "displaysettings.forecast.now": "Jetzt",
+    "displaysettings.forecast.outlook": "Nächste 48 Stunden",
+    "displaysettings.forecast.outside": "Draußen",
     "displaysettings.forecast.style": "Stil der Vorhersage",
     "displaysettings.forecast.style.compact": "Kompakt",
     "displaysettings.forecast.style.desc": "Vollständig zeigt das ganze Feld oben auf deinem Bildschirm. Kompakt zeigt eine ruhige Zeile über der Karte mit dem Wetter jetzt, der Uhrzeit und dem, was als Nächstes kommt.",

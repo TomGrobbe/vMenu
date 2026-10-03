@@ -20,7 +20,13 @@ public static class WeatherForecast
 {
     private const long RefreshIntervalMs = 1000;
 
+    private const long ChangingIntervalMs = 250;
+
     private const int UpcomingCount = 3;
+
+    private const int OutlookStepGameHours = 3;
+
+    private const int OutlookCount = 16;
 
     public const int Full = 0;
 
@@ -56,7 +62,7 @@ public static class WeatherForecast
         _tick = TickRegistry.Register(
             "World.Forecast",
             Flush,
-            TickRate.Every(RefreshIntervalMs),
+            TickRate.Varying(() => TickRate.Every(WeatherTemperature.Changing ? ChangingIntervalMs : RefreshIntervalMs)),
             () => Wanted,
             autoStart: false);
 
@@ -178,6 +184,7 @@ public static class WeatherForecast
         }
 
         var moonDays = WorldTime.MoonCycleDays;
+        var celsius = WeatherTemperature.Celsius();
 
         return new ForecastMessage
         {
@@ -195,6 +202,10 @@ public static class WeatherForecast
             CurrentName = localizer.Get(Loc.World.WeatherName(current)),
             CurrentIcon = IconOf(current),
             CurrentForSeconds = scheduled ? RealSeconds(WorldState.Schedule.GameHoursUntilNext, speed) : Unknown,
+            Temperature = celsius is { } value ? WeatherTemperature.Format(value) : string.Empty,
+            OutsideLabel = localizer.Get(Loc.DisplaySettings.ForecastOutside),
+            OutlookLabel = localizer.Get(Loc.DisplaySettings.ForecastOutlook),
+            Outlook = compact || !WorldState.HasClock ? [] : Outlook(forced),
             Upcoming = upcoming.ToArray(),
             MoonName = localizer.Get(Loc.World.MoonPhaseName(MoonCycle.PhaseOf(moonDays))),
             MoonLit = (int)Math.Round(MoonCycle.Illumination(moonDays) * 100.0),
@@ -216,11 +227,42 @@ public static class WeatherForecast
         CurrentName = string.Empty,
         CurrentIcon = string.Empty,
         CurrentForSeconds = Unknown,
+        Temperature = string.Empty,
+        OutsideLabel = string.Empty,
+        OutlookLabel = string.Empty,
+        Outlook = [],
         Upcoming = [],
         MoonName = string.Empty,
         MoonLit = 0,
         MoonWaxing = false,
     };
+
+    private static OutlookCell[] Outlook(WeatherType? forced)
+    {
+        var metric = WeatherTemperature.UseMetric;
+        var entries = WeatherTemperatures.Outlook(
+            GameClock.CycleGameHours(WorldState.UnixSeconds, WorldState.TimeSpeed),
+            WeatherTemperature.HourOfDay() * 3600.0,
+            WorldState.IsTimeFrozen,
+            forced,
+            OutlookStepGameHours,
+            OutlookCount);
+        var cells = new OutlookCell[entries.Count];
+
+        for (var i = 0; i < entries.Count; i++)
+        {
+            var entry = entries[i];
+
+            cells[i] = new OutlookCell
+            {
+                Time = TimeText.Format((int)(entry.HourOfDay * 3600.0)),
+                Icon = IconOf(entry.Type),
+                Temperature = $"{WeatherTemperature.Rounded(entry.Celsius, metric)}°",
+            };
+        }
+
+        return cells;
+    }
 
     private static string ClockText() =>
         TimeText.Format((Native.GetClockHours() * 3600) + (Native.GetClockMinutes() * 60));
@@ -261,6 +303,15 @@ public static class WeatherForecast
         public required int ForSeconds { get; init; }
     }
 
+    private sealed class OutlookCell
+    {
+        public required string Time { get; init; }
+
+        public required string Icon { get; init; }
+
+        public required string Temperature { get; init; }
+    }
+
     private sealed class ForecastMessage
     {
         public string Type { get; } = "forecast";
@@ -290,6 +341,14 @@ public static class WeatherForecast
         public required string CurrentIcon { get; init; }
 
         public required int CurrentForSeconds { get; init; }
+
+        public required string Temperature { get; init; }
+
+        public required string OutsideLabel { get; init; }
+
+        public required string OutlookLabel { get; init; }
+
+        public required OutlookCell[] Outlook { get; init; }
 
         public required ForecastRow[] Upcoming { get; init; }
 

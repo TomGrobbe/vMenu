@@ -140,6 +140,15 @@
 
         row.appendChild(text);
 
+        if (data.temperature) {
+            const temperature = element("div", "temperature");
+
+            temperature.appendChild(element("span", "degrees", data.temperature));
+            temperature.appendChild(element("span", "where", data.outsideLabel));
+
+            row.appendChild(temperature);
+        }
+
         return row;
     }
 
@@ -162,6 +171,28 @@
         return list;
     }
 
+    function outlook(data) {
+        const section = element("div", "outlook");
+
+        section.appendChild(element("div", "label", data.outlookLabel));
+
+        const cells = element("div", "cells");
+
+        for (const entry of data.outlook) {
+            const cell = element("div", "cell");
+
+            cell.appendChild(element("span", "at", entry.time));
+            cell.appendChild(weatherIcon(entry.icon));
+            cell.appendChild(element("span", "degrees", entry.temperature));
+
+            cells.appendChild(cell);
+        }
+
+        section.appendChild(cells);
+
+        return section;
+    }
+
     function render(data) {
         boxEl.textContent = "";
         boxEl.appendChild(head(data));
@@ -174,6 +205,10 @@
         if (Array.isArray(data.upcoming) && data.upcoming.length > 0) {
             boxEl.appendChild(upcoming(data));
         }
+
+        if (Array.isArray(data.outlook) && data.outlook.length > 0) {
+            boxEl.appendChild(outlook(data));
+        }
     }
 
     function renderCompact(data) {
@@ -183,6 +218,10 @@
 
         current.appendChild(weatherIcon(data.currentIcon));
         current.appendChild(element("span", "what", data.currentName));
+
+        if (data.temperature) {
+            current.appendChild(element("span", "temperature", data.temperature));
+        }
 
         if (data.showTime) {
             current.appendChild(element("span", "clock", data.time));

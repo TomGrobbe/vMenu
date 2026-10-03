@@ -610,6 +610,8 @@
     "displaysettings.forecast.next": "A continuación",
     "displaysettings.forecast.noclock": "Esperando al reloj del servidor.",
     "displaysettings.forecast.now": "Ahora",
+    "displaysettings.forecast.outlook": "Próximas 48 horas",
+    "displaysettings.forecast.outside": "Exterior",
     "displaysettings.forecast.style": "Estilo del Pronóstico",
     "displaysettings.forecast.style.compact": "Compacto",
     "displaysettings.forecast.style.desc": "Completo muestra el panel entero en la parte de arriba de tu pantalla. Compacto muestra una línea discreta encima del mapa con el tiempo actual, la hora, y lo que viene después.",

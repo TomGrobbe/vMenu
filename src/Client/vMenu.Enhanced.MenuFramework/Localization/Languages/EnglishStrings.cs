@@ -1883,6 +1883,8 @@ internal static class EnglishStrings
             [Loc.DisplaySettings.ForecastForced] = "The weather is set by hand on this server, so there is nothing scheduled after it.",
             [Loc.DisplaySettings.ForecastMoon] = "Moon",
             [Loc.DisplaySettings.ForecastNoClock] = "Waiting for the server clock.",
+            [Loc.DisplaySettings.ForecastOutlook] = "Next 48 hours",
+            [Loc.DisplaySettings.ForecastOutside] = "Outside",
             [Loc.DisplaySettings.ForecastStyle] = "Forecast Style",
             [Loc.DisplaySettings.ForecastStyleDescription] = "Full shows the whole panel at the top of your screen. Compact shows one quiet line above the minimap with the weather now, the time, and what is coming next.",
             [Loc.DisplaySettings.ForecastStyleLocked] = "Turn the weather forecast on first.",

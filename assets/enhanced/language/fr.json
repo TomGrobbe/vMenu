@@ -610,6 +610,8 @@
     "displaysettings.forecast.next": "À venir",
     "displaysettings.forecast.noclock": "En attente de l'horloge du serveur.",
     "displaysettings.forecast.now": "Maintenant",
+    "displaysettings.forecast.outlook": "Prochaines 48 heures",
+    "displaysettings.forecast.outside": "Extérieur",
     "displaysettings.forecast.style": "Style des Prévisions",
     "displaysettings.forecast.style.compact": "Compact",
     "displaysettings.forecast.style.desc": "Complet affiche tout le panneau en haut de votre écran. Compact affiche une seule ligne discrète au-dessus de la carte avec la météo actuelle, l'heure, et ce qui arrive ensuite.",

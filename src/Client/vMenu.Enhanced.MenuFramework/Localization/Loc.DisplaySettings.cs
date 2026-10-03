@@ -108,6 +108,10 @@ public static partial class Loc
 
         public const string ForecastNoClock = "displaysettings.forecast.noclock";
 
+        public const string ForecastOutlook = "displaysettings.forecast.outlook";
+
+        public const string ForecastOutside = "displaysettings.forecast.outside";
+
         public const string ForecastStyle = "displaysettings.forecast.style";
 
         public const string ForecastStyleDescription = "displaysettings.forecast.style.desc";
