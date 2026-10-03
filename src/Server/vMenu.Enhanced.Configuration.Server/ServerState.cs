@@ -7,6 +7,15 @@ using vMenu.Enhanced.Logging;
 
 namespace vMenu.Enhanced.Configuration.Server;
 
+public readonly struct WeatherChange(WeatherType from, WeatherType to, double atUnix)
+{
+    public WeatherType From { get; } = from;
+
+    public WeatherType To { get; } = to;
+
+    public double AtUnix { get; } = atUnix;
+}
+
 // The weather and time overrides, held here and mirrored to clients as convars. Not persisted across
 // restarts: coming back up on the deterministic schedule is the right default.
 public static class ServerState
@@ -23,7 +32,11 @@ public static class ServerState
 
     private static SnowMode _snow;
 
+    private static WeatherChange? _weatherChange;
+
     public static WeatherType? Weather => _weather;
+
+    public static WeatherChange? LastWeatherChange => _weatherChange;
 
     public static int TimeOffsetSeconds => _timeOffsetSeconds;
 
@@ -45,6 +58,16 @@ public static class ServerState
 
     public static void SetWeather(WeatherType? type)
     {
+        var now = ServerClock.Now();
+        var scheduled = WeatherCycle.Resolve(GameClock.CycleGameHours(now, ServerClock.Speed())).Current;
+        var from = _weather ?? scheduled;
+        var to = type ?? scheduled;
+
+        if (from != to)
+        {
+            _weatherChange = new WeatherChange(from, to, now);
+        }
+
         _weather = type;
 
         PublishWeather();

@@ -102,8 +102,9 @@ A `world` payload looks roughly like this (trimmed).
 {
   "Utc": 1757000000,
   "Clock": { "Hour": 13, "Minute": 5, "Speed": 30 },
-  "Weather": { "Current": "CLEAR", "Next": "RAIN" },
-  "Forecast": [{ "Type": "RAIN", "RealSecondsUntilStart": 240 }]
+  "Weather": { "Current": "CLEAR", "Next": "RAIN", "TemperatureCelsius": 27.0, "TemperatureFahrenheit": 80.6 },
+  "Forecast": [{ "Type": "RAIN", "RealSecondsUntilStart": 240 }],
+  "TemperatureOutlook": [{ "GameHoursAhead": 1, "Hour": 14, "Weather": "CLEAR", "Celsius": 27.8 }]
 }
 ```
 

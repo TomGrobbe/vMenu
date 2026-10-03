@@ -1,6 +1,6 @@
 ---
 title: "World API"
-description: "Let your own tools read the weather, time, date and moon phase over HTTP."
+description: "Let your own tools read the weather, temperature, time, date and moon phase over HTTP."
 ---
 
 vMenu decides what the sky is doing. It picks the weather, it runs the clock, and it works out the date and the moon phase from that clock. All of that lives inside the game, which is a problem the moment you want something outside the game to know about it. A Discord bot that posts "rain in twenty minutes", a website that shows the in-game time, a companion app that says whether tonight is a full moon: none of them can see any of it.
@@ -109,7 +109,9 @@ A block of [JSON](https://en.wikipedia.org/wiki/JSON), which is a plain text for
     "cycleLengthGameHours": 384.0,
     "blackout": "off",
     "snow": "auto",
-    "snowFalling": false
+    "snowFalling": false,
+    "temperatureCelsius": 30.0,
+    "temperatureFahrenheit": 86.0
   },
   "forecast": [
     {
@@ -118,6 +120,17 @@ A block of [JSON](https://en.wikipedia.org/wiki/JSON), which is a plain text for
       "realSecondsUntilStart": 300.0,
       "gameHoursLong": 4.0,
       "realSecondsLong": 480.0
+    }
+  ],
+  "temperatureOutlook": [
+    {
+      "gameHoursAhead": 0.75,
+      "realSecondsAhead": 90.0,
+      "hour": 13,
+      "minute": 0,
+      "weather": "EXTRASUNNY",
+      "celsius": 31.3,
+      "fahrenheit": 88.3
     }
   ]
 }
@@ -178,6 +191,8 @@ The in-game calendar. GTA does not really have one, so vMenu keeps its own: a 38
 | `blackout` | Whether street lighting is cut: `off`, `city`, or `all`. |
 | `snow` | The snow setting: `auto`, `on`, or `off`. |
 | `snowFalling` | Whether that setting works out to snow actually falling right now. |
+| `temperatureCelsius` | How warm it is outside right now, in degrees Celsius. See [temperatures](#temperatures) below for where this number comes from. |
+| `temperatureFahrenheit` | The same temperature in degrees Fahrenheit, so you do not have to convert it yourself. |
 
 :::note
 Forcing a weather type does not pause the schedule underneath. It carries on ticking, which is why `scheduled` and `next` still change while an override is in place. Hand the weather back to the schedule and it picks up wherever it has got to.
@@ -186,6 +201,28 @@ Forcing a weather type does not pause the schedule underneath. It carries on tic
 ### `forecast`
 
 A list of the weather changes still to come, in order. Each entry says what the weather turns into, how long until it starts, and how long it lasts. Every one of those is given twice, once in in-game hours and once in real seconds, so you never have to do the clock speed maths yourself.
+
+### `temperatureOutlook`
+
+A rough temperature for each of the next 48 whole in-game hours, so you can draw a little temperature chart or say "it will be cold tonight". The entries always land exactly on the hour, so at 14:20 the first one is 15:00, the next one 16:00, and so on. Once the clock passes 15:00, that entry drops off the front and a new one appears at the end.
+
+| Field | What it means |
+| --- | --- |
+| `gameHoursAhead` | How many in-game hours from now this entry is. The first one is less than an hour away. |
+| `realSecondsAhead` | The same distance in real seconds, which already accounts for the clock speed. |
+| `hour`, `minute` | What the in-game clock will show at that moment. |
+| `weather` | The weather the schedule will be on at that moment. If somebody forced a weather type from the menu, this assumes it stays forced. |
+| `celsius`, `fahrenheit` | The temperature at that moment, in both units. |
+
+### Temperatures
+
+GTA works out a temperature for its world all the time, it just never shows it to anyone. vMenu does the same sums the game does. Every weather type has its own temperature for each part of the day, so a sunny afternoon is hot and a rainy night is chilly. While the weather is changing from one type to another, the temperature slides between the two.
+
+A few things to know about these numbers:
+
+1. They are the temperature **outside**, at sea level. Players high up in the hills or flying feel it colder, because the game drops the temperature by up to 15°C between 200 and 1000 metres up. The forecast on a player's screen does take their height into account. This endpoint cannot, because it does not know where anybody is standing.
+2. They are the weather temperature, not the temperature inside a building.
+3. The game's own data for a couple of the snowy weather types was clearly typed in wrong (it had a snowy noon at 20°C, for example). vMenu smooths those out to sensible values.
 
 ## When something goes wrong
 

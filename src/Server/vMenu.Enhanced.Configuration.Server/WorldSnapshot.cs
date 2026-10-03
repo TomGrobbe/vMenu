@@ -84,6 +84,27 @@ public sealed class WorldWeatherState
     public required string Snow { get; init; }
 
     public required bool SnowFalling { get; init; }
+
+    public required double TemperatureCelsius { get; init; }
+
+    public required double TemperatureFahrenheit { get; init; }
+}
+
+public sealed class WorldTemperatureEntry
+{
+    public required double GameHoursAhead { get; init; }
+
+    public required double RealSecondsAhead { get; init; }
+
+    public required int Hour { get; init; }
+
+    public required int Minute { get; init; }
+
+    public required string Weather { get; init; }
+
+    public required double Celsius { get; init; }
+
+    public required double Fahrenheit { get; init; }
 }
 
 public sealed class WorldForecastEntry
@@ -116,6 +137,10 @@ public sealed class WorldSnapshot
 
     public required IReadOnlyList<WorldForecastEntry> Forecast { get; init; }
 
+    public required IReadOnlyList<WorldTemperatureEntry> TemperatureOutlook { get; init; }
+
+    private const int OutlookGameHours = 48;
+
     public static WorldSnapshot Capture(int forecastCount)
     {
         var now = ServerClock.Now();
@@ -128,6 +153,7 @@ public sealed class WorldSnapshot
         var cycleGameHours = GameClock.CycleGameHours(now, speed);
         var resolved = WeatherCycle.Resolve(cycleGameHours);
         var effective = ServerState.Weather ?? resolved.Current;
+        var celsius = SeaLevelCelsius(resolved, effective, now, secondOfDay / 3600.0);
 
         return new WorldSnapshot
         {
@@ -171,9 +197,42 @@ public sealed class WorldSnapshot
                 Blackout = BlackoutModes.NameOf(ServerState.Blackout),
                 Snow = SnowModes.NameOf(ServerState.Snow),
                 SnowFalling = SnowModes.Resolve(ServerState.Snow, effective),
+                TemperatureCelsius = Tenths(celsius),
+                TemperatureFahrenheit = Tenths(WeatherTemperatures.ToFahrenheit(celsius)),
             },
             Forecast = CaptureForecast(cycleGameHours, forecastCount, realSecondsPerGameHour),
+            TemperatureOutlook = CaptureOutlook(cycleGameHours, secondOfDay, realSecondsPerGameHour),
         };
+    }
+
+    // The same blend WorldWeather drives on the client, so the API reads what players are standing in.
+    private static double SeaLevelCelsius(CycleResolution resolved, WeatherType effective, double now, double hourOfDay)
+    {
+        if (ServerState.LastWeatherChange is { } change && change.To == effective)
+        {
+            var seconds = Math.Max(0, ServerConfig.Value(WeatherOptionsSettings.TransitionSeconds));
+            var progress = seconds <= 0 ? 1.0 : (now - change.AtUnix) / seconds;
+
+            if (progress < 1.0)
+            {
+                return WeatherTemperatures.Blended(
+                    change.From,
+                    change.To,
+                    WeatherCycle.Smooth(Math.Max(0.0, progress)),
+                    hourOfDay);
+            }
+        }
+
+        if (ServerState.Weather is null && resolved.GameHoursUntilNext < WeatherCycle.BoundaryWindowGameHours)
+        {
+            return WeatherTemperatures.Blended(
+                resolved.Current,
+                resolved.Next,
+                WeatherCycle.Smooth(1.0 - (resolved.GameHoursUntilNext / WeatherCycle.BoundaryWindowGameHours)),
+                hourOfDay);
+        }
+
+        return WeatherTemperatures.AtSeaLevel(effective, hourOfDay);
     }
 
     private static WorldDateState CaptureDate(
@@ -201,6 +260,41 @@ public sealed class WorldSnapshot
             Weekday = MoonCycle.WeekdayOf(MoonCycle.EpochDay + day),
         };
     }
+
+    private static List<WorldTemperatureEntry> CaptureOutlook(
+        double cycleGameHours,
+        double secondOfDay,
+        double realSecondsPerGameHour)
+    {
+        var entries = new List<WorldTemperatureEntry>();
+        var outlook = WeatherTemperatures.Outlook(
+            cycleGameHours,
+            secondOfDay,
+            ServerState.FrozenAtUnix.HasValue,
+            ServerState.Weather,
+            1,
+            OutlookGameHours);
+
+        foreach (var entry in outlook)
+        {
+            var minuteOfDay = (int)Math.Round(entry.HourOfDay * 60.0) % (24 * 60);
+
+            entries.Add(new WorldTemperatureEntry
+            {
+                GameHoursAhead = entry.GameHoursAhead,
+                RealSecondsAhead = entry.GameHoursAhead * realSecondsPerGameHour,
+                Hour = minuteOfDay / 60,
+                Minute = minuteOfDay % 60,
+                Weather = WeatherTypes.NameOf(entry.Type),
+                Celsius = Tenths(entry.Celsius),
+                Fahrenheit = Tenths(WeatherTemperatures.ToFahrenheit(entry.Celsius)),
+            });
+        }
+
+        return entries;
+    }
+
+    private static double Tenths(double value) => Math.Round(value, 1);
 
     private static List<WorldForecastEntry> CaptureForecast(
         double cycleGameHours,
