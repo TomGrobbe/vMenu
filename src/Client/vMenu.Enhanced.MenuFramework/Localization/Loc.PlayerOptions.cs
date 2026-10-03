@@ -195,9 +195,5 @@ public static partial class Loc
         public const string GroupScenarios = "playeroptions.group.scenarios";
 
         public const string GroupScenariosDescription = "playeroptions.group.scenarios.desc";
-
-        public const string GroupDriving = "playeroptions.group.driving";
-
-        public const string GroupDrivingDescription = "playeroptions.group.driving.desc";
     }
 }

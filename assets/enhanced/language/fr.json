@@ -1141,8 +1141,6 @@
     "playeroptions.godmode.desc": "Rien ne peut te blesser. Tu ne peux pas non plus être sorti d'un véhicule de force ni abattu à travers ses vitres. Le ragdoll reste géré par son propre réglage plus bas.",
     "playeroptions.group.appearance": "Apparence",
     "playeroptions.group.appearance.desc": "Le sang, les blessures et l'état de vos vêtements.",
-    "playeroptions.group.driving": "Conduite",
-    "playeroptions.group.driving.desc": "Laissez le volant à votre personnage et faites-vous conduire.",
     "playeroptions.group.health": "Santé et gilet",
     "playeroptions.group.health.desc": "Définir la santé et le gilet du joueur.",
     "playeroptions.group.movement": "Déplacement",

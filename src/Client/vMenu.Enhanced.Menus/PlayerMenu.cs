@@ -1,6 +1,7 @@
 using vMenu.Enhanced.MenuFramework;
 using vMenu.Enhanced.MenuFramework.Localization;
 
+using AutoPilotPermissions = vMenu.Enhanced.Data.Permissions.Menus.AutoPilot;
 using CharacterCreatorPermissions = vMenu.Enhanced.Data.Permissions.Menus.CharacterCreator;
 using PedModelsPermissions = vMenu.Enhanced.Data.Permissions.Menus.PedModels;
 using PlayerAppearancePermissions = vMenu.Enhanced.Data.Permissions.Menus.PlayerAppearance;
@@ -25,7 +26,8 @@ public sealed class PlayerMenu : MenuDefinition
         | MenuGate.Permission(CharacterCreatorPermissions.Menu)
         | MenuGate.Permission(SavedPedsPermissions.Menu)
         | MenuGate.Permission(WeaponOptionsPermissions.Menu)
-        | MenuGate.Permission(WeaponLoadoutsPermissions.Menu);
+        | MenuGate.Permission(WeaponLoadoutsPermissions.Menu)
+        | MenuGate.Permission(AutoPilotPermissions.Menu);
 
     protected override void Build(MenuBuilder menu)
     {
@@ -38,5 +40,7 @@ public sealed class PlayerMenu : MenuDefinition
 
         menu.Entries.Add(SubmenuEntry.For(new WeaponOptionsMenu()));
         menu.Entries.Add(SubmenuEntry.For(new WeaponLoadoutsMenu()));
+
+        menu.Entries.Add(SubmenuEntry.For(new VehicleAutoPilotMenu()));
     }
 }

@@ -1141,8 +1141,6 @@
     "playeroptions.godmode.desc": "Nada puede hacerte daño. Tampoco pueden sacarte de un vehículo a la fuerza ni dispararte a través de sus ventanillas. El ragdoll se sigue controlando con su propio ajuste más abajo.",
     "playeroptions.group.appearance": "Aspecto",
     "playeroptions.group.appearance.desc": "La sangre, las heridas y el estado de tu ropa.",
-    "playeroptions.group.driving": "Conducción",
-    "playeroptions.group.driving.desc": "Suelta el volante y deja que conduzca tu personaje.",
     "playeroptions.group.health": "Vida y chaleco",
     "playeroptions.group.health.desc": "Fija la vida y el chaleco del jugador.",
     "playeroptions.group.movement": "Movimiento",

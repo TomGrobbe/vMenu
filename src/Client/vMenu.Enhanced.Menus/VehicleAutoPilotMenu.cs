@@ -5,7 +5,7 @@ using vMenu.Enhanced.MenuFramework.Localization;
 using vMenu.Enhanced.Menus.Vehicles.AutoPilot;
 using vMenu.Enhanced.Storage;
 
-using PlayerOptionsPermissions = vMenu.Enhanced.Data.Permissions.Menus.PlayerOptions;
+using AutoPilotPermissions = vMenu.Enhanced.Data.Permissions.Menus.AutoPilot;
 
 namespace vMenu.Enhanced.Menus;
 
@@ -13,7 +13,7 @@ namespace vMenu.Enhanced.Menus;
     TitleKey = Loc.AutoPilot.Title,
     SubtitleKey = Loc.AutoPilot.Subtitle,
     DescriptionKey = Loc.AutoPilot.LinkDescription,
-    Permission = PlayerOptionsPermissions.AutoPilot)]
+    Permission = AutoPilotPermissions.Menu)]
 public sealed class VehicleAutoPilotMenu : MenuDefinition
 {
     private const int MaxCruiseSpeed = 150;

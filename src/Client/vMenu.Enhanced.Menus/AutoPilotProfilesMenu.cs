@@ -8,7 +8,7 @@ using vMenu.Enhanced.MenuFramework.Localization;
 using vMenu.Enhanced.Menus.Saved;
 using vMenu.Enhanced.Menus.Vehicles.AutoPilot;
 
-using PlayerOptionsPermissions = vMenu.Enhanced.Data.Permissions.Menus.PlayerOptions;
+using AutoPilotPermissions = vMenu.Enhanced.Data.Permissions.Menus.AutoPilot;
 
 namespace vMenu.Enhanced.Menus;
 
@@ -16,7 +16,7 @@ namespace vMenu.Enhanced.Menus;
     TitleKey = Loc.AutoPilot.ProfilesTitle,
     SubtitleKey = Loc.AutoPilot.ProfilesSubtitle,
     DescriptionKey = Loc.AutoPilot.ProfilesLinkDescription,
-    Permission = PlayerOptionsPermissions.AutoPilot)]
+    Permission = AutoPilotPermissions.Menu)]
 public sealed class AutoPilotProfilesMenu : MenuDefinition
 {
     private const int NameLength = 40;

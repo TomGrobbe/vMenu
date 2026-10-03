@@ -9,7 +9,7 @@ using vMenu.Enhanced.Permissions;
 using vMenu.Enhanced.Storage;
 using vMenu.Enhanced.Ticks;
 
-using PlayerOptionsPermissions = vMenu.Enhanced.Data.Permissions.Menus.PlayerOptions;
+using AutoPilotPermissions = vMenu.Enhanced.Data.Permissions.Menus.AutoPilot;
 
 namespace vMenu.Enhanced.Menus.Vehicles.AutoPilot;
 
@@ -76,7 +76,7 @@ public static class VehicleAutoPilot
 
     public static int PathCount => _path.Count;
 
-    public static bool IsAllowed => ClientPermissions.IsAllowed(PlayerOptionsPermissions.AutoPilot);
+    public static bool IsAllowed => ClientPermissions.IsAllowed(AutoPilotPermissions.Menu);
 
     public static void Initialize() =>
         _tick = TickRegistry.Register(

@@ -1635,8 +1635,6 @@ internal static class EnglishStrings
             [Loc.PlayerOptions.GroupAppearanceDescription] = "Blood, injuries and the state of your clothes.",
             [Loc.PlayerOptions.GroupScenarios] = "Scenarios",
             [Loc.PlayerOptions.GroupScenariosDescription] = "The idle animations the game's own pedestrians use.",
-            [Loc.PlayerOptions.GroupDriving] = "Driving",
-            [Loc.PlayerOptions.GroupDrivingDescription] = "Hand the wheel over and let your ped do the driving.",
 
             [Loc.AutoPilot.Title] = "Auto Pilot",
             [Loc.AutoPilot.Subtitle] = "Vehicle Auto Pilot",

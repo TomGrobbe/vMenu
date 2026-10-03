@@ -1141,8 +1141,6 @@
     "playeroptions.godmode.desc": "Nichts kann dir etwas anhaben. Du kannst auch nicht aus einem Fahrzeug gezogen oder durch dessen Fenster erschossen werden. Ragdoll wird weiterhin über die eigene Einstellung weiter unten gesteuert.",
     "playeroptions.group.appearance": "Aussehen",
     "playeroptions.group.appearance.desc": "Blut, Verletzungen und der Zustand deiner Kleidung.",
-    "playeroptions.group.driving": "Fahren",
-    "playeroptions.group.driving.desc": "Gib das Steuer ab und lass deinen Charakter fahren.",
     "playeroptions.group.health": "Gesundheit & Panzerung",
     "playeroptions.group.health.desc": "Gesundheit und Panzerung des Spielers festlegen.",
     "playeroptions.group.movement": "Bewegung",

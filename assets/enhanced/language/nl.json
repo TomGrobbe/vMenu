@@ -1141,8 +1141,6 @@
     "playeroptions.godmode.desc": "Niets kan je pijn doen. Je kunt ook niet uit een voertuig getrokken worden of door de ramen heen neergeschoten worden. Ragdoll wordt nog steeds geregeld door zijn eigen instelling hieronder.",
     "playeroptions.group.appearance": "Uiterlijk",
     "playeroptions.group.appearance.desc": "Bloed, verwondingen en de staat van je kleding.",
-    "playeroptions.group.driving": "Rijden",
-    "playeroptions.group.driving.desc": "Geef het stuur uit handen en laat je personage rijden.",
     "playeroptions.group.health": "Leven & kogelvrij vest",
     "playeroptions.group.health.desc": "Stel het leven en het kogelvrije vest van de speler in.",
     "playeroptions.group.movement": "Beweging",
