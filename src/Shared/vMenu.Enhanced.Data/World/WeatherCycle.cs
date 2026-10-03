@@ -33,6 +33,9 @@ public readonly struct ForecastEntry(WeatherType type, double gameHoursUntilStar
 // length. Those multipliers are stored here as running start hours instead.
 public static class WeatherCycle
 {
+    // How long before a scheduled change the sky starts moving, in in-game hours.
+    public const double BoundaryWindowGameHours = 0.5;
+
     private const double EarliestRainHour = 6.0;
 
     private const double LatestRainHour = 18.0;
@@ -296,6 +299,8 @@ public static class WeatherCycle
 
         return forecast;
     }
+
+    public static double Smooth(double t) => t * t * (3.0 - (2.0 * t));
 
     private static int IndexAt(double position)
     {
