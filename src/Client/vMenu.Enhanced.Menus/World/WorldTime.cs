@@ -33,6 +33,8 @@ public static class WorldTime
     private static double _frozenAnchor;
     private static int _catchUpStartMs;
 
+    public static bool IsTransitioning => _ramping || _catchingUp;
+
     // See the matching note in WorldWeather: the convar decides, never a permission.
     private static bool IsEnabled() => ClientConfig.Value(TimeOptionsSettings.Enabled);
 
@@ -55,6 +57,9 @@ public static class WorldTime
             },
             onStopped: () =>
             {
+                _ramping = false;
+                _catchingUp = false;
+
                 Native.NetworkClearClockTimeOverride();
 
                 // Otherwise switching time sync off while frozen leaves the game's own clock stopped.

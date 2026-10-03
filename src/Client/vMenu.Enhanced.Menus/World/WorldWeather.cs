@@ -18,9 +18,6 @@ public static class WorldWeather
     // The other job, correcting anything else that nudges the weather, is well inside a quarter second.
     private const int IntervalMs = 250;
 
-    // How long before a scheduled change the sky starts moving, in in-game hours.
-    private const double BoundaryWindowGameHours = 0.5;
-
     private static readonly uint[] Hashes = BuildHashes();
 
     private static WeatherType _from;
@@ -29,6 +26,9 @@ public static class WorldWeather
     private static bool _started;
     private static bool _settled;
     private static bool _wasForced;
+    private static bool _blending;
+
+    public static bool IsBlending => _blending;
 
     // The convar and nothing else. Not a MenuGate, and never a permission: the weather is one value
     // shared by everyone connected, so a player who may not change it still has to see the same sky as
@@ -55,6 +55,8 @@ public static class WorldWeather
             },
             onStopped: () =>
             {
+                _blending = false;
+
                 Native.ClearWeatherTypePersist();
 
                 WorldClouds.Release(TransitionSeconds());
@@ -78,17 +80,24 @@ public static class WorldWeather
     }
 
     // An unknown hash also means the game gained a weather type that WeatherType does not have yet.
-    private static string NameOfHash(uint hash)
+    private static string NameOfHash(uint hash) =>
+        TryTypeOfHash(hash, out var type) ? WeatherTypes.NameOf(type) : $"unknown ({hash})";
+
+    public static bool TryTypeOfHash(uint hash, out WeatherType type)
     {
         for (var i = 0; i < Hashes.Length; i++)
         {
             if (Hashes[i] == hash)
             {
-                return WeatherTypes.NameOf((WeatherType)i);
+                type = (WeatherType)i;
+
+                return true;
             }
         }
 
-        return $"unknown ({hash})";
+        type = default;
+
+        return false;
     }
 
     private static void Apply()
@@ -141,7 +150,7 @@ public static class WorldWeather
 
             if (progress < 1.0)
             {
-                Set(_from, _to, Smooth(progress));
+                Set(_from, _to, WeatherCycle.Smooth(progress));
 
                 return;
             }
@@ -149,9 +158,9 @@ public static class WorldWeather
             _settled = true;
         }
 
-        if (forced is null && schedule.GameHoursUntilNext < BoundaryWindowGameHours)
+        if (forced is null && schedule.GameHoursUntilNext < WeatherCycle.BoundaryWindowGameHours)
         {
-            Set(schedule.Current, schedule.Next, Smooth(1.0 - (schedule.GameHoursUntilNext / BoundaryWindowGameHours)));
+            Set(schedule.Current, schedule.Next, WeatherCycle.Smooth(1.0 - (schedule.GameHoursUntilNext / WeatherCycle.BoundaryWindowGameHours)));
 
             return;
         }
@@ -159,8 +168,12 @@ public static class WorldWeather
         Set(_to, _to, 0.0);
     }
 
-    private static void Set(WeatherType from, WeatherType to, double percent) =>
+    private static void Set(WeatherType from, WeatherType to, double percent)
+    {
+        _blending = from != to && percent > 0.0 && percent < 1.0;
+
         Native.SetWeatherTypeTransition(Hashes[(int)from], Hashes[(int)to], (float)percent);
+    }
 
     private static float TransitionSeconds() =>
         Math.Max(0, WorldState.WeatherTransitionSeconds);
@@ -168,9 +181,7 @@ public static class WorldWeather
     // Swaps at the moment the sky starts moving rather than when the schedule flips, so the clouds and
     // the weather arrive together instead of the clouds lagging a boundary window behind.
     private static WeatherType CloudTarget(WeatherType? forced, CycleResolution schedule) =>
-        forced ?? (schedule.GameHoursUntilNext < BoundaryWindowGameHours ? schedule.Next : schedule.Current);
-
-    private static double Smooth(double t) => t * t * (3.0 - (2.0 * t));
+        forced ?? (schedule.GameHoursUntilNext < WeatherCycle.BoundaryWindowGameHours ? schedule.Next : schedule.Current);
 
     private static uint[] BuildHashes()
     {
