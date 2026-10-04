@@ -39,9 +39,11 @@ public static class WeatherTemperatures
 
     private static readonly double[] Neutral = [12, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 11, 12];
 
-    private static readonly double[] Snow = [-10, -12, -6, -4, -3, -1, -1, -1, -2, -3, -5, -7, -9];
+    private static readonly double[] Blizzard = [-30, -15, -12, -10, -7, -5, -5, -7, -11, -14, -21, -27, -30];
 
-    private static readonly double[] SnowLight = [-20, -10, -9, -5, -4, -2, -1, -2, -5, -8, -12, -15, -20];
+    private static readonly double[] Snow = [-20, -10, -9, -5, -4, -2, -1, -2, -5, -8, -12, -15, -20];
+
+    private static readonly double[] SnowLight = [-10, -12, -6, -4, -3, -1, -1, -1, -2, -3, -5, -7, -9];
 
     private static readonly double[] Halloween = [12, 12, 12, 15, 15, 30, 30, 30, 15, 15, 12, 12, 12];
 
@@ -120,8 +122,8 @@ public static class WeatherTemperatures
         WeatherType.Thunder => Thunder,
         WeatherType.Neutral => Neutral,
         WeatherType.Snow => Snow,
-        WeatherType.Blizzard => Snow,
-        WeatherType.SnowHalloween => Snow,
+        WeatherType.Blizzard => Blizzard,
+        WeatherType.SnowHalloween => SnowLight,
         WeatherType.SnowLight => SnowLight,
         WeatherType.Xmas => SnowLight,
         WeatherType.Halloween => Halloween,
