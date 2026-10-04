@@ -2,7 +2,6 @@ using CitizenFX.FiveM.Client;
 
 using vMenu.Enhanced.MenuFramework;
 using vMenu.Enhanced.MenuFramework.Localization;
-using vMenu.Enhanced.Menus.Players;
 using vMenu.Enhanced.Menus.Players.Character;
 
 using CharacterCreatorPermissions = vMenu.Enhanced.Data.Permissions.Menus.CharacterCreator;

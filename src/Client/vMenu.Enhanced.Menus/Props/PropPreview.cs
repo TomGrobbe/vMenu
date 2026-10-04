@@ -263,7 +263,7 @@ public static class PropPreview
 
         EntityBox.DrawEdges(
             _highlighted,
-            (uint)Native.GetEntityModel(_highlighted),
+            Native.GetEntityModel(_highlighted),
             OutlineRed,
             OutlineGreen,
             OutlineBlue,

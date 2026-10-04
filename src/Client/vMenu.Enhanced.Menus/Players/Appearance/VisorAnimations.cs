@@ -27,11 +27,6 @@ public static class VisorAnimations
 
     private const int BicycleClass = 13;
 
-    private static readonly uint[] SportsBikes = Hashes(
-        "akuma", "bati", "bati2", "carbonrs", "defiler", "diablous2", "double", "fcr", "fcr2",
-        "hakuchou", "hakuchou2", "lectro", "nemesis", "oppressor", "oppressor2", "pcj", "ruffian",
-        "shotaro", "vader", "vortex");
-
     private static readonly uint[] Choppers = Hashes("sanctus", "zombiea", "zombieb");
 
     private static readonly uint[] DirtBikes = Hashes(
@@ -60,7 +55,7 @@ public static class VisorAnimations
     // enough sitting in a car and is what legacy settled on too.
     public static string ForVehicle(int vehicle)
     {
-        var model = (uint)Native.GetEntityModel(vehicle);
+        var model = Native.GetEntityModel(vehicle);
 
         return Native.GetVehicleClass(vehicle) switch
         {
@@ -87,7 +82,7 @@ public static class VisorAnimations
 
         if (Contains(Scooters, model)) { return OnScooter; }
 
-        // Sports is the fallback as well as a list of its own, because it is the most upright of the riding
+        // Sports is the fallback, because it is the most upright of the riding
         // postures and looks least wrong on a bike nobody thought to categorise.
         return OnSportsBike;
     }

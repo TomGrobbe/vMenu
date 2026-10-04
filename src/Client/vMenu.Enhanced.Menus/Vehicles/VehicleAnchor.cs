@@ -41,7 +41,7 @@ public static class VehicleAnchor
     {
         var vehicle = OwnVehicle.Driven();
 
-        return vehicle != 0 && Native.IsThisModelABoat((uint)Native.GetEntityModel(vehicle))
+        return vehicle != 0 && Native.IsThisModelABoat(Native.GetEntityModel(vehicle))
             && Native.CanAnchorBoatHere(vehicle);
     }
 
@@ -65,7 +65,7 @@ public static class VehicleAnchor
             return;
         }
 
-        if (!Native.IsThisModelABoat((uint)Native.GetEntityModel(vehicle)) || !Native.CanAnchorBoatHere(vehicle))
+        if (!Native.IsThisModelABoat(Native.GetEntityModel(vehicle)) || !Native.CanAnchorBoatHere(vehicle))
         {
             return;
         }

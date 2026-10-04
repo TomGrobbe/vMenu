@@ -15,7 +15,7 @@ public static class FreemodeReader
 
     public static async Task<MpCharacterCore?> ReadCoreAsync(int ped)
     {
-        var model = (uint)Native.GetEntityModel(ped);
+        var model = Native.GetEntityModel(ped);
 
         if (!PedSpawning.IsFreemode(model))
         {

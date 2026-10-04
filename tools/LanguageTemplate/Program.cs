@@ -358,7 +358,7 @@ static IReadOnlyList<LanguageComparison> Compare(string languageFolder, IEnumera
         var translated = read?.Strings ?? [];
         var missing = keys.Where(key => !translated.ContainsKey(key)).ToArray();
         var orphans = translated.Keys.Where(key => !known.Contains(key)).Order(StringComparer.Ordinal).ToArray();
-        var native = string.IsNullOrWhiteSpace(read?.NativeName) ? code : read!.NativeName;
+        var native = string.IsNullOrWhiteSpace(read?.NativeName) ? code : read.NativeName;
 
         rows.Add(new LanguageComparison(code, native, missing, orphans, null));
     }

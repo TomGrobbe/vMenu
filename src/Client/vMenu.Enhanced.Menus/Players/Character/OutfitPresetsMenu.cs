@@ -178,7 +178,7 @@ internal static class OutfitPresetsMenu
             },
         };
 
-        var male = PedSpawning.IsFreemodeMale((uint)Native.GetEntityModel(Native.PlayerPedId()));
+        var male = PedSpawning.IsFreemodeMale(Native.GetEntityModel(Native.PlayerPedId()));
 
         foreach (var preset in category.Presets)
         {
@@ -235,7 +235,7 @@ internal static class OutfitPresetsMenu
     private static void Wear(ClothingPreset preset)
     {
         var ped = Native.PlayerPedId();
-        var male = PedSpawning.IsFreemodeMale((uint)Native.GetEntityModel(ped));
+        var male = PedSpawning.IsFreemodeMale(Native.GetEntityModel(ped));
 
         if (!preset.Fits(male))
         {
@@ -495,7 +495,7 @@ internal static class OutfitPresetsMenu
         }
     }
 
-    private static bool Male() => PedSpawning.IsFreemodeMale((uint)Native.GetEntityModel(Native.PlayerPedId()));
+    private static bool Male() => PedSpawning.IsFreemodeMale(Native.GetEntityModel(Native.PlayerPedId()));
 
     private static void Fill(MenuBuilder builder, IReadOnlyList<MenuEntry> rows)
     {

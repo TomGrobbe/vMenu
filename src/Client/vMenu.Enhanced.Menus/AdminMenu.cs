@@ -2,7 +2,6 @@ using vMenu.Enhanced.MenuFramework;
 using vMenu.Enhanced.MenuFramework.Localization;
 using vMenu.Enhanced.Menus.Admin;
 using vMenu.Enhanced.Menus.Vehicles;
-using vMenu.Enhanced.Storage;
 
 using AdminPermissions = vMenu.Enhanced.Data.Permissions.Menus.Admin;
 

@@ -71,7 +71,7 @@ public static class VehicleTurbulence
             return;
         }
 
-        Write(vehicle, (uint)Native.GetEntityModel(vehicle));
+        Write(vehicle, Native.GetEntityModel(vehicle));
     }
 
     private static int Resolve(int stored) => IsAllowed ? Math.Clamp(stored, 0, Stock) : Stock;

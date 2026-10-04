@@ -911,7 +911,7 @@ internal sealed class SavedCharacters
         var model = PedSpawning.FreemodeModel(character.Core.IsMale);
         var ped = Native.PlayerPedId();
 
-        if ((uint)Native.GetEntityModel(ped) != model)
+        if (Native.GetEntityModel(ped) != model)
         {
             return false;
         }

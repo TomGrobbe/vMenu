@@ -30,7 +30,7 @@ public static class PedSpawning
     public static uint FreemodeModel(bool male) => male ? FreemodeMale : FreemodeFemale;
 
     public static bool IsWearingFreemode() =>
-        IsFreemode((uint)Native.GetEntityModel(Native.PlayerPedId()));
+        IsFreemode(Native.GetEntityModel(Native.PlayerPedId()));
 
     public static bool IsSpawnable(string modelName) => IsSpawnable(API.Hash(modelName));
 
@@ -76,7 +76,7 @@ public static class PedSpawning
 
         // Only when it is not already the model being worn. Swapping to the same one throws the ped out of
         // whatever it was doing for no gain.
-        if ((uint)Native.GetEntityModel(Native.PlayerPedId()) != hash)
+        if (Native.GetEntityModel(Native.PlayerPedId()) != hash)
         {
             // Read before the swap and handed back after it. Nothing is raised until the swap is done, by which
             // point the ped holding the weapons is gone, so this is the last chance to read them.
@@ -219,7 +219,7 @@ public static class PedSpawning
         }
 
         // Counts the driver's seat as one of them, so the last passenger index is two below the total.
-        var seats = Native.GetVehicleModelNumberOfSeats((uint)Native.GetEntityModel(vehicle));
+        var seats = Native.GetVehicleModelNumberOfSeats(Native.GetEntityModel(vehicle));
 
         for (var seat = 0; seat <= seats - 2; seat++)
         {

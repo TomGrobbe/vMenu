@@ -63,7 +63,7 @@ public static class VisorToggle
             return false;
         }
 
-        return VisorAnimations.IsGoggles((uint)Native.GetEntityModel(ped), drawable)
+        return VisorAnimations.IsGoggles(Native.GetEntityModel(ped), drawable)
             || Tagged(prop, "HELMET")
             || Tagged(prop, "FULL_FACE")
             || Tagged(prop, "DOME_HELMET");
@@ -77,7 +77,7 @@ public static class VisorToggle
         }
 
         return !Native.IsPedInAnyVehicle(ped, false)
-            || !VisorAnimations.IsGoggles((uint)Native.GetEntityModel(ped), Native.GetPedPropIndex(ped, PedPropSlots.Hats, false));
+            || !VisorAnimations.IsGoggles(Native.GetEntityModel(ped), Native.GetPedPropIndex(ped, PedPropSlots.Hats, false));
     }
 
     private static bool Tagged(uint prop, string tag) =>
@@ -145,7 +145,7 @@ public static class VisorToggle
             return;
         }
 
-        var model = (uint)Native.GetEntityModel(ped);
+        var model = Native.GetEntityModel(ped);
         var goggles = VisorAnimations.IsGoggles(model, drawable);
 
         var vehicle = Native.IsPedInAnyVehicle(ped, false) ? Native.GetVehiclePedIsIn(ped, false) : 0;

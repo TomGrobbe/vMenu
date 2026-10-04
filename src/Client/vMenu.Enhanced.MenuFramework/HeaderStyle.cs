@@ -1,7 +1,6 @@
 using MenuAPI;
 
 using vMenu.Enhanced.Configuration;
-using vMenu.Enhanced.Data.Configuration;
 using vMenu.Enhanced.Logging;
 
 using AppearanceSettings = vMenu.Enhanced.Data.Configuration.Settings.MenuAppearance;

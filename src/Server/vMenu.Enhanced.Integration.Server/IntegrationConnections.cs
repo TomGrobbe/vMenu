@@ -165,14 +165,14 @@ public static class IntegrationConnections
 
             case "reject":
                 pending.Admit = false;
-                pending.Reason = string.IsNullOrWhiteSpace(reason) ? pending.Reason : reason!;
+                pending.Reason = string.IsNullOrWhiteSpace(reason) ? pending.Reason : reason;
                 pending.Terminal = true;
                 break;
 
             default:
                 if (!string.IsNullOrEmpty(card))
                 {
-                    pending.Card = card!;
+                    pending.Card = card;
                 }
 
                 if (delaySeconds is > 0)
@@ -266,7 +266,7 @@ public static class IntegrationConnections
             // it ticks down. Don't treat that silence as an unresponsive manager, or a delay longer than the
             // heartbeat window would kick the player mid-countdown.
             var delayActive = pending.DelaySeconds >= 0
-                && nowTicks - pending.DelaySetAtTicks < (long)pending.DelaySeconds * TimeSpan.TicksPerSecond;
+                && nowTicks - pending.DelaySetAtTicks < pending.DelaySeconds * TimeSpan.TicksPerSecond;
 
             if (!pending.Terminal && !delayActive && nowTicks - pending.LastActivityTicks > HeartbeatTimeoutTicks)
             {

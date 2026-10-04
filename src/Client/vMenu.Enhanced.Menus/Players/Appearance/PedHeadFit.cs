@@ -265,7 +265,7 @@ public static class PedHeadFit
             : (uint)Native.GetHashNameForProp(ped, PedPropSlots.Hats, hat, hatTexture);
 
         Log.Debug(
-            $"[Character] {what} on the freemode {(PedSpawning.IsFreemodeMale((uint)Native.GetEntityModel(ped)) ? "male" : "female")}: "
+            $"[Character] {what} on the freemode {(PedSpawning.IsFreemodeMale(Native.GetEntityModel(ped)) ? "male" : "female")}: "
             + $"mask {mask}/{maskTexture} hash {maskItem} shrink {Native.DoesShopPedApparelHaveRestrictionTag(maskItem, shrink, ComponentApparel)}"
             + $"{Tags(maskItem, ComponentApparel)}{Forced(maskItem)}{Variants(maskItem)}, "
             + $"hat {hat}/{hatTexture} hash {hatItem}{Tags(hatItem, PropApparel)}{Forced(hatItem)}{Variants(hatItem)}");

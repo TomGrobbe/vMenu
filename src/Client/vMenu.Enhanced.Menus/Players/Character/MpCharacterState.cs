@@ -84,7 +84,7 @@ public static class MpCharacterState
             return false;
         }
 
-        var model = (uint)Native.GetEntityModel(Native.PlayerPedId());
+        var model = Native.GetEntityModel(Native.PlayerPedId());
 
         return PedSpawning.IsFreemode(model) && PedSpawning.IsFreemodeMale(model) == Worn.IsMale;
     }

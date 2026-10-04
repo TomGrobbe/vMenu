@@ -20,7 +20,7 @@ internal static class PlateSection
 
     private static IReadOnlyList<MenuEntry> Rows(MenuBuilder menu)
     {
-        if (SectionRows.Driven() is not { } handle)
+        if (SectionRows.Driven() is null)
         {
             return SectionRows.BlockedOnly();
         }

@@ -1,5 +1,3 @@
-using System.Globalization;
-
 using CitizenFX.FiveM.Client;
 
 using vMenu.Enhanced.Actions;

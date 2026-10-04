@@ -428,7 +428,7 @@ public static class VehicleAutoPilot
 
         return chosen > 0
             ? chosen
-            : Native.GetVehicleModelMaxSpeed((uint)Native.GetEntityModel(vehicle));
+            : Native.GetVehicleModelMaxSpeed(Native.GetEntityModel(vehicle));
     }
 
     private static void Halt()
@@ -517,7 +517,7 @@ public static class VehicleAutoPilot
 
     public static AutoPilotCategory Kind(int vehicle)
     {
-        var model = (uint)Native.GetEntityModel(vehicle);
+        var model = Native.GetEntityModel(vehicle);
 
         if (Native.IsThisModelAHeli(model))
         {

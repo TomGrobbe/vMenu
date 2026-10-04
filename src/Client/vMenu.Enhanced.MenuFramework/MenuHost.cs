@@ -585,7 +585,7 @@ internal sealed class MenuHost : IDisposable
                 return;
             }
 
-            Audit(entry, MenuActionKinds.List, item.GetCurrentSelection()?.ToString() ?? string.Empty);
+            Audit(entry, MenuActionKinds.List, item.GetCurrentSelection() ?? string.Empty);
 
             Guard(() => confirm.OnConfirmed?.Invoke(arguments), item);
 
@@ -602,7 +602,7 @@ internal sealed class MenuHost : IDisposable
             return;
         }
 
-        Audit(entry, MenuActionKinds.List, item.GetCurrentSelection()?.ToString() ?? string.Empty);
+        Audit(entry, MenuActionKinds.List, item.GetCurrentSelection() ?? string.Empty);
 
         Guard(() => list.OnSelected?.Invoke(arguments), item);
 

@@ -83,7 +83,7 @@ public static class WeaponInventory
     {
         var given = 0;
 
-        foreach (var (weapon, category) in Allowed())
+        foreach (var (weapon, _) in Allowed())
         {
             Give(API.Hash(weapon));
 

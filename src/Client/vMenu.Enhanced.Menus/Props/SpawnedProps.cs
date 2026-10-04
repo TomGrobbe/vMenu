@@ -131,7 +131,7 @@ public static class SpawnedProps
 
         foreach (var entity in Tracked)
         {
-            if (!Native.DoesEntityExist(entity) || (uint)Native.GetEntityModel(entity) != model)
+            if (!Native.DoesEntityExist(entity) || Native.GetEntityModel(entity) != model)
             {
                 continue;
             }

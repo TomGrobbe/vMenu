@@ -151,7 +151,7 @@ internal static class NearbyProps
                 continue;
             }
 
-            found.Add(new Found(entity, (uint)Native.GetEntityModel(entity), MathF.Sqrt(apart), mine));
+            found.Add(new Found(entity, Native.GetEntityModel(entity), MathF.Sqrt(apart), mine));
         }
 
         found.Sort(static (left, right) => left.Distance.CompareTo(right.Distance));

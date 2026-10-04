@@ -335,7 +335,7 @@ internal static class ModsSection
 
         MenuAudit.ReportAction(
             AuditActions.VehicleModsChanged,
-            VehicleSpawning.DisplayName((uint)Native.GetEntityModel(handle)),
+            VehicleSpawning.DisplayName(Native.GetEntityModel(handle)),
             string.Join(", ", changes));
     }
 

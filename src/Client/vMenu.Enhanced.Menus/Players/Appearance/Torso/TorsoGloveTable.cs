@@ -397,7 +397,7 @@ internal static class TorsoGloveTable
 
     private static void Resolve(int ped)
     {
-        var model = (uint)Native.GetEntityModel(ped);
+        var model = Native.GetEntityModel(ped);
 
         if (_resolved && model == _resolvedModel)
         {

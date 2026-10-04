@@ -521,7 +521,7 @@ public static class LocalVehicleTicks
         }
 
         // Counts the driver's seat as one of them, so the last passenger index is two below the total.
-        var seats = Native.GetVehicleModelNumberOfSeats((uint)Native.GetEntityModel(vehicle));
+        var seats = Native.GetVehicleModelNumberOfSeats(Native.GetEntityModel(vehicle));
 
         for (var seat = 0; seat <= seats - 2; seat++)
         {

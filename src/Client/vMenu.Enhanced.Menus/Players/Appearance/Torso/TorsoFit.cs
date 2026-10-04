@@ -39,7 +39,7 @@ public static class TorsoFit
         return new TorsoSnapshot
         {
             Ped = ped,
-            IsMale = PedSpawning.IsFreemodeMale((uint)Native.GetEntityModel(ped)),
+            IsMale = PedSpawning.IsFreemodeMale(Native.GetEntityModel(ped)),
             GloveType = wearingGloves ? gloveType : TorsoGloves.NoGlove,
             GloveTexture = gloveTexture,
         };

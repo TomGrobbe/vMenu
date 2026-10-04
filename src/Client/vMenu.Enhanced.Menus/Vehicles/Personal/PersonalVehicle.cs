@@ -418,7 +418,7 @@ public static class PersonalVehicle
 
         var live = entity != 0 && Native.DoesEntityExist(entity);
 
-        Model = live ? unchecked((uint)Native.GetEntityModel(entity)) : 0;
+        Model = live ? Native.GetEntityModel(entity) : 0;
         DoorMask = live ? DoorsOf(entity) : 0;
 
         PersonalVehicleBlip.Reevaluate();

@@ -953,7 +953,7 @@ public sealed class OnlinePlayersMenu : MenuDefinition
 
     private static int? FreeSeat(int vehicle)
     {
-        var seats = Native.GetVehicleModelNumberOfSeats((uint)Native.GetEntityModel(vehicle));
+        var seats = Native.GetVehicleModelNumberOfSeats(Native.GetEntityModel(vehicle));
 
         for (var seat = 0; seat <= seats - 2; seat++)
         {

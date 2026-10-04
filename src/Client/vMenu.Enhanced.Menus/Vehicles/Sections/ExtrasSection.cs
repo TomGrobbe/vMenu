@@ -28,7 +28,7 @@ internal static class ExtrasSection
         }
 
         var rows = new List<MenuEntry>();
-        var model = (uint)Native.GetEntityModel(handle);
+        var model = Native.GetEntityModel(handle);
 
         for (var id = 0; id < VehicleAppearanceReader.ExtraCount; id++)
         {

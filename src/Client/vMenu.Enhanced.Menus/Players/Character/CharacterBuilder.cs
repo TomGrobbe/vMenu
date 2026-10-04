@@ -56,7 +56,7 @@ internal sealed class CharacterBuilder
     {
         var model = PedSpawning.FreemodeModel(character.Core.IsMale);
 
-        var rebuild = restore || (uint)Native.GetEntityModel(Native.PlayerPedId()) != model;
+        var rebuild = restore || Native.GetEntityModel(Native.PlayerPedId()) != model;
 
         if (rebuild && !await PedSpawning.SetPlayerModelAsync(model))
         {

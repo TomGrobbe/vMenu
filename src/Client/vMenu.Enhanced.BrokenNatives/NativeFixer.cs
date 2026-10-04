@@ -2,7 +2,6 @@ using CitizenFX.Base;
 using CitizenFX.Base.Data;
 using CitizenFX.FiveM.Client;
 using CitizenFX.FiveM.Shared;
-using CitizenFX.FiveM.Shared.Serialization;
 
 using MessagePack;
 

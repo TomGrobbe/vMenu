@@ -11,7 +11,7 @@ public static class PedAppearanceReader
 {
     public static PedAppearance Read(int ped)
     {
-        var model = (uint)Native.GetEntityModel(ped);
+        var model = Native.GetEntityModel(ped);
         var outfit = ReadOutfit(ped);
 
         return new PedAppearance

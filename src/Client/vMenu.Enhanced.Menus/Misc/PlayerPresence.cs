@@ -283,7 +283,7 @@ public static class PlayerPresence
                 streamed.Ped,
                 streamed.Position,
                 (int)Native.GetEntityHeading(streamed.Ped),
-                vehicle != 0 ? unchecked((uint)Native.GetEntityModel(vehicle)) : 0,
+                vehicle != 0 ? Native.GetEntityModel(vehicle) : 0,
                 StateBags.GetPlayer<bool>(serverId, PlayerStateKeys.NoClip),
                 Native.IsPlayerDead(streamed.Slot),
                 StateBags.GetPlayer<bool>(serverId, PlayerStateKeys.Staff),

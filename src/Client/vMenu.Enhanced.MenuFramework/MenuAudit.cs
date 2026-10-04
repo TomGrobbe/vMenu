@@ -43,12 +43,12 @@ public static class MenuAudit
 
         var item = text.TranslationKey;
 
-        if (string.IsNullOrEmpty(item) || !AuditedMenuItems.Includes(item!) || !Allowed())
+        if (string.IsNullOrEmpty(item) || !AuditedMenuItems.Includes(item) || !Allowed())
         {
             return;
         }
 
-        API.EmitServer(AuditEvents.Menu, menu, item!, kind, value);
+        API.EmitServer(AuditEvents.Menu, menu, item, kind, value);
     }
 
     public static void ReportAction(string action, string value = "", string detail = "")

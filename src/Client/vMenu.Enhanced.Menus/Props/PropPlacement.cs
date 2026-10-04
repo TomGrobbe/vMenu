@@ -1,5 +1,3 @@
-using System.Numerics;
-
 using CitizenFX.FiveM.Client;
 
 using MenuAPI;

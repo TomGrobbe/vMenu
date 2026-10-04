@@ -90,7 +90,7 @@ public static class CharacterDumpCommands
             return;
         }
 
-        var male = PedSpawning.IsFreemodeMale((uint)Native.GetEntityModel(ped));
+        var male = PedSpawning.IsFreemodeMale(Native.GetEntityModel(ped));
 
         OnlineOutfitCatalogue.Forget();
         OnlineOutfitCatalogue.Begin(male);

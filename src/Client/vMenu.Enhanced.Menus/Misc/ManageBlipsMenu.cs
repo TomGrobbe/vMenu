@@ -7,8 +7,6 @@ using vMenu.Enhanced.Data.Actions;
 using vMenu.Enhanced.MenuFramework;
 using vMenu.Enhanced.MenuFramework.Localization;
 
-using DisplaySettingsPermissions = vMenu.Enhanced.Data.Permissions.Menus.DisplaySettings;
-
 namespace vMenu.Enhanced.Menus.Misc;
 
 internal static class ManageBlipsMenu

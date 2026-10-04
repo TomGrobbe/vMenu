@@ -20,7 +20,7 @@ public static class PlayerStatusReport
 
         if (vehicle != 0 && Native.DoesEntityExist(vehicle))
         {
-            var hash = (uint)Native.GetEntityModel(vehicle);
+            var hash = Native.GetEntityModel(vehicle);
 
             vehicleModel = VehicleModelNames.Resolve(hash);
             vehicleName = DisplayName(hash, vehicleModel);
@@ -33,7 +33,7 @@ public static class PlayerStatusReport
             VehicleGodMode.Enabled,
             vehicleName,
             vehicleModel,
-            WeaponName((uint)Native.GetSelectedPedWeapon(ped)));
+            WeaponName(Native.GetSelectedPedWeapon(ped)));
     }
 
     private static string DisplayName(uint hash, string fallback)

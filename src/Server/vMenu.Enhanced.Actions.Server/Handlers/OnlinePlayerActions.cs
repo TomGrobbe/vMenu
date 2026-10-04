@@ -927,7 +927,7 @@ public static class OnlinePlayerActions
         API.EmitClient(target, PlayerEvents.GetGodMode, requestId.ToString(CultureInfo.InvariantCulture));
 
         (bool Player, bool Vehicle) reported;
-        var answerable = true;
+        bool answerable;
 
         try
         {

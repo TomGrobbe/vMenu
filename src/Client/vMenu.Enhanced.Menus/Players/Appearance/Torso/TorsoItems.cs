@@ -78,7 +78,7 @@ internal static class TorsoItems
 
     private static Dictionary<uint, int> Index(int ped, int slot)
     {
-        var model = (uint)Native.GetEntityModel(ped);
+        var model = Native.GetEntityModel(ped);
 
         if (model != _indexedModel)
         {
