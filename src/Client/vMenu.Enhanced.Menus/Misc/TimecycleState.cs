@@ -1,6 +1,5 @@
 using CitizenFX.FiveM.Client;
 
-using vMenu.Enhanced.Data.World;
 using vMenu.Enhanced.Events;
 using vMenu.Enhanced.Permissions;
 using vMenu.Enhanced.Storage;
@@ -169,7 +168,7 @@ public static class TimecycleState
 
             foreach (var name in slots)
             {
-                if (name is { Length: > 0 } && Known(name) is { } known)
+                if (name is { Length: > 0 } && TimecycleCatalog.Find(name) is { } known)
                 {
                     Enable(known);
                 }
@@ -191,19 +190,6 @@ public static class TimecycleState
         }
 
         ClearAll();
-    }
-
-    private static string? Known(string name)
-    {
-        foreach (var known in TimecycleModifiers.Names)
-        {
-            if (string.Equals(known, name, StringComparison.OrdinalIgnoreCase))
-            {
-                return known;
-            }
-        }
-
-        return null;
     }
 
     private static int? FreeSlot()

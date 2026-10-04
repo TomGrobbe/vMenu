@@ -5,7 +5,6 @@ using CitizenFX.FiveM.Client;
 using MenuAPI;
 
 using vMenu.Enhanced.Data.Ticks;
-using vMenu.Enhanced.Data.World;
 using vMenu.Enhanced.MenuFramework;
 using vMenu.Enhanced.MenuFramework.Localization;
 using vMenu.Enhanced.Ticks;
@@ -36,7 +35,7 @@ internal sealed class TimecycleFilterMenu
 
     private string _query = string.Empty;
 
-    private int _matches = TimecycleModifiers.Names.Count;
+    private int _matches;
 
     private bool _prompting;
 
@@ -59,10 +58,12 @@ internal sealed class TimecycleFilterMenu
             OnSelectedAsync = _ => PromptAsync(),
         });
 
-        foreach (var name in TimecycleModifiers.Names)
+        foreach (var name in TimecycleCatalog.Names)
         {
             menu.Entries.Add(Row(name));
         }
+
+        _matches = TimecycleCatalog.Names.Count;
 
         TimecycleKeyBindings.Register(
             () => Nudge(1),
@@ -98,7 +99,7 @@ internal sealed class TimecycleFilterMenu
         };
 
         menu.OnIndexChanged = changed =>
-            _highlighted = changed.NewItem?.ItemData is string data ? Original(data) : null;
+            _highlighted = changed.NewItem?.ItemData is string data ? TimecycleCatalog.Find(data) : null;
 
         TimecycleState.Changed += Repaint;
 
@@ -118,7 +119,7 @@ internal sealed class TimecycleFilterMenu
             Loc.DisplaySettings.TimecycleSubtitleFiltered,
             ("query", MenuText.Literal(Shorten(_query))),
             ("count", MenuText.Literal(Number(_matches))),
-            ("total", MenuText.Literal(Number(TimecycleModifiers.Names.Count)))).Resolve(localizer);
+            ("total", MenuText.Literal(Number(TimecycleCatalog.Names.Count)))).Resolve(localizer);
     }
 
     private CheckboxEntry Row(string name)
@@ -227,19 +228,6 @@ internal sealed class TimecycleFilterMenu
         });
     }
 
-    private static string? Original(string data)
-    {
-        foreach (var name in TimecycleModifiers.Names)
-        {
-            if (string.Equals(name, data, StringComparison.OrdinalIgnoreCase))
-            {
-                return name;
-            }
-        }
-
-        return null;
-    }
-
     private void SyncButtons()
     {
         if (_menu is not { } menu)
@@ -331,7 +319,7 @@ internal sealed class TimecycleFilterMenu
         if (query.Length == 0)
         {
             _query = string.Empty;
-            _matches = TimecycleModifiers.Names.Count;
+            _matches = TimecycleCatalog.Names.Count;
 
             menu.SetUserFilter(null);
             menu.Menu.MenuSubtitle = Subtitle();
@@ -385,11 +373,11 @@ internal sealed class TimecycleFilterMenu
 
     private static IReadOnlyList<InputSuggestion> Suggestions()
     {
-        var rows = new InputSuggestion[TimecycleModifiers.Names.Count];
+        var rows = new InputSuggestion[TimecycleCatalog.Names.Count];
 
         for (var index = 0; index < rows.Length; index++)
         {
-            var name = TimecycleModifiers.Names[index];
+            var name = TimecycleCatalog.Names[index];
 
             rows[index] = new InputSuggestion { Value = name, Label = name };
         }
