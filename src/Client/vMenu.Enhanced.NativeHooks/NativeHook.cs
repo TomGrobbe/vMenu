@@ -26,7 +26,7 @@ public static class NativeHook
     }
 
     /// <summary>Runs when the native throws. The exception is rethrown afterwards.</summary>
-    public static void OnException(string name, Exception exception)
+    public static void OnException(string _, Exception __)
     {
     }
 }

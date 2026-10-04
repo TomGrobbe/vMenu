@@ -195,7 +195,7 @@ static int Check(string[] args)
 
     if (wanted.Count > 0)
     {
-        rows = rows.Where(row => wanted.Contains(row.Code, StringComparer.OrdinalIgnoreCase)).ToArray();
+        rows = [.. rows.Where(row => wanted.Contains(row.Code, StringComparer.OrdinalIgnoreCase))];
 
         if (rows.Count == 0)
         {

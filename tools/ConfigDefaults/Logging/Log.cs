@@ -5,7 +5,7 @@ public static class Log
 {
     public static int Errors { get; private set; }
 
-    public static void Debug(string message)
+    public static void Debug(string _)
     {
     }
 
