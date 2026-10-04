@@ -13,8 +13,8 @@ using vMenu.Enhanced.Players.Server;
 using vMenu.Enhanced.Ticks.Server;
 using vMenu.Enhanced.Webhooks.Server;
 
-using JoinLeaveSettings = vMenu.Enhanced.Data.Configuration.Settings.JoinLeave;
 using DisplaySettingsPermissions = vMenu.Enhanced.Data.Permissions.Menus.DisplaySettings;
+using JoinLeaveSettings = vMenu.Enhanced.Data.Configuration.Settings.JoinLeave;
 
 namespace vMenu.Enhanced.Actions.Server.Events;
 

@@ -2,8 +2,8 @@ using vMenu.Enhanced.Data.Configuration.Settings;
 
 using AdminSettings = vMenu.Enhanced.Data.Configuration.Settings.Admin;
 using IntegrationSettings = vMenu.Enhanced.Data.Configuration.Settings.Integration;
-using LoggingSettings = vMenu.Enhanced.Data.Configuration.Settings.Logging;
 using JoinLeaveSettings = vMenu.Enhanced.Data.Configuration.Settings.JoinLeave;
+using LoggingSettings = vMenu.Enhanced.Data.Configuration.Settings.Logging;
 using OnlinePlayerSettings = vMenu.Enhanced.Data.Configuration.Settings.OnlinePlayers;
 using StaffAlertSettings = vMenu.Enhanced.Data.Configuration.Settings.StaffAlerts;
 using UpdateSettings = vMenu.Enhanced.Data.Configuration.Settings.Updates;

@@ -15,7 +15,6 @@ public static class OnlinePlayers
     [StaffOnly]
     public const string Kill = "vMenu.Enhanced.Menus.OnlinePlayers.Kill";
 
-    
     public const string TeleportTo = "vMenu.Enhanced.Menus.OnlinePlayers.TeleportTo";
 
     [StaffOnly]

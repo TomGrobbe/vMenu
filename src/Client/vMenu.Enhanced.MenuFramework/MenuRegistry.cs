@@ -2,14 +2,13 @@ using CitizenFX.FiveM.Client;
 
 using MenuAPI;
 
-using vMenu.Enhanced.Data.Ticks;
-using vMenu.Enhanced.Ticks;
-
 using vMenu.Enhanced.Configuration;
 using vMenu.Enhanced.Data.Configuration;
+using vMenu.Enhanced.Data.Ticks;
 using vMenu.Enhanced.Logging;
 using vMenu.Enhanced.MenuFramework.Localization;
 using vMenu.Enhanced.Permissions;
+using vMenu.Enhanced.Ticks;
 
 using KeyBindingSettings = vMenu.Enhanced.Data.Configuration.Settings.KeyBindings;
 using LocalizationSettings = vMenu.Enhanced.Data.Configuration.Settings.Localization;

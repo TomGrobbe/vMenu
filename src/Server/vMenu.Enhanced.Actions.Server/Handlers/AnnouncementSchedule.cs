@@ -16,8 +16,8 @@ using vMenu.Enhanced.Ticks.Server;
 
 using AdminPermissions = vMenu.Enhanced.Data.Permissions.Menus.Admin;
 using AdminSettings = vMenu.Enhanced.Data.Configuration.Settings.Admin;
-using TimeOptionsSettings = vMenu.Enhanced.Data.Configuration.Settings.TimeOptions;
 using OnlinePlayerSettings = vMenu.Enhanced.Data.Configuration.Settings.OnlinePlayers;
+using TimeOptionsSettings = vMenu.Enhanced.Data.Configuration.Settings.TimeOptions;
 
 namespace vMenu.Enhanced.Actions.Server.Handlers;
 

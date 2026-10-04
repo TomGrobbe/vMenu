@@ -2,8 +2,8 @@ using CitizenFX.FiveM.Client;
 
 using vMenu.Enhanced.BrokenNatives;
 using vMenu.Enhanced.Data.Appearance;
-using vMenu.Enhanced.Menus.Players.Appearance;
 using vMenu.Enhanced.Logging;
+using vMenu.Enhanced.Menus.Players.Appearance;
 
 namespace vMenu.Enhanced.Menus.Players.Character;
 
