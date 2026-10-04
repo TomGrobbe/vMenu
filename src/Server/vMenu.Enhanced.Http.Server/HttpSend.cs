@@ -119,11 +119,9 @@ public static class HttpSend
     private static HttpClient Build(bool trustAnything) =>
         new(Handler(trustAnything)) { Timeout = System.Threading.Timeout.InfiniteTimeSpan };
 
-    // Proxy off: resolving the Windows proxy loads Microsoft.Win32.Registry, which is not shipped with
-    // the resource and throws on load. vMenu talks straight to github.com and nuget.org anyway.
     private static SocketsHttpHandler Handler(bool trustAnything)
     {
-        var handler = new SocketsHttpHandler { UseProxy = false };
+        var handler = SafeSockets.Handler();
 
         if (trustAnything)
         {

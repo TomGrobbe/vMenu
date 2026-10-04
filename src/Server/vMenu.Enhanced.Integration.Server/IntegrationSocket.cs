@@ -7,6 +7,7 @@ using CitizenFX.FiveM.Server;
 
 using vMenu.Enhanced.Configuration.Server;
 using vMenu.Enhanced.Data.Ticks;
+using vMenu.Enhanced.Http.Server;
 using vMenu.Enhanced.Http.Server.Bridge;
 using vMenu.Enhanced.Logging;
 using vMenu.Enhanced.Ticks.Server;
@@ -63,6 +64,8 @@ public static class IntegrationSocket
     private static readonly ConcurrentQueue<(LogLevel Level, string Message)> Logs = new();
 
     private static readonly SemaphoreSlim SendGate = new(1, 1);
+
+    private static HttpMessageInvoker? _socketInvoker;
 
     private static volatile bool _stopping;
 
@@ -245,9 +248,6 @@ public static class IntegrationSocket
         var ws = new ClientWebSocket();
         ws.Options.KeepAliveInterval = TimeSpan.FromSeconds(15);
 
-        // Proxy off: system-proxy lookup loads Microsoft.Win32.Registry, not shipped, and throws.
-        ws.Options.Proxy = null;
-
         foreach (var header in headers)
         {
             ws.Options.SetRequestHeader(header.Key, header.Value);
@@ -263,7 +263,7 @@ public static class IntegrationSocket
         // Linux TLS bridge
         var connect = ws is BridgeWebSocket bridge
             ? bridge.ConnectAsync(uri)
-            : ((ClientWebSocket)ws).ConnectAsync(uri, CancellationToken.None);
+            : ((ClientWebSocket)ws).ConnectAsync(uri, _socketInvoker ??= new(SafeSockets.Handler()), CancellationToken.None);
         var finished = await Task.WhenAny(connect, Task.Delay(ConnectTimeoutMs));
         if (finished != connect)
         {
