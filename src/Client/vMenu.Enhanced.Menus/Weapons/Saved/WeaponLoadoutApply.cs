@@ -15,10 +15,6 @@ public static class WeaponLoadoutApply
 
     private const int ComponentTimeoutMs = 1000;
 
-    // The natives do not always take on the frame they are called, but a weapon whose maximum is below
-    // the saved number would never agree, so this gives up rather than spinning.
-    private const int AmmoTimeoutMs = 500;
-
     // append keeps what the player is already carrying instead of clearing it first. ignorePermissions is
     // for handing back what they were carrying a moment ago, where the question was settled then.
     public static async Task<ApplyReport> ApplyAsync(WeaponLoadout loadout, bool append, bool ignorePermissions)
@@ -109,7 +105,7 @@ public static class WeaponLoadoutApply
             Native.SetPedWeaponTintIndex(ped, hash, saved.Tint);
         }
 
-        await FillAsync(ped, hash);
+        Fill(ped, hash);
     }
 
     // False when the component never took, which is the caller's cue to say so.
@@ -136,28 +132,20 @@ public static class WeaponLoadoutApply
 
     // We're filling ammo to the max because MK2 weapons with custom ammo is a PITA to deal with
     // it never restores properly. Stupid game.
-    private static async Task FillAsync(int ped, uint weaponHash)
+    private static void Fill(int ped, uint weaponHash)
     {
-        var wanted = WeaponInventory.MaxAmmo(weaponHash);
-        var deadline = Native.GetGameTimer() + AmmoTimeoutMs;
-
         Native.SetAmmoInClip(ped, weaponHash, Native.GetMaxAmmoInClip(ped, weaponHash, false));
+
+        var wanted = WeaponInventory.MaxAmmo(weaponHash);
 
         Native.SetPedAmmo(ped, weaponHash, wanted, false);
 
-        // More than asked for is fine and is left alone. Unlimited ammo holds the count at the weapon's
-        // maximum, and an equality check would force every weapon into the player's hands in turn.
-        while (Native.GetAmmoInPedWeapon(ped, weaponHash) < wanted)
+        // Setting cannot create special MK2 rounds the ped owns none of yet, only adding can.
+        var missing = wanted - Native.GetAmmoInPedWeapon(ped, weaponHash);
+
+        if (missing > 0)
         {
-            if (Native.GetGameTimer() > deadline)
-            {
-                return;
-            }
-
-            Native.SetCurrentPedWeapon(ped, weaponHash, true);
-            Native.SetPedAmmo(ped, weaponHash, wanted, false);
-
-            await API.Delay(0);
+            Native.AddAmmoToPedByType(ped, Native.GetPedAmmoTypeFromWeapon(ped, weaponHash), missing);
         }
     }
 
