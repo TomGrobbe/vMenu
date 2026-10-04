@@ -124,6 +124,7 @@ public sealed class Main : IScript
         NoClip.NoClip.Initialize();
 
         PvpMode.Initialize();
+        NoClipSmoke.Initialize();
 
         PlayerGodMode.Initialize();
         PlayerSuperJump.Initialize();

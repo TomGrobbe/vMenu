@@ -38,7 +38,7 @@ public static class ConfigCatalog
             MenuAppearance.TitleAlignment,
             MenuAppearance.HeaderGlare,
         ]),
-        new("Gameplay", [Gameplay.PvpMode]),
+        new("Gameplay", [Gameplay.PvpMode, Gameplay.NoClipSmoke]),
         new("Admin",
         [
             AdminSettings.ClearAreaRadius,
