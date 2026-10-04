@@ -11,6 +11,8 @@ public static class VisorKeyBinding
 
     private const int HoldMs = 400;
 
+    private const int SuppressAfterMs = 380;
+
     private const string Key = "F11";
 
     private const string Button = "LRIGHT_INDEX";
@@ -67,15 +69,30 @@ public static class VisorKeyBinding
 
             while (_held && Native.GetGameTimer() - started < HoldMs)
             {
+                if (Native.GetGameTimer() - started >= SuppressAfterMs && VisorToggle.CanToggle(Native.PlayerPedId()))
+                {
+                    SuppressHeadlight();
+                }
+
+                await API.Delay(0);
+            }
+
+            if (!_held)
+            {
+                return;
+            }
+
+            var suppress = VisorToggle.CanToggle(Native.PlayerPedId());
+            var toggle = VisorToggle.ToggleAsync();
+
+            while (suppress && (_held || !toggle.IsCompleted))
+            {
                 SuppressHeadlight();
 
                 await API.Delay(0);
             }
 
-            if (_held)
-            {
-                await VisorToggle.ToggleAsync();
-            }
+            await toggle;
         }
         finally
         {

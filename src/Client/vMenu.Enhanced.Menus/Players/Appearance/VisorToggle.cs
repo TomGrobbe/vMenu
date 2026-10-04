@@ -69,6 +69,17 @@ public static class VisorToggle
             || Tagged(prop, "DOME_HELMET");
     }
 
+    public static bool CanToggle(int ped)
+    {
+        if (_running || !ClientPermissions.HasAnyPermission || !CanRunNow() || !HasVisor(ped))
+        {
+            return false;
+        }
+
+        return !Native.IsPedInAnyVehicle(ped, false)
+            || !VisorAnimations.IsGoggles((uint)Native.GetEntityModel(ped), Native.GetPedPropIndex(ped, PedPropSlots.Hats, false));
+    }
+
     private static bool Tagged(uint prop, string tag) =>
         Native.DoesShopPedApparelHaveRestrictionTag(prop, (uint)Native.GetHashKey(tag), PropApparel);
 
