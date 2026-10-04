@@ -8,7 +8,7 @@ public class RegisterResult
 
     public int ProtocolVersion { get; set; } = PluginProtocol.Version;
 
-    public List<string> Errors { get; set; } = new();
+    public List<string> Errors { get; set; } = [];
 
-    public List<string> Warnings { get; set; } = new();
+    public List<string> Warnings { get; set; } = [];
 }

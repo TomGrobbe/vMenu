@@ -20,10 +20,10 @@ public sealed class PluginGate
     public static implicit operator PluginGate(string permissionShortName) => Permission(permissionShortName);
 
     public static PluginGate operator &(PluginGate left, PluginGate right) =>
-        new(new GateNode { All = new List<GateNode> { left._node, right._node } });
+        new(new GateNode { All = [left._node, right._node] });
 
     public static PluginGate operator |(PluginGate left, PluginGate right) =>
-        new(new GateNode { Any = new List<GateNode> { left._node, right._node } });
+        new(new GateNode { Any = [left._node, right._node] });
 
     internal GateNode ToNode() => _node;
 }

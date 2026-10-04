@@ -32,7 +32,7 @@ public sealed class PluginTheme
 /// restarting the game puts the server's own setting back.</summary>
 public sealed class PluginThemes
 {
-    private static readonly PluginTheme[] None = Array.Empty<PluginTheme>();
+    private static readonly PluginTheme[] None = [];
 
     private readonly VMenuPlugin _plugin;
 

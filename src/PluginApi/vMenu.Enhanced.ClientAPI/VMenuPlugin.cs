@@ -16,7 +16,7 @@ public sealed class VMenuPlugin
 
     private readonly Dictionary<string, PluginMenu> _menusById = new(StringComparer.Ordinal);
 
-    private readonly Dictionary<int, TaskCompletionSource<PromptResult>> _pendingPrompts = new();
+    private readonly Dictionary<int, TaskCompletionSource<PromptResult>> _pendingPrompts = [];
 
     private readonly Text _displayName;
 
@@ -167,7 +167,7 @@ public sealed class VMenuPlugin
 
             if (prompt.Suggestions is { Count: > 0 } suggestions)
             {
-                node.Suggestions = new List<SuggestionNode>();
+                node.Suggestions = [];
 
                 foreach (var suggestion in suggestions)
                 {
@@ -186,14 +186,14 @@ public sealed class VMenuPlugin
 
         var result = await pending.Task;
 
-        return result.Cancelled || result.Answers is null ? null : result.Answers.ToArray();
+        return result.Cancelled || result.Answers is null ? null : [.. result.Answers];
     }
 
     /// <summary>Groups every change made until the returned handle is disposed into one update, so many
     /// small changes cost vMenu a single repaint. Nesting is fine: only the outermost handle sends.</summary>
     public IDisposable BeginBatch()
     {
-        _batch ??= new List<UpdateOp>();
+        _batch ??= [];
         _batchDepth++;
 
         return new BatchScope(this);
@@ -303,7 +303,7 @@ public sealed class VMenuPlugin
 
         if (Settings.Nodes.Count > 0)
         {
-            request.Settings = new List<SettingNode>(Settings.Nodes);
+            request.Settings = [.. Settings.Nodes];
         }
 
         return request;

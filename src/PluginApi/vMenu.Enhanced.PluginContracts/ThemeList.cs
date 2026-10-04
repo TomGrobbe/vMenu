@@ -4,7 +4,7 @@ namespace vMenu.Enhanced.PluginContracts;
 /// right after it registers and again whenever the theme changes, whoever changed it.</summary>
 public class ThemeList
 {
-    public List<ThemeInfo> Themes { get; set; } = new();
+    public List<ThemeInfo> Themes { get; set; } = [];
 
     public string? Current { get; set; }
 

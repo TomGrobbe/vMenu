@@ -157,7 +157,7 @@ public abstract class PluginItem
 
     private protected void SubscribeNodeEvent(string name)
     {
-        Node.Events ??= new List<string>();
+        Node.Events ??= [];
 
         if (!Node.Events.Contains(name))
         {

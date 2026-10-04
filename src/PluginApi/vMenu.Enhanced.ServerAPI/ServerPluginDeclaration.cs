@@ -8,20 +8,15 @@ namespace vMenu.Enhanced.ServerAPI;
 /// example files, the permission names it wants under its own scope, and the convar settings vMenu
 /// should describe to server owners. Names are short: vMenu composes the full
 /// <c>vMenu.Enhanced.Plugins.&lt;Id&gt;.&lt;Name&gt;</c> form from the resource name.</summary>
-public sealed class ServerPluginDeclaration
+public sealed class ServerPluginDeclaration(string displayName)
 {
-    private readonly List<PermissionDeclaration> _permissions = new();
+    private readonly List<PermissionDeclaration> _permissions = [];
 
-    private readonly List<SettingNode> _settings = new();
+    private readonly List<SettingNode> _settings = [];
 
-    private readonly List<LoggedItemDeclaration> _loggedItems = new();
+    private readonly List<LoggedItemDeclaration> _loggedItems = [];
 
-    public ServerPluginDeclaration(string displayName)
-    {
-        DisplayName = displayName;
-    }
-
-    public string DisplayName { get; }
+    public string DisplayName { get; } = displayName;
 
     public ServerPluginDeclaration AddPermission(string name, string description, bool staffOnly = false)
     {
@@ -96,8 +91,8 @@ public sealed class ServerPluginDeclaration
     {
         ProtocolVersion = PluginProtocol.Version,
         DisplayName = DisplayName,
-        Permissions = new List<PermissionDeclaration>(_permissions),
-        Settings = new List<SettingNode>(_settings),
-        LoggedItems = new List<LoggedItemDeclaration>(_loggedItems),
+        Permissions = [.. _permissions],
+        Settings = [.. _settings],
+        LoggedItems = [.. _loggedItems],
     };
 }

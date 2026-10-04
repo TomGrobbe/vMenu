@@ -24,5 +24,5 @@ public class PromptRequest
 {
     public int RequestId { get; set; }
 
-    public List<PromptNode> Prompts { get; set; } = new();
+    public List<PromptNode> Prompts { get; set; } = [];
 }

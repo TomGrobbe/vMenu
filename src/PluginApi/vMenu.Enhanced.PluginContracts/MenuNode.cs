@@ -15,5 +15,5 @@ public class MenuNode
     /// <summary>Opt in <see cref="NodeEvents"/> subscriptions for this menu.</summary>
     public List<string>? Events { get; set; }
 
-    public List<ItemNode> Items { get; set; } = new();
+    public List<ItemNode> Items { get; set; } = [];
 }

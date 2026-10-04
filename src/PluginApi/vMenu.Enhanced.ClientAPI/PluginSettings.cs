@@ -87,7 +87,7 @@ public sealed class PluginSettings
 {
     private readonly string _prefix;
 
-    private readonly List<SettingNode> _nodes = new();
+    private readonly List<SettingNode> _nodes = [];
 
     internal PluginSettings(string pluginId) => _prefix = "vMenu.Enhanced.Plugins." + pluginId + ".";
 

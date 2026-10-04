@@ -4,5 +4,5 @@ namespace vMenu.Enhanced.PluginContracts;
 /// so many small changes cost one repaint.</summary>
 public class UpdateBatch
 {
-    public List<UpdateOp> Ops { get; set; } = new();
+    public List<UpdateOp> Ops { get; set; } = [];
 }

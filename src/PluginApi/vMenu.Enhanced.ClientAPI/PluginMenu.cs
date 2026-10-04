@@ -9,7 +9,7 @@ public sealed class PluginMenu
 {
     private readonly VMenuPlugin _plugin;
 
-    private readonly List<PluginItem> _items = new();
+    private readonly List<PluginItem> _items = [];
 
     private Text _title;
 
@@ -185,7 +185,7 @@ public sealed class PluginMenu
             return;
         }
 
-        _plugin.EmitOp(new UpdateOp { Op = UpdateOps.RemoveItems, ItemIds = new List<string> { item.Id } });
+        _plugin.EmitOp(new UpdateOp { Op = UpdateOps.RemoveItems, ItemIds = [item.Id] });
     }
 
     /// <summary>Removes every row.</summary>
@@ -247,7 +247,7 @@ public sealed class PluginMenu
         {
             Op = UpdateOps.AddItems,
             MenuId = Id,
-            Items = new List<ItemNode> { item.Node },
+            Items = [item.Node],
         });
 
         return item;
@@ -283,7 +283,7 @@ public sealed class PluginMenu
 
     private void SubscribeMenuEvent(string name)
     {
-        Node.Events ??= new List<string>();
+        Node.Events ??= [];
 
         if (!Node.Events.Contains(name))
         {

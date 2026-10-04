@@ -39,7 +39,7 @@ internal static class PluginValidation
             return false;
         }
 
-        menu.Items ??= new List<ItemNode>();
+        menu.Items ??= [];
 
         // Recorded so an item added to this menu later knows how deep it already sits, the late path having
         // no walk down from the root to count with.

@@ -132,11 +132,11 @@ public sealed class PluginPlayerActions
 {
     private readonly VMenuPlugin _plugin;
 
-    private readonly List<PluginItem> _items = new();
+    private readonly List<PluginItem> _items = [];
 
     internal PluginPlayerActions(VMenuPlugin plugin) => _plugin = plugin;
 
-    internal List<ItemNode> Nodes { get; } = new();
+    internal List<ItemNode> Nodes { get; } = [];
 
     public IReadOnlyList<PluginItem> Items => _items;
 
@@ -181,7 +181,7 @@ public sealed class PluginPlayerActions
 
             _plugin.UnregisterItem(item);
 
-            _plugin.EmitOp(new UpdateOp { Op = UpdateOps.RemoveItems, ItemIds = new List<string> { item.Id } });
+            _plugin.EmitOp(new UpdateOp { Op = UpdateOps.RemoveItems, ItemIds = [item.Id] });
 
             return;
         }
@@ -207,7 +207,7 @@ public sealed class PluginPlayerActions
         _plugin.EmitOp(new UpdateOp
         {
             Op = UpdateOps.AddPlayerActions,
-            Items = new List<ItemNode> { item.Node },
+            Items = [item.Node],
         });
 
         return item;

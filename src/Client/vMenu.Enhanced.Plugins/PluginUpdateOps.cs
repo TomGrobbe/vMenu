@@ -90,7 +90,7 @@ internal static class PluginUpdateOps
                 case UpdateOps.SetOptions:
                     if (TryItem(state, op, out node))
                     {
-                        node.Options = op.Options ?? new List<TextRef>();
+                        node.Options = op.Options ?? [];
 
                         if (op.Index is { } selected)
                         {
