@@ -296,6 +296,7 @@ internal sealed class MenuHost : IDisposable
         _filterDirty = false;
 
         var restore = Menu.GetCurrentMenuItem();
+        var offset = Menu.ViewIndexOffset;
         var empty = NoticeWanted();
 
         ShowNotice(empty);
@@ -319,7 +320,18 @@ internal sealed class MenuHost : IDisposable
         // Filtering always resets to the top, so put the player back on their row if it survived.
         var index = Menu.GetMenuItems().IndexOf(restore);
 
-        Menu.RefreshIndex(index < 0 ? 0 : index);
+        if (index < 0)
+        {
+            Menu.RefreshIndex(0, 0);
+            return;
+        }
+
+        var max = Menu.MaxItemsOnScreen;
+
+        offset = Math.Min(offset, Math.Max(Menu.Size - max, 0));
+        offset = Math.Clamp(offset, Math.Max(index - max + 1, 0), index);
+
+        Menu.RefreshIndex(index, offset);
     }
 
     private bool NoticeWanted()
