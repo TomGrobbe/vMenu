@@ -60,9 +60,9 @@ public static class VehicleVisibility
 
         Native.SetEntityVisible(handle, !visible, false);
 
-        foreach (var occupant in occupants)
+        foreach (var (ped, wasVisible) in occupants)
         {
-            Native.SetEntityVisible(occupant.Ped, occupant.Visible, false);
+            Native.SetEntityVisible(ped, wasVisible, false);
         }
 
         _hidden = visible ? handle : 0;

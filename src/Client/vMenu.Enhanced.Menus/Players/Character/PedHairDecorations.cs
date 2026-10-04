@@ -40,10 +40,10 @@ public static class PedHairDecorations
 
     public static bool IsScalpOverlay(string collection, string name)
     {
-        foreach (var entry in ByHairStyle)
+        foreach (var (entryCollection, entryName) in ByHairStyle)
         {
-            if (string.Equals(entry.Collection, collection, StringComparison.OrdinalIgnoreCase)
-                && string.Equals(entry.Name, name, StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(entryCollection, collection, StringComparison.OrdinalIgnoreCase)
+                && string.Equals(entryName, name, StringComparison.OrdinalIgnoreCase))
             {
                 return true;
             }

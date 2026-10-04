@@ -407,7 +407,7 @@ public sealed class WeaponOptionsMenu : MenuDefinition
         });
     }
 
-    private async Task SetAllAmmoAsync()
+    private static async Task SetAllAmmoAsync()
     {
         var typed = await UserInput.GetTextAsync(
             MenuText.Key(Loc.WeaponOptions.SetAllAmmoPrompt),
@@ -476,7 +476,7 @@ public sealed class WeaponOptionsMenu : MenuDefinition
                 Detail = weapon.Name,
             })];
 
-    private string AmmoLabel(uint weaponHash) =>
+    private static string AmmoLabel(uint weaponHash) =>
         WeaponInventory.Has(weaponHash)
             ? WeaponInventory.Ammo(weaponHash).ToString(CultureInfo.InvariantCulture)
             : string.Empty;

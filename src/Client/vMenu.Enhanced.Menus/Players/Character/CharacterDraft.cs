@@ -33,11 +33,9 @@ public static class CharacterDraft
                 FaceFeatures = NeutralFace(),
                 Overlays = BlankOverlays(PedHeadOverlays.Core),
             },
+            CurrentStyle = new MpCharacterStyle { Overlays = BlankOverlays(PedHeadOverlays.Style) },
+            CurrentOutfit = new MpCharacterOutfit { Outfit = StartingClothes(male) },
         };
-
-        character.CurrentStyle = new MpCharacterStyle { Overlays = BlankOverlays(PedHeadOverlays.Style) };
-
-        character.CurrentOutfit = new MpCharacterOutfit { Outfit = StartingClothes(male) };
 
         return character;
     }

@@ -119,7 +119,7 @@ public static class PedCustomizationRows
         // row of its own rather than no rows at all.
         return rows.Count > 0
             ? rows
-            : new List<MenuEntry> { Notice(Loc.PlayerAppearance.Empty, Loc.PlayerAppearance.EmptyDescription) };
+            : [Notice(Loc.PlayerAppearance.Empty, Loc.PlayerAppearance.EmptyDescription)];
     }
 
     private static ButtonEntry Notice(string text, string description) => new()

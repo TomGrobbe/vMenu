@@ -390,22 +390,22 @@ public static class CharacterCamera
             _framing = focus;
         }
 
-        var framing = Framings[(int)_framing];
+        var (pivotZ, framingDistance, framingPitch) = Framings[(int)_framing];
 
         if (!_seeded)
         {
-            _pivotZ = framing.PivotZ;
-            _distance = framing.Distance;
-            _basePitch = framing.Pitch;
+            _pivotZ = pivotZ;
+            _distance = framingDistance;
+            _basePitch = framingPitch;
             _seeded = true;
         }
         else
         {
             var step = 1f - MathF.Exp(-FramingSpeed * Native.GetFrameTime());
 
-            _pivotZ += (framing.PivotZ - _pivotZ) * step;
-            _distance += (framing.Distance - _distance) * step;
-            _basePitch += (framing.Pitch - _basePitch) * step;
+            _pivotZ += (pivotZ - _pivotZ) * step;
+            _distance += (framingDistance - _distance) * step;
+            _basePitch += (framingPitch - _basePitch) * step;
         }
 
         _pitch = Math.Clamp(_pitch, MinPitch - _basePitch, MaxPitch - _basePitch);

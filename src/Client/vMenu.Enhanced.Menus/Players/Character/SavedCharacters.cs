@@ -624,7 +624,7 @@ internal sealed class SavedCharacters
         return index < entry.Character.Styles.Count ? entry.Character.Styles[index].Name : string.Empty;
     }
 
-    private async Task ApplyVariantAsync(MpCharacterEntry entry, int index, bool outfits)
+    private static async Task ApplyVariantAsync(MpCharacterEntry entry, int index, bool outfits)
     {
         var ped = Native.PlayerPedId();
 
@@ -812,7 +812,7 @@ internal sealed class SavedCharacters
 
     #region Actions on a character
 
-    private async Task SpawnAsync(MpCharacterEntry entry)
+    private static async Task SpawnAsync(MpCharacterEntry entry)
     {
         var character = entry.Character;
         var model = PedSpawning.FreemodeModel(character.Core.IsMale);

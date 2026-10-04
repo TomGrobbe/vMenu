@@ -206,7 +206,7 @@ public static class WeatherForecast
             OutsideLabel = localizer.Get(Loc.DisplaySettings.ForecastOutside),
             OutlookLabel = localizer.Get(Loc.DisplaySettings.ForecastOutlook),
             Outlook = compact || !WorldState.HasClock ? [] : Outlook(forced),
-            Upcoming = upcoming.ToArray(),
+            Upcoming = [.. upcoming],
             MoonName = localizer.Get(Loc.World.MoonPhaseName(MoonCycle.PhaseOf(moonDays))),
             MoonLit = (int)Math.Round(MoonCycle.Illumination(moonDays) * 100.0),
             MoonWaxing = MoonCycle.DayOfCycle(moonDays) < MoonCycle.FullMoonDay,

@@ -197,7 +197,7 @@ public sealed class WeaponLoadoutsMenu : MenuDefinition
         });
     }
 
-    private async Task SaveAsync()
+    private static async Task SaveAsync()
     {
         var captured = WeaponLoadoutStore.Capture(string.Empty);
 

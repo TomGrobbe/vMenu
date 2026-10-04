@@ -70,35 +70,24 @@ public static class VehicleCommands
         }
     }
 
-    private sealed class ToggledCommand
+    private sealed class ToggledCommand(
+        string name,
+        BoolSetting setting,
+        string permission,
+        string deniedKey,
+        Func<Task> run,
+        string? elevatedPermission = null,
+        Func<Task>? runElevated = null)
     {
-        private readonly string _name;
-        private readonly BoolSetting _setting;
-        private readonly string _permission;
-        private readonly string _deniedKey;
-        private readonly Func<Task> _run;
-        private readonly string? _elevatedPermission;
-        private readonly Func<Task>? _runElevated;
+        private readonly string _name = name;
+        private readonly BoolSetting _setting = setting;
+        private readonly string _permission = permission;
+        private readonly string _deniedKey = deniedKey;
+        private readonly Func<Task> _run = run;
+        private readonly string? _elevatedPermission = elevatedPermission;
+        private readonly Func<Task>? _runElevated = runElevated;
 
         private bool _registered;
-
-        public ToggledCommand(
-            string name,
-            BoolSetting setting,
-            string permission,
-            string deniedKey,
-            Func<Task> run,
-            string? elevatedPermission = null,
-            Func<Task>? runElevated = null)
-        {
-            _name = name;
-            _setting = setting;
-            _permission = permission;
-            _deniedKey = deniedKey;
-            _run = run;
-            _elevatedPermission = elevatedPermission;
-            _runElevated = runElevated;
-        }
 
         private bool IsElevated =>
             _elevatedPermission is { } permission && ClientPermissions.IsAllowed(permission);

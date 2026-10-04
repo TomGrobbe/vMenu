@@ -120,7 +120,7 @@ public sealed class MpCharacterCore
         {
             IsMale = IsMale,
             Blend = Blend.Copy(),
-            FaceFeatures = new List<float>(FaceFeatures),
+            FaceFeatures = [.. FaceFeatures],
             EyeColour = EyeColour,
             Tattoos = Tattoos.Copy(),
         };

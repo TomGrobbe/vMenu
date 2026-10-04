@@ -248,7 +248,7 @@ internal sealed class CharacterBuilder
         }
     }
 
-    private ListEntry ExpressionRow()
+    private static ListEntry ExpressionRow()
     {
         var options = new List<MenuText>
         {
@@ -301,7 +301,7 @@ internal sealed class CharacterBuilder
         return 0;
     }
 
-    private ListEntry CategoryRow()
+    private static ListEntry CategoryRow()
     {
         return new ListEntry
         {
@@ -422,7 +422,7 @@ internal sealed class CharacterBuilder
 
     #endregion
 
-    private void Randomise()
+    private static void Randomise()
     {
         if (CharacterEdit.Draft is not { } draft || CharacterEdit.Style is not { } style)
         {

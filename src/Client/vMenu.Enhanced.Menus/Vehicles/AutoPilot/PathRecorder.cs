@@ -111,7 +111,7 @@ public static class PathRecorder
         {
             Name = name,
             Description = description,
-            Points = new List<AutoPilotPathPoint>(Points),
+            Points = [.. Points],
         };
 
     private static void Sample()

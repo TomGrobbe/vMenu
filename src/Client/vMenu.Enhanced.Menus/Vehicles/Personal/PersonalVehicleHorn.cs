@@ -27,16 +27,16 @@ internal static class PersonalVehicleHorn
                 return;
             }
 
-            foreach (var note in notes)
+            foreach (var (onMs, gapMs) in notes)
             {
                 if (!Native.DoesEntityExist(entity))
                 {
                     return;
                 }
 
-                Native.SetHornPermanentlyOnTime(entity, note.OnMs);
+                Native.SetHornPermanentlyOnTime(entity, onMs);
 
-                await API.Delay(note.OnMs + note.GapMs);
+                await API.Delay(onMs + gapMs);
             }
         }
         finally
