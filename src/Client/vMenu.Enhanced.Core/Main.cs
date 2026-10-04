@@ -127,6 +127,7 @@ public sealed class Main : IScript
 
         PlayerGodMode.Initialize();
         PlayerSuperJump.Initialize();
+        PlayerBeastMode.Initialize();
         PlayerFastRun.Initialize();
         PlayerFastSwim.Initialize();
         MpStats.Initialize();

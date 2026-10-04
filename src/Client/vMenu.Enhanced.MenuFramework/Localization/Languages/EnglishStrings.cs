@@ -1549,6 +1549,8 @@ internal static class EnglishStrings
             [Loc.PlayerOptions.GodModeDescription] = "Nothing can hurt you. You also cannot be dragged out of a vehicle or shot through its windows. Ragdoll is still controlled by its own setting below.",
             [Loc.PlayerOptions.SuperJump] = "Super Jump",
             [Loc.PlayerOptions.SuperJumpDescription] = "Jump much higher and further than you normally could. Falling from that height can still hurt, unless god mode is on.",
+            [Loc.PlayerOptions.BeastMode] = "Beast Mode",
+            [Loc.PlayerOptions.BeastModeDescription] = "Leap like the beast from GTA Online. This also turns on super jump, and you cannot climb over things while it is on. Falling from that height can still hurt, unless god mode is on.",
             [Loc.PlayerOptions.FastRun] = "Fast Run",
             [Loc.PlayerOptions.FastRunDescription] = "Sprint on foot at the fastest speed the game allows, about one and a half times normal.",
             [Loc.PlayerOptions.FastSwim] = "Fast Swim",

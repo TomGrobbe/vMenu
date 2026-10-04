@@ -18,6 +18,10 @@ public static partial class Loc
 
         public const string SuperJumpDescription = "playeroptions.superjump.desc";
 
+        public const string BeastMode = "playeroptions.beastmode";
+
+        public const string BeastModeDescription = "playeroptions.beastmode.desc";
+
         public const string FastRun = "playeroptions.fastrun";
 
         public const string FastRunDescription = "playeroptions.fastrun.desc";

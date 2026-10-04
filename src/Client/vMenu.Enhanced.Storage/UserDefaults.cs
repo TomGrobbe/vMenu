@@ -98,6 +98,8 @@ public static class UserDefaults
 
     public static BoolDefault PlayerSuperJump { get; } = new("playerSuperJump") { Default = false };
 
+    public static BoolDefault PlayerBeastMode { get; } = new("playerBeastMode") { Default = false };
+
     public static BoolDefault PlayerFastRun { get; } = new("playerFastRun") { Default = false };
 
     public static BoolDefault PlayerFastSwim { get; } = new("playerFastSwim") { Default = false };
@@ -369,6 +371,7 @@ public static class UserDefaults
 
         PlayerGodMode,
         PlayerSuperJump,
+        PlayerBeastMode,
         PlayerFastRun,
         PlayerFastSwim,
         PlayerStatShooting,

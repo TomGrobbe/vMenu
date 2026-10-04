@@ -80,7 +80,26 @@ public sealed class PlayerOptionsMenu : MenuDefinition
             Description = MenuText.Key(Loc.PlayerOptions.SuperJumpDescription),
             Gate = PlayerOptionsPermissions.SuperJump,
             ReadState = () => PlayerSuperJump.Enabled,
-            OnChanged = changed => PlayerSuperJump.SetEnabled(changed.Checked),
+            OnChanged = changed =>
+            {
+                PlayerSuperJump.SetEnabled(changed.Checked);
+
+                MenuRegistry.Refresh(menu.Menu);
+            },
+        });
+
+        menu.Entries.Add(new CheckboxEntry
+        {
+            Text = MenuText.Key(Loc.PlayerOptions.BeastMode),
+            Description = MenuText.Key(Loc.PlayerOptions.BeastModeDescription),
+            Gate = PlayerOptionsPermissions.SuperJump,
+            ReadState = () => PlayerBeastMode.Enabled,
+            OnChanged = changed =>
+            {
+                PlayerBeastMode.SetEnabled(changed.Checked);
+
+                MenuRegistry.Refresh(menu.Menu);
+            },
         });
 
         menu.Entries.Add(new CheckboxEntry

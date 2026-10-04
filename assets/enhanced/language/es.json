@@ -1213,6 +1213,8 @@
     "playeroptions.suicide.desc": "Te mata en el acto. Sin animación, simplemente mueres donde estás.",
     "playeroptions.superjump": "Supersalto",
     "playeroptions.superjump.desc": "Salta mucho más alto y más lejos de lo normal. La caída desde esa altura todavía puede hacerte daño, salvo que tengas el modo Dios activado.",
+    "playeroptions.beastmode": "Modo bestia",
+    "playeroptions.beastmode.desc": "Salta como la bestia de GTA Online. Esto también activa el supersalto, y no puedes trepar mientras esté activado. La caída desde esa altura todavía puede hacerte daño, salvo que tengas el modo Dios activado.",
     "playeroptions.title": "Opciones de jugador",
     "playeroptions.unlimitedoxygen": "Oxígeno ilimitado",
     "playeroptions.unlimitedoxygen.desc": "Quédate bajo el agua todo el tiempo que quieras. Nunca te quedas sin aire y no puedes ahogarte.",

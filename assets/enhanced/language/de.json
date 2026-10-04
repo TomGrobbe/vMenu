@@ -1213,6 +1213,8 @@
     "playeroptions.suicide.desc": "Tötet dich auf der Stelle. Keine Animation, du stirbst einfach dort, wo du gerade bist.",
     "playeroptions.superjump": "Supersprung",
     "playeroptions.superjump.desc": "Springe viel höher und weiter, als du normalerweise könntest. Der Sturz aus dieser Höhe kann trotzdem wehtun, außer der Gottmodus ist an.",
+    "playeroptions.beastmode": "Biestmodus",
+    "playeroptions.beastmode.desc": "Springe wie das Biest aus GTA Online. Das schaltet auch den Supersprung ein, und solange es an ist, kannst du nirgends hinüberklettern. Der Sturz aus dieser Höhe kann trotzdem wehtun, außer der Gottmodus ist an.",
     "playeroptions.title": "Spieleroptionen",
     "playeroptions.unlimitedoxygen": "Unbegrenzter Sauerstoff",
     "playeroptions.unlimitedoxygen.desc": "Bleib so lange unter Wasser, wie du willst. Dir geht nie die Luft aus und du kannst nicht ertrinken.",

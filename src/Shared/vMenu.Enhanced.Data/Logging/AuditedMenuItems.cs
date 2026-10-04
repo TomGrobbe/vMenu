@@ -9,6 +9,7 @@ public static class AuditedMenuItems
         ["playeroptions.noragdoll"] = "no ragdoll",
         ["playeroptions.everyoneignores"] = "being ignored by everyone",
         ["playeroptions.superjump"] = "super jump",
+        ["playeroptions.beastmode"] = "beast mode",
         ["playeroptions.fastrun"] = "fast run",
         ["playeroptions.fastswim"] = "fast swim",
         ["playeroptions.unlimitedoxygen"] = "unlimited oxygen",

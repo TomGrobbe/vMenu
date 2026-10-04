@@ -1213,6 +1213,8 @@
     "playeroptions.suicide.desc": "Vous tue sur le coup. Aucune animation, vous mourez simplement là où vous êtes.",
     "playeroptions.superjump": "Super saut",
     "playeroptions.superjump.desc": "Sautez bien plus haut et plus loin que d'habitude. La chute depuis cette hauteur peut toujours faire mal, sauf si le mode Dieu est activé.",
+    "playeroptions.beastmode": "Mode bête",
+    "playeroptions.beastmode.desc": "Bondissez comme la bête de GTA Online. Cela active aussi le super saut, et vous ne pouvez plus escalader tant qu'il est activé. La chute depuis cette hauteur peut toujours faire mal, sauf si le mode Dieu est activé.",
     "playeroptions.title": "Options du joueur",
     "playeroptions.unlimitedoxygen": "Oxygène illimité",
     "playeroptions.unlimitedoxygen.desc": "Restez sous l'eau aussi longtemps que vous voulez. Vous ne manquez jamais d'air et ne pouvez pas vous noyer.",

@@ -11,11 +11,13 @@ namespace vMenu.Enhanced.Menus.Players;
 
 public static class PlayerSuperJump
 {
+    private const int DisableParachuting = 217;
+
     private static TickHandle? _tick;
 
     public static bool Enabled => UserDefaults.PlayerSuperJump.Value && IsAllowed;
 
-    private static bool IsAllowed => ClientPermissions.IsAllowed(PlayerOptionsPermissions.SuperJump);
+    internal static bool IsAllowed => ClientPermissions.IsAllowed(PlayerOptionsPermissions.SuperJump);
 
     // Call once at startup, before permissions have arrived. A permission arriving or being revoked
     // re-runs every tick condition through the registry, so this does not subscribe to that itself.
@@ -32,8 +34,19 @@ public static class PlayerSuperJump
 
         UserDefaults.PlayerSuperJump.Value = enabled;
 
+        if (!enabled)
+        {
+            UserDefaults.PlayerBeastMode.Value = false;
+        }
+
         _tick?.Reevaluate();
+
+        PlayerBeastMode.Reevaluate();
     }
 
-    private static void Apply() => Native.SetSuperJumpThisFrame(Native.PlayerId());
+    private static void Apply()
+    {
+        Native.SetSuperJumpThisFrame(Native.PlayerId());
+        Native.SetPedResetFlag(Native.PlayerPedId(), DisableParachuting, true);
+    }
 }
