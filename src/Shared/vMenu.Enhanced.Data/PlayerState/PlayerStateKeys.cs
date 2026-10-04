@@ -12,4 +12,8 @@ public static class PlayerStateKeys
 
     // A ClothingGlow value, written by the client that chose it.
     public const string ClothingGlow = "vMenu:clothingGlow";
+
+    public const string MoveSpeed = "vMenu:moveSpeed";
+
+    public const string SwimSpeed = "vMenu:swimSpeed";
 }

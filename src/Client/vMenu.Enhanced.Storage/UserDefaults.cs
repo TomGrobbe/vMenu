@@ -120,6 +120,14 @@ public static class UserDefaults
 
     public static BoolDefault PlayerUnlimitedOxygen { get; } = new("playerUnlimitedOxygen") { Default = false };
 
+    public static BoolDefault PlayerMoveSpeedEnabled { get; } = new("playerMoveSpeedEnabled") { Default = false };
+
+    public static FloatDefault PlayerMoveSpeed { get; } = new("playerMoveSpeed") { Default = 1f };
+
+    public static BoolDefault PlayerSwimSpeedEnabled { get; } = new("playerSwimSpeedEnabled") { Default = false };
+
+    public static FloatDefault PlayerSwimSpeed { get; } = new("playerSwimSpeed") { Default = 1f };
+
     public static BoolDefault PlayerNoRagdoll { get; } = new("playerNoRagdoll") { Default = false };
 
     public static BoolDefault PlayerNoHelmet { get; } = new("playerNoHelmet") { Default = false };
@@ -382,6 +390,10 @@ public static class UserDefaults
         PlayerStatDriving,
         PlayerStatLungCapacity,
         PlayerUnlimitedOxygen,
+        PlayerMoveSpeedEnabled,
+        PlayerMoveSpeed,
+        PlayerSwimSpeedEnabled,
+        PlayerSwimSpeed,
         PlayerNoRagdoll,
         PlayerNoHelmet,
         PlayerInvisible,

@@ -132,6 +132,7 @@ public sealed class Main : IScript
         PlayerFastSwim.Initialize();
         MpStats.Initialize();
         PlayerUnlimitedOxygen.Initialize();
+        PlayerMoveSpeed.Initialize();
         PlayerNoRagdoll.Initialize();
         PlayerNoHelmet.Initialize();
         PlayerInvisible.Initialize();

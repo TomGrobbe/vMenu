@@ -1,3 +1,5 @@
+using System.Globalization;
+
 using vMenu.Enhanced.Data.PedModels;
 using vMenu.Enhanced.MenuFramework;
 using vMenu.Enhanced.MenuFramework.Localization;
@@ -128,6 +130,24 @@ public sealed class PlayerOptionsMenu : MenuDefinition
             ReadState = () => PlayerUnlimitedOxygen.Enabled,
             OnChanged = changed => PlayerUnlimitedOxygen.SetEnabled(changed.Checked),
         });
+
+        AddSpeedEntries(
+            menu,
+            PlayerMoveSpeed.Walk,
+            PlayerOptionsPermissions.MoveSpeed,
+            Loc.PlayerOptions.MoveSpeed,
+            Loc.PlayerOptions.MoveSpeedDescription,
+            Loc.PlayerOptions.MoveSpeedRate,
+            Loc.PlayerOptions.MoveSpeedRateDescription);
+
+        AddSpeedEntries(
+            menu,
+            PlayerMoveSpeed.Swim,
+            PlayerOptionsPermissions.SwimSpeed,
+            Loc.PlayerOptions.SwimSpeed,
+            Loc.PlayerOptions.SwimSpeedDescription,
+            Loc.PlayerOptions.SwimSpeedRate,
+            Loc.PlayerOptions.SwimSpeedRateDescription);
 
         menu.Entries.Add(Group(Loc.PlayerOptions.GroupWanted, Loc.PlayerOptions.GroupWantedDescription));
 
@@ -318,5 +338,34 @@ public sealed class PlayerOptionsMenu : MenuDefinition
         }
 
         return options;
+    }
+
+    private static void AddSpeedEntries(
+        MenuBuilder menu,
+        PlayerMoveSpeed speed,
+        string permission,
+        string toggleKey,
+        string toggleDescriptionKey,
+        string rateKey,
+        string rateDescriptionKey)
+    {
+        menu.Entries.Add(new CheckboxEntry
+        {
+            Text = MenuText.Key(toggleKey),
+            Description = MenuText.Key(toggleDescriptionKey),
+            Gate = permission,
+            ReadState = () => speed.Enabled,
+            OnChanged = changed => speed.SetEnabled(changed.Checked),
+        });
+
+        menu.Entries.Add(new ListEntry
+        {
+            Text = MenuText.Key(rateKey),
+            Description = MenuText.Key(rateDescriptionKey),
+            Gate = permission,
+            Options = [.. speed.Speeds.Select(rate => MenuText.Literal(rate.ToString("0.0x", CultureInfo.InvariantCulture)))],
+            ReadSelectedIndex = () => speed.SpeedIndex,
+            OnIndexChanged = changed => speed.SetSpeedIndex(changed.NewIndex),
+        });
     }
 }

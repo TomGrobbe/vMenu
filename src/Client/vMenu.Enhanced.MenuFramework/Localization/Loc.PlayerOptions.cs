@@ -72,6 +72,22 @@ public static partial class Loc
 
         public const string UnlimitedOxygenDescription = "playeroptions.unlimitedoxygen.desc";
 
+        public const string MoveSpeed = "playeroptions.movespeed";
+
+        public const string MoveSpeedDescription = "playeroptions.movespeed.desc";
+
+        public const string MoveSpeedRate = "playeroptions.movespeed.rate";
+
+        public const string MoveSpeedRateDescription = "playeroptions.movespeed.rate.desc";
+
+        public const string SwimSpeed = "playeroptions.swimspeed";
+
+        public const string SwimSpeedDescription = "playeroptions.swimspeed.desc";
+
+        public const string SwimSpeedRate = "playeroptions.swimspeed.rate";
+
+        public const string SwimSpeedRateDescription = "playeroptions.swimspeed.rate.desc";
+
         public const string NoRagdoll = "playeroptions.noragdoll";
 
         public const string NoRagdollDescription = "playeroptions.noragdoll.desc";

@@ -13,6 +13,8 @@ public static class AuditedMenuItems
         ["playeroptions.fastrun"] = "fast run",
         ["playeroptions.fastswim"] = "fast swim",
         ["playeroptions.unlimitedoxygen"] = "unlimited oxygen",
+        ["playeroptions.movespeed"] = "custom move speed",
+        ["playeroptions.swimspeed"] = "custom swim speed",
         ["playeroptions.neverwanted"] = "never wanted",
         ["playeroptions.setwanted"] = "their wanted level",
         ["playeroptions.setarmor"] = "their armour",
