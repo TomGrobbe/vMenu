@@ -15,6 +15,8 @@ internal static class TimecycleKeyBindings
 
     private const string TopCommand = "vmenu:timecycle:top";
 
+    private const string FavoriteCommand = "vmenu:timecycle:favorite";
+
     private static bool _registered;
 
     internal static int IntensityUpControl { get; } = BindingControl(IntensityUpCommand);
@@ -27,12 +29,15 @@ internal static class TimecycleKeyBindings
 
     internal static int TopControl { get; } = BindingControl(TopCommand);
 
+    internal static int FavoriteControl { get; } = BindingControl(FavoriteCommand);
+
     internal static void Register(
         Action onIntensityUp,
         Action onIntensityDown,
         Action onClear,
         Action onSearch,
-        Action onTop)
+        Action onTop,
+        Action onFavorite)
     {
         if (_registered)
         {
@@ -46,12 +51,14 @@ internal static class TimecycleKeyBindings
         SharedAPI.Commands.RegisterCommand(ClearCommand, false, onClear);
         SharedAPI.Commands.RegisterCommand(SearchCommand, false, onSearch);
         SharedAPI.Commands.RegisterCommand(TopCommand, false, onTop);
+        SharedAPI.Commands.RegisterCommand(FavoriteCommand, false, onFavorite);
 
         Native.RegisterKeyMapping(IntensityUpCommand, "vMenu: Timecycle intensity up", "keyboard", "PAGEUP");
         Native.RegisterKeyMapping(IntensityDownCommand, "vMenu: Timecycle intensity down", "keyboard", "PAGEDOWN");
         Native.RegisterKeyMapping(ClearCommand, "vMenu: Clear all timecycle modifiers", "keyboard", "DELETE");
         Native.RegisterKeyMapping(SearchCommand, "vMenu: Search timecycle modifiers", "keyboard", "0");
         Native.RegisterKeyMapping(TopCommand, "vMenu: Back to the top of the timecycle list", "keyboard", "MINUS");
+        Native.RegisterKeyMapping(FavoriteCommand, "vMenu: Favorite a timecycle modifier", "keyboard", "END");
     }
 
     private static int BindingControl(string command) => API.HashSigned(command) | int.MinValue;

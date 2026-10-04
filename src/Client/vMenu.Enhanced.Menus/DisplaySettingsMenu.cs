@@ -18,6 +18,7 @@ public sealed class DisplaySettingsMenu : MenuDefinition
     {
         // The sliders are gated on state the submenu changes, and opening a menu re-gates nothing.
         TimecycleState.Changed += () => MenuRegistry.Refresh(menu.Menu);
+        TimecycleFavorites.Changed += () => MenuRegistry.Refresh(menu.Menu);
 
         menu.Entries.Add(new CheckboxEntry
         {
@@ -229,6 +230,16 @@ public sealed class DisplaySettingsMenu : MenuDefinition
             Build = Timecycles.Build,
         });
 
+        menu.Entries.Add(new SubmenuEntry
+        {
+            Text = MenuText.Key(Loc.DisplaySettings.TimecycleFavorites),
+            Description = MenuText.Key(Loc.DisplaySettings.TimecycleFavoritesDescription),
+            MenuSubtitle = MenuText.Key(Loc.DisplaySettings.TimecycleFavorites),
+            Gate = DisplaySettingsPermissions.Timecycles,
+            ReadEnabled = () => TimecycleFavorites.Count > 0,
+            Build = TimecycleFavoritesMenu.Build,
+        });
+
         menu.Entries.Add(new SliderEntry
         {
             Text = MenuText.Key(Loc.DisplaySettings.TimecycleIntensity),
@@ -299,5 +310,7 @@ public sealed class DisplaySettingsMenu : MenuDefinition
         });
     }
 
-    private static readonly TimecycleFilterMenu Timecycles = new();
+    private static readonly TimecycleFilterMenu Timecycles = new(false);
+
+    private static readonly TimecycleFilterMenu TimecycleFavoritesMenu = new(true);
 }

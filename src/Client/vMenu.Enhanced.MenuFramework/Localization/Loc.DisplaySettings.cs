@@ -172,6 +172,12 @@ public static partial class Loc
 
         public const string TimecycleTopButton = "displaysettings.timecycles.button.top";
 
+        public const string TimecycleFavoriteButton = "displaysettings.timecycles.button.favorite";
+
+        public const string TimecycleFavorites = "displaysettings.timecycles.favorites";
+
+        public const string TimecycleFavoritesDescription = "displaysettings.timecycles.favorites.desc";
+
         public const string TimecycleIntensity = "displaysettings.timecycles.intensity";
 
         public const string TimecycleIntensityDescription = "displaysettings.timecycles.intensity.desc";

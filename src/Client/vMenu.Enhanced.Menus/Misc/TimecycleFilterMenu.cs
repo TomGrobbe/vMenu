@@ -11,7 +11,7 @@ using vMenu.Enhanced.Ticks;
 
 namespace vMenu.Enhanced.Menus.Misc;
 
-internal sealed class TimecycleFilterMenu
+internal sealed class TimecycleFilterMenu(bool favoritesOnly)
 {
     private const int QueryMaxLength = 40;
 
@@ -26,6 +26,8 @@ internal sealed class TimecycleFilterMenu
     private const string IconSeparator = "%b_998%";
 
     private const int KeyboardGroup = 2;
+
+    private static readonly List<TimecycleFilterMenu> Instances = [];
 
     private readonly Dictionary<string, CheckboxEntry> _rows = new(StringComparer.OrdinalIgnoreCase);
 
@@ -45,8 +47,6 @@ internal sealed class TimecycleFilterMenu
 
     private bool _buttonsStale = true;
 
-    private string? _highlighted;
-
     internal void Build(MenuBuilder menu)
     {
         _menu = menu;
@@ -63,17 +63,20 @@ internal sealed class TimecycleFilterMenu
             menu.Entries.Add(Row(name));
         }
 
-        _matches = TimecycleCatalog.Names.Count;
+        _matches = Total();
+
+        Instances.Add(this);
 
         TimecycleKeyBindings.Register(
-            () => Nudge(1),
-            () => Nudge(-1),
-            ClearAll,
-            Search,
-            BackToTop);
+            () => Each(open => open.Nudge(1)),
+            () => Each(open => open.Nudge(-1)),
+            () => Each(open => open.ClearAll()),
+            () => Each(open => open.Search()),
+            () => Each(open => open.BackToTop()),
+            () => Each(open => open.Favorite()));
 
         _buttons = TickRegistry.Register(
-            "Display.TimecycleButtons",
+            favoritesOnly ? "Display.TimecycleFavoriteButtons" : "Display.TimecycleButtons",
             SyncButtons,
             TickRate.Every(ButtonIntervalMs),
             () => _open,
@@ -84,9 +87,13 @@ internal sealed class TimecycleFilterMenu
         {
             _open = true;
             _buttonsStale = true;
-            _highlighted = null;
 
             _buttons?.Reevaluate();
+
+            if (favoritesOnly)
+            {
+                Refilter(menu);
+            }
 
             opened.Menu.MenuSubtitle = Subtitle();
         };
@@ -98,13 +105,30 @@ internal sealed class TimecycleFilterMenu
             _buttons?.Reevaluate();
         };
 
-        menu.OnIndexChanged = changed =>
-            _highlighted = changed.NewItem?.ItemData is string data ? TimecycleCatalog.Find(data) : null;
-
         TimecycleState.Changed += Repaint;
 
         TimecycleState.Changed += () => _buttonsStale = true;
+
+        TimecycleFavorites.Changed += Repaint;
+
+        TimecycleFavorites.Changed += () =>
+        {
+            if (favoritesOnly && _open)
+            {
+                Refilter(menu);
+            }
+        };
     }
+
+    private static void Each(Action<TimecycleFilterMenu> action)
+    {
+        foreach (var instance in Instances)
+        {
+            action(instance);
+        }
+    }
+
+    private int Total() => favoritesOnly ? TimecycleFavorites.Count : TimecycleCatalog.Names.Count;
 
     internal string Subtitle()
     {
@@ -112,14 +136,16 @@ internal sealed class TimecycleFilterMenu
 
         if (_query.Length == 0)
         {
-            return localizer.Get(Loc.DisplaySettings.TimecycleSubtitle);
+            return localizer.Get(favoritesOnly
+                ? Loc.DisplaySettings.TimecycleFavorites
+                : Loc.DisplaySettings.TimecycleSubtitle);
         }
 
         return MenuText.Key(
             Loc.DisplaySettings.TimecycleSubtitleFiltered,
             ("query", MenuText.Literal(Shorten(_query))),
             ("count", MenuText.Literal(Number(_matches))),
-            ("total", MenuText.Literal(Number(TimecycleCatalog.Names.Count)))).Resolve(localizer);
+            ("total", MenuText.Literal(Number(Total())))).Resolve(localizer);
     }
 
     private CheckboxEntry Row(string name)
@@ -130,6 +156,7 @@ internal sealed class TimecycleFilterMenu
             Description = MenuText.Key(Loc.DisplaySettings.TimecycleRowDescription),
 
             ReadState = () => TimecycleState.IsActive(name),
+            ReadLeftIcon = () => FavoriteIcon(name),
             OnChanged = _ => TimecycleState.Toggle(name),
 
             Configure = item => item.ItemData = name.ToLowerInvariant(),
@@ -152,6 +179,8 @@ internal sealed class TimecycleFilterMenu
 
             var active = TimecycleState.IsActive(pair.Key);
 
+            item.LeftIcon = FavoriteIcon(pair.Key);
+
             if (item is MenuCheckboxItem checkbox)
             {
                 checkbox.Checked = active;
@@ -160,6 +189,9 @@ internal sealed class TimecycleFilterMenu
             item.Description = DescriptionFor(active);
         }
     }
+
+    private static MenuItem.Icon FavoriteIcon(string name) =>
+        TimecycleFavorites.IsFavorite(name) ? MenuItem.Icon.STAR : MenuItem.Icon.NONE;
 
     private static string DescriptionFor(bool active)
     {
@@ -212,6 +244,22 @@ internal sealed class TimecycleFilterMenu
             }
 
             menu.Menu.RefreshIndex(0, 0);
+        });
+    }
+
+    private void Favorite()
+    {
+        API.RunOnMainThread(() =>
+        {
+            if (!_open
+                || !Native.IsUsingKeyboardAndMouse(KeyboardGroup)
+                || _menu?.Menu.GetCurrentMenuItem()?.ItemData is not string data
+                || TimecycleCatalog.Find(data) is not { } name)
+            {
+                return;
+            }
+
+            TimecycleFavorites.Toggle(name);
         });
     }
 
@@ -274,6 +322,10 @@ internal sealed class TimecycleFilterMenu
         menu.Menu.CustomInstructionalButtons.Add(new Menu.InstructionalButton(
             Icon(TimecycleKeyBindings.TopControl),
             localizer.Get(Loc.DisplaySettings.TimecycleTopButton)));
+
+        menu.Menu.CustomInstructionalButtons.Add(new Menu.InstructionalButton(
+            Icon(TimecycleKeyBindings.FavoriteControl),
+            localizer.Get(Loc.DisplaySettings.TimecycleFavoriteButton)));
     }
 
     private void ClearButtons()
@@ -319,18 +371,15 @@ internal sealed class TimecycleFilterMenu
         if (query.Length == 0)
         {
             _query = string.Empty;
-            _matches = TimecycleCatalog.Names.Count;
 
-            menu.SetUserFilter(null);
-            menu.Menu.MenuSubtitle = Subtitle();
+            Refilter(menu);
 
             Notifications.Info(MenuText.Key(Loc.DisplaySettings.TimecycleFilterCleared));
 
             return;
         }
 
-        var needle = query.ToLowerInvariant();
-        var matches = Count(menu, needle);
+        var matches = Count(menu, query.ToLowerInvariant());
 
         if (matches == 0)
         {
@@ -342,10 +391,8 @@ internal sealed class TimecycleFilterMenu
         }
 
         _query = query;
-        _matches = matches;
 
-        menu.SetUserFilter(item => Matches(item, needle));
-        menu.Menu.MenuSubtitle = Subtitle();
+        Refilter(menu);
 
         Notifications.Info(MenuText.Key(
             Loc.DisplaySettings.TimecycleFilterApplied,
@@ -353,13 +400,23 @@ internal sealed class TimecycleFilterMenu
             ("query", MenuText.Literal(query))));
     }
 
-    private static int Count(MenuBuilder menu, string needle)
+    private void Refilter(MenuBuilder menu)
+    {
+        var needle = _query.ToLowerInvariant();
+
+        _matches = Count(menu, needle);
+
+        menu.SetUserFilter(favoritesOnly || needle.Length > 0 ? item => Matches(item, needle) : null);
+        menu.Menu.MenuSubtitle = Subtitle();
+    }
+
+    private int Count(MenuBuilder menu, string needle)
     {
         var matches = 0;
 
         foreach (var entry in menu.Entries)
         {
-            if (entry.Item is { } item && Matches(item, needle))
+            if (entry.Item is { ItemData: string } item && Matches(item, needle))
             {
                 matches++;
             }
@@ -368,18 +425,20 @@ internal sealed class TimecycleFilterMenu
         return matches;
     }
 
-    private static bool Matches(MenuItem item, string needle) =>
-        item.ItemData is not string text || text.Contains(needle);
+    private bool Matches(MenuItem item, string needle) =>
+        item.ItemData is not string text
+        || (text.Contains(needle) && (!favoritesOnly || TimecycleFavorites.IsFavorite(text)));
 
-    private static IReadOnlyList<InputSuggestion> Suggestions()
+    private IReadOnlyList<InputSuggestion> Suggestions()
     {
-        var rows = new InputSuggestion[TimecycleCatalog.Names.Count];
+        var rows = new List<InputSuggestion>();
 
-        for (var index = 0; index < rows.Length; index++)
+        foreach (var name in TimecycleCatalog.Names)
         {
-            var name = TimecycleCatalog.Names[index];
-
-            rows[index] = new InputSuggestion { Value = name, Label = name };
+            if (!favoritesOnly || TimecycleFavorites.IsFavorite(name))
+            {
+                rows.Add(new InputSuggestion { Value = name, Label = name });
+            }
         }
 
         return rows;
