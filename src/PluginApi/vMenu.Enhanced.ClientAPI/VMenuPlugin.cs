@@ -112,6 +112,11 @@ public sealed class VMenuPlugin
     /// <summary>Shows a message through vMenu's notification area, credited to your resource.</summary>
     public void Notify(NotifyStyle style, Text text, int? durationMs = null)
     {
+        if (!IsConnected)
+        {
+            return;
+        }
+
         var request = new NotifyRequest
         {
             Style = style switch
