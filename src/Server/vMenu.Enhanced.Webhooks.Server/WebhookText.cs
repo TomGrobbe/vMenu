@@ -33,7 +33,7 @@ public static class WebhookText
 
             lastWasSpace = false;
 
-            if (Markdown.IndexOf(character) >= 0)
+            if (Markdown.Contains(character))
             {
                 text.Append('\\');
             }

@@ -22,7 +22,7 @@ internal sealed class GenericChannel
 
     private int _reportedAt;
 
-    public bool IsConfigured => Url().Length > 0;
+    public static bool IsConfigured => Url().Length > 0;
 
     public void Add(WebhookEntry entry)
     {

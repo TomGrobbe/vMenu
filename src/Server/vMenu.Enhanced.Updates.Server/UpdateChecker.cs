@@ -249,9 +249,12 @@ public static class UpdateChecker
             Log.Debug($"[Updates] '{text}' in fxmanifest.lua is not a version this can compare, so this counts as an old build.");
         }
 
-        SemanticVersion.TryParse(DevelopmentVersion, out _current);
+        if (!SemanticVersion.TryParse(DevelopmentVersion, out _current) || _current is null)
+        {
+            throw new InvalidOperationException($"[Updates] DevelopmentVersion '{DevelopmentVersion}' is not a valid version.");
+        }
 
-        return _current!;
+        return _current;
     }
 
     private static UpdateChannel Channel()

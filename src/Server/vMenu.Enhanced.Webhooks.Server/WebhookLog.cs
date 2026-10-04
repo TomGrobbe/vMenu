@@ -52,11 +52,11 @@ public static class WebhookLog
     private static bool _initialized;
 
     public static bool Wants(LogCategory category) =>
-        IsOn && (Channel(category).IsConfigured || Generic.IsConfigured);
+        IsOn && (Channel(category).IsConfigured || GenericChannel.IsConfigured);
 
-    public static bool WantsMenuActions => IsOn && (ActionsChannel.IsConfigured || Generic.IsConfigured);
+    public static bool WantsMenuActions => IsOn && (ActionsChannel.IsConfigured || GenericChannel.IsConfigured);
 
-    public static bool WantsSecurity => IsOn && (SecurityChannel.IsConfigured || Generic.IsConfigured);
+    public static bool WantsSecurity => IsOn && (SecurityChannel.IsConfigured || GenericChannel.IsConfigured);
 
     private static bool IsOn => ServerConfig.Value(LoggingSettings.Enabled);
 
@@ -136,7 +136,7 @@ public static class WebhookLog
 
         var discord = Channel(category);
 
-        if (!discord.IsConfigured && !Generic.IsConfigured)
+        if (!discord.IsConfigured && !GenericChannel.IsConfigured)
         {
             return;
         }

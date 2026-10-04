@@ -43,7 +43,7 @@ public sealed class BridgeWebSocket(IReadOnlyDictionary<string, string> headers)
     {
         if (_offset >= _current.Length)
         {
-            await _arrivals.WaitAsync();
+            await _arrivals.WaitAsync(CancellationToken.None);
             if (!_inbox.TryDequeue(out var next))
             {
                 _arrivals.Release();

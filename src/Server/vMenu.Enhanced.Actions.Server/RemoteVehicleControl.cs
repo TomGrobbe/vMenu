@@ -150,16 +150,16 @@ public static class RemoteVehicleControl
 
         var picked = new List<int>();
 
-        foreach (var entry in reachable)
+        foreach (var (serverId, _) in reachable)
         {
-            if (entry.ServerId == preferred)
+            if (serverId == preferred)
             {
-                picked.Insert(0, entry.ServerId);
+                picked.Insert(0, serverId);
 
                 continue;
             }
 
-            picked.Add(entry.ServerId);
+            picked.Add(serverId);
         }
 
         if (picked.Count > MaxCandidates)

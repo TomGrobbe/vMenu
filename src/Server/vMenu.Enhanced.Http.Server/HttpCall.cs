@@ -116,7 +116,7 @@ public sealed class HttpCall
 
     private static IReadOnlyDictionary<string, MessagePackBuffer> Bag(MessagePackBuffer? value) =>
         (value is null ? null : Read<Dictionary<string, MessagePackBuffer>>(value)) ??
-        new Dictionary<string, MessagePackBuffer>();
+        [];
 
     private static string Field(IReadOnlyDictionary<string, MessagePackBuffer> bag, string name) =>
         bag.TryGetValue(name, out var value) ? Text(value) : string.Empty;
