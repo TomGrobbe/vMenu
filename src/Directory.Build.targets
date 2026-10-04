@@ -18,6 +18,11 @@
     <ResourceRoot>$(RepoRoot)build\vMenu.Enhanced\</ResourceRoot>
   </PropertyGroup>
 
+  <!-- Client projects share one output folder, so a second copier of MenuAPI's fonts races Core's on a rebuild. -->
+  <ItemGroup Condition="'$(IsResourceRootProject)' != 'true'">
+    <PackageReference Update="MenuAPI.FiveM.Enhanced" ExcludeAssets="contentFiles" />
+  </ItemGroup>
+
   <Import Project="$(MSBuildThisFileDirectory)Assemblies.targets" />
 
   <ItemGroup Condition="'$(IsResourceRootProject)' == 'true'">
