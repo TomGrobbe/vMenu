@@ -33,8 +33,6 @@ public static class AuditedMenuItems
         ["vehicleoptions.god.invincible"] = "vehicle invincibility",
         ["vehicleoptions.power.enabled"] = "the engine power multiplier",
         ["vehicleoptions.torque.enabled"] = "the engine torque multiplier",
-        ["vehicleoptions.power"] = "the engine power multiplier",
-        ["vehicleoptions.torque"] = "the engine torque multiplier",
         ["vehicleoptions.repair"] = "repaired their vehicle",
         ["vehicleoptions.delete"] = "deleted their vehicle",
         ["vehicleoptions.visibility"] = "changed their vehicle's visibility",
