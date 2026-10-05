@@ -78,6 +78,7 @@ public static class WorldWeather
     {
         WeatherCycle.SnowyWeather = ClientConfig.Value(WeatherOptionsSettings.SnowyWeather);
     }
+
     // What the game itself reports, which is the only proof the weather calls are landing.
     public static string Describe()
     {

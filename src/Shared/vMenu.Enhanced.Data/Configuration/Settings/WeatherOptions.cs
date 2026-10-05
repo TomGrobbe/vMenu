@@ -12,10 +12,10 @@ public static class WeatherOptions
     public static readonly BoolSetting SnowyWeather = new("vMenu.Enhanced.WeatherOptions.SnowyWeather")
     {
         Description =
-            "Enables or disables snowy weather.",
+            "Swaps the normal GTA Online weather schedule for a winter one, and keeps snow on the ground the whole time while the snow setting is on automatic.",
         Default = false,
     };
-    
+
     public static readonly BoolSetting SyncClouds = new("vMenu.Enhanced.WeatherOptions.SyncClouds")
     {
         Description =

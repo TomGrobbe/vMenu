@@ -4,7 +4,7 @@ public static class GameClock
 {
     public const double RealSecondsPerGameHour = 120.0;
 
-    public static double GameHoursPerCycle => WeatherCycle.Entries[^1].GameHour;
+    public static double GameHoursPerCycle => WeatherCycle.LengthGameHours;
 
     public const int SecondsPerGameDay = 86400;
 

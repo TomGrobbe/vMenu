@@ -36,16 +36,6 @@ public static class WeatherCycle
     // How long before a scheduled change the sky starts moving, in in-game hours.
     public const double BoundaryWindowGameHours = 0.5;
 
-    //private const double EarliestRainHour = 6.0;
-
-    //private const double LatestRainHour = 18.0;
-
-    //private const int ExpectedCount = 173;
-
-    //private const double ShortestBlockGameHours = 1.0;
-
-    // TimeMult is a byte in the game, but nothing in this table goes above five.
-    //private const double LongestBlockGameHours = 5.0;
     private static readonly CycleEntry[] EntriesSnowy =
     [
         new(0, WeatherType.SnowLight),
@@ -134,6 +124,7 @@ public static class WeatherCycle
         new(174, WeatherType.SnowLight),
         new(176, WeatherType.Clouds),
     ];
+
     private static readonly CycleEntry[] EntriesNormal =
     [
         new(0, WeatherType.ExtraSunny),
@@ -310,8 +301,19 @@ public static class WeatherCycle
         new(377, WeatherType.ExtraSunny),
         new(381, WeatherType.Smog),
     ];
+
+    private const double NormalLengthGameHours = 384.0;
+
+    private const double SnowyLengthGameHours = 180.0;
+
     public static bool SnowyWeather { get; set; }
+
     public static CycleEntry[] Entries => SnowyWeather ? EntriesSnowy : EntriesNormal;
+
+    public static double LengthGameHours => SnowyWeather ? SnowyLengthGameHours : NormalLengthGameHours;
+
+    public static string Name => SnowyWeather ? "snowy" : "normal";
+
     public static CycleResolution Resolve(double cycleGameHours)
     {
         var position = GameClock.Mod(cycleGameHours, GameClock.GameHoursPerCycle);
@@ -402,79 +404,4 @@ public static class WeatherCycle
 
         return Entries.Length - 1;
     }
-
-    // Checks the table against every structural property the schedule is known to have. Returns messages
-    // rather than logging, since this assembly has no runtime to log to. The night rain check is the
-    // sensitive one: a mistyped offset usually drags rain into darkness.
-    /*public static IReadOnlyList<string> Validate()
-    {
-        var problems = new List<string>();
-
-        if (Entries.Length != ExpectedCount)
-        {
-            problems.Add($"Expected {ExpectedCount} entries, found {Entries.Length}.");
-        }
-
-        if (Entries.Length == 0)
-        {
-            return problems;
-        }
-
-        if (Entries[0].GameHour != 0.0)
-        {
-            problems.Add($"First entry starts at {Entries[0].GameHour}, expected 0.");
-        }
-
-        if (Entries[^1].GameHour >= GameClock.GameHoursPerCycle)
-        {
-            problems.Add($"Last entry starts at {Entries[^1].GameHour}, which is outside the cycle.");
-        }
-
-        for (var i = 1; i < Entries.Length; i++)
-        {
-            if (Entries[i].GameHour <= Entries[i - 1].GameHour)
-            {
-                problems.Add($"Entry {i} at {Entries[i].GameHour} does not come after entry {i - 1}.");
-            }
-        }
-
-        var total = 0.0;
-
-        for (var i = 0; i < Entries.Length; i++)
-        {
-            var start = Entries[i].GameHour;
-            var end = i + 1 < Entries.Length ? Entries[i + 1].GameHour : GameClock.GameHoursPerCycle;
-            var duration = end - start;
-
-            total += duration;
-
-            if (duration < ShortestBlockGameHours || duration > LongestBlockGameHours)
-            {
-                problems.Add(
-                    $"Entry {i} ({Entries[i].Type}) lasts {duration} in-game hours, outside the " +
-                    $"known {ShortestBlockGameHours} to {LongestBlockGameHours} range.");
-            }
-
-            if (Entries[i].Type is not (WeatherType.Rain or WeatherType.Thunder))
-            {
-                continue;
-            }
-
-            var startHour = start % 24.0;
-
-            if (startHour < EarliestRainHour || startHour + duration > LatestRainHour)
-            {
-                problems.Add(
-                    $"Entry {i} ({Entries[i].Type}) runs {startHour:0.#} to {startHour + duration:0.#} " +
-                    "in-game hours, but precipitation never falls at night.");
-            }
-        }
-
-        if (total != GameClock.GameHoursPerCycle)
-        {
-            problems.Add($"Durations sum to {total} in-game hours, expected {GameClock.GameHoursPerCycle}.");
-        }
-
-        return problems;
-    }*/
 }
