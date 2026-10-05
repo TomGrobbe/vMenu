@@ -9,6 +9,7 @@ using vMenu.Enhanced.Data.VehicleData;
 using vMenu.Enhanced.Events;
 using vMenu.Enhanced.MenuFramework;
 using vMenu.Enhanced.MenuFramework.Localization;
+using vMenu.Enhanced.Menus.Bully;
 using vMenu.Enhanced.Permissions;
 using vMenu.Enhanced.Storage;
 
@@ -55,6 +56,9 @@ public static class PersonalVehicle
     public static bool HasPosition { get; private set; }
 
     public static bool IsLocked { get; private set; }
+
+    public static bool IsElectrified =>
+        IsMarked && Electrified.IsOwnedBy(NetworkId, Native.GetPlayerServerId(Native.PlayerId()));
 
     public static bool IsEngineRunning { get; private set; }
 
@@ -253,6 +257,13 @@ public static class PersonalVehicle
             _busy = false;
         }
     }
+
+    public static Task SetElectrifiedAsync(bool on) =>
+        RemoteAsync(
+            ActionIds.PersonalVehicle.SetElectrocute,
+            on ? Loc.PersonalVehicle.ElectrocuteOn : Loc.PersonalVehicle.ElectrocuteOff,
+            Loc.PersonalVehicle.ElectrocuteFailed,
+            on ? RemoteVehicleAction.On : RemoteVehicleAction.Off);
 
     public static Task SetLockedAsync(bool locked) =>
         RemoteAsync(

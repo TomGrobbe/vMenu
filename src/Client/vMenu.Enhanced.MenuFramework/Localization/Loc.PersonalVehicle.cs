@@ -195,5 +195,15 @@ public static partial class Loc
         public const string ExplodeFailed = "personalvehicle.explode.failed";
 
         public const string ExplodeGodMode = "personalvehicle.explode.godmode";
+
+        public const string Electrocute = "personalvehicle.electrocute";
+
+        public const string ElectrocuteDescription = "personalvehicle.electrocute.desc";
+
+        public const string ElectrocuteOn = "personalvehicle.electrocute.on";
+
+        public const string ElectrocuteOff = "personalvehicle.electrocute.off";
+
+        public const string ElectrocuteFailed = "personalvehicle.electrocute.failed";
     }
 }

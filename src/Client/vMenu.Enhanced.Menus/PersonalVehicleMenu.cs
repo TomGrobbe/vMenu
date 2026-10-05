@@ -7,6 +7,7 @@ using vMenu.Enhanced.MenuFramework.Localization;
 using vMenu.Enhanced.Menus.Vehicles;
 using vMenu.Enhanced.Menus.Vehicles.Personal;
 
+using BullySettings = vMenu.Enhanced.Data.Configuration.Settings.Bully;
 using PersonalVehiclePermissions = vMenu.Enhanced.Data.Permissions.Menus.PersonalVehicle;
 
 namespace vMenu.Enhanced.Menus;
@@ -87,6 +88,17 @@ public sealed class PersonalVehicleMenu : MenuDefinition
             ReadState = static () => PersonalVehicle.IsLocked,
             ReadEnabled = static () => PersonalVehicle.IsMarked,
             OnChangedAsync = changed => PersonalVehicle.SetLockedAsync(changed.Checked),
+        });
+
+        menu.Entries.Add(new CheckboxEntry
+        {
+            Text = MenuText.Key(Loc.PersonalVehicle.Electrocute),
+            Description = MenuText.Key(Loc.PersonalVehicle.ElectrocuteDescription),
+            Gate = MenuGate.Setting(BullySettings.Enabled) & MenuGate.Permission(PersonalVehiclePermissions.Electrocute),
+            Behaviour = GateBehaviour.Hide,
+            ReadState = static () => PersonalVehicle.IsElectrified,
+            ReadEnabled = static () => PersonalVehicle.IsMarked,
+            OnChangedAsync = changed => PersonalVehicle.SetElectrifiedAsync(changed.Checked),
         });
 
         menu.Entries.Add(new CheckboxEntry

@@ -312,6 +312,11 @@ internal static class EnglishStrings
             [Loc.PersonalVehicle.Exploded] = "~r~Your personal vehicle has been blown up~s~.",
             [Loc.PersonalVehicle.ExplodeFailed] = "Could not blow your vehicle up.",
             [Loc.PersonalVehicle.ExplodeGodMode] = "Your vehicle has ~y~vehicle god mode~s~ on, so it cannot be blown up.",
+            [Loc.PersonalVehicle.Electrocute] = "Electric Door Handles",
+            [Loc.PersonalVehicle.ElectrocuteDescription] = "Anybody except you who tries to open a door of your personal vehicle gets an electric shock.",
+            [Loc.PersonalVehicle.ElectrocuteOn] = "Your personal vehicle now shocks anybody who touches its doors.",
+            [Loc.PersonalVehicle.ElectrocuteOff] = "Your personal vehicle no longer shocks people.",
+            [Loc.PersonalVehicle.ElectrocuteFailed] = "Could not change the electric door handles on your personal vehicle.",
 
             [Loc.VehiclesMenu.Title] = "Vehicles Menu",
             [Loc.VehiclesMenu.Subtitle] = "Vehicles Menu",
