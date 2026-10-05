@@ -13,11 +13,14 @@ using vMenu.Enhanced.Data.Ticks;
 using vMenu.Enhanced.Logging;
 using vMenu.Enhanced.MenuFramework;
 using vMenu.Enhanced.MenuFramework.Localization;
+using vMenu.Enhanced.Menus.Bully;
 using vMenu.Enhanced.Menus.Players;
 using vMenu.Enhanced.Permissions;
 using vMenu.Enhanced.Plugins;
 using vMenu.Enhanced.Ticks;
 
+using BullyPermissions = vMenu.Enhanced.Data.Permissions.Menus.Bully;
+using BullySettings = vMenu.Enhanced.Data.Configuration.Settings.Bully;
 using OnlinePlayersPermissions = vMenu.Enhanced.Data.Permissions.Menus.OnlinePlayers;
 
 namespace vMenu.Enhanced.Menus;
@@ -472,6 +475,18 @@ public sealed class OnlinePlayersMenu : MenuDefinition
                     Native.ExecuteCommand($"tx {Id(player)}");
                 }
             },
+        });
+
+        actions.Entries.Add(new SubmenuEntry
+        {
+            Text = MenuText.Key(Loc.Bully.PlayerActions),
+            Description = MenuText.Key(Loc.Bully.PlayerActionsDescription),
+            Gate = MenuGate.Setting(BullySettings.Enabled) & MenuGate.Permission(BullyPermissions.Menu),
+            Behaviour = GateBehaviour.Hide,
+            MenuTitle = MenuText.From(() => _selected?.Name ?? string.Empty),
+            MenuSubtitle = MenuText.Key(Loc.Bully.PlayerActions),
+            Build = BullyPanel.ForPlayer(
+                () => _selected is { } player ? (player.ServerId, player.Name) : ((int, string)?)null).Build,
         });
 
         actions.Entries.Add(new SubmenuEntry

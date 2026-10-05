@@ -39,6 +39,8 @@ public static class PlayerNoRagdoll
         Apply();
     }
 
+    public static void Reapply() => Apply();
+
     private static void Apply()
     {
         var on = Enabled;

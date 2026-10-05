@@ -278,7 +278,7 @@ public static class TimecycleState
 
     private static void OnRevived(PlayerPedRevived _) => Reapply();
 
-    private static void Reapply()
+    public static void Reapply()
     {
         for (var slot = 0; slot < Slots; slot++)
         {

@@ -16,6 +16,7 @@ using vMenu.Enhanced.MenuFramework;
 using vMenu.Enhanced.MenuFramework.Localization;
 using vMenu.Enhanced.Menus;
 using vMenu.Enhanced.Menus.Admin;
+using vMenu.Enhanced.Menus.Bully;
 using vMenu.Enhanced.Menus.Developer;
 using vMenu.Enhanced.Menus.Misc;
 using vMenu.Enhanced.Menus.Players;
@@ -192,6 +193,7 @@ public sealed class Main : IScript
         PlayerPushEvents.Initialize();
         AdminPushEvents.Initialize();
         StaffAlertsFeature.Initialize();
+        BullyReceiver.Initialize();
 
         DeathNotifications.Initialize();
         JoinLeaveNotifications.Initialize();
