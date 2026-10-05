@@ -46,6 +46,6 @@ public static class SnowModes
     {
         SnowMode.On => true,
         SnowMode.Off => false,
-        _ => WeatherTypes.IsSnowy(weather),
+        _ => WeatherCycle.SnowyWeather || WeatherTypes.IsSnowy(weather),
     };
 }

@@ -47,6 +47,12 @@ public static class WeatherTemperatures
 
     private static readonly double[] Halloween = [12, 12, 12, 15, 15, 30, 30, 30, 15, 15, 12, 12, 12];
 
+    public static IReadOnlyList<double> Hours => SampleHours;
+
+    public static IReadOnlyList<double> Holds => SampleHolds;
+
+    public static IReadOnlyList<double> Row(WeatherType type) => SamplesOf(type);
+
     public static double AtSeaLevel(WeatherType type, double hourOfDay)
     {
         var samples = SamplesOf(type);
@@ -109,7 +115,10 @@ public static class WeatherTemperatures
         return entries;
     }
 
-    private static double[] SamplesOf(WeatherType type) => type switch
+    private static double[] SamplesOf(WeatherType type) =>
+        WeatherCycle.SnowyWeather && !WeatherTypes.IsSnowy(type) ? SnowLight : NormalRowOf(type);
+
+    private static double[] NormalRowOf(WeatherType type) => type switch
     {
         WeatherType.ExtraSunny => ExtraSunny,
         WeatherType.Clear => Clear,
