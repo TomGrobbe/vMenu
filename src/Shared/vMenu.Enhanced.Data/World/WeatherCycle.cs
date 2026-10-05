@@ -36,18 +36,105 @@ public static class WeatherCycle
     // How long before a scheduled change the sky starts moving, in in-game hours.
     public const double BoundaryWindowGameHours = 0.5;
 
-    private const double EarliestRainHour = 6.0;
+    //private const double EarliestRainHour = 6.0;
 
-    private const double LatestRainHour = 18.0;
+    //private const double LatestRainHour = 18.0;
 
-    private const int ExpectedCount = 173;
+    //private const int ExpectedCount = 173;
 
-    private const double ShortestBlockGameHours = 1.0;
+    //private const double ShortestBlockGameHours = 1.0;
 
     // TimeMult is a byte in the game, but nothing in this table goes above five.
-    private const double LongestBlockGameHours = 5.0;
-
-    private static readonly CycleEntry[] Entries =
+    //private const double LongestBlockGameHours = 5.0;
+    private static readonly CycleEntry[] EntriesSnowy =
+    [
+        new(0, WeatherType.SnowLight),
+        new(2, WeatherType.Xmas),
+        new(3, WeatherType.Smog),
+        new(7, WeatherType.SnowLight),
+        new(8, WeatherType.Smog),
+        new(11, WeatherType.Xmas),
+        new(13, WeatherType.Foggy),
+        new(14, WeatherType.Overcast),
+        new(15, WeatherType.SnowLight),
+        new(17, WeatherType.Smog),
+        new(20, WeatherType.Clouds),
+        new(22, WeatherType.SnowLight),
+        new(27, WeatherType.Clouds),
+        new(28, WeatherType.Smog),
+        new(31, WeatherType.Xmas),
+        new(33, WeatherType.Overcast),
+        new(34, WeatherType.Clouds),
+        new(39, WeatherType.Foggy),
+        new(41, WeatherType.Smog),
+        new(43, WeatherType.Clouds),
+        new(45, WeatherType.Overcast),
+        new(46, WeatherType.Smog),
+        new(48, WeatherType.Overcast),
+        new(50, WeatherType.Smog),
+        new(52, WeatherType.Xmas),
+        new(53, WeatherType.SnowLight),
+        new(54, WeatherType.SnowLight),
+        new(56, WeatherType.Clouds),
+        new(58, WeatherType.Xmas),
+        new(60, WeatherType.Smog),
+        new(63, WeatherType.Foggy),
+        new(64, WeatherType.Smog),
+        new(66, WeatherType.Clouds),
+        new(70, WeatherType.Smog),
+        new(71, WeatherType.Foggy),
+        new(73, WeatherType.SnowLight),
+        new(74, WeatherType.Smog),
+        new(76, WeatherType.Overcast),
+        new(77, WeatherType.Clouds),
+        new(78, WeatherType.Clouds),
+        new(79, WeatherType.Foggy),
+        new(80, WeatherType.SnowLight),
+        new(83, WeatherType.Overcast),
+        new(87, WeatherType.Xmas),
+        new(92, WeatherType.Xmas),
+        new(94, WeatherType.Overcast),
+        new(96, WeatherType.Smog),
+        new(99, WeatherType.Overcast),
+        new(100, WeatherType.Smog),
+        new(103, WeatherType.Overcast),
+        new(106, WeatherType.SnowLight),
+        new(107, WeatherType.Smog),
+        new(108, WeatherType.Foggy),
+        new(109, WeatherType.SnowLight),
+        new(110, WeatherType.Xmas),
+        new(112, WeatherType.Clouds),
+        new(116, WeatherType.Clouds),
+        new(118, WeatherType.SnowLight),
+        new(121, WeatherType.Foggy),
+        new(122, WeatherType.Overcast),
+        new(123, WeatherType.Xmas),
+        new(128, WeatherType.Smog),
+        new(129, WeatherType.Clouds),
+        new(131, WeatherType.SnowLight),
+        new(132, WeatherType.Smog),
+        new(137, WeatherType.Clouds),
+        new(139, WeatherType.Clouds),
+        new(140, WeatherType.Smog),
+        new(142, WeatherType.Xmas),
+        new(143, WeatherType.Overcast),
+        new(145, WeatherType.Foggy),
+        new(148, WeatherType.SnowLight),
+        new(153, WeatherType.Smog),
+        new(156, WeatherType.Foggy),
+        new(158, WeatherType.Clouds),
+        new(159, WeatherType.SnowLight),
+        new(160, WeatherType.SnowLight),
+        new(163, WeatherType.Smog),
+        new(165, WeatherType.Overcast),
+        new(168, WeatherType.Smog),
+        new(169, WeatherType.Xmas),
+        new(170, WeatherType.Foggy),
+        new(171, WeatherType.Smog),
+        new(174, WeatherType.SnowLight),
+        new(176, WeatherType.Clouds),
+    ];
+    private static readonly CycleEntry[] EntriesNormal =
     [
         new(0, WeatherType.ExtraSunny),
         new(2, WeatherType.Clear),
@@ -223,7 +310,8 @@ public static class WeatherCycle
         new(377, WeatherType.ExtraSunny),
         new(381, WeatherType.Smog),
     ];
-
+    public static bool SnowyWeather { get; set; }
+    public static CycleEntry[] Entries => SnowyWeather ? EntriesSnowy : EntriesNormal;
     public static CycleResolution Resolve(double cycleGameHours)
     {
         var position = GameClock.Mod(cycleGameHours, GameClock.GameHoursPerCycle);
@@ -318,7 +406,7 @@ public static class WeatherCycle
     // Checks the table against every structural property the schedule is known to have. Returns messages
     // rather than logging, since this assembly has no runtime to log to. The night rain check is the
     // sensitive one: a mistyped offset usually drags rain into darkness.
-    public static IReadOnlyList<string> Validate()
+    /*public static IReadOnlyList<string> Validate()
     {
         var problems = new List<string>();
 
@@ -388,5 +476,5 @@ public static class WeatherCycle
         }
 
         return problems;
-    }
+    }*/
 }

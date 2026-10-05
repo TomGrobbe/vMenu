@@ -22,8 +22,12 @@ public static class ServerClock
 
     private const int PublishIntervalMs = 1000;
 
+    public static void SnowSet() => WeatherCycle.SnowyWeather = ServerConfig.Value(WeatherOptionsSettings.SnowyWeather);
+
     public static void Initialize()
     {
+        SnowSet();
+
         // onStarted rather than here, so nothing is published while both sync features are off.
         var tick = ServerTickRegistry.Register(
             "Clock.Publish",
@@ -35,6 +39,10 @@ public static class ServerClock
         ServerConfig.AddEventListenerFor(
             [WeatherOptionsSettings.Enabled, TimeOptionsSettings.Enabled],
             tick.Reevaluate);
+
+        ServerConfig.AddEventListenerFor(
+            [WeatherOptionsSettings.SnowyWeather],
+            SnowSet);
 
         SharedAPI.Commands.RegisterCommand(DumpCommand, true, DebugCommands.Gate(Dump));
 

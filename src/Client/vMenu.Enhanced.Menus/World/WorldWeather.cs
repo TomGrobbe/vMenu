@@ -37,6 +37,8 @@ public static class WorldWeather
 
     public static void Initialize()
     {
+        SnowSet();
+
         var tick = TickRegistry.Register(
             "World.Weather",
             Apply,
@@ -67,9 +69,15 @@ public static class WorldWeather
 
         ClientConfig.AddEventListenerFor([WeatherOptionsSettings.Enabled], tick.Reevaluate);
 
+        ClientConfig.AddEventListenerFor([WeatherOptionsSettings.SnowyWeather], SnowSet);
+
         WorldState.Changed += TickRegistry.Reevaluate;
     }
 
+    public static void SnowSet()
+    {
+        WeatherCycle.SnowyWeather = ClientConfig.Value(WeatherOptionsSettings.SnowyWeather);
+    }
     // What the game itself reports, which is the only proof the weather calls are landing.
     public static string Describe()
     {

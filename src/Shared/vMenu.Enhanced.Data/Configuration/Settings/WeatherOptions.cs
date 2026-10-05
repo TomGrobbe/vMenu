@@ -9,6 +9,13 @@ public static class WeatherOptions
         Default = true,
     };
 
+    public static readonly BoolSetting SnowyWeather = new("vMenu.Enhanced.WeatherOptions.SnowyWeather")
+    {
+        Description =
+            "Enables or disables snowy weather.",
+        Default = false,
+    };
+    
     public static readonly BoolSetting SyncClouds = new("vMenu.Enhanced.WeatherOptions.SyncClouds")
     {
         Description =
