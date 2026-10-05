@@ -27,6 +27,25 @@ public static class ServerStateBags
     public static bool SetPlayer<T>(int serverId, string key, T value) =>
         Set(PlayerBag(serverId), key, value);
 
+    public static T? Get<T>(string bagName, string key)
+    {
+        if (!Native.StateBagHasKey(bagName, key))
+        {
+            return default;
+        }
+
+        try
+        {
+            return MessagePackSerializer.Deserialize<T>(Native.GetStateBagValue(bagName, key), Options);
+        }
+        catch (Exception exception)
+        {
+            Log.Error($"[StateBags] Could not read '{key}' from '{bagName}': {exception}");
+
+            return default;
+        }
+    }
+
     public static bool Set<T>(string bagName, string key, T value, bool replicated = true)
     {
         try

@@ -4,11 +4,13 @@ using CitizenFX.FiveM.Server;
 using CitizenFX.FiveM.Server.Entities;
 using CitizenFX.FiveM.Shared.Serialization;
 
+using vMenu.Enhanced.Configuration.Server;
 using vMenu.Enhanced.Data.Actions;
 using vMenu.Enhanced.Data.VehicleData;
 using vMenu.Enhanced.Logging;
 using vMenu.Enhanced.Players.Server;
 
+using BullySettings = vMenu.Enhanced.Data.Configuration.Settings.Bully;
 using PersonalVehiclePermissions = vMenu.Enhanced.Data.Permissions.Menus.PersonalVehicle;
 using PersonalVehicleSettings = vMenu.Enhanced.Data.Configuration.Settings.PersonalVehicle;
 
@@ -59,6 +61,12 @@ public static class PersonalVehicleActions
             Limit);
 
         ActionRegistry.Register(ActionIds.PersonalVehicle.Explode, PersonalVehiclePermissions.Explode, Explode, Limit);
+
+        ActionRegistry.Register(
+            ActionIds.PersonalVehicle.SetElectrocute,
+            PersonalVehiclePermissions.Electrocute,
+            SetElectrocute,
+            Limit);
     }
 
     internal static int Resolve(int networkId)
@@ -111,6 +119,25 @@ public static class PersonalVehicleActions
         PersonalVehicleRegistry.SetMarked(source.Handle, networkId);
 
         return ActionResponse.Ok();
+    }
+
+    private static ActionResponse SetElectrocute(Player source, string[] args)
+    {
+        if (!ServerConfig.Value(BullySettings.Enabled))
+        {
+            return ActionResponse.Refused();
+        }
+
+        if (!TryMarked(source, out _, out _))
+        {
+            return ActionResponse.NotFound();
+        }
+
+        var on = Flag(args, 0) == RemoteVehicleAction.On;
+
+        PersonalVehicleRegistry.SetElectrified(source.Handle, on);
+
+        return ActionResponse.Ok(on ? RemoteVehicleAction.On : RemoteVehicleAction.Off);
     }
 
     private static ActionResponse Forget(Player source, string[] args)

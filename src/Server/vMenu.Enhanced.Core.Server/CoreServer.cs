@@ -97,6 +97,7 @@ public class CoreServer : IScript
         ClothingPresetActions.Register();
         WorldActions.Register();
         OnlinePlayerActions.Register();
+        BullyActions.Register();
         StaffAlertActions.Register();
         AdminActions.Register();
         AnnouncementSchedule.Register();
