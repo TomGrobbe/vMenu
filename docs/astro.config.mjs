@@ -72,6 +72,7 @@ export default defineConfig({
         { label: 'Edit Your Data', link: '/data-editor/' },
         { label: 'Custom Character Creator', link: '/character-creator/' },
         { label: 'Admin Menu', link: '/admin-menu/' },
+        { label: 'Bully Menu', link: '/bully-menu/' },
         { label: 'Webhook Logging', link: '/webhook-logging/' },
         { label: 'Exports', link: '/exports/' },
         {
