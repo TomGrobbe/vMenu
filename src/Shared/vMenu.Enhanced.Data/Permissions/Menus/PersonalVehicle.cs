@@ -27,4 +27,6 @@ public static class PersonalVehicle
 
     [StaffOnly]
     public const string Explode = "vMenu.Enhanced.Menus.PersonalVehicle.Explode";
+
+    public const string Electrocute = "vMenu.Enhanced.Menus.PersonalVehicle.Electrocute";
 }

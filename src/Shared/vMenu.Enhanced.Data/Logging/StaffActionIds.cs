@@ -1,4 +1,5 @@
 ﻿using vMenu.Enhanced.Data.Actions;
+using vMenu.Enhanced.Data.Bullying;
 
 namespace vMenu.Enhanced.Data.Logging;
 
@@ -35,7 +36,27 @@ public static class StaffActionIds
         [ActionIds.Admin.RemoveAnnouncement] = "removed a scheduled announcement",
         [ActionIds.Admin.ResetRoutingBucket] = "put themselves back in the default world",
 
+        [ActionIds.Bully.StopAll] = "stopped every bully effect",
     };
+
+    static StaffActionIds()
+    {
+        foreach (var effect in BullyEffects.All)
+        {
+            Verbs[ActionIds.Bully.Effect(effect.Id)] = effect.Verb;
+            Verbs[ActionIds.Bully.Everyone(effect.Id)] = effect.Verb + " everyone";
+        }
+
+        foreach (var toggle in BullyToggles.All)
+        {
+            var name = BullyToggles.LogName(toggle);
+
+            Verbs[ActionIds.Bully.Toggle(toggle, true)] = $"switched {name} on for";
+            Verbs[ActionIds.Bully.Toggle(toggle, false)] = $"switched {name} off for";
+            Verbs[ActionIds.Bully.ServerToggle(toggle, true)] = $"switched the server wide {name} on";
+            Verbs[ActionIds.Bully.ServerToggle(toggle, false)] = $"switched the server wide {name} off";
+        }
+    }
 
     public static bool Includes(string actionId) => Verbs.ContainsKey(actionId);
 
@@ -52,7 +73,10 @@ public static class StaffActionIds
             or ActionIds.Admin.RefreshPermissions
             or ActionIds.Admin.AddAnnouncement
             or ActionIds.Admin.RemoveAnnouncement
-            or ActionIds.Admin.ResetRoutingBucket => false,
+            or ActionIds.Admin.ResetRoutingBucket
+            or ActionIds.Bully.StopAll => false,
+        _ when actionId.StartsWith(ActionIds.Bully.EveryonePrefix, StringComparison.Ordinal)
+            || actionId.StartsWith(ActionIds.Bully.ServerTogglePrefix, StringComparison.Ordinal) => false,
         _ => true,
     };
 }

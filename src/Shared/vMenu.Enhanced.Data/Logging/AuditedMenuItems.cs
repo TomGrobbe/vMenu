@@ -46,6 +46,7 @@ public static class AuditedMenuItems
         ["personalvehicle.explode"] = "blew up their personal vehicle",
         ["personalvehicle.horn"] = "sounded the horn on their personal vehicle",
         ["personalvehicle.lock"] = "the locks on their personal vehicle",
+        ["personalvehicle.electrocute"] = "the electric door handles on their personal vehicle",
         ["personalvehicle.engine"] = "the engine of their personal vehicle",
         ["personalvehicle.lights"] = "the lights on their personal vehicle",
     };

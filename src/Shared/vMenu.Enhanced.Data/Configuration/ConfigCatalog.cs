@@ -59,6 +59,7 @@ public static class ConfigCatalog
             OnlinePlayerSettings.ActionLimitSeconds,
             OnlinePlayerSettings.MatchRoutingBucket,
         ]),
+        new("Bully", [Bully.Enabled, Bully.DisableExplosions, Bully.DisableParticleEffects]),
         new("Join and Leave", [JoinLeaveSettings.LogToConsole]),
         new("Webhook Logging",
         [

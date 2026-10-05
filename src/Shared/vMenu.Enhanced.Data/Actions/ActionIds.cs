@@ -56,6 +56,8 @@ public static class ActionIds
         public const string PlayHornTune = "PersonalVehicle.PlayHornTune";
 
         public const string Explode = "PersonalVehicle.Explode";
+
+        public const string SetElectrocute = "PersonalVehicle.SetElectrocute";
     }
 
     public static class WeatherOptions
@@ -104,6 +106,33 @@ public static class ActionIds
         public const string SetNoClipAccess = "OnlinePlayers.SetNoClipAccess";
 
         public const string GetNoClip = "OnlinePlayers.GetNoClip";
+    }
+
+    public static class Bully
+    {
+        public const string EffectPrefix = "Bully.Effect.";
+
+        public const string EveryonePrefix = "Bully.Everyone.";
+
+        public const string TogglePrefix = "Bully.Toggle.";
+
+        public const string ServerTogglePrefix = "Bully.ServerToggle.";
+
+        public const string GetToggles = "Bully.GetToggles";
+
+        public const string GetActive = "Bully.GetActive";
+
+        public const string StopAll = "Bully.StopAll";
+
+        public static string Effect(string effect) => EffectPrefix + effect;
+
+        public static string Everyone(string effect) => EveryonePrefix + effect;
+
+        public static string Toggle(string toggle, bool on) => TogglePrefix + toggle + State(on);
+
+        public static string ServerToggle(string toggle, bool on) => ServerTogglePrefix + toggle + State(on);
+
+        private static string State(bool on) => on ? ".On" : ".Off";
     }
 
     public static class DisplaySettings
