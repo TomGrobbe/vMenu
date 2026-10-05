@@ -79,6 +79,10 @@ public sealed class WorldWeatherState
 
     public required double CycleLengthGameHours { get; init; }
 
+    public required string Cycle { get; init; }
+
+    public required IReadOnlyList<WorldCycleEntry> CycleEntries { get; init; }
+
     public required string Blackout { get; init; }
 
     public required string Snow { get; init; }
@@ -88,6 +92,29 @@ public sealed class WorldWeatherState
     public required double TemperatureCelsius { get; init; }
 
     public required double TemperatureFahrenheit { get; init; }
+}
+
+public sealed class WorldCycleEntry
+{
+    public required double GameHour { get; init; }
+
+    public required string Type { get; init; }
+}
+
+public sealed class WorldTemperatureTable
+{
+    public required IReadOnlyList<double> SampleHours { get; init; }
+
+    public required IReadOnlyList<double> SampleHolds { get; init; }
+
+    public required IReadOnlyList<WorldTemperatureRow> Rows { get; init; }
+}
+
+public sealed class WorldTemperatureRow
+{
+    public required string Type { get; init; }
+
+    public required IReadOnlyList<double> Celsius { get; init; }
 }
 
 public sealed class WorldTemperatureEntry
@@ -138,6 +165,8 @@ public sealed class WorldSnapshot
     public required IReadOnlyList<WorldForecastEntry> Forecast { get; init; }
 
     public required IReadOnlyList<WorldTemperatureEntry> TemperatureOutlook { get; init; }
+
+    public required WorldTemperatureTable Temperatures { get; init; }
 
     private const int OutlookGameHours = 48;
 
@@ -194,6 +223,10 @@ public sealed class WorldSnapshot
                 RealSecondsUntilNext = resolved.GameHoursUntilNext * realSecondsPerGameHour,
                 CycleGameHours = cycleGameHours,
                 CycleLengthGameHours = GameClock.GameHoursPerCycle,
+                Cycle = WeatherCycle.Name,
+                CycleEntries = WeatherCycle.Entries
+                    .Select(entry => new WorldCycleEntry { GameHour = entry.GameHour, Type = WeatherTypes.NameOf(entry.Type) })
+                    .ToList(),
                 Blackout = BlackoutModes.NameOf(ServerState.Blackout),
                 Snow = SnowModes.NameOf(ServerState.Snow),
                 SnowFalling = SnowModes.Resolve(ServerState.Snow, effective),
@@ -202,6 +235,14 @@ public sealed class WorldSnapshot
             },
             Forecast = CaptureForecast(cycleGameHours, forecastCount, realSecondsPerGameHour),
             TemperatureOutlook = CaptureOutlook(cycleGameHours, secondOfDay, realSecondsPerGameHour),
+            Temperatures = new WorldTemperatureTable
+            {
+                SampleHours = WeatherTemperatures.Hours,
+                SampleHolds = WeatherTemperatures.Holds,
+                Rows = WeatherTypes.Selectable
+                    .Select(type => new WorldTemperatureRow { Type = WeatherTypes.NameOf(type), Celsius = WeatherTemperatures.Row(type) })
+                    .ToList(),
+            },
         };
     }
 

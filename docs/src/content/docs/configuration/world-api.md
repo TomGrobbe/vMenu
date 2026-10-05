@@ -107,6 +107,11 @@ A block of [JSON](https://en.wikipedia.org/wiki/JSON), which is a plain text for
     "realSecondsUntilNext": 300.0,
     "cycleGameHours": 123.45,
     "cycleLengthGameHours": 384.0,
+    "cycle": "normal",
+    "cycleEntries": [
+      { "gameHour": 0.0, "type": "EXTRASUNNY" },
+      { "gameHour": 2.0, "type": "CLEAR" }
+    ],
     "blackout": "off",
     "snow": "auto",
     "snowFalling": false,
@@ -132,7 +137,14 @@ A block of [JSON](https://en.wikipedia.org/wiki/JSON), which is a plain text for
       "celsius": 31.3,
       "fahrenheit": 88.3
     }
-  ]
+  ],
+  "temperatures": {
+    "sampleHours": [0, 5, 6, 7, 10, 12, 16, 17, 18, 19, 20, 21, 22],
+    "sampleHolds": [4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    "rows": [
+      { "type": "CLEAR", "celsius": [12, 12, 12, 15, 20, 27, 30, 30, 24, 20, 15, 13, 12] }
+    ]
+  }
 }
 ```
 
@@ -187,7 +199,9 @@ The in-game calendar. GTA does not really have one, so vMenu keeps its own: a 38
 | `gameHoursUntilNext` | How many in-game hours away that change is. |
 | `realSecondsUntilNext` | How many real seconds away it is, which already accounts for the clock speed. This is the one to count down with. |
 | `cycleGameHours` | How far through the weather schedule the server is. |
-| `cycleLengthGameHours` | How long the whole schedule is, always `384` in-game hours. |
+| `cycleLengthGameHours` | How long the whole schedule is in in-game hours. `384` for the normal schedule, `180` for the snowy one. |
+| `cycle` | Which weather schedule the server runs: `normal` for the GTA Online one, or `snowy` when `vMenu.Enhanced.WeatherOptions.SnowyWeather` is on. |
+| `cycleEntries` | The whole schedule that `cycle` names, in order. Each entry is the in-game hour a block starts at, counted from the start of the schedule, and the weather it has. A block lasts until the next entry starts, and the last one lasts until the schedule starts over. This lets you work out the forecast yourself, far beyond what `forecast` lists. |
 | `blackout` | Whether street lighting is cut: `off`, `city`, or `all`. |
 | `snow` | The snow setting: `auto`, `on`, or `off`. |
 | `snowFalling` | Whether that setting works out to snow actually falling right now. |
@@ -214,6 +228,16 @@ A rough temperature for each of the next 48 whole in-game hours, so you can draw
 | `weather` | The weather the schedule will be on at that moment. If somebody forced a weather type from the menu, this assumes it stays forced. |
 | `celsius`, `fahrenheit` | The temperature at that moment, in both units. |
 
+### `temperatures`
+
+The table every temperature on this page is worked out from, for the weather schedule the server is running right now. Use it if you want to show temperatures further ahead than `temperatureOutlook` goes, together with `cycleEntries`.
+
+| Field | What it means |
+| --- | --- |
+| `sampleHours` | The in-game hours of the day the table has a temperature for. |
+| `sampleHolds` | How many in-game hours each sample stays put before it starts sliding towards the next one. Only midnight holds, until 04:00. |
+| `rows` | One row for every weather type: its name in `type`, and in `celsius` its temperature at each of the `sampleHours`, in the same order. Between two samples the temperature slides evenly from one to the next. |
+
 ### Temperatures
 
 GTA works out a temperature for its world all the time, it just never shows it to anyone. vMenu does the same sums the game does. Every weather type has its own temperature for each part of the day, so a sunny afternoon is hot and a rainy night is chilly. While the weather is changing from one type to another, the temperature slides between the two.
@@ -223,6 +247,7 @@ A few things to know about these numbers:
 1. They are the temperature **outside**, at sea level. Players high up in the hills or flying feel it colder, because the game drops the temperature by up to 15°C between 200 and 1000 metres up. The forecast on a player's screen does take their height into account. This endpoint cannot, because it does not know where anybody is standing.
 2. They are the weather temperature, not the temperature inside a building.
 3. The game's own data for a couple of the snowy weather types was clearly typed in wrong (it had a snowy noon at 20°C, for example). vMenu smooths those out to sensible values.
+4. While the snowy weather schedule is on, every weather type that is not a snowy one uses the light snow temperatures. A foggy or cloudy day in the middle of winter is still freezing.
 
 ## When something goes wrong
 
