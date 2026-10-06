@@ -182,6 +182,6 @@ public static class WeatherTemperatures
         WeatherType.Xmas => Snow,
         WeatherType.Halloween => SnowyHalloween,
         WeatherType.RainHalloween => SnowyHalloween,
-        _ => Clear,
+        _ => SnowyClear,
     };
 }
