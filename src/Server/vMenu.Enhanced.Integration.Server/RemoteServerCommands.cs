@@ -265,23 +265,9 @@ internal static class RemoteServerCommands
             return new IntegrationCommands.CommandReply(400, IntegrationJson.Fail("not-allowed"));
         }
 
-        // The value goes into a command string, so strip quote/backslash/semicolon/newline to stop injection.
-        var safe = Sanitise(value);
-
-        Native.ExecuteCommand($"set {known.Name} \"{safe}\"");
+        Native.SetConvarReplicated(known.Name, value.Trim());
 
         return new IntegrationCommands.CommandReply(200, IntegrationJson.Ok);
-    }
-
-    private static string Sanitise(string value)
-    {
-        var cleaned = value.Replace("\\", string.Empty)
-            .Replace("\"", string.Empty)
-            .Replace("\r", string.Empty)
-            .Replace("\n", string.Empty)
-            .Replace(";", string.Empty);
-
-        return cleaned.Trim();
     }
 }
 
