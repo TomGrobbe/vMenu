@@ -107,12 +107,14 @@ A block of [JSON](https://en.wikipedia.org/wiki/JSON), which is a plain text for
     "realSecondsUntilNext": 300.0,
     "cycleGameHours": 123.45,
     "cycleLengthGameHours": 384.0,
-    "cycle": "normal",
+    "cycle": "default",
     "cycleEntries": [
       { "gameHour": 0.0, "type": "EXTRASUNNY" },
       { "gameHour": 2.0, "type": "CLEAR" }
     ],
+    "snowPass": false,
     "blackout": "off",
+    "blackoutMode": "dynamic",
     "snow": "auto",
     "snowFalling": false,
     "temperatureCelsius": 30.0,
@@ -199,10 +201,12 @@ The in-game calendar. GTA does not really have one, so vMenu keeps its own: a 38
 | `gameHoursUntilNext` | How many in-game hours away that change is. |
 | `realSecondsUntilNext` | How many real seconds away it is, which already accounts for the clock speed. This is the one to count down with. |
 | `cycleGameHours` | How far through the weather schedule the server is. |
-| `cycleLengthGameHours` | How long the whole schedule is in in-game hours. `384` for the normal schedule, `180` for the snowy one. |
-| `cycle` | Which weather schedule the server runs: `normal` for the GTA Online one, or `snowy` when `vMenu.Enhanced.WeatherOptions.SnowyWeather` is on. |
-| `cycleEntries` | The whole schedule that `cycle` names, in order. Each entry is the in-game hour a block starts at, counted from the start of the schedule, and the weather it has. A block lasts until the next entry starts, and the last one lasts until the schedule starts over. This lets you work out the forecast yourself, far beyond what `forecast` lists. |
-| `blackout` | Whether street lighting is cut: `off`, `city`, or `all`. |
+| `cycleLengthGameHours` | How long the whole schedule is in in-game hours. `384` for the default schedule, `180` for the snowy one, and whatever the blocks add up to for a custom one. |
+| `cycle` | Which weather schedule the server runs: `default` for the GTA Online one, `snowy` for the winter one, or `custom` for the server's own [weather-cycle.json](/configuration/weather-cycle-json/). This follows `vMenu.Enhanced.WeatherOptions.WeatherCycle`, except that a custom schedule that could not be loaded shows up as `default`, because that is what the server falls back to. |
+| `cycleEntries` | The whole schedule that `cycle` names, in order. Each entry is the in-game hour a block starts at, counted from the start of the schedule, and the weather it has. A block lasts until the next entry starts, and the last one lasts until the schedule starts over. This lets you work out the forecast yourself, far beyond what `forecast` lists. An entry from a custom schedule can also have a `blackout` (`city` or `all`), which is the blackout planned for that block. Entries without one have no `blackout` field at all. |
+| `snowPass` | Whether the schedule keeps snow on the ground the whole time while `snow` is `auto`. Always `true` for the snowy schedule, and whatever the server owner picked for a custom one. |
+| `blackout` | Whether street lighting is cut right now: `off`, `city`, or `all`. |
+| `blackoutMode` | The blackout setting: `dynamic` (follow the blackouts scheduled in a custom weather schedule, the default), `off`, `city`, or `all`. |
 | `snow` | The snow setting: `auto`, `on`, or `off`. |
 | `snowFalling` | Whether that setting works out to snow actually falling right now. |
 | `temperatureCelsius` | How warm it is outside right now, in degrees Celsius. See [temperatures](#temperatures) below for where this number comes from. |
@@ -247,7 +251,7 @@ A few things to know about these numbers:
 1. They are the temperature **outside**, at sea level. Players high up in the hills or flying feel it colder, because the game drops the temperature by up to 15°C between 200 and 1000 metres up. The forecast on a player's screen does take their height into account. This endpoint cannot, because it does not know where anybody is standing.
 2. They are the weather temperature, not the temperature inside a building.
 3. The game's own data for a couple of the snowy weather types was clearly typed in wrong (it had a snowy noon at 20°C, for example). vMenu smooths those out to sensible values.
-4. While the snowy weather schedule is on, every weather type that is not a snowy one uses the light snow temperatures. A foggy or cloudy day in the middle of winter is still freezing.
+4. While the snowy weather schedule is on, or a custom one with `snowPass` turned on, every weather type that is not a snowy one uses the light snow temperatures. A foggy or cloudy day in the middle of winter is still freezing.
 
 ## When something goes wrong
 

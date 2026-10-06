@@ -78,6 +78,8 @@ You send vMenu:
 
 A `command` can be server wide (`announce`, `get-world`, `set-weather`, `set-time`, `set-blackout`, `set-snow`, `set-freeze`, `get-config`, `set-convar`, `waypoint-everyone`, `teleport-everyone`) or aimed at one player (`kick`, `kill`, `noclip`, `notify`, `waypoint`, `teleport`, `heal`, `armor`, `spawnvehicle`, `deletevehicle`, `explodevehicle`, `status`). The read only ones (`get-world`, `get-config`, `status`) always work. Anything that changes the game needs `AllowActions true`.
 
+`set-blackout` takes `params.mode`, which is `dynamic`, `off`, `city` or `all`. `dynamic` hands the lights back to the blackouts planned in a custom weather schedule, see [weather-cycle.json](/configuration/weather-cycle-json/).
+
 `waypoint-everyone` and `teleport-everyone` are the server wide versions of `waypoint` and `teleport`, both taking a spot as `params.x` and `params.y`. `teleport-everyone` spreads players out around the spot so a crowd does not stack on one point. Both need `AllowActions true` and answer with `{ "ok": true, "reached": <count> }`.
 
 A player `teleport` takes the spot as `params.x` and `params.y` and drops the player on the ground there. Add `params.z` to land at that exact height instead (for example inside a building), and `params.heading` to set which way they face.

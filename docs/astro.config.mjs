@@ -87,6 +87,7 @@ export default defineConfig({
           items: [
             { label: 'blips.json', link: '/configuration/blips-json/' },
             { label: 'extras.json', link: '/configuration/extras-json/' },
+            { label: 'weather-cycle.json', link: '/configuration/weather-cycle-json/' },
             { label: 'World API', link: '/configuration/world-api/' },
           ],
         },
