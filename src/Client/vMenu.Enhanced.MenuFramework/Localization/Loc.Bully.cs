@@ -116,6 +116,8 @@ public static partial class Loc
 
         public const string Timecycle6 = "bully.timecycle.6";
 
+        public const string Timecycle7 = "bully.timecycle.7";
+
         public const string Sound0 = "bully.sound.0";
 
         public const string Sound1 = "bully.sound.1";

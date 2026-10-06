@@ -39,6 +39,10 @@ internal static class ScreenPranks
 
     private const int TimecycleMs = 20000;
 
+    private const int TimecycleFadeMs = 2000;
+
+    private const int TimecycleFadeSteps = 20;
+
     private const int DrugsOutMs = 3500;
 
     private const int FlashMs = 1500;
@@ -66,15 +70,16 @@ internal static class ScreenPranks
         (255f, 255f, 255f),
     ];
 
-    public static IReadOnlyList<string> Timecycles { get; } =
+    public static IReadOnlyList<(string Name, int Intensity)> Timecycles { get; } =
     [
-        "spectator4",
-        "CAMERA_BW",
-        "CAMERA_secuirity_FUZZ",
-        "spectator5",
-        "stoned_aliens",
-        "drug_wobbly",
-        "REDMIST",
+        ("spectator4", TimecycleState.MaxIntensity),
+        ("CAMERA_BW", TimecycleState.MaxIntensity),
+        ("CAMERA_secuirity_FUZZ", TimecycleState.MaxIntensity),
+        ("spectator5", TimecycleState.MaxIntensity),
+        ("stoned_aliens", TimecycleState.MaxIntensity),
+        ("drug_wobbly", TimecycleState.MaxIntensity),
+        ("REDMIST", TimecycleState.MaxIntensity),
+        ("Broken_camera_fuzz", 13),
     ];
 
     public static IReadOnlyList<(string Name, string SoundSet, string? Bank)> Sounds { get; } =
@@ -92,6 +97,8 @@ internal static class ScreenPranks
     private static readonly Window Coloured = new();
 
     private static bool _beast;
+
+    private static int _colourPicks;
 
     public static void Initialize() => BullyState.Stopped += OnStopped;
 
@@ -163,10 +170,19 @@ internal static class ScreenPranks
         }
 
         var started = Coloured.Extend(TimecycleMs);
-
-        Native.SetTransitionTimecycleModifier(Timecycles[index], 2f);
+        var pick = ++_colourPicks;
+        var (name, intensity) = Timecycles[index];
 
         run.Started();
+
+        if (intensity < TimecycleState.MaxIntensity)
+        {
+            await FadeTimecycleAsync(name, intensity / (float)TimecycleState.MaxIntensity, pick);
+        }
+        else
+        {
+            Native.SetTransitionTimecycleModifier(name, 2f);
+        }
 
         if (started)
         {
@@ -372,6 +388,26 @@ internal static class ScreenPranks
             }
 
             _beast = false;
+        }
+    }
+
+    // A transition always ends at full strength, so a partial one has to fade in by hand.
+    private static async Task FadeTimecycleAsync(string name, float strength, int pick)
+    {
+        var stopAllCount = BullyState.StopAllCount;
+
+        Native.SetTimecycleModifier(name);
+
+        for (var step = 1; step <= TimecycleFadeSteps; step++)
+        {
+            if (pick != _colourPicks || stopAllCount != BullyState.StopAllCount)
+            {
+                return;
+            }
+
+            Native.SetTimecycleModifierStrength(strength * step / TimecycleFadeSteps);
+
+            await API.Delay(TimecycleFadeMs / TimecycleFadeSteps);
         }
     }
 

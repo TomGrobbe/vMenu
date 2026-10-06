@@ -1448,6 +1448,7 @@ internal static class EnglishStrings
             [Loc.Bully.Timecycle4] = "Alien Vision",
             [Loc.Bully.Timecycle5] = "Wobbly",
             [Loc.Bully.Timecycle6] = "Red Mist",
+            [Loc.Bully.Timecycle7] = "Broken Camera",
             [Loc.Bully.Sound0] = "Beast Roar",
             [Loc.Bully.Sound1] = "Killer Clown",
             [Loc.Bully.Sound2] = "Slasher",
