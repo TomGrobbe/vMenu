@@ -310,7 +310,9 @@ internal static class ScreenPranks
 
             run.Started();
 
-            foreach (var (prop, effect) in launchers.OrderBy(_ => Dice.Next(int.MaxValue)))
+            var ahead = CameraForward(centre);
+
+            foreach (var (prop, effect) in launchers.OrderByDescending(launcher => Vector3.Dot(ahead, Native.GetEntityCoords(launcher.Prop, false) - centre)))
             {
                 if (stopAllCount != BullyState.StopAllCount)
                 {
@@ -374,9 +376,7 @@ internal static class ScreenPranks
             run.Started();
 
             var player = Native.GetEntityCoords(Native.PlayerPedId(), false);
-            var camera = Native.GetFinalRenderedCamCoord();
-            var facing = new Vector3(player.X - camera.X, player.Y - camera.Y, 0f);
-            var spot = player + (facing.LengthSquared() > 0.01f ? Vector3.Normalize(facing) : Vector3.UnitY) * BeastDistance;
+            var spot = player + CameraForward(player) * BeastDistance;
 
             Fx.Burst(BeastAsset, "scr_powerplay_beast_appear", spot, 2f);
             Fx.Sound("Beast_Attack", BeastSoundSet, spot);
@@ -435,6 +435,14 @@ internal static class ScreenPranks
 
             await API.Delay(TimecycleFadeMs / TimecycleFadeSteps);
         }
+    }
+
+    private static Vector3 CameraForward(Vector3 player)
+    {
+        var camera = Native.GetFinalRenderedCamCoord();
+        var facing = new Vector3(player.X - camera.X, player.Y - camera.Y, 0f);
+
+        return facing.LengthSquared() > 0.01f ? Vector3.Normalize(facing) : Vector3.UnitY;
     }
 
     private static async Task PostFxAsync(string effect, int durationMs)
