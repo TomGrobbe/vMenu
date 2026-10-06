@@ -11,11 +11,11 @@ namespace vMenu.Enhanced.Menus.Bully;
 
 internal static class Carjackers
 {
-    private const float SearchRadius = 60f;
+    private const float SearchRadius = 250f;
 
-    private const int MaxJackers = 3;
+    private const float AnimalReach = 3.5f;
 
-    private const int MaxAnimals = 2;
+    private const float AnimalSprint = 3f;
 
     private const int MissionPopulation = 7;
 
@@ -29,11 +29,19 @@ internal static class Carjackers
 
     private const int DontWaitForVehicleToStop = 64;
 
+    private const int DontCloseDoor = 256;
+
+    private const int BlockSeatShuffling = 1048576;
+
+    private const int PlayerExitMs = 5000;
+
+    private const int AnimalEnterMs = 10000;
+
     private const int WillJackAnyPlayer = 141;
 
     private const float Run = 2f;
 
-    private const int EnterTimeoutMs = 20000;
+    private const int EnterTimeoutMs = 60000;
 
     private const int ForgetAfterMs = 60000;
 
@@ -55,47 +63,47 @@ internal static class Carjackers
 
         var target = Native.GetEntityCoords(vehicle, false);
 
-        var nearby = NativeFixer.GetGamePool("CPed")
+        var thief = NativeFixer.GetGamePool("CPed")
             .Where(ped => ped != player
                 && Native.DoesEntityExist(ped)
                 && !Native.IsPedAPlayer(ped)
                 && !Native.IsPedDeadOrDying(ped, true)
                 && Native.GetEntityPopulationType(ped) != MissionPopulation
-                && Vector3.Distance(Native.GetEntityCoords(ped, false), target) <= SearchRadius)
-            .OrderBy(ped => Vector3.Distance(Native.GetEntityCoords(ped, false), target))
-            .ToLookup(Native.IsPedHuman);
+                && Distance(ped, target) <= SearchRadius)
+            .OrderBy(ped => Distance(ped, target))
+            .FirstOrDefault();
 
-        var jackers = nearby[true].Take(MaxJackers).ToList();
-        var spawned = jackers.Count == 0 ? await SpawnJackerAsync(target) : 0;
 
-        if (spawned != 0)
+        if (thief != 0 && Native.GetPedType(thief) == MountainLion.AnimalPedType)
         {
-            jackers.Add(spawned);
+            Native.SetPedCanBeDraggedOut(player, true);
+
+            try
+            {
+                await AnimalJackAsync(run, thief, vehicle);
+            }
+            finally
+            {
+                PedProtection.Reapply();
+            }
+
+            return;
         }
 
+        var spawned = thief == 0 ? await SpawnJackerAsync(target) : 0;
+        var jacker = thief != 0 ? thief : spawned;
         var tasked = new List<int>();
 
-        foreach (var jacker in jackers)
+        if (jacker != 0 && await JackAsync(jacker, vehicle))
         {
-            if (await JackAsync(jacker, vehicle))
-            {
-                tasked.Add(jacker);
+            tasked.Add(jacker);
 
-                run.Started();
-            }
+            run.Started();
         }
-
-        foreach (var animal in nearby[false].Take(MaxAnimals))
+        else
         {
-            if (await NetworkEntity.TakeControlAsync(animal))
-            {
-                HostilePeds.Attack(animal, player);
-
-                run.Started();
-            }
+            run.Failed();
         }
-
-        run.Failed();
 
         // Overrides the target's own Stay In Vehicle for as long as the jack can take, like ragdolling does.
         Native.SetPedCanBeDraggedOut(player, true);
@@ -123,6 +131,88 @@ internal static class Carjackers
             Native.SetPedAsNoLongerNeeded(ref spawned);
         }
     }
+
+    // Animals walk to the driver door and get in, but have no clips for pulling someone out, so the target gets out first.
+    private static async Task AnimalJackAsync(BullyRun run, int animal, int vehicle)
+    {
+        if (!await NetworkEntity.TakeControlAsync(animal))
+        {
+            run.Failed();
+
+            return;
+        }
+
+        Native.SetBlockingOfNonTemporaryEvents(animal, true);
+        Native.TaskEnterVehicle(animal, vehicle, -1, DriverSeat, AnimalSprint, ResumeIfInterrupted | JackAnyone | BlockSeatShuffling, string.Empty);
+        Native.SetPedKeepTask(animal, true);
+
+        run.Started();
+
+        var stopAllCount = BullyState.StopAllCount;
+        var giveUpAt = Native.GetGameTimer() + EnterTimeoutMs;
+
+        while (Vector3.Distance(Native.GetEntityCoords(animal, false), Native.GetEntityCoords(vehicle, false)) > AnimalReach
+            && Native.GetPedInVehicleSeat(vehicle, DriverSeat, false) != animal)
+        {
+            if (Native.GetGameTimer() > giveUpAt
+                || stopAllCount != BullyState.StopAllCount
+                || !Native.DoesEntityExist(animal)
+                || Native.IsPedDeadOrDying(animal, true)
+                || !Native.DoesEntityExist(vehicle))
+            {
+                return;
+            }
+
+            await API.Delay(100);
+        }
+
+        var player = Native.PlayerPedId();
+
+        if (Native.IsPedInVehicle(player, vehicle, false))
+        {
+            Native.TaskLeaveVehicle(player, vehicle, DontCloseDoor);
+
+            var outBy = Native.GetGameTimer() + PlayerExitMs;
+
+            while (Native.IsPedInVehicle(player, vehicle, false) && Native.GetGameTimer() < outBy)
+            {
+                await API.Delay(0);
+            }
+        }
+
+        if (Native.GetPedInVehicleSeat(vehicle, DriverSeat, false) != animal)
+        {
+            Native.TaskEnterVehicle(animal, vehicle, AnimalEnterMs, DriverSeat, Run, ResumeIfInterrupted | BlockSeatShuffling, string.Empty);
+        }
+
+        var seatedBy = Native.GetGameTimer() + AnimalEnterMs + PlayerExitMs;
+
+        while (Native.GetPedInVehicleSeat(vehicle, DriverSeat, false) != animal && Native.GetGameTimer() < seatedBy)
+        {
+            if (stopAllCount != BullyState.StopAllCount || !Native.DoesEntityExist(animal) || !Native.DoesEntityExist(vehicle))
+            {
+                return;
+            }
+
+            await API.Delay(100);
+        }
+
+        if (Native.GetPedInVehicleSeat(vehicle, DriverSeat, false) != animal)
+        {
+            if (!Native.IsVehicleSeatFree(vehicle, DriverSeat, false))
+            {
+                return;
+            }
+
+            Native.SetPedIntoVehicle(animal, vehicle, DriverSeat);
+        }
+
+        Native.SetVehicleEngineOn(vehicle, true, true, false);
+        Native.TaskVehicleDriveWander(animal, vehicle, GetawaySpeed, GetawayDriving);
+        Native.SetPedKeepTask(animal, true);
+    }
+
+    private static float Distance(int ped, Vector3 target) => Vector3.Distance(Native.GetEntityCoords(ped, false), target);
 
     private static async Task<int> SpawnJackerAsync(Vector3 near)
     {

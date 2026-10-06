@@ -272,7 +272,7 @@
     "bully.effect.beast": "Bestien-Schreck",
     "bully.effect.beast.desc": "Eine Bestie taucht vor ihnen aus einer Rauchwolke auf, brüllt und speit Feuer auf sie. Nur sie sehen sie.",
     "bully.effect.carjack": "Autodiebe",
-    "bully.effect.carjack.desc": "Leute rund um ihr Fahrzeug, oder das, das sie zuletzt gefahren sind, versuchen es zu stehlen. Tiere in der Nähe greifen stattdessen an.",
+    "bully.effect.carjack.desc": "Der nächste Mensch oder das nächste Tier bei ihrem Fahrzeug, oder dem, das sie zuletzt gefahren sind, versucht es zu stehlen.",
     "bully.effect.mug": "Straßenräuber",
     "bully.effect.mug.desc": "Ein Gangmitglied mit einem Messer rennt heran, schubst sie um und rennt wieder weg.",
     "bully.effect.clowns": "Killerclowns",

@@ -272,7 +272,7 @@
     "bully.effect.beast": "Beestachtige schrik",
     "bully.effect.beast.desc": "Een beest verschijnt voor hen uit een rookwolk, brult en spuwt vuur naar hen. Alleen zij zien het.",
     "bully.effect.carjack": "Autodieven",
-    "bully.effect.carjack.desc": "Mensen rond hun voertuig, of het voertuig waar ze het laatst in reden, proberen het te stelen. Dieren in de buurt vallen in plaats daarvan aan.",
+    "bully.effect.carjack.desc": "De dichtstbijzijnde persoon of het dichtstbijzijnde dier bij hun voertuig, of het voertuig waar ze het laatst in reden, probeert het te stelen.",
     "bully.effect.mug": "Overvaller",
     "bully.effect.mug.desc": "Een bendelid met een mes komt aanrennen, duwt hen omver en rent weer weg.",
     "bully.effect.clowns": "Moordclowns",

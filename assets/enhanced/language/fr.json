@@ -272,7 +272,7 @@
     "bully.effect.beast": "Frayeur de la bête",
     "bully.effect.beast.desc": "Une bête apparaît devant lui dans un nuage de fumée, rugit et lui crache du feu dessus. Lui seul la voit.",
     "bully.effect.carjack": "Voleurs de voiture",
-    "bully.effect.carjack.desc": "Les gens autour de son véhicule, ou du dernier qu'il a conduit, essaient de le voler. Les animaux à proximité attaquent à la place.",
+    "bully.effect.carjack.desc": "La personne ou l'animal le plus proche de son véhicule, ou du dernier qu'il a conduit, essaie de le voler.",
     "bully.effect.mug": "Agresseur",
     "bully.effect.mug.desc": "Un membre de gang armé d'un couteau arrive en courant, le pousse par terre et repart en courant.",
     "bully.effect.clowns": "Clowns tueurs",

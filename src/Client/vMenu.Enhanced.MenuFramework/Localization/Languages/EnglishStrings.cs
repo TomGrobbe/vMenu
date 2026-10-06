@@ -1481,7 +1481,7 @@ internal static class EnglishStrings
             [Loc.Bully.Beast] = "Beast Scare",
             [Loc.Bully.BeastDescription] = "A beast appears in front of them out of a cloud of smoke, roars and breathes fire at them. Only they see it.",
             [Loc.Bully.Carjack] = "Carjackers",
-            [Loc.Bully.CarjackDescription] = "People around their vehicle, or the one they last drove, try to steal it. Nearby animals attack instead.",
+            [Loc.Bully.CarjackDescription] = "The closest person or animal near their vehicle, or the one they last drove, tries to steal it.",
             [Loc.Bully.Mug] = "Mugger",
             [Loc.Bully.MugDescription] = "A gang member with a knife runs up, shoves them over and runs off again.",
             [Loc.Bully.Clowns] = "Killer Clowns",

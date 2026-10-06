@@ -272,7 +272,7 @@
     "bully.effect.beast": "Susto de la bestia",
     "bully.effect.beast.desc": "Una bestia aparece delante de él entre una nube de humo, ruge y le escupe fuego. Solo lo ve él.",
     "bully.effect.carjack": "Ladrones de coches",
-    "bully.effect.carjack.desc": "La gente alrededor de su vehículo, o del último que condujo, intenta robarlo. Los animales cercanos atacan en su lugar.",
+    "bully.effect.carjack.desc": "La persona o el animal más cercano a su vehículo, o al último que condujo, intenta robarlo.",
     "bully.effect.mug": "Atracador",
     "bully.effect.mug.desc": "Un pandillero con un cuchillo llega corriendo, lo tira al suelo y se vuelve a ir corriendo.",
     "bully.effect.clowns": "Payasos asesinos",
