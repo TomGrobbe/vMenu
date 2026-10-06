@@ -70,7 +70,7 @@ internal static class ClownAttack
                 return;
             }
 
-            var generation = BullyState.Generation;
+            var stopAllCount = BullyState.StopAllCount;
             var victims = run.Victims;
             var position = Native.GetEntityCoords(Native.PlayerPedId(), false);
             var seats = Math.Max(1, Native.GetVehicleModelNumberOfSeats(van));
@@ -137,7 +137,7 @@ internal static class ClownAttack
             var redriveAt = started + RedriveMs;
             var endsAt = started + DurationMs;
 
-            while (generation == BullyState.Generation && Native.GetGameTimer() < endsAt)
+            while (stopAllCount == BullyState.StopAllCount && Native.GetGameTimer() < endsAt)
             {
                 if (clowns.All(Dead))
                 {

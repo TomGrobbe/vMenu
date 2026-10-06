@@ -59,7 +59,7 @@ internal static class Mugger
                 return;
             }
 
-            var generation = BullyState.Generation;
+            var stopAllCount = BullyState.StopAllCount;
             var position = Native.GetEntityCoords(Native.PlayerPedId(), false);
 
             if (NpcSupport.SafeSpotAround(position, 20f, 30f, hidden: true) is not { } spot)
@@ -98,13 +98,13 @@ internal static class Mugger
             var lastVictim = 0;
             var killed = false;
 
-            while (left.Count > 0 && generation == BullyState.Generation && !killed)
+            while (left.Count > 0 && stopAllCount == BullyState.StopAllCount && !killed)
             {
                 var victim = Nearest(mugger, left);
 
                 left.Remove(victim);
 
-                var chase = await ChaseAsync(mugger, victim, generation);
+                var chase = await ChaseAsync(mugger, victim, stopAllCount);
 
                 killed = chase.Killed;
                 lastVictim = chase.Ped == 0 ? lastVictim : chase.Ped;
@@ -117,7 +117,7 @@ internal static class Mugger
 
             var fleeUntil = Native.GetGameTimer() + FleeMs;
 
-            while (!killed && generation == BullyState.Generation && Native.GetGameTimer() < fleeUntil)
+            while (!killed && stopAllCount == BullyState.StopAllCount && Native.GetGameTimer() < fleeUntil)
             {
                 killed = Dead(mugger);
 
@@ -159,12 +159,12 @@ internal static class Mugger
 
     private static bool Dead(int mugger) => !Native.DoesEntityExist(mugger) || Native.IsPedDeadOrDying(mugger, true);
 
-    private static async Task<(bool Killed, int Ped)> ChaseAsync(int mugger, int victim, int generation)
+    private static async Task<(bool Killed, int Ped)> ChaseAsync(int mugger, int victim, int stopAllCount)
     {
         var chasing = 0;
         var giveUpAt = Native.GetGameTimer() + ApproachTimeoutMs;
 
-        while (generation == BullyState.Generation && Native.GetGameTimer() < giveUpAt)
+        while (stopAllCount == BullyState.StopAllCount && Native.GetGameTimer() < giveUpAt)
         {
             if (Dead(mugger))
             {

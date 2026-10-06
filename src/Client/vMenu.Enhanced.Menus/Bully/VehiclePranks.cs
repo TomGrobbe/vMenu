@@ -116,11 +116,11 @@ internal static class VehiclePranks
 
             run.Started();
 
-            var generation = BullyState.Generation;
+            var stopAllCount = BullyState.StopAllCount;
             var started = Native.GetGameTimer();
             var hovering = false;
 
-            while (Native.GetGameTimer() - started < FloatMs && generation == BullyState.Generation)
+            while (Native.GetGameTimer() - started < FloatMs && stopAllCount == BullyState.StopAllCount)
             {
                 if (!hovering && Native.GetGameTimer() - started >= RiseMs && Native.DoesEntityExist(vehicle))
                 {

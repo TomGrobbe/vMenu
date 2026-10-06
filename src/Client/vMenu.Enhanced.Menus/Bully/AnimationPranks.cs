@@ -56,14 +56,14 @@ internal static class AnimationPranks
                 return;
             }
 
-            var generation = BullyState.Generation;
+            var stopAllCount = BullyState.StopAllCount;
             var until = Native.GetGameTimer() + DanceMs;
 
             Native.TaskPlayAnim(ped, dictionary, clip, 8f, BlendOut, -1, Looping | NotInterruptable, 0f, false, 0, false);
 
             run.Started();
 
-            while (Native.GetGameTimer() < until && generation == BullyState.Generation)
+            while (Native.GetGameTimer() < until && stopAllCount == BullyState.StopAllCount)
             {
                 await API.Delay(250);
             }

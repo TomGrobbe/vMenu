@@ -61,7 +61,7 @@ internal static class EvilClone
 
         try
         {
-            var generation = BullyState.Generation;
+            var stopAllCount = BullyState.StopAllCount;
             var position = Native.GetEntityCoords(victim, false);
 
             if (NpcSupport.SafeSpotAround(position, MinDistance, MaxDistance, hidden: true) is not { } spot)
@@ -112,7 +112,7 @@ internal static class EvilClone
 
             var endsAt = Native.GetGameTimer() + LifetimeMs;
 
-            while (generation == BullyState.Generation && Native.GetGameTimer() < endsAt)
+            while (stopAllCount == BullyState.StopAllCount && Native.GetGameTimer() < endsAt)
             {
                 if (Native.PlayerPedId() != victim
                     || Native.IsPedDeadOrDying(victim, true)

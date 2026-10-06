@@ -126,7 +126,7 @@ internal static class AlienAbduction
 
         try
         {
-            var generation = BullyState.Generation;
+            var stopAllCount = BullyState.StopAllCount;
             var ground = Native.GetEntityCoords(ped, false);
             var shipAt = new Vector3(ground.X, ground.Y, ground.Z + ShipHeight);
 
@@ -148,9 +148,9 @@ internal static class AlienAbduction
 
             var animated = await Streaming.AnimDictAsync(FloatDictionary) && await Streaming.AnimDictAsync(GetUpDictionary);
 
-            await BeamAsync(ship, ground, shipAt, HoverMs, generation, null);
+            await BeamAsync(ship, ground, shipAt, HoverMs, stopAllCount, null);
 
-            if (generation != BullyState.Generation)
+            if (stopAllCount != BullyState.StopAllCount)
             {
                 return;
             }
@@ -166,18 +166,18 @@ internal static class AlienAbduction
             {
                 Native.TaskPlayAnim(ped, FloatDictionary, ReactClip, 8f, -8f, -1, ReactFlags, 0f, false, 0, false);
 
-                await BeamAsync(ship, ground, shipAt, ReactFailsafeMs, generation, () => Phase(ped, ReactClip) > ReactDone);
+                await BeamAsync(ship, ground, shipAt, ReactFailsafeMs, stopAllCount, () => Phase(ped, ReactClip) > ReactDone);
 
                 Native.TaskPlayAnim(ped, FloatDictionary, FloatClip, 8f, -8f, -1, FloatFlags, 0f, false, 0, false);
 
-                await BeamAsync(ship, ground, shipAt, FloatFailsafeMs, generation, () => Phase(ped, FloatClip) > FloatDone);
+                await BeamAsync(ship, ground, shipAt, FloatFailsafeMs, stopAllCount, () => Phase(ped, FloatClip) > FloatDone);
             }
             else
             {
-                await BeamAsync(ship, ground, shipAt, ReactFailsafeMs, generation, null);
+                await BeamAsync(ship, ground, shipAt, ReactFailsafeMs, stopAllCount, null);
             }
 
-            if (generation != BullyState.Generation)
+            if (stopAllCount != BullyState.StopAllCount)
             {
                 return;
             }
@@ -311,11 +311,11 @@ internal static class AlienAbduction
         return ship;
     }
 
-    private static async Task BeamAsync(int ship, Vector3 ground, Vector3 shipAt, int durationMs, int generation, Func<bool>? done)
+    private static async Task BeamAsync(int ship, Vector3 ground, Vector3 shipAt, int durationMs, int stopAllCount, Func<bool>? done)
     {
         var endsAt = Native.GetGameTimer() + durationMs;
 
-        while (Native.GetGameTimer() < endsAt && generation == BullyState.Generation && done?.Invoke() != true)
+        while (Native.GetGameTimer() < endsAt && stopAllCount == BullyState.StopAllCount && done?.Invoke() != true)
         {
             if (ship != 0 && Native.DoesEntityExist(ship))
             {

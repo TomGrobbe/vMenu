@@ -220,7 +220,7 @@ internal static class ScreenPranks
             return;
         }
 
-        var generation = BullyState.Generation;
+        var stopAllCount = BullyState.StopAllCount;
         var centre = Native.GetEntityCoords(Native.PlayerPedId(), false);
         var start = Dice.Float(0f, MathF.Tau);
         var launchers = new List<(int Prop, string Effect)>();
@@ -261,7 +261,7 @@ internal static class ScreenPranks
 
             foreach (var (prop, effect) in launchers.OrderBy(_ => Dice.Next(int.MaxValue)))
             {
-                if (generation != BullyState.Generation)
+                if (stopAllCount != BullyState.StopAllCount)
                 {
                     break;
                 }

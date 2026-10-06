@@ -10,7 +10,7 @@ public static class BullyState
 
     public static event Action? Stopped;
 
-    public static int Generation { get; private set; }
+    public static int StopAllCount { get; private set; }
 
     public static bool IsOn(string toggle) => Personal.Contains(toggle) || ServerWide.Contains(toggle);
 
@@ -27,7 +27,7 @@ public static class BullyState
 
     public static void StopAll()
     {
-        Generation++;
+        StopAllCount++;
 
         Personal.Clear();
         ServerWide.Clear();
