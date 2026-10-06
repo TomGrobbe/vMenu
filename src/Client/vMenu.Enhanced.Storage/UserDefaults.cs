@@ -87,6 +87,9 @@ public static class UserDefaults
     public static IntDefault DisplayWeatherForecastStyle { get; } =
         new("displayWeatherForecastStyle") { Default = 1 };
 
+    public static IntDefault DisplayTemperatureUnit { get; } =
+        new("displayTemperatureUnit") { Default = 0 };
+
     #endregion
 
     #region Player Options
@@ -436,6 +439,7 @@ public static class UserDefaults
 
         DisplayWeatherForecast,
         DisplayWeatherForecastStyle,
+        DisplayTemperatureUnit,
         DisplayShowTime,
         DisplayLocationBlips,
 

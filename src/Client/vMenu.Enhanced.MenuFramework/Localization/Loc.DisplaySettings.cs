@@ -122,6 +122,16 @@ public static partial class Loc
 
         public const string ForecastStyleCompact = "displaysettings.forecast.style.compact";
 
+        public const string TemperatureUnit = "displaysettings.forecast.unit";
+
+        public const string TemperatureUnitDescription = "displaysettings.forecast.unit.desc";
+
+        public const string TemperatureUnitLocked = "displaysettings.forecast.unit.locked";
+
+        public const string TemperatureUnitCelsius = "displaysettings.forecast.unit.celsius";
+
+        public const string TemperatureUnitFahrenheit = "displaysettings.forecast.unit.fahrenheit";
+
         public const string ShowTime = "displaysettings.showtime";
 
         public const string ShowTimeDescription = "displaysettings.showtime.desc";

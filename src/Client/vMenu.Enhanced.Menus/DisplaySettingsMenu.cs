@@ -136,6 +136,21 @@ public sealed class DisplaySettingsMenu : MenuDefinition
             OnIndexChanged = changed => WeatherForecast.SetStyle(changed.NewIndex),
         });
 
+        menu.Entries.Add(new ListEntry
+        {
+            Text = MenuText.Key(Loc.DisplaySettings.TemperatureUnit),
+            Description = MenuText.Key(Loc.DisplaySettings.TemperatureUnitDescription),
+            LockedDescription = MenuText.Key(Loc.DisplaySettings.TemperatureUnitLocked),
+            Gate = WeatherForecast.Allowed & MenuGate.When(() => UserDefaults.DisplayWeatherForecast.Value),
+            Options =
+            [
+                MenuText.Key(Loc.DisplaySettings.TemperatureUnitCelsius),
+                MenuText.Key(Loc.DisplaySettings.TemperatureUnitFahrenheit),
+            ],
+            ReadSelectedIndex = () => WeatherTemperature.Unit,
+            OnIndexChanged = changed => WeatherForecast.SetTemperatureUnit(changed.NewIndex),
+        });
+
         menu.Entries.Add(new CheckboxEntry
         {
             Text = MenuText.Key(Loc.DisplaySettings.ShowTime),

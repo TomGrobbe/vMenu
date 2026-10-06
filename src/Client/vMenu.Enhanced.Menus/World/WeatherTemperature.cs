@@ -4,6 +4,7 @@ using CitizenFX.FiveM.Client;
 
 using vMenu.Enhanced.Data.Ticks;
 using vMenu.Enhanced.Data.World;
+using vMenu.Enhanced.Storage;
 using vMenu.Enhanced.Ticks;
 
 namespace vMenu.Enhanced.Menus.World;
@@ -13,6 +14,10 @@ public static class WeatherTemperature
     private const int CacheIntervalMs = 500;
 
     private const int ChangingIntervalMs = 250;
+
+    public const int UnitCelsius = 0;
+
+    public const int UnitFahrenheit = 1;
 
     private static double? _seaLevel;
 
@@ -83,7 +88,10 @@ public static class WeatherTemperature
     public static double HourOfDay() =>
         Native.GetClockHours() + (Native.GetClockMinutes() / 60.0) + (Native.GetClockSeconds() / 3600.0);
 
-    public static bool UseMetric => Native.ShouldUseMetricMeasurements();
+    public static int Unit =>
+        UserDefaults.DisplayTemperatureUnit.Value == UnitFahrenheit ? UnitFahrenheit : UnitCelsius;
+
+    public static bool UseMetric => Unit == UnitCelsius;
 
     public static int Rounded(double celsius, bool metric) =>
         (int)Math.Round(metric ? celsius : WeatherTemperatures.ToFahrenheit(celsius));

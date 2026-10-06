@@ -92,6 +92,13 @@ public static class WeatherForecast
         Reevaluate();
     }
 
+    public static void SetTemperatureUnit(int unit)
+    {
+        UserDefaults.DisplayTemperatureUnit.Value = unit;
+
+        Reevaluate();
+    }
+
     public static void SetClockEnabled(bool enabled)
     {
         UserDefaults.DisplayShowTime.Value = enabled;
