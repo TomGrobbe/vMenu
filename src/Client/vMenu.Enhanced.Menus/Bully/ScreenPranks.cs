@@ -25,6 +25,10 @@ internal static class ScreenPranks
 
     public const string ClownVoice = "CLOWNS";
 
+    public const string ClownSoundSet = "DLC_Tuner_Halloween_Clown_Soundset";
+
+    public const string ClownBank = "DLC_TUNER/DLC_Tuner_Killer_Clown";
+
     private const string FireworksAsset = "scr_indep_fireworks";
 
     private const string BeastBank = "DLC_APARTMENT/APT_BEAST";
@@ -82,10 +86,13 @@ internal static class ScreenPranks
         ("Broken_camera_fuzz", 13),
     ];
 
+    private static (string Name, string SoundSet, string? Bank) ClownScare { get; } =
+        ("FE_Spawn", ClownSoundSet, ClownBank);
+
     public static IReadOnlyList<(string Name, string SoundSet, string? Bank)> Sounds { get; } =
     [
         ("Beast_Attack", BeastSoundSet, BeastBank),
-        ("FE_Spawn", "DLC_Tuner_Halloween_Clown_Soundset", "DLC_TUNER/DLC_Tuner_Killer_Clown"),
+        ClownScare,
         ("FE_Spawn", "DLC_Tuner_Halloween_Slasher_Soundset", "DLC_TUNER/DLC_Tuner_Killer_SackSlasher"),
         ("FE_Spawn", "Freemode_Mirror_Slash_sounds", "DLC_MPSUM2/Mirror_Slash"),
     ];
@@ -228,6 +235,25 @@ internal static class ScreenPranks
         run.Started();
 
         await PostFxAsync(Flash, FlashMs);
+        await ReleaseSoundAsync(bank);
+    }
+
+    public static async Task ClownScareAsync()
+    {
+        var (name, soundSet, bank) = ClownScare;
+
+        if (bank is not null && !await Streaming.AudioBankAsync(bank))
+        {
+            return;
+        }
+
+        Native.PlaySoundFrontend(-1, name, soundSet, true);
+
+        await ReleaseSoundAsync(bank);
+    }
+
+    private static async Task ReleaseSoundAsync(string? bank)
+    {
         await API.Delay(8000);
 
         if (bank is not null)

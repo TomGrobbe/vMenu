@@ -36,6 +36,14 @@ internal static class ClownAttack
 
     private const int RushedDriving = 786468;
 
+    private const string HonkLoop = "Honk_Loop";
+
+    private const string CreepLoop = "Character_Loop";
+
+    private const string MusicStart = "HALLOWEEN_START_MUSIC";
+
+    private const string MusicStop = "HALLOWEEN_FAST_STOP_MUSIC";
+
     private static bool _active;
 
     public static async Task Start(BullyRun run)
@@ -57,6 +65,9 @@ internal static class ClownAttack
         var assigned = new Dictionary<int, int>();
         var attacking = new Dictionary<int, int>();
         var orderedAt = new Dictionary<int, int>();
+        var loops = new Dictionary<int, int>();
+        var bank = false;
+        var music = false;
 
         try
         {
@@ -133,6 +144,17 @@ internal static class ClownAttack
 
             run.Started();
 
+            BullyTask.Run(ScreenPranks.ClownScareAsync, "ClownAttack.Scare");
+
+            bank = await Streaming.AudioBankAsync(ScreenPranks.ClownBank);
+
+            if (bank)
+            {
+                vans.ForEach(vehicle => StartLoop(loops, vehicle, HonkLoop));
+            }
+
+            music = Native.TriggerMusicEvent(MusicStart);
+
             var started = Native.GetGameTimer();
             var redriveAt = started + RedriveMs;
             var endsAt = started + DurationMs;
@@ -183,6 +205,8 @@ internal static class ClownAttack
                     {
                         unloaded.Add(vehicle);
 
+                        StopLoop(loops, vehicle);
+
                         Native.SetVehicleEngineOn(vehicle, false, true, false);
                     }
                     else if (redrive && Native.GetPedInVehicleSeat(vehicle, DriverSeat, false) is var driver and not 0)
@@ -197,6 +221,8 @@ internal static class ClownAttack
                 {
                     if (Dead(ped))
                     {
+                        StopLoop(loops, ped);
+
                         continue;
                     }
 
@@ -211,6 +237,11 @@ internal static class ClownAttack
                         }
 
                         continue;
+                    }
+
+                    if (bank && !loops.ContainsKey(ped))
+                    {
+                        StartLoop(loops, ped, CreepLoop);
                     }
 
                     if (alive.Count == 0)
@@ -247,6 +278,21 @@ internal static class ClownAttack
         }
         finally
         {
+            foreach (var entity in loops.Keys.ToList())
+            {
+                StopLoop(loops, entity);
+            }
+
+            if (music)
+            {
+                Native.TriggerMusicEvent(MusicStop);
+            }
+
+            if (bank)
+            {
+                Streaming.ReleaseAudioBank(ScreenPranks.ClownBank);
+            }
+
             blips.ForEach(HostilePeds.RemoveBlip);
 
             foreach (var entity in clowns.Concat(vans))
@@ -256,6 +302,26 @@ internal static class ClownAttack
 
             _active = false;
         }
+    }
+
+    private static void StartLoop(Dictionary<int, int> loops, int entity, string sound)
+    {
+        var id = Native.GetSoundId();
+
+        Native.PlaySoundFromEntity(id, sound, entity, ScreenPranks.ClownSoundSet, true, 0);
+
+        loops[entity] = id;
+    }
+
+    private static void StopLoop(Dictionary<int, int> loops, int entity)
+    {
+        if (!loops.Remove(entity, out var id))
+        {
+            return;
+        }
+
+        Native.StopSound(id);
+        Native.ReleaseSoundId(id);
     }
 
     private static bool Dead(int ped) => !Native.DoesEntityExist(ped) || Native.IsPedDeadOrDying(ped, true);
