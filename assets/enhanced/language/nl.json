@@ -282,7 +282,7 @@
     "bully.effect.clone": "Kwaadaardige kloon",
     "bully.effect.clone.desc": "Een kwaadaardige kopie van henzelf duikt ergens in de buurt op en komt met een wapen op hen af. Alleen zij zien het. Werkt alleen te voet.",
     "bully.effect.teleport": "Willekeurige teleport",
-    "bully.effect.teleport.desc": "Teleporteert hen naar een willekeurige plek, en haalt hen tussen vijf en vijfentwintig seconden later weer terug. Werkt alleen te voet.",
+    "bully.effect.teleport.desc": "Teleporteert hen naar een willekeurige plek, en haalt hen tussen twintig en zestig seconden later weer terug. Werkt alleen te voet.",
     "bully.effect.abduct": "Ontvoering door aliens",
     "bully.effect.abduct.desc": "Er verschijnt een ufo die hen omhoog straalt, en ze worden ergens anders wakker. Werkt alleen te voet.",
     "bully.effect.float": "Zwevend voertuig",

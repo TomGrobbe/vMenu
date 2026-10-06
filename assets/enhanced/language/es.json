@@ -282,7 +282,7 @@
     "bully.effect.clone": "Clon malvado",
     "bully.effect.clone.desc": "Una copia malvada de él aparece en algún sitio cercano y va a por él con un arma. Solo lo ve él. Solo funciona a pie.",
     "bully.effect.teleport": "Teletransporte aleatorio",
-    "bully.effect.teleport.desc": "Lo teletransporta a un sitio al azar, y lo trae de vuelta entre cinco y veinticinco segundos después. Solo funciona a pie.",
+    "bully.effect.teleport.desc": "Lo teletransporta a un sitio al azar, y lo trae de vuelta entre veinte y sesenta segundos después. Solo funciona a pie.",
     "bully.effect.abduct": "Abducción alienígena",
     "bully.effect.abduct.desc": "Aparece un ovni y lo abduce, y se despierta en otro sitio. Solo funciona a pie.",
     "bully.effect.float": "Vehículo flotante",

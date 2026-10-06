@@ -63,7 +63,7 @@ Transform Vehicle gives the old vehicle back after fifteen seconds, at the spot 
 - **Bully Everyone:** the same options without the ones that stay on, aimed at every player. Has an Include Yourself tick box. Killer Clowns and Mugger are sent once to every group of players standing close together, instead of once per player, so a crowd does not fill the server with clowns. Everybody in a group is within 75 metres of everybody else in that group, so they can all see each other. The clowns then split up, so different clowns go after different players in that group, and the mugger runs from one player to the next.
 - **Server Wide Effects:** Gang Attack, Invert Vehicle Controls, Possessed Pedals and Slippery Tyres, for every player, including anybody who joins later.
 - **Active Effects:** every effect that is still on, and who it is on. Untick a row to stop it.
-- **Stop Every Bully Effect:** stops everything on everybody, as far as it can. A few effects that are already halfway through, like a random teleport, still finish on their own.
+- **Stop Every Bully Effect:** stops everything on everybody, as far as it can. A few effects that are already halfway through still finish on their own.
 
 ### Personal Vehicle
 

@@ -1491,7 +1491,7 @@ internal static class EnglishStrings
             [Loc.Bully.Clone] = "Evil Clone",
             [Loc.Bully.CloneDescription] = "An evil copy of them shows up somewhere nearby and comes after them with a weapon. Only they see it. Only works on foot.",
             [Loc.Bully.Teleport] = "Random Teleport",
-            [Loc.Bully.TeleportDescription] = "Teleports them somewhere random, and brings them back between five and twenty five seconds later. Only works on foot.",
+            [Loc.Bully.TeleportDescription] = "Teleports them somewhere random, and brings them back between twenty and sixty seconds later. Only works on foot.",
             [Loc.Bully.Abduct] = "Alien Abduction",
             [Loc.Bully.AbductDescription] = "A UFO shows up and beams them up, and they wake up somewhere else. Only works on foot.",
             [Loc.Bully.Float] = "Floating Vehicle",

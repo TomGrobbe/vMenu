@@ -19,7 +19,7 @@ internal static class PlayerTeleport
 
     private const int AnyFreeSeat = -2;
 
-    public static Task ToCoordsAsync(Vector3 destination, float? heading = null) =>
+    public static Task<bool> ToCoordsAsync(Vector3 destination, float? heading = null) =>
         GoAsync(destination, findGround: false, heading);
 
     public static Task<bool> ToGroundAsync(float x, float y, float? heading = null) =>

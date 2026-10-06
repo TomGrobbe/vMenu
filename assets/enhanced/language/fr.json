@@ -282,7 +282,7 @@
     "bully.effect.clone": "Clone maléfique",
     "bully.effect.clone.desc": "Une copie maléfique de lui apparaît quelque part à proximité et s'en prend à lui avec une arme. Lui seul la voit. Fonctionne seulement à pied.",
     "bully.effect.teleport": "Téléportation aléatoire",
-    "bully.effect.teleport.desc": "Le téléporte à un endroit au hasard, et le ramène entre cinq et vingt-cinq secondes plus tard. Fonctionne seulement à pied.",
+    "bully.effect.teleport.desc": "Le téléporte à un endroit au hasard, et le ramène entre vingt et soixante secondes plus tard. Fonctionne seulement à pied.",
     "bully.effect.abduct": "Enlèvement extraterrestre",
     "bully.effect.abduct.desc": "Un OVNI apparaît et l'aspire, et il se réveille ailleurs. Fonctionne seulement à pied.",
     "bully.effect.float": "Véhicule flottant",

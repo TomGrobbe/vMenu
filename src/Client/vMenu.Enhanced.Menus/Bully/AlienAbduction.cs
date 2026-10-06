@@ -63,6 +63,8 @@ internal static class AlienAbduction
 
     private static bool _active;
 
+    public static bool IsActive => _active;
+
     public static void Initialize() => ResourceShutdown.Stopping += OnShutdown;
 
     // A restart mid abduction would otherwise leave the target frozen and invisible in the air.
@@ -85,7 +87,7 @@ internal static class AlienAbduction
     {
         var ped = Native.PlayerPedId();
 
-        if (_active)
+        if (_active || Relocation.IsAway)
         {
             run.Busy();
 

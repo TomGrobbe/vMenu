@@ -57,6 +57,7 @@ public static class BullyReceiver
         // Shutdown handlers run in this order: the transform puts the real vehicle back before tracked spawns are deleted.
         VehiclePranks.Initialize();
         AlienAbduction.Initialize();
+        Relocation.Initialize();
         Mugger.Initialize();
         BullySpawnCleanup.Initialize();
         ScreenPranks.Initialize();
