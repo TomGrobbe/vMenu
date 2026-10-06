@@ -67,6 +67,8 @@ public static class ActionIds
         public const string SetBlackout = "WeatherOptions.SetBlackout";
 
         public const string SetSnow = "WeatherOptions.SetSnow";
+
+        public const string SetCycle = "WeatherOptions.SetCycle";
     }
 
     public static class OnlinePlayers

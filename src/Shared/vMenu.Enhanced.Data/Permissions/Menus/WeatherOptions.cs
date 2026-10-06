@@ -16,4 +16,7 @@ public static class WeatherOptions
 
     [StaffOnly]
     public const string Snow = "vMenu.Enhanced.Menus.WeatherOptions.Snow";
+
+    [StaffOnly]
+    public const string WeatherCycle = "vMenu.Enhanced.Menus.WeatherOptions.WeatherCycle";
 }

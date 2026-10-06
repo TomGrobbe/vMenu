@@ -54,6 +54,18 @@ public static partial class Loc
 
         public const string SnowDescription = "world.snow.desc";
 
+        public const string Cycle = "world.cycle";
+
+        public const string CycleDescription = "world.cycle.desc";
+
+        public const string CycleDefault = "world.cycle.default";
+
+        public const string CycleSnowy = "world.cycle.snowy";
+
+        public const string CycleCustom = "world.cycle.custom";
+
+        public const string CycleSet = "world.cycle.set";
+
         public const string SnowAutomatic = "world.snow.automatic";
 
         public const string SnowOn = "world.snow.on";
@@ -169,6 +181,13 @@ public static partial class Loc
             BlackoutMode.CityAndVehicles => BlackoutCityAndVehicles,
             BlackoutMode.Dynamic => BlackoutDynamic,
             _ => BlackoutOff,
+        };
+
+        public static string CycleName(WeatherCycleType cycle) => cycle switch
+        {
+            WeatherCycleType.Snowy => CycleSnowy,
+            WeatherCycleType.Custom => CycleCustom,
+            _ => CycleDefault,
         };
 
         public static string SnowName(SnowMode mode) => mode switch

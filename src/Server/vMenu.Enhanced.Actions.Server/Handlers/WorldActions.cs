@@ -40,6 +40,11 @@ public static class WorldActions
             SetSnow);
 
         ActionRegistry.Register(
+            ActionIds.WeatherOptions.SetCycle,
+            WeatherOptionsPermissions.WeatherCycle,
+            SetCycle);
+
+        ActionRegistry.Register(
             ActionIds.TimeOptions.SetFrozen,
             TimeOptionsPermissions.FreezeTime,
             SetFrozen);
@@ -79,6 +84,27 @@ public static class WorldActions
         Log.Debug($"[State] {source} set the snow effects to {SnowModes.NameOf(mode)}.");
 
         Announce(source, "changed the snow effects", ("snow", SnowModes.NameOf(mode)));
+
+        return ActionResponse.Ok();
+    }
+
+    private static ActionResponse SetCycle(Player source, string[] args)
+    {
+        if (!ServerConfig.Value(WeatherOptionsSettings.Enabled))
+        {
+            return ActionResponse.Refused();
+        }
+
+        if (args.Length < 1 || !WeatherCycles.TryParse(args[0], out var cycle))
+        {
+            return ActionResponse.InvalidRequest();
+        }
+
+        ServerWeatherCycle.Set(cycle);
+
+        Log.Debug($"[State] {source} set the weather cycle to {WeatherCycles.NameOf(cycle)}.");
+
+        Announce(source, "changed the weather cycle", ("cycle", WeatherCycles.NameOf(cycle)));
 
         return ActionResponse.Ok();
     }

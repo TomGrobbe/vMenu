@@ -35,6 +35,9 @@ public sealed class WorldMenu : MenuDefinition
     private static readonly MenuGate SnowAllowed =
         MenuGate.Setting(WeatherOptionsSettings.Enabled) & MenuGate.Permission(WeatherOptionsPermissions.Snow);
 
+    private static readonly MenuGate CycleAllowed =
+        MenuGate.Setting(WeatherOptionsSettings.Enabled) & MenuGate.Permission(WeatherOptionsPermissions.WeatherCycle);
+
     private static readonly MenuGate FreezeAllowed =
         MenuGate.Setting(TimeOptionsSettings.Enabled) & MenuGate.Permission(TimeOptionsPermissions.FreezeTime);
 
@@ -159,6 +162,28 @@ public sealed class WorldMenu : MenuDefinition
                     SnowModes.NameOf(mode),
                     Loc.World.SnowSet,
                     MenuText.Key(Loc.World.SnowName(mode)));
+            },
+        });
+
+        menu.Entries.Add(new ListEntry
+        {
+            Text = MenuText.Key(Loc.World.Cycle),
+            Description = MenuText.Key(Loc.World.CycleDescription),
+            Gate = CycleAllowed,
+            Options = ModeOptions(WeatherCycles.Selectable, Loc.World.CycleName),
+            ReadSelectedIndex = static () =>
+                WeatherCycles.TryParse(ClientConfig.Value(WeatherOptionsSettings.WeatherCycle), out var cycle)
+                    ? (int)cycle
+                    : (int)WeatherCycleType.Default,
+            OnSelectedAsync = selected =>
+            {
+                var cycle = WeatherCycles.Selectable[selected.SelectedIndex];
+
+                return SendStateAsync(
+                    ActionIds.WeatherOptions.SetCycle,
+                    WeatherCycles.NameOf(cycle),
+                    Loc.World.CycleSet,
+                    MenuText.Key(Loc.World.CycleName(cycle)));
             },
         });
 
