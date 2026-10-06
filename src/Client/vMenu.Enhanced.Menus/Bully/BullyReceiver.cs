@@ -31,6 +31,7 @@ public static class BullyReceiver
         [BullyEffects.Carjack] = Carjackers.Start,
         [BullyEffects.Mug] = Mugger.Start,
         [BullyEffects.Clowns] = ClownAttack.Start,
+        [BullyEffects.Cougar] = CougarAttack.Start,
         [BullyEffects.Clone] = EvilClone.Start,
         [BullyEffects.Teleport] = Relocation.TeleportAndReturn,
         [BullyEffects.Abduct] = AlienAbduction.Start,

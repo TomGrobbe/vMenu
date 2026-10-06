@@ -38,6 +38,8 @@ public static class BullyEffects
 
     public const string Clowns = "Clowns";
 
+    public const string Cougar = "Cougar";
+
     public const string Clone = "Clone";
 
     public const string Teleport = "Teleport";
@@ -66,6 +68,7 @@ public static class BullyEffects
         new(Carjack, "sent carjackers after", BullyRequirement.None) { SpawnsEntities = true },
         new(Mug, "sent a mugger after", BullyRequirement.None) { SpawnsEntities = true, Grouped = true },
         new(Clowns, "sent killer clowns after", BullyRequirement.None) { SpawnsEntities = true, Grouped = true },
+        new(Cougar, "sent a mountain lion after", BullyRequirement.None) { SpawnsEntities = true },
         new(Clone, "sent an evil clone after", BullyRequirement.OnFoot),
         new(Teleport, "randomly teleported", BullyRequirement.OnFoot),
         new(Abduct, "had aliens abduct", BullyRequirement.OnFoot) { SpawnsEntities = true },

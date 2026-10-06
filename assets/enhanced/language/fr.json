@@ -276,6 +276,8 @@
     "bully.effect.mug.desc": "Un membre de gang armé d'un couteau arrive en courant, le pousse par terre et repart en courant.",
     "bully.effect.clowns": "Clowns tueurs",
     "bully.effect.clowns.desc": "Des fourgons pleins de clowns le prennent en chasse, et jusqu'à dix clowns en sortent pour le tabasser. Ils repartent au bout de cinq minutes.",
+    "bully.effect.cougar": "Puma",
+    "bully.effect.cougar.desc": "Un puma s'approche discrètement depuis un endroit hors de vue et l'attaque. Il repart en courant au bout d'une minute.",
     "bully.effect.clone": "Clone maléfique",
     "bully.effect.clone.desc": "Une copie maléfique de lui apparaît quelque part à proximité et s'en prend à lui avec une arme. Lui seul la voit. Fonctionne seulement à pied.",
     "bully.effect.teleport": "Téléportation aléatoire",

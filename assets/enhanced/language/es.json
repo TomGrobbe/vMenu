@@ -276,6 +276,8 @@
     "bully.effect.mug.desc": "Un pandillero con un cuchillo llega corriendo, lo tira al suelo y se vuelve a ir corriendo.",
     "bully.effect.clowns": "Payasos asesinos",
     "bully.effect.clowns.desc": "Furgonetas llenas de payasos lo persiguen, y hasta diez payasos saltan fuera para darle una paliza. Se van a los cinco minutos.",
+    "bully.effect.cougar": "Puma",
+    "bully.effect.cougar.desc": "Un puma se acerca a escondidas desde algún lugar fuera de la vista y lo ataca. Se va corriendo al cabo de un minuto.",
     "bully.effect.clone": "Clon malvado",
     "bully.effect.clone.desc": "Una copia malvada de él aparece en algún sitio cercano y va a por él con un arma. Solo lo ve él. Solo funciona a pie.",
     "bully.effect.teleport": "Teletransporte aleatorio",

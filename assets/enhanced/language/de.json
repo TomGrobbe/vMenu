@@ -276,6 +276,8 @@
     "bully.effect.mug.desc": "Ein Gangmitglied mit einem Messer rennt heran, schubst sie um und rennt wieder weg.",
     "bully.effect.clowns": "Killerclowns",
     "bully.effect.clowns.desc": "Transporter voller Clowns jagen sie, und bis zu zehn Clowns springen heraus, um sie zu verprügeln. Nach fünf Minuten verschwinden sie wieder.",
+    "bully.effect.cougar": "Berglöwe",
+    "bully.effect.cougar.desc": "Ein Berglöwe schleicht sich von irgendwo außer Sicht heran und greift sie an. Nach einer Minute rennt er wieder weg.",
     "bully.effect.clone": "Böser Klon",
     "bully.effect.clone.desc": "Eine böse Kopie von ihnen taucht irgendwo in der Nähe auf und geht mit einer Waffe auf sie los. Nur sie sehen sie. Funktioniert nur zu Fuß.",
     "bully.effect.teleport": "Zufälliger Teleport",

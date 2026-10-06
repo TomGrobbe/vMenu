@@ -190,6 +190,10 @@ public static partial class Loc
 
         public const string ClownsDescription = "bully.effect.clowns.desc";
 
+        public const string Cougar = "bully.effect.cougar";
+
+        public const string CougarDescription = "bully.effect.cougar.desc";
+
         public const string Clone = "bully.effect.clone";
 
         public const string CloneDescription = "bully.effect.clone.desc";

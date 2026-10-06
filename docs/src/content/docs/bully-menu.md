@@ -49,7 +49,7 @@ Everything here happens to the selected player. After you pick something, the me
 
 - **Mean Tricks:** Explode, Up-n-Atomizer, Tase, Set On Fire, Ragdoll, Jump, Dance, Drunk, Drugged, Screen Colours
 - **Scares:** Jumpscare Sound, Fireworks, Beast Scare, Evil Clone, Random Teleport, Alien Abduction
-- **Attackers:** Carjackers, Mugger, Killer Clowns
+- **Attackers:** Carjackers, Mugger, Killer Clowns, Mountain Lion
 - **Vehicle:** Floating Vehicle, Transform Vehicle
 - **Stays On Until You Switch It Off:** Electric Door Handles, Gang Attack, Invert Vehicle Controls, Possessed Pedals, Slippery Tyres, Glitched Body
 

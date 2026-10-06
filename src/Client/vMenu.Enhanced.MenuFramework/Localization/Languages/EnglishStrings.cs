@@ -1485,6 +1485,8 @@ internal static class EnglishStrings
             [Loc.Bully.MugDescription] = "A gang member with a knife runs up, shoves them over and runs off again.",
             [Loc.Bully.Clowns] = "Killer Clowns",
             [Loc.Bully.ClownsDescription] = "Vans full of clowns chase them down, and up to ten clowns jump out to beat them up. They leave after five minutes.",
+            [Loc.Bully.Cougar] = "Mountain Lion",
+            [Loc.Bully.CougarDescription] = "A mountain lion sneaks up from somewhere out of sight and attacks them. It runs off again after a minute.",
             [Loc.Bully.Clone] = "Evil Clone",
             [Loc.Bully.CloneDescription] = "An evil copy of them shows up somewhere nearby and comes after them with a weapon. Only they see it. Only works on foot.",
             [Loc.Bully.Teleport] = "Random Teleport",
