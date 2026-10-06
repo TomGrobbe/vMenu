@@ -25,27 +25,51 @@ public static class WeatherTemperatures
 
     private const double LatestHour = 23.999;
 
-    private static readonly double[] ExtraSunny = [12, 12, 12, 15, 20, 30, 35, 30, 24, 20, 15, 13, 12];
+    private static readonly double[] Smog = [11.5, 11, 12.5, 13.5, 20, 26.5, 28.5, 27, 22.5, 20, 13.5, 12, 12];
 
-    private static readonly double[] Clear = [12, 12, 12, 15, 20, 27, 30, 30, 24, 20, 15, 13, 12];
+    private static readonly double[] Clouds = [13, 11.5, 11, 14, 16.5, 20, 24.5, 24.5, 18.5, 16, 12.5, 12.5, 11];
 
-    private static readonly double[] Smog = [12, 12, 12, 15, 20, 27, 30, 27, 24, 20, 15, 13, 12];
+    private static readonly double[] Rain = [12, 13, 11.5, 13, 15.5, 19.5, 24, 21.5, 19, 14, 14, 13, 11.5];
 
-    private static readonly double[] Clouds = [12, 12, 12, 13, 15, 20, 25, 23, 20, 15, 13, 13, 12];
+    private static readonly double[] Thunder = [12.5, 12, 12, 14.5, 16, 19, 23, 17, 16, 14.5, 13, 14.5, 12.5];
 
-    private static readonly double[] Rain = [12, 12, 12, 13, 15, 20, 24, 23, 20, 15, 13, 13, 12];
+    private static readonly double[] Neutral = [13.5, 10.5, 9.5, 10, 9.5, 10, 10.5, 10, 10.5, 10, 10, 11, 13];
 
-    private static readonly double[] Thunder = [12, 12, 12, 13, 15, 20, 23, 17, 15, 14, 13, 13, 12];
+    private static readonly double[] Clearing = [12.1, 12.1, 12.1, 12.7, 13.7, 16.2, 21.1, 26, 24.6, 20.4, 16.2, 13.7, 12.7];
 
-    private static readonly double[] Neutral = [12, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 11, 12];
+    private static readonly double[] Foggy = [12.2, 12.2, 12.2, 12.4, 13.2, 14.4, 15.6, 16, 15.2, 14.1, 13.1, 12.4, 12.1];
 
-    private static readonly double[] Blizzard = [-30, -15, -12, -10, -7, -5, -5, -7, -11, -14, -21, -27, -30];
+    private static readonly double[] Halloween = [14, 13.5, 13.5, 15, 17, 28.5, 30.5, 30.5, 16.5, 16.5, 11.5, 11.5, 13.5];
 
-    private static readonly double[] Snow = [-20, -10, -9, -5, -4, -2, -1, -2, -5, -8, -12, -15, -20];
+    private static readonly double[] ExtraSunny = [15, 14.5, 14.5, 17, 21.5, 30, 34.5, 34, 27, 22, 17, 15, 15.5];
 
-    private static readonly double[] SnowLight = [-10, -12, -6, -4, -3, -1, -1, -1, -2, -3, -5, -7, -9];
+    private static readonly double[] Clear = [14.5, 14, 14, 16, 19.5, 27, 31, 31.5, 23, 19, 15, 14, 14.5];
+  
+    private static readonly double[] Blizzard = [-35, -18.8, -15.6, -13.4, -10.2, -7.9, -7.9, -10.2, -14.5, -17.7, -25.3, -31.8, -35];
 
-    private static readonly double[] Halloween = [12, 12, 12, 15, 15, 30, 30, 30, 15, 15, 12, 12, 12];
+    private static readonly double[] Snow = [-23, -12.2, -11.1, -6.8, -5.7, -4.6, -3.5, -4.6, -6.8, -10, -14.3, -17.6, -23];
+
+    private static readonly double[] SnowLight = [-5, -6, -3, -2, -1.5, -1.5, -1.5, -1.5, -1, -1.5, -2.5, -3.5, -4.5];
+
+    private static readonly double[] SnowyClearing = [-13, -13, -13, -12.4, -11.7, -9.7, -5.8, -1.9, -3.1, -6.4, -9.7, -11.7, -12.4];
+
+    private static readonly double[] SnowyFoggy = [-9.9, -9.9, -10, -9.6, -8.8, -7.6, -6.4, -6, -6.6, -7.6, -9, -9.6, -10];
+
+    private static readonly double[] SnowyExtraSunny = [-12, -11.9, -11.9, -10.6, -8.2, -3.4, -0.9, -3.4, -6.3, -8.2, -10.6, -11.5, -12];
+
+    private static readonly double[] SnowyClear = [-14, -14, -14, -12.2, -9.1, -4.8, -3, -2.9, -6.7, -9.1, -12.2, -13.4, -14];
+
+    private static readonly double[] SnowySmog = [-11, -11, -11, -9.8, -7.9, -5.2, -4, -5.2, -6.2, -7.9, -9.8, -10.6, -11];
+
+    private static readonly double[] SnowyClouds = [-9, -9, -8.9, -8.6, -7.8, -5.9, -3.9, -4.8, -5.9, -7.8, -8.6, -8.6, -8.9];
+
+    private static readonly double[] SnowyRain = [-4, -4, -4, -3.7, -2.9, -1.3, 0, -0.3, -1.3, -2.9, -3.7, -3.7, -4];
+
+    private static readonly double[] SnowyThunder = [-8, -8, -8, -7.6, -6.9, -5.1, -3.8, -6.2, -6.9, -7.3, -7.6, -7.6, -8];
+
+    private static readonly double[] SnowyNeutral = [-6, -7.9, -7.9, -8, -8, -8, -8, -8, -8, -7.7, -8, -6.9, -6];
+
+    private static readonly double[] SnowyHalloween = [-16, -16, -16, -13.7, -13.7, -2, -1.9, -2, -13.7, -13.7, -16, -16, -16];
 
     public static IReadOnlyList<double> Hours => SampleHours;
 
@@ -116,7 +140,7 @@ public static class WeatherTemperatures
     }
 
     private static double[] SamplesOf(WeatherType type) =>
-        WeatherCycle.SnowPass && !WeatherTypes.IsSnowy(type) ? SnowLight : NormalRowOf(type);
+        WeatherCycle.SnowPass ? SnowyRowOf(type) : NormalRowOf(type);
 
     private static double[] NormalRowOf(WeatherType type) => type switch
     {
@@ -125,8 +149,8 @@ public static class WeatherTemperatures
         WeatherType.Smog => Smog,
         WeatherType.Clouds => Clouds,
         WeatherType.Overcast => Clouds,
-        WeatherType.Foggy => Clouds,
-        WeatherType.Clearing => Clouds,
+        WeatherType.Foggy => Foggy,
+        WeatherType.Clearing => Clearing,
         WeatherType.Rain => Rain,
         WeatherType.Thunder => Thunder,
         WeatherType.Neutral => Neutral,
@@ -134,9 +158,30 @@ public static class WeatherTemperatures
         WeatherType.Blizzard => Blizzard,
         WeatherType.SnowHalloween => SnowLight,
         WeatherType.SnowLight => SnowLight,
-        WeatherType.Xmas => SnowLight,
+        WeatherType.Xmas => Snow,
         WeatherType.Halloween => Halloween,
         WeatherType.RainHalloween => Halloween,
+        _ => Clear,
+    };
+    private static double[] SnowyRowOf(WeatherType type) => type switch
+    {
+        WeatherType.ExtraSunny => SnowyExtraSunny,
+        WeatherType.Clear => SnowyClear,
+        WeatherType.Smog => SnowySmog,
+        WeatherType.Clouds => SnowyClouds,
+        WeatherType.Overcast => SnowyClouds,
+        WeatherType.Foggy => SnowyFoggy,
+        WeatherType.Clearing => SnowyClearing,
+        WeatherType.Rain => SnowyRain,
+        WeatherType.Thunder => SnowyThunder,
+        WeatherType.Neutral => SnowyNeutral,
+        WeatherType.Snow => Snow,
+        WeatherType.Blizzard => Blizzard,
+        WeatherType.SnowHalloween => SnowLight,
+        WeatherType.SnowLight => SnowLight,
+        WeatherType.Xmas => Snow,
+        WeatherType.Halloween => SnowyHalloween,
+        WeatherType.RainHalloween => SnowyHalloween,
         _ => Clear,
     };
 }
