@@ -9,11 +9,11 @@ public static class WeatherOptions
         Default = true,
     };
 
-    public static readonly IntSetting WeatherCycle = new("vMenu.Enhanced.WeatherOptions.WeatherCycle")
+    public static readonly StringSetting WeatherCycle = new("vMenu.Enhanced.WeatherOptions.WeatherCycle")
     {
         Description =
-            "Swaps the normal GTA Online weather schedule for a Custom or Snowy one.",
-        Default = 0,
+            "Which weather schedule the server follows: 'default' (the normal GTA Online one), 'snowy' (a winter one that keeps snow on the ground while the snow setting is on automatic) or 'custom' (your own schedule from config/weather-cycle.json, which is the only one that can also schedule blackouts).",
+        Default = "default",
     };
 
     public static readonly BoolSetting SyncClouds = new("vMenu.Enhanced.WeatherOptions.SyncClouds")

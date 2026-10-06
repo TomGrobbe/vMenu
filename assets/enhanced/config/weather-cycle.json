@@ -1,0 +1,35 @@
+{
+  // Your own weather schedule. vMenu only reads this file when
+  // vMenu.Enhanced.WeatherOptions.WeatherCycle is set to "custom" and weather sync is turned on.
+  //
+  // The schedule is a list of blocks played from top to bottom. Each block says how many in-game
+  // hours a weather lasts. When the last block ends, the list starts over from the top. One in-game
+  // hour is two real minutes at normal speed, so 24 hours here is one full in-game day.
+  //
+  // "hours" is how long the block lasts, any number above 0 (1.5 works too).
+  // "weather" is one of: CLEAR, EXTRASUNNY, CLOUDS, OVERCAST, RAIN, CLEARING, THUNDER, SMOG, FOGGY,
+  //   XMAS, SNOW, SNOWLIGHT, BLIZZARD, HALLOWEEN, NEUTRAL, RAIN_HALLOWEEN, SNOW_HALLOWEEN.
+  // "blackout" is optional. "city" turns the city lights off, "all" turns the city and vehicle
+  //   lights off. Leave it out to keep the lights on. This only happens while the blackout option
+  //   in the menu is on "Follow Weather Schedule".
+  //
+  // "snowPass" keeps snow on the ground for the whole schedule while the snow option in the menu is
+  // on automatic, and makes the temperatures wintery, just like the built in snowy schedule.
+  //
+  // A block with a typo is skipped and the server console says which one. If nothing usable is
+  // left, the default GTA Online schedule is used instead.
+
+  "snowPass": false,
+  "cycle": [
+    { "hours": 4, "weather": "EXTRASUNNY" },
+    { "hours": 3, "weather": "CLEAR" },
+    { "hours": 2, "weather": "CLOUDS" },
+    { "hours": 2, "weather": "OVERCAST" },
+    { "hours": 2, "weather": "RAIN" },
+    { "hours": 1, "weather": "THUNDER", "blackout": "city" },
+    { "hours": 1, "weather": "THUNDER", "blackout": "all" },
+    { "hours": 2, "weather": "CLEARING" },
+    { "hours": 3, "weather": "FOGGY" },
+    { "hours": 4, "weather": "SMOG" }
+  ]
+}

@@ -21,20 +21,9 @@ public static class ServerClock
     private const string ResetCommand = "vmenu_resettime";
 
     private const int PublishIntervalMs = 1000;
-    public static void WeatherSet()
-    {
-        WeatherCycle.CurrentCycle = (ServerConfig.Value(WeatherOptionsSettings.WeatherCycle)) switch
-        {
-            0 => WeatherCycleType.Normal,
-            1 => WeatherCycleType.Snowy,
-            2 => WeatherCycleType.Custom,
-            _ => WeatherCycleType.Normal
-        };
-    }
+
     public static void Initialize()
     {
-        WeatherSet();
-
         // onStarted rather than here, so nothing is published while both sync features are off.
         var tick = ServerTickRegistry.Register(
             "Clock.Publish",
@@ -46,10 +35,6 @@ public static class ServerClock
         ServerConfig.AddEventListenerFor(
             [WeatherOptionsSettings.Enabled, TimeOptionsSettings.Enabled],
             tick.Reevaluate);
-
-        ServerConfig.AddEventListenerFor(
-            [WeatherOptionsSettings.WeatherCycle],
-            WeatherSet);
 
         SharedAPI.Commands.RegisterCommand(DumpCommand, true, DebugCommands.Gate(Dump));
 
@@ -123,7 +108,7 @@ public static class ServerClock
         Log.Info(
             $"[Clock]   in-game {world.Clock.Hour:00}:{world.Clock.Minute:00} " +
             $"(offset {world.Clock.OffsetSeconds}s), " +
-            $"cycle {world.Weather.CycleGameHours.ToString("0.##", CultureInfo.InvariantCulture)} of {world.Weather.CycleLengthGameHours} hours, " +
+            $"{world.Weather.Cycle} cycle {world.Weather.CycleGameHours.ToString("0.##", CultureInfo.InvariantCulture)} of {world.Weather.CycleLengthGameHours} hours, " +
             $"at {world.Clock.Speed.ToString("0.###", CultureInfo.InvariantCulture)}x speed");
         Log.Info(
             $"[Clock]   weather {world.Weather.Current}, then " +

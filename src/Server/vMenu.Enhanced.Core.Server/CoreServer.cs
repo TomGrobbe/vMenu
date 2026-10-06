@@ -63,6 +63,7 @@ public class CoreServer : IScript
 
         ServerTickRegistry.Initialize();
 
+        ServerWeatherCycle.Initialize();
         ServerClock.Initialize();
         ServerState.Initialize();
         HttpRouter.Initialize();

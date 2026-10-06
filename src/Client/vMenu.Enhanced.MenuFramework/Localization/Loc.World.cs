@@ -40,6 +40,8 @@ public static partial class Loc
 
         public const string BlackoutDescription = "world.blackout.desc";
 
+        public const string BlackoutDynamic = "world.blackout.dynamic";
+
         public const string BlackoutOff = "world.blackout.off";
 
         public const string BlackoutCity = "world.blackout.city";
@@ -165,6 +167,7 @@ public static partial class Loc
         {
             BlackoutMode.City => BlackoutCity,
             BlackoutMode.CityAndVehicles => BlackoutCityAndVehicles,
+            BlackoutMode.Dynamic => BlackoutDynamic,
             _ => BlackoutOff,
         };
 

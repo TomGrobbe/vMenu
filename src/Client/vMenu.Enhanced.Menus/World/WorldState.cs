@@ -8,6 +8,7 @@ using vMenu.Enhanced.Data.Diagnostics;
 using vMenu.Enhanced.Data.Ticks;
 using vMenu.Enhanced.Data.World;
 using vMenu.Enhanced.Logging;
+using vMenu.Enhanced.Serialization;
 using vMenu.Enhanced.Ticks;
 
 using TimeOptionsSettings = vMenu.Enhanced.Data.Configuration.Settings.TimeOptions;
@@ -81,6 +82,13 @@ public static class WorldState
 
     public static WeatherType Weather => WeatherOverride ?? Schedule.Current;
 
+    public static BlackoutMode EffectiveBlackout =>
+        BlackoutModes.Resolve(
+            Blackout,
+            WeatherOverride.HasValue,
+            ClientConfig.Value(WeatherOptionsSettings.Enabled),
+            GameClock.CycleGameHours(UnixSeconds, TimeSpeed));
+
     // Whether either sync feature wants the clock. The same condition the server publishes on.
     public static bool IsNeeded() =>
         ClientConfig.Value(WeatherOptionsSettings.Enabled) || ClientConfig.Value(TimeOptionsSettings.Enabled);
@@ -93,6 +101,7 @@ public static class WorldState
 
         // Read once here, because listeners only fire when a value changes after one is registered.
         ReadClock();
+        ReadCycle();
         ReadOverrides();
 
         ClientConfig.AddEventListenerFor(
@@ -105,6 +114,8 @@ public static class WorldState
             ReadSettings);
 
         ClientConfig.AddEventListenerFor([WorldStateConvars.Utc], ReadClock);
+        ClientConfig.AddEventListenerFor([WeatherOptionsSettings.WeatherCycle], ReadCycle);
+        ClientConfig.AddEventListenerFor([WorldStateConvars.CustomCycle], ReadCycle);
         ClientConfig.AddEventListenerFor(
             [
                 WorldStateConvars.Weather,
@@ -154,7 +165,11 @@ public static class WorldState
                 $"in force: {WeatherTypes.NameOf(Weather)}, time offset: {TimeOffsetSeconds}s, " +
                 $"clock: {(FrozenAtUnix is { } pinned ? $"frozen at unix {pinned:0.000}" : "running")}");
             Log.Info(
-                $"[World] blackout: {BlackoutModes.NameOf(Blackout)}, " +
+                $"[World] cycle: {WeatherCycle.Name}, {WeatherCycle.Entries.Length} entries over " +
+                $"{GameClock.GameHoursPerCycle.ToString("0.##", CultureInfo.InvariantCulture)} hours, " +
+                $"snow pass: {WeatherCycle.SnowPass}");
+            Log.Info(
+                $"[World] blackout: {BlackoutModes.NameOf(Blackout)} (in force: {BlackoutModes.NameOf(EffectiveBlackout)}), " +
                 $"snow: {SnowModes.NameOf(SnowSetting)} (wanted right now: {SnowWanted})");
 
             // Everything above is what vMenu believes. This is what the game actually has.
@@ -174,6 +189,38 @@ public static class WorldState
         TimeTransitionSeconds = ClientConfig.Value(TimeOptionsSettings.TransitionSeconds);
         WeatherTransitionSeconds = ClientConfig.Value(WeatherOptionsSettings.TransitionSeconds);
         SyncClouds = ClientConfig.Value(WeatherOptionsSettings.SyncClouds);
+    }
+
+    private static void ReadCycle()
+    {
+        var wanted = WeatherCycles.TryParse(ClientConfig.Value(WeatherOptionsSettings.WeatherCycle), out var parsed)
+            ? parsed
+            : WeatherCycleType.Default;
+
+        var custom = wanted == WeatherCycleType.Custom ? ReadCustomCycle() : null;
+
+        WeatherCycle.Use(wanted, custom);
+
+        Changed?.Invoke();
+    }
+
+    private static CustomCycle? ReadCustomCycle()
+    {
+        var payload = Native.GetConvar(WorldStateConvars.CustomCycle, string.Empty);
+
+        if (string.IsNullOrWhiteSpace(payload))
+        {
+            return null;
+        }
+
+        if (!ClientJson.TryDeserialize<CustomCycleFile>(payload, out var read))
+        {
+            Log.Error($"[World] The custom weather cycle the server sent could not be read: {payload}");
+
+            return null;
+        }
+
+        return CustomCycle.Build(read, problem => Log.Warning($"[World] The custom weather cycle the server sent: {problem}"));
     }
 
     private static void ReadClock()
@@ -213,7 +260,7 @@ public static class WorldState
             FrozenAtUnix = null;
         }
 
-        Blackout = BlackoutModes.TryParse(blackout, out var mode) ? mode : BlackoutMode.Off;
+        Blackout = BlackoutModes.TryParse(blackout, out var mode) ? mode : BlackoutMode.Dynamic;
         SnowSetting = SnowModes.TryParse(snow, out var snowMode) ? snowMode : SnowMode.Automatic;
 
         Changed?.Invoke();

@@ -1,14 +1,14 @@
-using System.Text.Json;
-
 namespace vMenu.Enhanced.Data.World;
 
 // A struct rather than a record: generated equality routes through EqualityComparer<T>.Default,
 // which the client sandbox refuses to load.
-public readonly struct CycleEntry(double gameHour, WeatherType type)
+public readonly struct CycleEntry(double gameHour, WeatherType type, BlackoutMode blackout = BlackoutMode.Off)
 {
     public double GameHour { get; } = gameHour;
 
     public WeatherType Type { get; } = type;
+
+    public BlackoutMode Blackout { get; } = blackout;
 }
 
 public readonly struct CycleResolution(WeatherType current, WeatherType next, double gameHoursUntilNext)
@@ -28,16 +28,6 @@ public readonly struct ForecastEntry(WeatherType type, double gameHoursUntilStar
 
     public double GameHoursLong { get; } = gameHoursLong;
 }
-
-public enum WeatherCycleType
-{
-    Normal,
-    Snowy,
-    Custom
-}
-
-public record CustomWeather(int LenthInHours, string Weather);
-
 
 // GTA Online's weather schedule: 173 blocks over 384 in-game hours, anchored to the Unix epoch. Taken
 // straight from the game's own weather.xml cycle table. Each entry there carries a TimeMult, which
@@ -314,54 +304,61 @@ public static class WeatherCycle
         new(381, WeatherType.Smog),
     ];
 
-    private static CycleEntry[] EntriesCustom = EntriesNormal;
-
-    public static void SetCustomEntries(string jsonData)
-    {
-        var customWeathers = JsonSerializer.Deserialize<CustomWeather[]>(jsonData);
-
-        if (customWeathers is null or [])
-        {
-            return;
-        }
-
-        EntriesCustom = customWeathers.SelectMany((weather, index) =>
-        {
-            var startHour = index == 0 ? 0 : customWeathers.Take(index).Sum(w => w.LenthInHours);
-            return new[] { new CycleEntry(startHour, Enum.Parse<WeatherType>(weather.Weather)) };
-        }).ToArray() ?? [];
-
-        CustomLengthGameHours = (double)customWeathers.Sum(w => w.LenthInHours);
-    }
-
-    private static double CustomLengthGameHours = 384.0;
     private const double NormalLengthGameHours = 384.0;
 
     private const double SnowyLengthGameHours = 180.0;
 
-    public static WeatherCycleType CurrentCycle { get; set; }
+    private static CustomCycle? _custom;
 
-    public static CycleEntry[] Entries => (CurrentCycle) switch
+    public static WeatherCycleType CurrentCycle { get; private set; }
+
+    // Bumped on every change, so anything comparing snapshots notices a reloaded custom cycle.
+    public static int Revision { get; private set; }
+
+    public static string Name => WeatherCycles.NameOf(CurrentCycle);
+
+    public static CycleEntry[] Entries => CurrentCycle switch
     {
         WeatherCycleType.Snowy => EntriesSnowy,
-        WeatherCycleType.Custom => EntriesCustom,
-        _ => EntriesNormal
+        WeatherCycleType.Custom when _custom is not null => _custom.Entries,
+        _ => EntriesNormal,
     };
-    public static double LengthGameHours => (CurrentCycle) switch
+
+    public static double LengthGameHours => CurrentCycle switch
     {
         WeatherCycleType.Snowy => SnowyLengthGameHours,
-        WeatherCycleType.Custom => CustomLengthGameHours,
-        _ => NormalLengthGameHours
+        WeatherCycleType.Custom when _custom is not null => _custom.LengthGameHours,
+        _ => NormalLengthGameHours,
     };
 
-    //public static double LengthGameHours => SnowyWeather ? SnowyLengthGameHours : NormalLengthGameHours;
-
-    /*public static string Name => (currentCycle) switch
+    public static bool SnowPass => CurrentCycle switch
     {
-        WeatherCycleType.Snowy => "Snowy",
-        WeatherCycleType.Custom => "Custom",
-        _ => "Normal"
-    };*/
+        WeatherCycleType.Snowy => true,
+        WeatherCycleType.Custom => _custom?.SnowPass == true,
+        _ => false,
+    };
+
+    public static bool HasScheduledBlackouts => CurrentCycle == WeatherCycleType.Custom && _custom?.HasBlackouts == true;
+
+    // A custom cycle without a usable schedule runs the default one rather than nothing.
+    public static void Use(WeatherCycleType wanted, CustomCycle? custom)
+    {
+        var cycle = wanted == WeatherCycleType.Custom && custom is null ? WeatherCycleType.Default : wanted;
+        var kept = cycle == WeatherCycleType.Custom ? custom : null;
+
+        if (cycle == CurrentCycle && ReferenceEquals(kept, _custom))
+        {
+            return;
+        }
+
+        CurrentCycle = cycle;
+        _custom = kept;
+        Revision++;
+    }
+
+    public static BlackoutMode BlackoutAt(double cycleGameHours) =>
+        Entries[IndexAt(GameClock.Mod(cycleGameHours, GameClock.GameHoursPerCycle))].Blackout;
+
     public static CycleResolution Resolve(double cycleGameHours)
     {
         var position = GameClock.Mod(cycleGameHours, GameClock.GameHoursPerCycle);
