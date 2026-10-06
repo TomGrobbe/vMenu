@@ -97,7 +97,7 @@ internal static class ClownAttack
                 Native.SetVehicleDoorsLockedForAllPlayers(vehicle, true);
                 Native.SetVehicleEngineOn(vehicle, true, true, false);
 
-                NpcSupport.Own(vehicle);
+                BullySpawnCleanup.TrackForCleanup(vehicle);
 
                 for (var seat = DriverSeat; seat < seats - 1 && remaining > 0; seat++)
                 {
@@ -108,7 +108,7 @@ internal static class ClownAttack
                         remaining--;
 
                         clowns.Add(ped);
-                        blips.Add(NpcSupport.HostileBlip(ped));
+                        blips.Add(HostilePeds.AddHostileBlip(ped));
                     }
                 }
 
@@ -238,7 +238,7 @@ internal static class ClownAttack
                         attacking[ped] = victim;
                         orderedAt[ped] = now;
 
-                        NpcSupport.Attack(ped, victim);
+                        HostilePeds.Attack(ped, victim);
                     }
                 }
 
@@ -247,11 +247,11 @@ internal static class ClownAttack
         }
         finally
         {
-            blips.ForEach(NpcSupport.RemoveBlip);
+            blips.ForEach(HostilePeds.RemoveBlip);
 
             foreach (var entity in clowns.Concat(vans))
             {
-                await NpcSupport.DeleteAsync(entity);
+                await BullySpawnCleanup.DeleteAsync(entity);
             }
 
             _active = false;
@@ -262,7 +262,7 @@ internal static class ClownAttack
 
     private static int SpawnClown(int vehicle, uint model, int seat)
     {
-        var ped = Native.CreatePedInsideVehicle(vehicle, NpcSupport.CivilianPedType, model, seat, true, false);
+        var ped = Native.CreatePedInsideVehicle(vehicle, HostilePeds.CivilianPedType, model, seat, true, false);
 
         if (ped != 0)
         {
@@ -275,8 +275,8 @@ internal static class ClownAttack
             Native.SetBlockingOfNonTemporaryEvents(ped, true);
             Native.SetAmbientVoiceName(ped, ScreenPranks.ClownVoice);
 
-            NpcSupport.MakeHostile(ped);
-            NpcSupport.Own(ped);
+            HostilePeds.MakeHostile(ped);
+            BullySpawnCleanup.TrackForCleanup(ped);
         }
 
         return ped;

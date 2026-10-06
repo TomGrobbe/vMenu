@@ -64,7 +64,7 @@ internal static class EvilClone
             var stopAllCount = BullyState.StopAllCount;
             var position = Native.GetEntityCoords(victim, false);
 
-            if (NpcSupport.SafeSpotAround(position, MinDistance, MaxDistance, hidden: true) is not { } spot)
+            if (SpawnSpots.FindSafeSpotAround(position, MinDistance, MaxDistance, hidden: true) is not { } spot)
             {
                 run.Failed();
 
@@ -99,8 +99,8 @@ internal static class EvilClone
             Native.GiveWeaponToPed(clone, weapon, 1, true, true);
             Native.SetCurrentPedWeapon(clone, weapon, true);
 
-            NpcSupport.MakeHostile(clone);
-            NpcSupport.Attack(clone, victim);
+            HostilePeds.MakeHostile(clone);
+            HostilePeds.Attack(clone, victim);
 
             bank = await Streaming.AudioBankAsync(Bank);
 

@@ -53,11 +53,11 @@ public static class BullyReceiver
         API.OnNetEvent(BullyEvents.Toggle, new Action<string, string, string>(OnToggle), false);
         API.OnNetEvent(BullyEvents.StopAll, new Action(BullyState.StopAll), false);
 
-        // Shutdown handlers run in this order: the transform puts the real vehicle back before owned entities go.
+        // Shutdown handlers run in this order: the transform puts the real vehicle back before tracked spawns are deleted.
         VehiclePranks.Initialize();
         AlienAbduction.Initialize();
         Mugger.Initialize();
-        NpcSupport.Initialize();
+        BullySpawnCleanup.Initialize();
         ScreenPranks.Initialize();
         ToggleEffects.Initialize();
         UfoBeam.Initialize();

@@ -197,7 +197,7 @@ internal static class AlienAbduction
 
             announced = false;
 
-            await NpcSupport.DeleteAsync(ship);
+            await BullySpawnCleanup.DeleteAsync(ship);
 
             ship = 0;
 
@@ -251,7 +251,7 @@ internal static class AlienAbduction
                 UfoBeam.Announce(false, beamGround, ShipHeight);
             }
 
-            await NpcSupport.DeleteAsync(ship);
+            await BullySpawnCleanup.DeleteAsync(ship);
 
             StopSound(ref sound);
 
@@ -306,7 +306,7 @@ internal static class AlienAbduction
         Native.FreezeEntityPosition(ship, true);
         Native.SetEntityLodDist(ship, 9000);
 
-        NpcSupport.Own(ship);
+        BullySpawnCleanup.TrackForCleanup(ship);
 
         return ship;
     }

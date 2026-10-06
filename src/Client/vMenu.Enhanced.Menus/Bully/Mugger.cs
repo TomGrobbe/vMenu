@@ -62,7 +62,7 @@ internal static class Mugger
             var stopAllCount = BullyState.StopAllCount;
             var position = Native.GetEntityCoords(Native.PlayerPedId(), false);
 
-            if (NpcSupport.SafeSpotAround(position, 20f, 30f, hidden: true) is not { } spot)
+            if (SpawnSpots.FindSafeSpotAround(position, 20f, 30f, hidden: true) is not { } spot)
             {
                 Native.SetModelAsNoLongerNeeded(model);
 
@@ -71,7 +71,7 @@ internal static class Mugger
                 return;
             }
 
-            mugger = Native.CreatePed(NpcSupport.CivilianPedType, model, spot.X, spot.Y, spot.Z, Fx.HeadingTowards(spot, position), true, false);
+            mugger = Native.CreatePed(HostilePeds.CivilianPedType, model, spot.X, spot.Y, spot.Z, Fx.HeadingTowards(spot, position), true, false);
 
             Native.SetModelAsNoLongerNeeded(model);
 
@@ -88,9 +88,9 @@ internal static class Mugger
             Native.SetPedDropsWeaponsWhenDead(mugger, false);
             Native.SetPedMoney(mugger, 0);
 
-            NpcSupport.Own(mugger);
+            BullySpawnCleanup.TrackForCleanup(mugger);
 
-            blip = NpcSupport.HostileBlip(mugger);
+            blip = HostilePeds.AddHostileBlip(mugger);
 
             run.Started();
 
@@ -112,7 +112,7 @@ internal static class Mugger
 
             if (!killed && lastVictim != 0)
             {
-                NpcSupport.MakeFlee(mugger, lastVictim);
+                HostilePeds.MakeFleeFrom(mugger, lastVictim);
             }
 
             var fleeUntil = Native.GetGameTimer() + FleeMs;
@@ -126,7 +126,7 @@ internal static class Mugger
 
             if (killed)
             {
-                NpcSupport.RemoveBlip(blip);
+                HostilePeds.RemoveBlip(blip);
 
                 blip = 0;
 
@@ -135,11 +135,11 @@ internal static class Mugger
         }
         finally
         {
-            NpcSupport.RemoveBlip(blip);
+            HostilePeds.RemoveBlip(blip);
 
             if (mugger != 0)
             {
-                await NpcSupport.DeleteAsync(mugger);
+                await BullySpawnCleanup.DeleteAsync(mugger);
             }
 
             _active = false;

@@ -89,7 +89,7 @@ internal static class Carjackers
         {
             if (await NetworkEntity.TakeControlAsync(animal))
             {
-                NpcSupport.Attack(animal, player);
+                HostilePeds.Attack(animal, player);
 
                 run.Started();
             }
@@ -116,7 +116,7 @@ internal static class Carjackers
 
         await API.Delay(ForgetAfterMs);
 
-        NpcSupport.Disown(spawned);
+        BullySpawnCleanup.StopTrackingForCleanup(spawned);
 
         if (Native.DoesEntityExist(spawned))
         {
@@ -133,14 +133,14 @@ internal static class Carjackers
             return 0;
         }
 
-        if (NpcSupport.SafeSpotAround(near, 15f, 30f, hidden: true) is not { } spot)
+        if (SpawnSpots.FindSafeSpotAround(near, 15f, 30f, hidden: true) is not { } spot)
         {
             Native.SetModelAsNoLongerNeeded(model);
 
             return 0;
         }
 
-        var ped = Native.CreatePed(NpcSupport.CivilianPedType, model, spot.X, spot.Y, spot.Z, Fx.HeadingTowards(spot, near), true, false);
+        var ped = Native.CreatePed(HostilePeds.CivilianPedType, model, spot.X, spot.Y, spot.Z, Fx.HeadingTowards(spot, near), true, false);
 
         Native.SetModelAsNoLongerNeeded(model);
 
@@ -151,7 +151,7 @@ internal static class Carjackers
 
         Native.SetEntityAsMissionEntity(ped, true, true);
 
-        NpcSupport.Own(ped);
+        BullySpawnCleanup.TrackForCleanup(ped);
 
         return ped;
     }

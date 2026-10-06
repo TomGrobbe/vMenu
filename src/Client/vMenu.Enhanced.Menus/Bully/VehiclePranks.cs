@@ -208,7 +208,7 @@ internal static class VehiclePranks
 
             Native.SetEntityAsMissionEntity(replacement, true, true);
 
-            NpcSupport.Own(replacement, report: false);
+            BullySpawnCleanup.TrackForCleanup(replacement, reportToServer: false);
 
             run.Started();
 
@@ -267,7 +267,7 @@ internal static class VehiclePranks
             {
                 Conceal(replacement);
 
-                await NpcSupport.DeleteAsync(replacement);
+                await BullySpawnCleanup.DeleteAsync(replacement);
             }
 
             if (_marked && Native.DoesEntityExist(original))
