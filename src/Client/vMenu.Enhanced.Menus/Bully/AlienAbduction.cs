@@ -17,8 +17,6 @@ internal static class AlienAbduction
 
     private const string FloatDictionary = "anim@scripted@freemode@ufo_invasion@ufo_float@male@";
 
-    private const string GetUpDictionary = "get_up@standard";
-
     private const float ShipHeight = 120f;
 
     private const int SoundRange = 250;
@@ -26,8 +24,6 @@ internal static class AlienAbduction
     private const string ReactClip = "react_upperbody";
 
     private const string FloatClip = "float";
-
-    private const string GetUpClip = "front";
 
     private const int HoverMs = 2500;
 
@@ -39,19 +35,11 @@ internal static class AlienAbduction
 
     private const float FloatDone = 0.7f;
 
-    private const int WhiteHoldMs = 2000;
-
     private const float MinimumTravel = 250f;
-
-    private const int WhiteoutMs = 3000;
 
     private const int ReactFlags = 8 | 16 | 131072 | 1048576;
 
     private const int FloatFlags = 8 | 2 | 131072 | 1048576 | 2048 | 512 | 1024;
-
-    private const int GetUpFlags = 8 | 131072 | 1048576;
-
-    private const int AfterFade = 7;
 
     private static readonly (Vector3 Position, float Heading)[] WakeUpSpots =
     [
@@ -75,8 +63,6 @@ internal static class AlienAbduction
 
     private static bool _active;
 
-    private static bool _white;
-
     public static void Initialize() => ResourceShutdown.Stopping += OnShutdown;
 
     // A restart mid abduction would otherwise leave the target frozen and invisible in the air.
@@ -87,7 +73,7 @@ internal static class AlienAbduction
             return;
         }
 
-        _white = false;
+        WakeUp.Uncover();
 
         var ped = Native.PlayerPedId();
 
@@ -146,7 +132,7 @@ internal static class AlienAbduction
 
             announced = true;
 
-            var animated = await Streaming.AnimDictAsync(FloatDictionary) && await Streaming.AnimDictAsync(GetUpDictionary);
+            var animated = await Streaming.AnimDictAsync(FloatDictionary) && await WakeUp.LoadAsync();
 
             await BeamAsync(ship, ground, shipAt, HoverMs, stopAllCount, null);
 
@@ -187,11 +173,7 @@ internal static class AlienAbduction
 
             faded = true;
 
-            await WhiteoutAsync(fadeIn: true);
-
-            _white = true;
-
-            BullyTask.Run(HoldWhiteAsync, "AlienAbduction.HoldWhite");
+            await WakeUp.CoverAsync();
 
             UfoBeam.Announce(false, ground, ShipHeight);
 
@@ -208,34 +190,12 @@ internal static class AlienAbduction
             await PlayerTeleport.ToCoordsAsync(wakeUp.Position, wakeUp.Heading);
 
             faded = false;
-            ped = Native.PlayerPedId();
 
-            Native.FreezeEntityPosition(ped, true);
-
-            if (animated)
-            {
-                Native.TaskPlayAnim(ped, GetUpDictionary, GetUpClip, 8f, -8f, -1, GetUpFlags, 0f, false, 0, false);
-            }
-
-            var holdUntil = Native.GetGameTimer() + WhiteHoldMs;
-
-            while (Native.GetGameTimer() < holdUntil)
-            {
-                if (animated)
-                {
-                    Native.SetEntityAnimCurrentTime(ped, GetUpDictionary, GetUpClip, 0f);
-                }
-
-                await API.Delay(0);
-            }
-
-            _white = false;
-
-            await WhiteoutAsync(fadeIn: false);
+            await WakeUp.RevealAsync(animated);
         }
         finally
         {
-            _white = false;
+            WakeUp.Uncover();
 
             var current = Native.PlayerPedId();
 
@@ -261,7 +221,7 @@ internal static class AlienAbduction
             }
 
             Native.RemoveAnimDict(FloatDictionary);
-            Native.RemoveAnimDict(GetUpDictionary);
+            WakeUp.Release();
 
             _active = false;
         }
@@ -326,37 +286,6 @@ internal static class AlienAbduction
 
             await API.Delay(0);
         }
-    }
-
-    private static async Task WhiteoutAsync(bool fadeIn)
-    {
-        var endsAt = Native.GetGameTimer() + WhiteoutMs;
-
-        while (Native.GetGameTimer() < endsAt)
-        {
-            var progress = 1f - (endsAt - Native.GetGameTimer()) / (float)WhiteoutMs;
-            var alpha = (int)(255 * (fadeIn ? progress : 1f - progress));
-
-            DrawWhite(Math.Clamp(alpha, 0, 255));
-
-            await API.Delay(0);
-        }
-    }
-
-    private static async Task HoldWhiteAsync()
-    {
-        while (_white)
-        {
-            DrawWhite(255);
-
-            await API.Delay(0);
-        }
-    }
-
-    private static void DrawWhite(int alpha)
-    {
-        Native.SetScriptGfxDrawOrder(AfterFade);
-        Native.DrawRect(0.5f, 0.5f, 3f, 3f, 255, 255, 255, alpha, false);
     }
 
     private static void StopSound(ref int sound)
