@@ -110,7 +110,7 @@ public static class ConfigCatalog
             VehicleSpawner.SpawnLimitTier2,
             VehicleSpawner.SpawnLimitTier3,
         ]),
-        new("Weather Options", [WeatherOptions.Enabled, WeatherOptions.SyncClouds, WeatherOptions.TransitionSeconds, WeatherOptions.SnowyWeather]),
+        new("Weather Options", [WeatherOptions.Enabled, WeatherOptions.SyncClouds, WeatherOptions.TransitionSeconds, WeatherOptions.WeatherCycle]),
         new("Time Options",
         [
             TimeOptions.Enabled,

@@ -21,12 +21,19 @@ public static class ServerClock
     private const string ResetCommand = "vmenu_resettime";
 
     private const int PublishIntervalMs = 1000;
-
-    public static void SnowSet() => WeatherCycle.SnowyWeather = ServerConfig.Value(WeatherOptionsSettings.SnowyWeather);
-
+    public static void WeatherSet()
+    {
+        WeatherCycle.CurrentCycle = (ServerConfig.Value(WeatherOptionsSettings.WeatherCycle)) switch
+        {
+            0 => WeatherCycleType.Normal,
+            1 => WeatherCycleType.Snowy,
+            2 => WeatherCycleType.Custom,
+            _ => WeatherCycleType.Normal
+        };
+    }
     public static void Initialize()
     {
-        SnowSet();
+        WeatherSet();
 
         // onStarted rather than here, so nothing is published while both sync features are off.
         var tick = ServerTickRegistry.Register(
@@ -41,8 +48,8 @@ public static class ServerClock
             tick.Reevaluate);
 
         ServerConfig.AddEventListenerFor(
-            [WeatherOptionsSettings.SnowyWeather],
-            SnowSet);
+            [WeatherOptionsSettings.WeatherCycle],
+            WeatherSet);
 
         SharedAPI.Commands.RegisterCommand(DumpCommand, true, DebugCommands.Gate(Dump));
 

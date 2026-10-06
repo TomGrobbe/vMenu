@@ -116,7 +116,7 @@ public static class WeatherTemperatures
     }
 
     private static double[] SamplesOf(WeatherType type) =>
-        WeatherCycle.SnowyWeather && !WeatherTypes.IsSnowy(type) ? SnowLight : NormalRowOf(type);
+        WeatherCycle.CurrentCycle == WeatherCycleType.Snowy && !WeatherTypes.IsSnowy(type) ? SnowLight : NormalRowOf(type);
 
     private static double[] NormalRowOf(WeatherType type) => type switch
     {

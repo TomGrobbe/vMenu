@@ -1,3 +1,5 @@
+using System.Text.Json;
+
 namespace vMenu.Enhanced.Data.World;
 
 // A struct rather than a record: generated equality routes through EqualityComparer<T>.Default,
@@ -26,6 +28,16 @@ public readonly struct ForecastEntry(WeatherType type, double gameHoursUntilStar
 
     public double GameHoursLong { get; } = gameHoursLong;
 }
+
+public enum WeatherCycleType
+{
+    Normal,
+    Snowy,
+    Custom
+}
+
+public record CustomWeather(int LenthInHours, string Weather);
+
 
 // GTA Online's weather schedule: 173 blocks over 384 in-game hours, anchored to the Unix epoch. Taken
 // straight from the game's own weather.xml cycle table. Each entry there carries a TimeMult, which
@@ -302,18 +314,54 @@ public static class WeatherCycle
         new(381, WeatherType.Smog),
     ];
 
+    private static CycleEntry[] EntriesCustom = EntriesNormal;
+
+    public static void SetCustomEntries(string jsonData)
+    {
+        var customWeathers = JsonSerializer.Deserialize<CustomWeather[]>(jsonData);
+
+        if (customWeathers is null or [])
+        {
+            return;
+        }
+
+        EntriesCustom = customWeathers.SelectMany((weather, index) =>
+        {
+            var startHour = index == 0 ? 0 : customWeathers.Take(index).Sum(w => w.LenthInHours);
+            return new[] { new CycleEntry(startHour, Enum.Parse<WeatherType>(weather.Weather)) };
+        }).ToArray() ?? [];
+
+        CustomLengthGameHours = (double)customWeathers.Sum(w => w.LenthInHours);
+    }
+
+    private static double CustomLengthGameHours = 384.0;
     private const double NormalLengthGameHours = 384.0;
 
     private const double SnowyLengthGameHours = 180.0;
 
-    public static bool SnowyWeather { get; set; }
+    public static WeatherCycleType CurrentCycle { get; set; }
 
-    public static CycleEntry[] Entries => SnowyWeather ? EntriesSnowy : EntriesNormal;
+    public static CycleEntry[] Entries => (CurrentCycle) switch
+    {
+        WeatherCycleType.Snowy => EntriesSnowy,
+        WeatherCycleType.Custom => EntriesCustom,
+        _ => EntriesNormal
+    };
+    public static double LengthGameHours => (CurrentCycle) switch
+    {
+        WeatherCycleType.Snowy => SnowyLengthGameHours,
+        WeatherCycleType.Custom => CustomLengthGameHours,
+        _ => NormalLengthGameHours
+    };
 
-    public static double LengthGameHours => SnowyWeather ? SnowyLengthGameHours : NormalLengthGameHours;
+    //public static double LengthGameHours => SnowyWeather ? SnowyLengthGameHours : NormalLengthGameHours;
 
-    public static string Name => SnowyWeather ? "snowy" : "normal";
-
+    /*public static string Name => (currentCycle) switch
+    {
+        WeatherCycleType.Snowy => "Snowy",
+        WeatherCycleType.Custom => "Custom",
+        _ => "Normal"
+    };*/
     public static CycleResolution Resolve(double cycleGameHours)
     {
         var position = GameClock.Mod(cycleGameHours, GameClock.GameHoursPerCycle);
