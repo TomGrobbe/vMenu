@@ -108,6 +108,7 @@ A block of [JSON](https://en.wikipedia.org/wiki/JSON), which is a plain text for
     "cycleGameHours": 123.45,
     "cycleLengthGameHours": 384.0,
     "cycle": "default",
+    "cycleMode": "default",
     "cycleEntries": [
       { "gameHour": 0.0, "type": "EXTRASUNNY" },
       { "gameHour": 2.0, "type": "CLEAR" }
@@ -203,6 +204,7 @@ The in-game calendar. GTA does not really have one, so vMenu keeps its own: a 38
 | `cycleGameHours` | How far through the weather schedule the server is. |
 | `cycleLengthGameHours` | How long the whole schedule is in in-game hours. `384` for the default schedule, `180` for the snowy one, and whatever the blocks add up to for a custom one. |
 | `cycle` | Which weather schedule the server runs: `default` for the GTA Online one, `snowy` for the winter one, or `custom` for the server's own [weather-cycle.json](/configuration/weather-cycle-json/). This follows `vMenu.Enhanced.WeatherOptions.WeatherCycle`, except that a custom schedule that could not be loaded shows up as `default`, because that is what the server falls back to. |
+| `cycleMode` | The weather schedule setting itself: `default`, `snowy` or `custom`. Differs from `cycle` only when a custom schedule could not be loaded. |
 | `cycleEntries` | The whole schedule that `cycle` names, in order. Each entry is the in-game hour a block starts at, counted from the start of the schedule, and the weather it has. A block lasts until the next entry starts, and the last one lasts until the schedule starts over. This lets you work out the forecast yourself, far beyond what `forecast` lists. An entry from a custom schedule can also have a `blackout` (`city` or `all`), which is the blackout planned for that block. Entries without one have no `blackout` field at all. |
 | `snowPass` | Whether the schedule keeps snow on the ground the whole time while `snow` is `auto`. Always `true` for the snowy schedule, and whatever the server owner picked for a custom one. |
 | `blackout` | Whether street lighting is cut right now: `off`, `city`, or `all`. |

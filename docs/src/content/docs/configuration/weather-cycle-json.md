@@ -15,6 +15,8 @@ setr vMenu.Enhanced.WeatherOptions.WeatherCycle "default"
 | `snowy` | A winter schedule with snow on the ground and cold temperatures. |
 | `custom` | Your own schedule from `config/weather-cycle.json`. Only this one can schedule blackouts. |
 
+Staff with `vMenu.Enhanced.Menus.WeatherOptions.WeatherCycle` can also switch it from the **Weather Cycle** row in the world menu, and SnowstormBot can switch it from the dashboard. A switch from there lasts until the server restarts, after which your config value applies again.
+
 Changes apply live. The file is only read while `vMenu.Enhanced.WeatherOptions.Enabled` is on, and it is read again whenever either setting changes or the resource restarts.
 
 ## Format
