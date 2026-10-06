@@ -85,6 +85,8 @@ internal static class ScreenPranks
         ("FE_Spawn", "Freemode_Mirror_Slash_sounds", "DLC_MPSUM2/Mirror_Slash"),
     ];
 
+    public static int SoundCount => Sounds.Count + 1;
+
     private static readonly Window Intoxicated = new();
 
     private static readonly Window Coloured = new();
@@ -180,6 +182,13 @@ internal static class ScreenPranks
     public static async Task Sound(BullyRun run)
     {
         var index = run.Option;
+
+        if (index == Sounds.Count)
+        {
+            await MountainLion.Growl(run);
+
+            return;
+        }
 
         if ((uint)index >= (uint)Sounds.Count)
         {

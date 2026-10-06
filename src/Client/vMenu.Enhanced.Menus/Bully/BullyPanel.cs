@@ -86,7 +86,7 @@ internal sealed class BullyPanel
     private MenuEntry EffectRow(string effect) => effect switch
     {
         BullyEffects.Timecycle => OptionRow(effect, ScreenPranks.Timecycles.Count, Loc.Bully.TimecycleOption),
-        BullyEffects.Sound => OptionRow(effect, ScreenPranks.Sounds.Count, Loc.Bully.SoundOption),
+        BullyEffects.Sound => OptionRow(effect, ScreenPranks.SoundCount, Loc.Bully.SoundOption),
         _ => new ButtonEntry
         {
             Text = MenuText.Key(Loc.Bully.EffectName(effect)),

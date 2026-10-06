@@ -124,6 +124,8 @@ public static partial class Loc
 
         public const string Sound3 = "bully.sound.3";
 
+        public const string Sound4 = "bully.sound.4";
+
         public const string Explode = "bully.effect.explode";
 
         public const string ExplodeDescription = "bully.effect.explode.desc";

@@ -12,6 +12,8 @@ public static class BullyModels
 
     public const string FallbackShip = "p_spinning_anus_s";
 
+    public const string MountainLion = "a_c_mtlion";
+
     public static IReadOnlyList<string> Muggers { get; } =
     [
         "g_m_y_mexgoon_01",
@@ -22,5 +24,5 @@ public static class BullyModels
         "g_m_y_salvagoon_01",
     ];
 
-    public static IReadOnlyList<string> Spawned { get; } = Muggers.Concat([ClownVan, Clown, Carjacker, Ship, FallbackShip]).ToList();
+    public static IReadOnlyList<string> Spawned { get; } = Muggers.Concat([ClownVan, Clown, Carjacker, Ship, FallbackShip, MountainLion]).ToList();
 }

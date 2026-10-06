@@ -60,7 +60,7 @@ public static class BullyEffects
         new(Drunk, "intoxicated", BullyRequirement.None),
         new(Drugged, "drugged", BullyRequirement.None),
         new(Timecycle, "changed the screen colours of", BullyRequirement.None),
-        new(Sound, "played a jumpscare sound for", BullyRequirement.None),
+        new(Sound, "played a jumpscare sound for", BullyRequirement.None) { SpawnsEntities = true },
         new(Fireworks, "set off fireworks around", BullyRequirement.None) { TurnedOffBy = BullySettings.DisableParticleEffects },
         new(Beast, "sent the beast after", BullyRequirement.None) { TurnedOffBy = BullySettings.DisableParticleEffects },
         new(Carjack, "sent carjackers after", BullyRequirement.None) { SpawnsEntities = true },
