@@ -145,7 +145,7 @@ A block of [JSON](https://en.wikipedia.org/wiki/JSON), which is a plain text for
     "sampleHours": [0, 5, 6, 7, 10, 12, 16, 17, 18, 19, 20, 21, 22],
     "sampleHolds": [4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     "rows": [
-      { "type": "CLEAR", "celsius": [12, 12, 12, 15, 20, 27, 30, 30, 24, 20, 15, 13, 12] }
+      { "type": "CLEAR", "celsius": [14.5, 14, 14, 16, 19.5, 27, 31, 31.5, 23, 19, 15, 14, 14.5] }
     ]
   }
 }
@@ -246,14 +246,14 @@ The table every temperature on this page is worked out from, for the weather sch
 
 ### Temperatures
 
-GTA works out a temperature for its world all the time, it just never shows it to anyone. vMenu does the same sums the game does. Every weather type has its own temperature for each part of the day, so a sunny afternoon is hot and a rainy night is chilly. While the weather is changing from one type to another, the temperature slides between the two.
+GTA works out a temperature for its world all the time, it just never shows it to anyone. vMenu works out its own version of it. Every weather type has its own temperature for each part of the day, so a sunny afternoon is hot and a rainy night is chilly. While the weather is changing from one type to another, the temperature slides between the two.
 
 A few things to know about these numbers:
 
 1. They are the temperature **outside**, at sea level. Players high up in the hills or flying feel it colder, because the game drops the temperature by up to 15°C between 200 and 1000 metres up. The forecast on a player's screen does take their height into account. This endpoint cannot, because it does not know where anybody is standing.
 2. They are the weather temperature, not the temperature inside a building.
 3. The game's own data for a couple of the snowy weather types was clearly typed in wrong (it had a snowy noon at 20°C, for example). vMenu smooths those out to sensible values.
-4. While the snowy weather schedule is on, or a custom one with `snowPass` turned on, every weather type that is not a snowy one uses the light snow temperatures. A foggy or cloudy day in the middle of winter is still freezing.
+4. While the snowy weather schedule is on, or a custom one with `snowPass` turned on, every weather type switches to its own winter temperatures. A foggy or cloudy day in the middle of winter is still freezing.
 
 ## When something goes wrong
 
