@@ -2,6 +2,7 @@ using System.Text;
 
 using vMenu.Enhanced.Actions.Server.Handlers;
 using vMenu.Enhanced.Configuration.Server;
+using vMenu.Enhanced.Data.World;
 using vMenu.Enhanced.Logging;
 using vMenu.Enhanced.Serialization.Server;
 
@@ -90,7 +91,8 @@ public static class IntegrationSnapshots
     }
 
     private static string Signature(WorldSnapshot world) =>
-        $"{world.Weather.Override}|{world.Weather.Scheduled}|{world.Weather.Cycle}|{world.Weather.Blackout}|" +
+        $"{world.Weather.Override}|{world.Weather.Scheduled}|{world.Weather.Cycle}|{WeatherCycle.Revision}|" +
+        $"{world.Weather.Blackout}|{world.Weather.BlackoutMode}|" +
         $"{world.Weather.Snow}|{world.Weather.SnowFalling}|{world.Clock.Frozen}|" +
         $"{world.Clock.OffsetSeconds}|{world.Clock.Speed}|{world.Sync.Weather}|{world.Sync.Time}";
 }

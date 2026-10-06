@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 using vMenu.Enhanced.Data.World;
 
 using TimeOptionsSettings = vMenu.Enhanced.Data.Configuration.Settings.TimeOptions;
@@ -83,7 +85,11 @@ public sealed class WorldWeatherState
 
     public required IReadOnlyList<WorldCycleEntry> CycleEntries { get; init; }
 
+    public required bool SnowPass { get; init; }
+
     public required string Blackout { get; init; }
+
+    public required string BlackoutMode { get; init; }
 
     public required string Snow { get; init; }
 
@@ -99,6 +105,9 @@ public sealed class WorldCycleEntry
     public required double GameHour { get; init; }
 
     public required string Type { get; init; }
+
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? Blackout { get; init; }
 }
 
 public sealed class WorldTemperatureTable
@@ -225,9 +234,20 @@ public sealed class WorldSnapshot
                 CycleLengthGameHours = GameClock.GameHoursPerCycle,
                 Cycle = WeatherCycle.Name,
                 CycleEntries = WeatherCycle.Entries
-                    .Select(entry => new WorldCycleEntry { GameHour = entry.GameHour, Type = WeatherTypes.NameOf(entry.Type) })
+                    .Select(entry => new WorldCycleEntry
+                    {
+                        GameHour = entry.GameHour,
+                        Type = WeatherTypes.NameOf(entry.Type),
+                        Blackout = entry.Blackout == BlackoutMode.Off ? null : BlackoutModes.NameOf(entry.Blackout),
+                    })
                     .ToList(),
-                Blackout = BlackoutModes.NameOf(ServerState.Blackout),
+                SnowPass = WeatherCycle.SnowPass,
+                Blackout = BlackoutModes.NameOf(BlackoutModes.Resolve(
+                    ServerState.Blackout,
+                    ServerState.Weather.HasValue,
+                    ServerConfig.Value(WeatherOptionsSettings.Enabled),
+                    cycleGameHours)),
+                BlackoutMode = BlackoutModes.NameOf(ServerState.Blackout),
                 Snow = SnowModes.NameOf(ServerState.Snow),
                 SnowFalling = SnowModes.Resolve(ServerState.Snow, effective),
                 TemperatureCelsius = Tenths(celsius),
