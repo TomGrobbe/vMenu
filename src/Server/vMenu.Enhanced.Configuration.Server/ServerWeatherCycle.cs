@@ -24,9 +24,13 @@ public static class ServerWeatherCycle
             Load);
     }
 
-    // Through the console like set-convar, so the change listener reloads the cycle. Not saved to the cfg.
-    public static void Set(WeatherCycleType cycle) =>
-        Native.ExecuteCommand($"setr {WeatherOptionsSettings.WeatherCycle.Name} \"{WeatherCycles.NameOf(cycle)}\"");
+    // Not saved to the cfg.
+    public static void Set(WeatherCycleType cycle)
+    {
+        Native.SetConvarReplicated(WeatherOptionsSettings.WeatherCycle.Name, WeatherCycles.NameOf(cycle));
+
+        Load();
+    }
 
     public static WeatherCycleType Configured() =>
         WeatherCycles.TryParse(ServerConfig.Value(WeatherOptionsSettings.WeatherCycle), out var cycle)
