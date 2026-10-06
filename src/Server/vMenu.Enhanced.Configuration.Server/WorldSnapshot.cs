@@ -83,6 +83,8 @@ public sealed class WorldWeatherState
 
     public required string Cycle { get; init; }
 
+    public required string CycleMode { get; init; }
+
     public required IReadOnlyList<WorldCycleEntry> CycleEntries { get; init; }
 
     public required bool SnowPass { get; init; }
@@ -233,6 +235,7 @@ public sealed class WorldSnapshot
                 CycleGameHours = cycleGameHours,
                 CycleLengthGameHours = GameClock.GameHoursPerCycle,
                 Cycle = WeatherCycle.Name,
+                CycleMode = WeatherCycles.NameOf(ServerWeatherCycle.Configured()),
                 CycleEntries = WeatherCycle.Entries
                     .Select(entry => new WorldCycleEntry
                     {

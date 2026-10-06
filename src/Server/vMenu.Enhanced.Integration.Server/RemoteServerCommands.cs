@@ -21,7 +21,7 @@ internal static class RemoteServerCommands
     public static bool IsServerAction(string action) => action switch
     {
         "announce" or "get-world" or "set-weather" or "set-time"
-            or "set-blackout" or "set-snow" or "set-freeze" or "get-config" or "set-convar"
+            or "set-blackout" or "set-snow" or "set-weather-cycle" or "set-freeze" or "get-config" or "set-convar"
             or "waypoint-everyone" or "teleport-everyone" => true,
         _ => false,
     };
@@ -43,6 +43,7 @@ internal static class RemoteServerCommands
             "set-time" => SetTime(parameters),
             "set-blackout" => SetBlackout(parameters),
             "set-snow" => SetSnow(parameters),
+            "set-weather-cycle" => SetWeatherCycle(parameters),
             "set-freeze" => SetFreeze(parameters),
             "get-config" => GetConfig(),
             "set-convar" => SetConvar(parameters),
@@ -183,6 +184,24 @@ internal static class RemoteServerCommands
         }
 
         ServerState.SetSnow(parsed);
+
+        return new IntegrationCommands.CommandReply(200, IntegrationJson.Ok);
+    }
+
+    private static IntegrationCommands.CommandReply SetWeatherCycle(JsonElement parameters)
+    {
+        if (!ServerConfig.Value(WeatherOptionsSettings.Enabled))
+        {
+            return new IntegrationCommands.CommandReply(403, IntegrationJson.Fail("refused"));
+        }
+
+        var cycle = IntegrationJson.ReadString(parameters, "cycle");
+        if (!WeatherCycles.TryParse(cycle, out var parsed))
+        {
+            return new IntegrationCommands.CommandReply(400, IntegrationJson.Fail("bad-request"));
+        }
+
+        ServerWeatherCycle.Set(parsed);
 
         return new IntegrationCommands.CommandReply(200, IntegrationJson.Ok);
     }
