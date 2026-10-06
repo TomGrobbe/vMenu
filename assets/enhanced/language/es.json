@@ -711,7 +711,7 @@
     "displaysettings.deathnotifications": "Notificaciones de muerte",
     "displaysettings.deathnotifications.desc": "Muestra un mensaje cuando un jugador de este servidor muere, y quién lo mató.",
     "displaysettings.forecast": "Previsión del tiempo",
-    "displaysettings.forecast.desc": "Mantén una previsión del tiempo en pantalla, con lo que viene y cuánto dura cada tipo.",
+    "displaysettings.forecast.desc": "Mantén una previsión del tiempo en pantalla, con lo que viene y cuánto dura cada tipo. Con la tecla del pronóstico, que es = salvo que la cambies en las asignaciones de teclas de FiveM, pasas entre apagado, compacto y completo.",
     "displaysettings.forecast.forced": "En este servidor el tiempo se fija a mano, así que no hay nada programado después.",
     "displaysettings.forecast.moon": "Luna",
     "displaysettings.forecast.next": "A continuación",

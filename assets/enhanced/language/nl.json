@@ -711,7 +711,7 @@
     "displaysettings.deathnotifications": "Overlijdensmeldingen",
     "displaysettings.deathnotifications.desc": "Toont een melding zodra een speler op deze server sterft, en wie diegene heeft gedood.",
     "displaysettings.forecast": "Weersverwachting",
-    "displaysettings.forecast.desc": "Houd een weersverwachting op je scherm, met wat eraan komt en hoe lang elk weertype duurt.",
+    "displaysettings.forecast.desc": "Houd een weersverwachting op je scherm, met wat eraan komt en hoe lang elk weertype duurt. Met de verwachting toets, = tenzij je die bij de FiveM toetsen hebt veranderd, wissel je tussen uit, compact en volledig.",
     "displaysettings.forecast.forced": "Het weer wordt op deze server met de hand ingesteld, dus er staat niets ingepland na dit weertype.",
     "displaysettings.forecast.moon": "Maan",
     "displaysettings.forecast.next": "Straks",

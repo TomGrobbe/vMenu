@@ -711,7 +711,7 @@
     "displaysettings.deathnotifications": "Notifications de mort",
     "displaysettings.deathnotifications.desc": "Affiche un message dès qu'un joueur de ce serveur meurt, et qui l'a tué.",
     "displaysettings.forecast": "Prévisions météo",
-    "displaysettings.forecast.desc": "Garde des prévisions météo à l'écran, avec ce qui arrive et combien de temps chaque type dure.",
+    "displaysettings.forecast.desc": "Garde des prévisions météo à l'écran, avec ce qui arrive et combien de temps chaque type dure. La touche des prévisions, = sauf si vous l'avez changée dans les raccourcis FiveM, passe de désactivé à compact puis à complet.",
     "displaysettings.forecast.forced": "Sur ce serveur la météo est réglée à la main, donc rien n'est prévu ensuite.",
     "displaysettings.forecast.moon": "Lune",
     "displaysettings.forecast.next": "À venir",

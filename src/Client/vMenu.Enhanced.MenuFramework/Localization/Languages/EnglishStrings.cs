@@ -2000,7 +2000,7 @@ internal static class EnglishStrings
             [Loc.World.Disabled] = "The server owner has turned that off.",
             [Loc.World.Failed] = "That did not work. Try again in a moment.",
             [Loc.DisplaySettings.Forecast] = "Weather Forecast",
-            [Loc.DisplaySettings.ForecastDescription] = "Keep a weather forecast on your screen, showing what is coming and how long each spell lasts.",
+            [Loc.DisplaySettings.ForecastDescription] = "Keep a weather forecast on your screen, showing what is coming and how long each spell lasts. The forecast key, which is = unless you changed it in the FiveM key bindings, switches it between off, compact and full.",
             [Loc.DisplaySettings.ForecastTitle] = "Forecast",
             [Loc.DisplaySettings.ForecastNow] = "Now",
             [Loc.DisplaySettings.ForecastNext] = "Coming up",

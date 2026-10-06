@@ -1,4 +1,5 @@
 using CitizenFX.FiveM.Client;
+using CitizenFX.FiveM.Shared;
 
 using vMenu.Enhanced.Configuration;
 using vMenu.Enhanced.Data.Ticks;
@@ -66,6 +67,8 @@ public static class WeatherForecast
             () => Wanted,
             autoStart: false);
 
+        WeatherForecastKeyBinding.Register(() => SharedAPI.RunOnMainThread(Cycle));
+
         ClientPermissions.PermissionsChanged += Reevaluate;
 
         ClientConfig.AddEventListenerFor([WeatherOptionsSettings.Enabled], Reevaluate);
@@ -97,6 +100,30 @@ public static class WeatherForecast
         UserDefaults.DisplayTemperatureUnit.Value = unit;
 
         Reevaluate();
+    }
+
+    public static void Cycle()
+    {
+        if (!Allowed.Evaluate() || !Hud.CanDraw)
+        {
+            return;
+        }
+
+        if (!UserDefaults.DisplayWeatherForecast.Value)
+        {
+            UserDefaults.DisplayWeatherForecastStyle.Value = Compact;
+            SetEnabled(true);
+        }
+        else if (Style == Compact)
+        {
+            SetStyle(Full);
+        }
+        else
+        {
+            SetEnabled(false);
+        }
+
+        MenuRegistry.RefreshAll();
     }
 
     public static void SetClockEnabled(bool enabled)
