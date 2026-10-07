@@ -66,6 +66,27 @@ public static class NativeFixer
         return result;
     }
 
+    public static bool IsClosestDoorOfTypeLocked(uint model, float x, float y, float z)
+    {
+        nativeApi.ResetContext();
+        nativeApi.PushArg(model);
+        nativeApi.PushArg(x);
+        nativeApi.PushArg(y);
+        nativeApi.PushArg(z);
+        nativeApi.PushArg(0);
+        nativeApi.PushArg(0f);
+        nativeApi.Invoke(7596775163932545834uL, "GetStateOfClosestDoorOfType");
+
+        try
+        {
+            return nativeApi.GetResInt(0) != 0;
+        }
+        catch (Exception)
+        {
+            return false;
+        }
+    }
+
     public static void SetFacialIdleAnimOverride(int ped, string clipName)
     {
         using var clip = new StringArg(clipName);
