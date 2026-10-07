@@ -9,7 +9,14 @@ public class PluginCallback
 
     public string? MenuId { get; set; }
 
+    /// <summary>The row acted on. For a key press, the usable row under the cursor.</summary>
     public string? ItemId { get; set; }
+
+    // Key press.
+    public string? KeyId { get; set; }
+
+    /// <summary>The row under the cursor when it is locked or disabled. <see cref="ItemId"/> is then null.</summary>
+    public string? DisabledItemId { get; set; }
 
     // Checkbox.
     public bool? Checked { get; set; }

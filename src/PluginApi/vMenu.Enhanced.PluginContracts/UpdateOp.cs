@@ -14,6 +14,9 @@ public class UpdateOp
     /// <summary>Target menu id for menu operations, addItems and clearMenu.</summary>
     public string? MenuId { get; set; }
 
+    /// <summary>Target key id for key operations.</summary>
+    public string? KeyId { get; set; }
+
     public TextRef? TextValue { get; set; }
 
     public string? LeftIcon { get; set; }

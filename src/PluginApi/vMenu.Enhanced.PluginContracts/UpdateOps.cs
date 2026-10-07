@@ -36,6 +36,11 @@ public static class UpdateOps
     public const string OpenMenu = "openMenu";
     public const string CloseMenu = "closeMenu";
 
+    // Keys.
+    public const string SetKeyText = "setKeyText";
+    public const string SetKeyEnabled = "setKeyEnabled";
+    public const string SetKeyGate = "setKeyGate";
+
     // Translations.
     public const string MergeTranslations = "mergeTranslations";
 }

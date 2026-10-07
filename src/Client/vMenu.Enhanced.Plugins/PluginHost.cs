@@ -416,7 +416,7 @@ public static class PluginHost
         }
     }
 
-    private static string DisplayNameOf(PluginState state) =>
+    internal static string DisplayNameOf(PluginState state) =>
         state.DisplayName is { } name && state.Resolve(name) is { Length: > 0 } resolved
             ? resolved
             : state.Resource;

@@ -58,6 +58,8 @@ internal sealed class PluginState
 
     internal Dictionary<string, MenuNode> MenusById { get; } = new(StringComparer.Ordinal);
 
+    internal Dictionary<string, KeyNode> KeysById { get; } = new(StringComparer.Ordinal);
+
     // How deep each menu sits, the root being 1. Read when an item is added to it later.
     internal Dictionary<string, int> MenuDepths { get; } = new(StringComparer.Ordinal);
 
@@ -95,6 +97,7 @@ internal sealed class PluginState
         ItemOwners.Clear();
         PlayerActionIds.Clear();
         MenusById.Clear();
+        KeysById.Clear();
         MenuDepths.Clear();
         Builders.Clear();
         NodesByItem.Clear();

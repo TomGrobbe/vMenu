@@ -312,6 +312,33 @@ internal static class PluginUpdateOps
 
                     break;
 
+                case UpdateOps.SetKeyText:
+                    if (TryKey(state, op, out var key))
+                    {
+                        key.Text = op.TextValue;
+                        dirty = true;
+                    }
+
+                    break;
+
+                case UpdateOps.SetKeyEnabled:
+                    if (TryKey(state, op, out key))
+                    {
+                        key.Enabled = op.Flag ?? true;
+                        dirty = true;
+                    }
+
+                    break;
+
+                case UpdateOps.SetKeyGate:
+                    if (TryKey(state, op, out key))
+                    {
+                        key.Gate = op.Gate;
+                        dirty = true;
+                    }
+
+                    break;
+
                 case UpdateOps.MergeTranslations:
                     if (op.Language is { Length: > 0 } language && op.Entries is { Count: > 0 } entriesToMerge)
                     {
@@ -480,6 +507,20 @@ internal static class PluginUpdateOps
         Log.Warning($"[Plugins] '{state.Resource}' targeted unknown item '{op.ItemId}' with op '{op.Op}'.");
 
         node = null!;
+        return false;
+    }
+
+    private static bool TryKey(PluginState state, UpdateOp op, out KeyNode key)
+    {
+        if (op.KeyId is { Length: > 0 } id && state.KeysById.TryGetValue(id, out var found))
+        {
+            key = found;
+            return true;
+        }
+
+        Log.Warning($"[Plugins] '{state.Resource}' targeted unknown key '{op.KeyId}' with op '{op.Op}'.");
+
+        key = null!;
         return false;
     }
 

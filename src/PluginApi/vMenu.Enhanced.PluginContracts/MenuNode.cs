@@ -16,4 +16,7 @@ public class MenuNode
     public List<string>? Events { get; set; }
 
     public List<ItemNode> Items { get; set; } = [];
+
+    /// <summary>Keys that work while this menu is open.</summary>
+    public List<KeyNode>? Keys { get; set; }
 }

@@ -53,6 +53,11 @@ internal static class PluginEntryFactory
             });
         }
 
+        foreach (var key in menuNode.Keys ?? [])
+        {
+            builder.Keys.Add(CreateKey(state, key, menuNode.Id));
+        }
+
         foreach (var node in menuNode.Items)
         {
             if (CreateEntry(state, node, menuNode.Id) is { } entry)
@@ -60,6 +65,43 @@ internal static class PluginEntryFactory
                 builder.Entries.Add(entry);
             }
         }
+    }
+
+    private static MenuKey CreateKey(PluginState state, KeyNode key, string menuId) => new()
+    {
+        // Key mappings are global, so the plugin id keeps plugins apart. Neither id can contain a colon.
+        Name = $"plugin:{state.Id}:{key.Id}",
+        // Registered with the game once, so it never follows a language change.
+        Description = MenuText.From(() =>
+            $"{PluginHost.DisplayNameOf(state)}: {state.Resolve(key.Description ?? key.Text)}"),
+        DefaultKey = key.DefaultKey,
+        DefaultButton = key.DefaultButton is { Length: > 0 } button ? button : null,
+        ShadowedControl = key.ShadowedControl is { } control ? (Control)control : null,
+        Text = LiveText(state, () => key.Text),
+        Gate = MenuGate.When(() => key.Enabled != false && state.EvaluateGate(key.Gate)),
+        Handler = (menu, _) => PluginHost.Emit(state, KeyPressed(state, menu, menuId, key)),
+    };
+
+    // A locked row is reported apart from a usable one, so a key cannot quietly bypass the row's gate.
+    private static PluginCallback KeyPressed(PluginState state, Menu menu, string menuId, KeyNode key)
+    {
+        var callback = new PluginCallback { Type = CallbackTypes.KeyPressed, MenuId = menuId, KeyId = key.Id };
+
+        if (menu.GetCurrentMenuItem() is not { } item || !state.NodesByItem.TryGetValue(item, out var node))
+        {
+            return callback;
+        }
+
+        if (item.Enabled)
+        {
+            callback.ItemId = node.Id;
+        }
+        else
+        {
+            callback.DisabledItemId = node.Id;
+        }
+
+        return callback;
     }
 
     internal static MenuEntry? CreateEntry(PluginState state, ItemNode node, string menuId)

@@ -11,6 +11,8 @@ public sealed class PluginMenu
 
     private readonly List<PluginItem> _items = [];
 
+    private readonly List<PluginKey> _keys = [];
+
     private Text _title;
 
     private Text _subtitle;
@@ -32,6 +34,8 @@ public sealed class PluginMenu
     public string Id => Node.Id;
 
     public IReadOnlyList<PluginItem> Items => _items;
+
+    public IReadOnlyList<PluginKey> Keys => _keys;
 
     public Text Title
     {
@@ -177,6 +181,47 @@ public sealed class PluginMenu
         return Attach(new PluginSubmenu(node, menu));
     }
 
+    /// <summary>Adds a key that works while this menu is open, with an instructional button at the bottom
+    /// of the screen. Keep the id stable: it names the binding in the player's key settings, so changing
+    /// it loses a key they picked themselves. Declare keys before connecting, a key added later re-sends
+    /// the whole registration.</summary>
+    /// <param name="id">Letters, digits and underscores, unique within your plugin.</param>
+    /// <param name="text">The instructional button's label.</param>
+    /// <param name="defaultKey">A keyboard key name as the game knows it, for example "X" or "F5".</param>
+    /// <param name="defaultButton">An optional controller button, for example "RUP_INDEX".</param>
+    /// <param name="description">What the key settings list it as. Falls back to the text.</param>
+    /// <param name="shadowedControl">A game control index to suppress while the menu is open, for a
+    /// default key the game already uses.</param>
+    public PluginKey AddKey(
+        string id,
+        Text text,
+        string defaultKey,
+        string? defaultButton = null,
+        Text description = default,
+        int? shadowedControl = null)
+    {
+        var node = new KeyNode
+        {
+            Id = id,
+            Text = text.ToRef(),
+            Description = description.ToRef(),
+            DefaultKey = defaultKey,
+            DefaultButton = defaultButton,
+            ShadowedControl = shadowedControl,
+        };
+
+        Node.Keys ??= [];
+        Node.Keys.Add(node);
+
+        var key = new PluginKey(_plugin, node, text);
+
+        _keys.Add(key);
+        _plugin.RegisterKey(key);
+        _plugin.ReRegisterIfConnected();
+
+        return key;
+    }
+
     /// <summary>Removes one row. For a submenu row, everything beneath it goes too.</summary>
     public void Remove(PluginItem item)
     {
@@ -262,7 +307,14 @@ public sealed class PluginMenu
 
         var copy = node.CopyRow();
 
-        copy.Menu = new MenuNode { Id = menu.Id, Title = menu.Title, Subtitle = menu.Subtitle, Events = menu.Events };
+        copy.Menu = new MenuNode
+        {
+            Id = menu.Id,
+            Title = menu.Title,
+            Subtitle = menu.Subtitle,
+            Events = menu.Events,
+            Keys = menu.Keys,
+        };
 
         return copy;
     }

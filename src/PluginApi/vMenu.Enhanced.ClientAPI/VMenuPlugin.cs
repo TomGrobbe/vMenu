@@ -16,6 +16,8 @@ public sealed class VMenuPlugin
 
     private readonly Dictionary<string, PluginMenu> _menusById = new(StringComparer.Ordinal);
 
+    private readonly Dictionary<string, PluginKey> _keysById = new(StringComparer.Ordinal);
+
     private readonly Dictionary<int, TaskCompletionSource<PromptResult>> _pendingPrompts = [];
 
     private readonly Text _displayName;
@@ -212,6 +214,14 @@ public sealed class VMenuPlugin
 
     internal void RegisterItem(PluginItem item) => _itemsById[item.Node.Id] = item;
 
+    internal void RegisterKey(PluginKey key)
+    {
+        if (!_keysById.TryAdd(key.Id, key))
+        {
+            SharedAPI.Log.Warn($"[{Resource}] Key id '{key.Id}' is used twice, vMenu will skip the second one.");
+        }
+    }
+
     internal void UnregisterItem(PluginItem item)
     {
         _itemsById.Remove(item.Node.Id);
@@ -222,6 +232,11 @@ public sealed class VMenuPlugin
         }
 
         _menusById.Remove(submenu.Menu.Id);
+
+        foreach (var key in submenu.Menu.Keys)
+        {
+            _keysById.Remove(key.Id);
+        }
 
         foreach (var child in submenu.Menu.Items)
         {
@@ -374,6 +389,14 @@ public sealed class VMenuPlugin
 
                     break;
 
+                case CallbackTypes.KeyPressed:
+                    if (callback.KeyId is { } keyId && _keysById.TryGetValue(keyId, out var key))
+                    {
+                        key.Handle(new PluginKeyPress(ItemOrNull(callback.ItemId), ItemOrNull(callback.DisabledItemId)));
+                    }
+
+                    break;
+
                 default:
                     if (callback.ItemId is { } itemId && _itemsById.TryGetValue(itemId, out var item))
                     {
@@ -388,6 +411,8 @@ public sealed class VMenuPlugin
             SharedAPI.Log.Error($"[{Resource}] A menu callback handler threw: {exception}");
         }
     }
+
+    private PluginItem? ItemOrNull(string? id) => id is null ? null : _itemsById.GetValueOrDefault(id);
 
     private void OnPromptResult(string json)
     {

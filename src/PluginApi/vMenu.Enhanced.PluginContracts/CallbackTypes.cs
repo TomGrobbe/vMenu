@@ -19,4 +19,5 @@ public static class CallbackTypes
     public const string PlayerActionSelected = "playerActionSelected";
     public const string PlayerActionConfirmed = "playerActionConfirmed";
     public const string PlayerActionListSelected = "playerActionListSelected";
+    public const string KeyPressed = "keyPressed";
 }

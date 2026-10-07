@@ -1,3 +1,4 @@
+using vMenu.Enhanced.Data.Configuration;
 using vMenu.Enhanced.PluginContracts;
 
 namespace vMenu.Enhanced.Plugins;
@@ -9,6 +10,11 @@ internal static class PluginValidation
     internal const int MaxItems = 2000;
 
     internal const int MaxDepth = 8;
+
+    // Key mappings cannot be removed until the player reconnects.
+    internal const int MaxKeys = 25;
+
+    private const int MaxKeyNameLength = 32;
 
     private static readonly HashSet<string> PlayerActionTypes = new(StringComparer.Ordinal)
     {
@@ -44,6 +50,8 @@ internal static class PluginValidation
         // Recorded so an item added to this menu later knows how deep it already sits, the late path having
         // no walk down from the root to count with.
         state.MenuDepths[menu.Id] = depth;
+
+        IndexKeys(state, menu, result);
 
         // Forwards, and the index only moves on for an item that survived. Walking backwards would be
         // simpler to remove from, but then the last of two rows sharing an id would be the one indexed and
@@ -85,6 +93,67 @@ internal static class PluginValidation
 
         return true;
     }
+
+    private static void IndexKeys(PluginState state, MenuNode menu, RegisterResult result)
+    {
+        if (menu.Keys is not { Count: > 0 } keys)
+        {
+            return;
+        }
+
+        for (var index = 0; index < keys.Count;)
+        {
+            var key = keys[index];
+
+            if (KeyProblem(state, key) is { } problem)
+            {
+                result.Warnings.Add(problem);
+                keys.RemoveAt(index);
+                continue;
+            }
+
+            state.KeysById[key.Id] = key;
+            index++;
+        }
+    }
+
+    private static string? KeyProblem(PluginState state, KeyNode key)
+    {
+        if (!ConfigPath.IsValidSegment(key.Id))
+        {
+            return $"Key '{key.Id}' was skipped: key ids may only contain letters, digits and underscores.";
+        }
+
+        if (state.KeysById.ContainsKey(key.Id))
+        {
+            return $"Key id '{key.Id}' is used twice, the second one was skipped.";
+        }
+
+        if (state.KeysById.Count >= MaxKeys)
+        {
+            return $"Key '{key.Id}' was skipped: a plugin may declare at most {MaxKeys} keys.";
+        }
+
+        if (!IsKeyName(key.DefaultKey))
+        {
+            return $"Key '{key.Id}' was skipped: '{key.DefaultKey}' is not a keyboard key name.";
+        }
+
+        if (key.DefaultButton is { Length: > 0 } button && !IsKeyName(button))
+        {
+            return $"Key '{key.Id}' was skipped: '{button}' is not a controller button name.";
+        }
+
+        if (key.ShadowedControl is < 0)
+        {
+            return $"Key '{key.Id}' was skipped: {key.ShadowedControl} is not a game control.";
+        }
+
+        return null;
+    }
+
+    private static bool IsKeyName(string? name) =>
+        name is { Length: > 0 and <= MaxKeyNameLength } && name.All(static c => char.IsAsciiLetterOrDigit(c) || c == '_');
 
     // Answers whether the item may stay.
     internal static bool IndexItem(PluginState state, ItemNode node, string menuId, RegisterResult result)
@@ -230,6 +299,11 @@ internal static class PluginValidation
 
         state.MenusById.Remove(menu.Id);
         state.MenuDepths.Remove(menu.Id);
+
+        foreach (var key in menu.Keys ?? [])
+        {
+            state.KeysById.Remove(key.Id);
+        }
 
         if (state.Builders.Remove(menu.Id, out var builder))
         {
