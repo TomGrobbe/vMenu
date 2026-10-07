@@ -1,4 +1,4 @@
-﻿namespace vMenu.Enhanced.MenuFramework.Localization.Languages;
+namespace vMenu.Enhanced.MenuFramework.Localization.Languages;
 
 /// <summary>The English strings, and the fallback for every other language.</summary>
 /// <remarks>Other languages live in JSON under <c>assets/enhanced/language/</c>; update those too when
@@ -1494,6 +1494,8 @@ internal static class EnglishStrings
             [Loc.Bully.TeleportDescription] = "Teleports them somewhere random, and brings them back between twenty and sixty seconds later. Only works on foot.",
             [Loc.Bully.Abduct] = "Alien Abduction",
             [Loc.Bully.AbductDescription] = "A UFO shows up and beams them up, and they wake up somewhere else. Only works on foot.",
+            [Loc.Bully.Haircut] = "Lamar's Haircut Roast",
+            [Loc.Bully.HaircutDescription] = "Put them into the haircut roast cutscene from GTA V.",
             [Loc.Bully.Float] = "Floating Vehicle",
             [Loc.Bully.FloatDescription] = "Turns off gravity for their vehicle, so it slowly floats up and then drops back down. They have to be driving.",
             [Loc.Bully.Transform] = "Transform Vehicle",

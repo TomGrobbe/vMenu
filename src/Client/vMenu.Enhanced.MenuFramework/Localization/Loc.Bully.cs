@@ -208,6 +208,10 @@ public static partial class Loc
 
         public const string AbductDescription = "bully.effect.abduct.desc";
 
+        public const string Haircut = "bully.effect.haircut";
+
+        public const string HaircutDescription = "bully.effect.haircut.desc";
+
         public const string Float = "bully.effect.float";
 
         public const string FloatDescription = "bully.effect.float.desc";

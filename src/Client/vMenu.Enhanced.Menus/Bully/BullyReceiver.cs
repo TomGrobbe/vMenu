@@ -35,6 +35,7 @@ public static class BullyReceiver
         [BullyEffects.Clone] = EvilClone.Start,
         [BullyEffects.Teleport] = Relocation.TeleportAndReturn,
         [BullyEffects.Abduct] = AlienAbduction.Start,
+        [BullyEffects.Haircut] = HaircutRoast.Start,
         [BullyEffects.Float] = VehiclePranks.Float,
         [BullyEffects.Transform] = VehiclePranks.Transform,
     };
@@ -58,6 +59,7 @@ public static class BullyReceiver
         VehiclePranks.Initialize();
         AlienAbduction.Initialize();
         Relocation.Initialize();
+        HaircutRoast.Initialize();
         Mugger.Initialize();
         BullySpawnCleanup.Initialize();
         ScreenPranks.Initialize();
@@ -85,6 +87,13 @@ public static class BullyReceiver
         if (!ClientConfig.Value(BullySettings.Enabled))
         {
             run.Skip(BullyEvents.RefusedDisabled);
+
+            return;
+        }
+
+        if (HaircutRoast.IsActive)
+        {
+            run.Busy();
 
             return;
         }

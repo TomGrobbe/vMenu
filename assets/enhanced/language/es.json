@@ -285,6 +285,8 @@
     "bully.effect.teleport.desc": "Lo teletransporta a un sitio al azar, y lo trae de vuelta entre veinte y sesenta segundos después. Solo funciona a pie.",
     "bully.effect.abduct": "Abducción alienígena",
     "bully.effect.abduct.desc": "Aparece un ovni y lo abduce, y se despierta en otro sitio. Solo funciona a pie.",
+    "bully.effect.haircut": "Lamar se burla del corte de pelo",
+    "bully.effect.haircut.desc": "Los mete en la escena de la burla del corte de pelo de GTA V.",
     "bully.effect.float": "Vehículo flotante",
     "bully.effect.float.desc": "Quita la gravedad a su vehículo, así que sube flotando despacio y luego vuelve a caer. Tiene que ir conduciendo.",
     "bully.effect.transform": "Transformar vehículo",

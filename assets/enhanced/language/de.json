@@ -285,6 +285,8 @@
     "bully.effect.teleport.desc": "Teleportiert sie an einen zufälligen Ort und holt sie zwanzig bis sechzig Sekunden später zurück. Funktioniert nur zu Fuß.",
     "bully.effect.abduct": "Alien-Entführung",
     "bully.effect.abduct.desc": "Ein UFO taucht auf und beamt sie hoch, und sie wachen woanders wieder auf. Funktioniert nur zu Fuß.",
+    "bully.effect.haircut": "Lamars Frisuren-Spott",
+    "bully.effect.haircut.desc": "Steckt sie in die Frisuren-Spott-Zwischensequenz aus GTA V.",
     "bully.effect.float": "Schwebendes Fahrzeug",
     "bully.effect.float.desc": "Schaltet die Schwerkraft für ihr Fahrzeug ab, sodass es langsam nach oben schwebt und dann wieder herunterfällt. Sie müssen selbst fahren.",
     "bully.effect.transform": "Fahrzeug verwandeln",

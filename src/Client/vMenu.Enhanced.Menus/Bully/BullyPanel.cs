@@ -24,7 +24,7 @@ internal sealed class BullyPanel
         (Loc.Bully.ScaresGroup,
         [
             BullyEffects.Sound, BullyEffects.Fireworks, BullyEffects.Beast, BullyEffects.Clone, BullyEffects.Teleport,
-            BullyEffects.Abduct,
+            BullyEffects.Abduct, BullyEffects.Haircut,
         ]),
         (Loc.Bully.AttackersGroup, [BullyEffects.Carjack, BullyEffects.Mug, BullyEffects.Clowns, BullyEffects.Cougar]),
         (Loc.Bully.VehicleGroup, [BullyEffects.Float, BullyEffects.Transform]),

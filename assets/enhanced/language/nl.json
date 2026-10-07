@@ -285,6 +285,8 @@
     "bully.effect.teleport.desc": "Teleporteert hen naar een willekeurige plek, en haalt hen tussen twintig en zestig seconden later weer terug. Werkt alleen te voet.",
     "bully.effect.abduct": "Ontvoering door aliens",
     "bully.effect.abduct.desc": "Er verschijnt een ufo die hen omhoog straalt, en ze worden ergens anders wakker. Werkt alleen te voet.",
+    "bully.effect.haircut": "Lamar kraakt het kapsel af",
+    "bully.effect.haircut.desc": "Zet ze in de cutscene uit GTA V waarin Lamar het kapsel afkraakt.",
     "bully.effect.float": "Zwevend voertuig",
     "bully.effect.float.desc": "Zet de zwaartekracht uit voor hun voertuig, zodat het langzaam omhoog zweeft en daarna weer naar beneden valt. Ze moeten zelf rijden.",
     "bully.effect.transform": "Voertuig transformeren",

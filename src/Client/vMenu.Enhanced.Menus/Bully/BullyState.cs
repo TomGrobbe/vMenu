@@ -12,7 +12,21 @@ public static class BullyState
 
     public static int StopAllCount { get; private set; }
 
-    public static bool IsOn(string toggle) => Personal.Contains(toggle) || ServerWide.Contains(toggle);
+    public static bool IsPaused { get; private set; }
+
+    public static bool IsOn(string toggle) => !IsPaused && (Personal.Contains(toggle) || ServerWide.Contains(toggle));
+
+    public static void SetPaused(bool paused)
+    {
+        if (paused == IsPaused)
+        {
+            return;
+        }
+
+        IsPaused = paused;
+
+        Changed?.Invoke();
+    }
 
     public static void Set(string toggle, bool on, bool serverWide)
     {

@@ -285,6 +285,8 @@
     "bully.effect.teleport.desc": "Le téléporte à un endroit au hasard, et le ramène entre vingt et soixante secondes plus tard. Fonctionne seulement à pied.",
     "bully.effect.abduct": "Enlèvement extraterrestre",
     "bully.effect.abduct.desc": "Un OVNI apparaît et l'aspire, et il se réveille ailleurs. Fonctionne seulement à pied.",
+    "bully.effect.haircut": "Lamar se moque de la coupe",
+    "bully.effect.haircut.desc": "Les place dans la cinématique de la moquerie sur la coupe de GTA V.",
     "bully.effect.float": "Véhicule flottant",
     "bully.effect.float.desc": "Coupe la gravité de son véhicule, qui monte lentement en flottant puis retombe. Il doit être au volant.",
     "bully.effect.transform": "Transformer le véhicule",
