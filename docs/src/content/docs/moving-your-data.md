@@ -34,6 +34,10 @@ Either way, paste with `Ctrl+V` and press `Enter`. vMenu tells you how many thin
 
 The [Edit Your Data](/vmenu/enhanced/data-editor/) page unpacks a code in your browser and shows you every saved vehicle, ped, character, loadout and setting it holds. You can rename things, change them, throw out what you no longer want, and download a fresh code along with a backup of the one you started with.
 
+## Combining two codes
+
+The [Compare Your Data](/vmenu/enhanced/data-compare/) page takes two codes, for example one from each server you play on, and shows what is only in one of them and what is different between them. You pick which copy to keep, or keep both under different names, and download one merged code.
+
 ## What is in the code
 
 In it:

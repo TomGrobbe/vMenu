@@ -70,6 +70,7 @@ export default defineConfig({
         { label: 'Menu Appearance', link: '/menu-appearance/' },
         { label: 'Moving Your Data', link: '/moving-your-data/' },
         { label: 'Edit Your Data', link: '/data-editor/' },
+        { label: 'Compare Your Data', link: '/data-compare/' },
         { label: 'Custom Character Creator', link: '/character-creator/' },
         { label: 'Admin Menu', link: '/admin-menu/' },
         { label: 'Bully Menu', link: '/bully-menu/' },

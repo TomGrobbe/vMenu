@@ -1,0 +1,136 @@
+---
+import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
+
+import '../styles/data-tool.css';
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<StarlightPage
+  frontmatter={{
+    title: 'Compare Your Data',
+    description: 'Put two vMenu transfer codes side by side, see what is different, and merge them into one new code.',
+    tableOfContents: false,
+  }}
+>
+  <p>
+    Got two transfer codes, for example one from each server you play on? Paste them in below to see
+    what is only in one of them, what is in both, and what is different. Then pick what to keep and
+    get one new code with everything in it. If you do not have a code yet,{' '}
+    <a href={`${base}/moving-your-data/`}>Moving Your Data</a> explains how to get one out of the game.
+  </p>
+
+  <div class="vmt not-content">
+    <div class="vmt-sides">
+      <div class="vmt-panel">
+        <label class="vmt-label" for="vmc-code-left">Left code</label>
+        <textarea id="vmc-code-left" class="vmt-code" spellcheck="false" autocomplete="off" placeholder="VME1G:..."></textarea>
+        <div class="vmt-actions">
+          <button id="vmc-pick-left" class="vmt-button" type="button">Open a text file</button>
+          <input id="vmc-file-left" class="vmt-file" type="file" accept=".txt,.json,text/plain" />
+          <span id="vmc-status-left" class="vmt-status"></span>
+        </div>
+      </div>
+
+      <div class="vmt-panel">
+        <label class="vmt-label" for="vmc-code-right">Right code</label>
+        <textarea id="vmc-code-right" class="vmt-code" spellcheck="false" autocomplete="off" placeholder="VME1G:..."></textarea>
+        <div class="vmt-actions">
+          <button id="vmc-pick-right" class="vmt-button" type="button">Open a text file</button>
+          <input id="vmc-file-right" class="vmt-file" type="file" accept=".txt,.json,text/plain" />
+          <span id="vmc-status-right" class="vmt-status"></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="vmt-actions">
+      <button id="vmc-load" class="vmt-button vmt-primary" type="button">Compare</button>
+      <span id="vmc-status" class="vmt-status"></span>
+    </div>
+
+    <div id="vmc-result" class="vmt-result" hidden>
+      <div class="vmt-panel">
+        <div id="vmc-summary"></div>
+        <div class="vmt-actions vmt-stack">
+          <label class="vmt-check"><input id="vmc-hide-same" type="checkbox" checked /> Hide items that are the same</label>
+          <button id="vmc-all-left" class="vmt-button" type="button">Use left for every difference</button>
+          <button id="vmc-all-right" class="vmt-button" type="button">Use right for every difference</button>
+          <button
+            id="vmc-all-newest"
+            class="vmt-button"
+            type="button"
+            title="Keeps the copy with the higher version number. When both have the same version number, the left one is kept."
+          >Use the newest for every difference</button>
+        </div>
+      </div>
+
+      <div id="vmc-groups" class="vmt-groups"></div>
+
+      <div class="vmt-panel vmt-sticky">
+        <div id="vmc-warn" class="vmt-warn" hidden></div>
+        <div class="vmt-actions">
+          <button id="vmc-download" class="vmt-button vmt-primary" type="button">Download zip</button>
+          <button id="vmc-copy" class="vmt-button" type="button">Copy the merged code</button>
+          <span id="vmc-out" class="vmt-status"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h2>What you see</h2>
+
+  <table>
+    <thead>
+      <tr><th>Label</th><th>Meaning</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>only left</strong> / <strong>only right</strong></td><td>Saved in one code and missing from the other. Kept unless you untick it.</td></tr>
+      <tr><td><strong>different</strong></td><td>Saved in both under the same name, with different contents. Open it to see every field that differs.</td></tr>
+      <tr><td><strong>same</strong></td><td>Exactly the same in both. Kept once.</td></tr>
+      <tr><td><strong>older version</strong></td><td>You are keeping the copy saved by an older vMenu than the other one.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Picking a side</h2>
+
+  <table>
+    <thead>
+      <tr><th>Choice</th><th>What ends up in the new code</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>Keep left</strong></td><td>The left copy only.</td></tr>
+      <tr><td><strong>Keep right</strong></td><td>The right copy only.</td></tr>
+      <tr><td><strong>Keep both</strong></td><td>Both, with one of them saved under a new name. Not available for settings, which only work under their own name.</td></tr>
+    </tbody>
+  </table>
+
+  <p>
+    Every item has a version number, which goes up when a newer vMenu changes how that kind of item is
+    saved. It says nothing about when you saved it.
+  </p>
+
+  <p>
+    <strong>Use the newest for every difference</strong> keeps the copy with the higher version number.
+    When both copies have the same version number, it keeps the left one, because the page cannot tell
+    which of the two you saved last. This is also what every difference starts on when you open the codes.
+  </p>
+
+  <h2>Worth knowing</h2>
+
+  <ul>
+    <li>Nothing reaches the game until you paste the merged code in under <strong>Misc Settings, Import &amp; Export</strong>.</li>
+    <li>
+      Keeping an older version is allowed, but <strong>Paste A Code</strong> skips any item where your
+      computer already has a newer one. Use <strong>Paste A Code And Replace Everything</strong> if you
+      really want the older one.
+    </li>
+    <li>The zip holds the merged code plus a backup of both codes you pasted in.</li>
+    <li>To change items by hand, open the merged code in <a href={`${base}/data-editor/`}>Edit Your Data</a>.</li>
+  </ul>
+</StarlightPage>
+
+<script>
+  import { setup } from '../scripts/data-compare.js';
+
+  setup();
+</script>

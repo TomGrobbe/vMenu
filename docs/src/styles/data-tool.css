@@ -296,3 +296,111 @@
 .vmt .vmt-sticky .vmt-actions {
   margin-top: 0;
 }
+
+.vmt .vmt-sides {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  gap: 1rem;
+}
+
+.vmt .vmt-sides .vmt-actions {
+  margin-top: 0.5rem;
+}
+
+.vmt .vmt-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.vmt .vmt-badge-left,
+.vmt .vmt-badge-right,
+.vmt .vmt-badge-changed,
+.vmt .vmt-badge-same {
+  color: var(--on-accent);
+}
+
+.vmt .vmt-badge-left {
+  background: var(--violet);
+}
+
+.vmt .vmt-badge-right {
+  background: var(--mint);
+}
+
+.vmt .vmt-badge-changed {
+  background: var(--gold);
+}
+
+.vmt .vmt-badge-same {
+  background: var(--cream-deep);
+  color: var(--ink);
+}
+
+.vmt .vmt-warn {
+  margin: 0;
+  padding: 0.5rem 0.75rem;
+  border: 2px solid var(--gold-ink);
+  border-radius: 12px;
+  background: var(--gold-tint);
+  color: var(--ink);
+  font-size: 0.88rem;
+}
+
+.vmt .vmt-sticky .vmt-warn {
+  margin-bottom: 0.6rem;
+}
+
+.vmt .vmt-flat {
+  padding: 0;
+  gap: 0.3rem;
+}
+
+.vmt .vmt-select {
+  flex: 0 1 auto;
+}
+
+.vmt .vmt-diff {
+  overflow-x: auto;
+}
+
+.vmt .vmt-diff-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--sl-font-mono);
+  font-size: 0.75rem;
+}
+
+.vmt .vmt-diff-table th,
+.vmt .vmt-diff-table td {
+  padding: 0.25rem 0.5rem;
+  border: 1px solid var(--line);
+  text-align: left;
+  vertical-align: top;
+  word-break: break-all;
+}
+
+.vmt .vmt-diff-table th {
+  background: var(--cream-deep);
+}
+
+.vmt .vmt-path {
+  font-weight: 600;
+}
+
+.vmt .vmt-differs {
+  background: var(--gold-tint);
+}
+
+.vmt .vmt-missing {
+  color: var(--sl-color-gray-3);
+  font-style: italic;
+}
+
+.vmt .vmt-stack {
+  flex-direction: column;
+  align-items: flex-start;
+}
