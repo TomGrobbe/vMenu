@@ -69,4 +69,6 @@ public class ItemNode
 
     // Submenu.
     public MenuNode? Menu { get; set; }
+
+    public ItemNode CopyRow() => (ItemNode)MemberwiseClone();
 }

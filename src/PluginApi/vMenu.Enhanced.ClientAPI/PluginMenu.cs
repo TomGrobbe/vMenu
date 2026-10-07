@@ -247,10 +247,24 @@ public sealed class PluginMenu
         {
             Op = UpdateOps.AddItems,
             MenuId = Id,
-            Items = [item.Node],
+            Items = [AsAdded(item.Node)],
         });
 
         return item;
+    }
+
+    private static ItemNode AsAdded(ItemNode node)
+    {
+        if (node.Menu is not { } menu)
+        {
+            return node;
+        }
+
+        var copy = node.CopyRow();
+
+        copy.Menu = new MenuNode { Id = menu.Id, Title = menu.Title, Subtitle = menu.Subtitle, Events = menu.Events };
+
+        return copy;
     }
 
     private bool RemoveLocal(PluginItem item)
