@@ -23,7 +23,8 @@ public static class Hud
     // Whether the game is in a state where drawing anything would be wrong: mid player switch, in the
     // pause menu, faded out, or with the HUD turned off by the player or by a script.
     public static bool CanDraw =>
-        Native.IsHudPreferenceSwitchedOn()
+        !SceneLock.IsActive
+        && Native.IsHudPreferenceSwitchedOn()
         && !Native.IsHudHidden()
         && !Native.IsPlayerSwitchInProgress()
         && Native.IsScreenFadedIn()

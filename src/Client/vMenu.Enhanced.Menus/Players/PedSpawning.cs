@@ -1,5 +1,6 @@
 using CitizenFX.FiveM.Client;
 
+using vMenu.Enhanced.MenuFramework;
 using vMenu.Enhanced.Menus.Players.Appearance;
 using vMenu.Enhanced.Menus.Weapons;
 using vMenu.Enhanced.Permissions;
@@ -59,7 +60,7 @@ public static class PedSpawning
     // lookup for a ped model, so a save whose model the owner never listed has no name left to spawn from.
     public static async Task<bool> SetPlayerModelAsync(uint hash)
     {
-        if (!IsSpawnable(hash))
+        if (SceneLock.IsActive || !IsSpawnable(hash))
         {
             return false;
         }

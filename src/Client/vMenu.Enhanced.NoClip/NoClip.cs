@@ -242,9 +242,11 @@ public static class NoClip
     public static void SetActiveByStaff(bool active) =>
         SharedAPI.RunOnMainThread(() => SetNoclipActive(active, byStaff: true));
 
+    public static void Disable() => SetNoclipActive(false);
+
     public static bool Enable()
     {
-        if (!IsAllowed)
+        if (!IsAllowed || SceneLock.IsActive)
         {
             return false;
         }
@@ -299,7 +301,7 @@ public static class NoClip
     internal static void SetNoclipActive(bool active, bool byStaff = false)
     {
         // The key tick follows the permission, but a revoke can land between the two.
-        if (active && !byStaff && !IsAllowed)
+        if (active && ((!byStaff && !IsAllowed) || SceneLock.IsActive))
         {
             return;
         }

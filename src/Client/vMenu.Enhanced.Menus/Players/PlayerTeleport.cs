@@ -2,6 +2,7 @@ using System.Numerics;
 
 using CitizenFX.FiveM.Client;
 
+using vMenu.Enhanced.MenuFramework;
 using vMenu.Enhanced.Menus.Vehicles;
 
 namespace vMenu.Enhanced.Menus.Players;
@@ -58,7 +59,7 @@ internal static class PlayerTeleport
 
     private static async Task<bool> GoAsync(Vector3 destination, bool findGround, float? heading)
     {
-        if (API.Players.Local.Ped is not { } ped)
+        if (SceneLock.IsActive || API.Players.Local.Ped is not { } ped)
         {
             return false;
         }

@@ -65,7 +65,7 @@ public static class TeleportKeyBinding
     // A command handler cannot await, so this is the fire and forget boundary.
     private static async void Dispatch()
     {
-        if (_running)
+        if (_running || SceneLock.IsActive)
         {
             return;
         }
