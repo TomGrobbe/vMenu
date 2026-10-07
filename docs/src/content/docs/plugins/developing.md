@@ -178,6 +178,30 @@ using (plugin.BeginBatch())
 
 Batches nest safely. Only the outermost one sends, so a helper that batches internally cannot cut your batch short.
 
+### Keys
+
+A menu can have keys of its own. A key only does something while that menu is open, and it shows up as an instructional button, which is the little row of key hints at the bottom right of the screen. This is handy for shortcuts that act on the row the player is standing on:
+
+```csharp
+var edit = menu.AddKey("edit_value", "Type a value", defaultKey: "X", defaultButton: "RUP_INDEX");
+
+edit.Pressed += press =>
+{
+    if (press.Item is PluginList list)
+    {
+        // the player pressed X while the cursor was on this list
+    }
+};
+```
+
+`Pressed` tells you which row the cursor was on. When the player may use that row, you get it as `Item`. When the row is locked by its gate or switched off with `Enabled`, `Item` stays empty and you get the row as `DisabledItem` instead. That way a key never quietly lets a player use a row they are not allowed to, but you can still decide to react to it yourself, for example to explain why nothing happened. Both are empty when the menu has no rows or the row is not one of yours.
+
+The player can change the key in the game's own key settings, under vMenu, where it is listed with your plugin's name in front of it. The game remembers that choice by the key's id, so pick an id once and never change it, or players lose the key they picked. Ids may only use letters, digits and underscores.
+
+`defaultKey` is a keyboard key name the way the game writes it, such as `X`, `F5` or `LCONTROL`. `defaultButton` is optional and names a controller button, such as `RUP_INDEX`. Without one, the key still works on a keyboard but shows no hint while the player uses a controller. When your key is one the game already uses for something, pass that game control as `shadowedControl` and vMenu switches it off while your menu is open, so pressing the key does not also make the character crouch.
+
+`Text`, `Enabled` and `Gate` can change at any time, just like on a row. A disabled key or one whose gate fails does nothing and shows no hint. Add your keys before connecting, because a key added later makes the plugin register all over again, which closes your menu if the player has it open.
+
 ## Text and translations
 
 Every piece of text is a `Text` object, either a literal or a key into your own translation tables:
@@ -386,7 +410,7 @@ Once registered, a theme is a theme like any other. It shows up for plugins read
 ## Rules to keep to
 
 - **Your resource name is your identity.** Permissions, settings and both template files are named after it. Two resources whose names sanitize to the same identity cannot both register, the second is refused.
-- **Limits.** A menu tree may hold 2000 items and nest 8 levels deep. Rows added after connecting count towards the same 2000. Past that, rows are skipped with a warning.
+- **Limits.** A menu tree may hold 2000 items and nest 8 levels deep. Rows added after connecting count towards the same 2000. Past that, rows are skipped with a warning. A plugin may declare 25 keys across all its menus.
 - **Never trust the client.** The client half decides what a menu looks like, nothing more. Anything that changes the world belongs behind a server side permission check.
 - **vMenu owns the menu.** You describe what you want, vMenu decides how and when it is drawn. That is what keeps your plugin working across vMenu updates.
 - **Update with vMenu.** A breaking change on vMenu's side can stop an old plugin from loading.
