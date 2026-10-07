@@ -46,6 +46,8 @@ public static class BullyEffects
 
     public const string Abduct = "Abduct";
 
+    public const string Haircut = "Haircut";
+
     public const string Float = "Float";
 
     public const string Transform = "Transform";
@@ -72,6 +74,7 @@ public static class BullyEffects
         new(Clone, "sent an evil clone after", BullyRequirement.OnFoot),
         new(Teleport, "randomly teleported", BullyRequirement.OnFoot),
         new(Abduct, "had aliens abduct", BullyRequirement.OnFoot) { SpawnsEntities = true },
+        new(Haircut, "had Lamar roast the haircut of", BullyRequirement.OnFoot),
         new(Float, "levitated the vehicle of", BullyRequirement.Driving),
         new(Transform, "transformed the vehicle of", BullyRequirement.Driving) { SpawnsEntities = true },
     ];

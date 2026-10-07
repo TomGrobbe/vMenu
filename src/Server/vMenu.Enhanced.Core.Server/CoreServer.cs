@@ -74,6 +74,7 @@ public class CoreServer : IScript
         IntegrationPlayersPush.Initialize();
         ConnectionGate.Initialize();
         RoutingBuckets.Initialize();
+        BullyPrivateWorlds.ManagedWorlds = RoutingBuckets.WorldIds;
         RoutingBucketCommands.Initialize();
         UpdateChecker.Initialize();
 

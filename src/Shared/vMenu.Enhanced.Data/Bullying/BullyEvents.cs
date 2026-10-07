@@ -26,11 +26,17 @@ public static class BullyEvents
 
     public const string Spawned = "vMenu.Enhanced:Bully:Spawned";
 
+    public const string PrivateWorld = "vMenu.Enhanced:Bully:PrivateWorld";
+
+    public const string PrivateWorldMoved = "vMenu.Enhanced:Bully:PrivateWorldMoved";
+
     public const string LodConvar = "vMenu.Enhanced.State.BullyLod";
 
     public const string ElectrifiedKey = "vMenu:electrified";
 
     public const string SpawnedKey = "vMenu:bullySpawned";
+
+    public const string PrivateWorldsKey = "vMenu:bullyPrivateWorlds";
 
     public const string GlobalBag = "global";
 

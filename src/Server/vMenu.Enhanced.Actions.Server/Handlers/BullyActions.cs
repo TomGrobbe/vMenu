@@ -123,6 +123,8 @@ public static class BullyActions
 
         ServerConfig.AddEventListenerFor([BullySettings.Enabled], OnEnabledChanged);
 
+        BullyPrivateWorlds.Register();
+
         CleanUpAfterRestart();
     }
 
@@ -157,6 +159,11 @@ public static class BullyActions
 
         var name = NameOf(target);
 
+        if (BullyPrivateWorlds.IsBusy(target))
+        {
+            return ActionResponse.Refused(BullyEvents.RefusedBusy, name);
+        }
+
         if (Unmet(effect.Requirement, ped) is { } reason)
         {
             return ActionResponse.Refused(reason, name);
@@ -187,6 +194,7 @@ public static class BullyActions
 
         var targets = ConnectedPlayers.All()
             .Where(player => includeSelf || player.ServerId != source.Handle)
+            .Where(player => !BullyPrivateWorlds.IsBusy(player.ServerId))
             .Select(player => (Id: player.ServerId, Ped: PedOf(player.ServerId) ?? 0))
             .Where(target => target.Ped != 0 && Unmet(effect.Requirement, target.Ped) is null)
             .Select(target => new Target(
@@ -248,6 +256,11 @@ public static class BullyActions
 
     private static void Settle(int target, BullyEffect effect, string outcome)
     {
+        if (effect.Id == BullyEffects.Haircut && outcome is not (BullyEvents.Started or BullyEvents.Unconfirmed))
+        {
+            BullyPrivateWorlds.Refused(target);
+        }
+
         if (effect.Id == BullyEffects.Transform
             && outcome is not (BullyEvents.Started or BullyEvents.Unconfirmed or BullyEvents.RefusedBusy)
             && Transforms.TryGetValue(target, out var transform)
@@ -269,6 +282,9 @@ public static class BullyActions
                 break;
             case BullyEffects.Abduct:
                 Abductions[target] = expires;
+                break;
+            case BullyEffects.Haircut:
+                BullyPrivateWorlds.Allow(target, expires);
                 break;
             case BullyEffects.Mug:
                 Mugs[target] = new MugRound(expires, victims.Where(victim => victim != target).ToHashSet());
@@ -345,6 +361,11 @@ public static class BullyActions
         if (!TryResolveTarget(args, out var target))
         {
             return ActionResponse.NotFound();
+        }
+
+        if (on && BullyPrivateWorlds.IsBusy(target))
+        {
+            return ActionResponse.Refused(BullyEvents.RefusedBusy, NameOf(target));
         }
 
         SetPlayerToggle(target, toggle, on);
@@ -625,6 +646,8 @@ public static class BullyActions
         Transforms.Remove(source);
         Abductions.Remove(source);
         Mugs.Remove(source);
+
+        BullyPrivateWorlds.Forget(source);
 
         foreach (var pending in Pending.Values.Where(pending => pending.Target == source).ToList())
         {

@@ -55,6 +55,29 @@ public static class RoutingBuckets
         }
     }
 
+    public static IReadOnlyCollection<int> WorldIds()
+    {
+        var ids = new List<int>();
+
+        try
+        {
+            using var doc = JsonDocument.Parse(_payload);
+
+            foreach (var bucket in doc.RootElement.GetProperty("buckets").EnumerateArray())
+            {
+                if (bucket.TryGetProperty("id", out var id) && id.TryGetInt32(out var value))
+                {
+                    ids.Add(value);
+                }
+            }
+        }
+        catch (Exception exception) when (exception is JsonException or KeyNotFoundException or InvalidOperationException)
+        {
+        }
+
+        return ids;
+    }
+
     private static bool IsValid(string json)
     {
         try
