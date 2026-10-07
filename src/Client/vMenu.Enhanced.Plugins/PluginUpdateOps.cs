@@ -210,6 +210,13 @@ internal static class PluginUpdateOps
 
                         foreach (var added in op.Items)
                         {
+                            if (added.Id is { } addedId && state.ItemOwners.TryGetValue(addedId, out var owner) && owner == menuNode.Id)
+                            {
+                                Log.Debug($"[Plugins] '{state.Resource}': item '{addedId}' is already in menu '{menuNode.Id}', the repeat was skipped.");
+
+                                continue;
+                            }
+
                             if (!PluginValidation.IndexLateItem(state, added, menuNode.Id, report))
                             {
                                 continue;

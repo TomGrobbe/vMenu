@@ -54,6 +54,8 @@ internal sealed class PluginState
 
     internal HashSet<string> PlayerActionIds { get; } = new(StringComparer.Ordinal);
 
+    internal HashSet<string> WarnedPlaceholders { get; } = new(StringComparer.OrdinalIgnoreCase);
+
     internal Dictionary<string, MenuNode> MenusById { get; } = new(StringComparer.Ordinal);
 
     // How deep each menu sits, the root being 1. Read when an item is added to it later.

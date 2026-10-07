@@ -76,7 +76,10 @@ internal static class PluginPlaceholders
             }
         }
 
-        Log.Warning($"[Plugins] '{plugin.Resource}' used placeholder '{{{name}}}' without supplying a value for it.");
+        if (plugin.WarnedPlaceholders.Add(name))
+        {
+            Log.Warning($"[Plugins] '{plugin.Resource}' used placeholder '{{{name}}}' without supplying a value for it.");
+        }
 
         return "!{" + name + "}!";
     }
