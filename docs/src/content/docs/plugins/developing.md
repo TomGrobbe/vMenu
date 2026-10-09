@@ -3,7 +3,7 @@ title: "Making a plugin"
 description: "How to write a vMenu Enhanced plugin in C#: the packages, the project layout, the menu API, permissions and settings."
 ---
 
-A plugin is a normal FiveM resource of your own that asks vMenu to draw a menu on its behalf. C# is the only officially supported language for menus, Lua and JavaScript will follow later. 
+A plugin is a normal FiveM resource of your own that asks vMenu to draw a menu on its behalf. C# is the only officially supported language for menus, Lua and JavaScript will follow later.
 A look at what a tiny JavaScript plugin could look like can be found in the custom themes plugin below.
 
 :::tip[Start from an example]
@@ -27,8 +27,8 @@ Your resource has two halves, and both talk to vMenu over events. Neither side r
 
 The **client** half describes the menu: rows, translations, and which rows are hidden or locked. The **server** half declares the permissions and settings the server owner controls. Use the same names on both sides and vMenu does all the checking for you.
 
-| Package | Used by |
-| --- | --- |
+| Package                    | Used by            |
+| -------------------------- | ------------------ |
 | `vMenu.Enhanced.ClientAPI` | your client script |
 | `vMenu.Enhanced.ServerAPI` | your server script |
 
@@ -160,9 +160,27 @@ A checkbox can remember itself between sessions with `persist: true`, which stor
 
 A menu's `subtitle` is the bar under the banner. Leave it out and vMenu uses the menu's title instead, so it is never empty.
 
-### Adding rows later
+### Changing a menu while it is live
 
 You can connect first and build afterwards. Your row under Plugins appears as soon as your menu has something in it, so a plugin that only contributes player actions never advertises an empty menu.
+
+Everything about a menu can change while players use it. Each change only touches the rows involved, the rest of the menu stays as it is and the highlighted row stays highlighted.
+
+| What                    | How                                                                                       |
+| ----------------------- | ----------------------------------------------------------------------------------------- |
+| Add a row at the bottom | `menu.AddButton(...)` and the other `Add` methods                                         |
+| Add rows at a position  | `using (menu.InsertAt(2)) { menu.AddButton(...); }`                                       |
+| Move a row              | `menu.Move(row, 0)`                                                                       |
+| Highlight a row         | `menu.Select(row)`. Raises `Highlighted` and `IndexChanged` like the player moving there. |
+| Remove a row            | `menu.Remove(row)`. A submenu row takes its menu with it.                                 |
+| Remove every row        | `menu.Clear()`                                                                            |
+| Show only some rows     | `menu.Filter(row => ...)`, `menu.ClearFilter()`                                           |
+| Rename a menu           | `menu.Title`, `menu.Subtitle`                                                             |
+| Change a row            | any property, such as `Text`, `Visible` or `HideWhenLocked`                               |
+
+`Filter` hides the rows it answers false for. Rows you add later are checked too. Inside a batch that happens when the batch ends, so properties you set right after adding a row count. When the filter looks at something that changed, call `Filter` again.
+
+Setting a property to the value it already has sends nothing, so you can set everything on every update without worrying about the cost.
 
 Wrap many changes in a batch and vMenu repaints once instead of once per change:
 
@@ -200,7 +218,7 @@ The player can change the key in the game's own key settings, under vMenu, where
 
 `defaultKey` is a keyboard key name the way the game writes it, such as `X`, `F5` or `LCONTROL`. `defaultButton` is optional and names a controller button, such as `RUP_INDEX`. Without one, the key still works on a keyboard but shows no hint while the player uses a controller. When your key is one the game already uses for something, pass that game control as `shadowedControl` and vMenu switches it off while your menu is open, so pressing the key does not also make the character crouch.
 
-`Text`, `Enabled` and `Gate` can change at any time, just like on a row. A disabled key or one whose gate fails does nothing and shows no hint. Add your keys before connecting, because a key added later makes the plugin register all over again, which closes your menu if the player has it open.
+`Text`, `Enabled` and `Gate` can change at any time, just like on a row. A disabled key or one whose gate fails does nothing and shows no hint. Keys can be added after connecting too. A key cannot be removed again until the player reconnects.
 
 ## Text and translations
 
@@ -389,11 +407,19 @@ A theme set this way beats the server's convar, and it belongs to that one playe
 A resource can also hand vMenu new themes, so a server does not have to edit vMenu's own files to get a look of its own. This one needs no C# and no plugin registration at all, it is a single event, so a plain JavaScript or Lua resource can do it:
 
 ```js
-emit("vMenu.Enhanced:Plugins:RegisterThemes", JSON.stringify({
-    themes: [
-        { id: "reddead", name: "Red Dead", css: "themes/red-dead.css", banner: "default" },
-    ],
-}));
+emit(
+    "vMenu.Enhanced:Plugins:RegisterThemes",
+    JSON.stringify({
+        themes: [
+            {
+                id: "reddead",
+                name: "Red Dead",
+                css: "themes/red-dead.css",
+                banner: "default",
+            },
+        ],
+    }),
+);
 ```
 
 - **id** is what a convar or a plugin names the theme by. Letters, digits, dashes, underscores and dots, and never one of vMenu's own names.
