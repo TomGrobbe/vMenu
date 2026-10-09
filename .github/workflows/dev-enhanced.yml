@@ -101,6 +101,39 @@ jobs:
           name: enhanced-packages
           path: packages/*.nupkg
 
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      # Never published from here, npm trusts combined.yml only. npm rejects build metadata, so no +sha.
+      - name: Build the Lua and JavaScript plugin APIs
+        shell: bash
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          NPM_VERSION="${VERSION%%+*}"
+          mkdir -p npm-package build/vMenu.Enhanced/plugin-api
+
+          (
+            cd src/PluginApi/vMenu.Enhanced.JsAPI
+            npm ci --no-audit --no-fund
+            npm version "$NPM_VERSION" --no-git-tag-version --allow-same-version
+            npm run check
+            npm run build
+            npm pack --pack-destination ../../../npm-package
+          )
+
+          tr -d '\r' < src/PluginApi/vMenu.Enhanced.JsAPI/dist/vmenu.js > build/vMenu.Enhanced/plugin-api/vmenu.js
+          sed "s/versiongoeshere/$VERSION/g" src/PluginApi/vMenu.Enhanced.LuaAPI/vmenu.lua | tr -d '\r' > build/vMenu.Enhanced/plugin-api/vmenu.lua
+          head -n 1 build/vMenu.Enhanced/plugin-api/vmenu.lua build/vMenu.Enhanced/plugin-api/vmenu.js
+
+      - name: Upload npm package
+        uses: actions/upload-artifact@v4
+        with:
+          name: enhanced-npm
+          path: npm-package/*.tgz
+
       - name: Translation coverage
         if: always()
         shell: pwsh
