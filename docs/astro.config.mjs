@@ -99,6 +99,10 @@ export default defineConfig({
             { label: 'What plugins are', link: '/plugins/' },
             { label: 'Installing plugins', link: '/plugins/installing/' },
             { label: 'Making a plugin', link: '/plugins/developing/' },
+            { label: 'C# setup', link: '/plugins/csharp/' },
+            { label: 'Lua setup', link: '/plugins/lua/' },
+            { label: 'JavaScript setup', link: '/plugins/javascript/' },
+            { label: 'TypeScript setup', link: '/plugins/typescript/' },
           ],
         },
         {

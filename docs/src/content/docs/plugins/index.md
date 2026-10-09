@@ -27,7 +27,7 @@ as it is, and each is also worth reading as an example of how a plugin is put to
 | [Theme Picker](https://github.com/TomGrobbe/vMenu.ThemePicker) | Let's each player choose a theme for vMenu themselves, rather than being forced to use the server theme. |
 | [Custom Themes](https://github.com/TomGrobbe/vMenu.CustomThemesPlugin) | Allows you to easily add new custom themes to vMenu. |
 | [vMenu Time Permissions](https://github.com/RickyB505/vMenu.Time.Permissions) | Gives players more vMenu permissions automatically the longer they play on your server. |
-| [Example Plugin](https://github.com/TomGrobbe/vMenu.ExamplePlugin) | Example plugin, do not use on public servers, use this as a tempalte if you want to make your own plugins. |
+| [Example Plugin](https://github.com/TomGrobbe/vMenu.ExamplePlugin) | Example plugin in C#, Lua, JavaScript and TypeScript. Do not use it on public servers, use it as a template if you want to make your own plugins. |
 
 Every one of them is open source. Most are GPL-3.0-or-later, same as vMenu, and Time Permissions is AGPL-3.0. Each one publishes a ready to drop in zip on its
 own releases page.
@@ -35,4 +35,4 @@ own releases page.
 ## Where to go from here
 
 - **Installing one?** See [Installing plugins](/vmenu/enhanced/plugins/installing/).
-- **Writing one?** See [Making a plugin](/vmenu/enhanced/plugins/developing/). There are the three plugins above to copy from, and two NuGet packages that do the talking for you. C# is the supported way to build a menu. A resource in another language can still register themes, which is a single event and what the Custom Themes plugin does, but menus are C# for now.
+- **Writing one?** See [Making a plugin](/vmenu/enhanced/plugins/developing/). Plugins can be written in C#, Lua, JavaScript or TypeScript, and the Example Plugin above is there in all four to copy from.

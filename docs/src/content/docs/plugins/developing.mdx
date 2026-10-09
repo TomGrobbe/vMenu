@@ -1,20 +1,21 @@
 ---
 title: "Making a plugin"
-description: "How to write a vMenu Enhanced plugin in C#: the packages, the project layout, the menu API, permissions and settings."
+description: "How to write a vMenu Enhanced plugin in C#, Lua, JavaScript or TypeScript: the menu API, permissions, settings and the rules to keep to."
 ---
 
-A plugin is a normal FiveM resource of your own that asks vMenu to draw a menu on its behalf. C# is the only officially supported language for menus, Lua and JavaScript will follow later.
-A look at what a tiny JavaScript plugin could look like can be found in the custom themes plugin below.
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
+A plugin is a normal FiveM resource of your own that asks vMenu to draw a menu on its behalf. You can write one in C#, Lua, JavaScript or TypeScript. All four get the same API, and every code sample on this page is shown in all four. Pick your language once and every sample follows.
 
 :::tip[Start from an example]
-[vMenu.ExamplePlugin](https://github.com/TomGrobbe/vMenu.ExamplePlugin) is a complete working plugin that uses every kind of row once. Copy from it.
+[vMenu.ExamplePlugin](https://github.com/TomGrobbe/vMenu.ExamplePlugin) is a complete working plugin that uses every kind of row once, written in all four languages. Copy from it.
 
-[vMenu.RoutingBucketsPlugin](https://github.com/TomGrobbe/vMenu.RoutingBucketsPlugin) is a more advanced plugin. This plugin includes server and client side code, both sides talking to each other, server side permission checks on everything, live state pushed out to the menu (live menu updates), rows in [Online Players](#player-actions), and a saved config file of its own.
+[vMenu.RoutingBucketsPlugin](https://github.com/TomGrobbe/vMenu.RoutingBucketsPlugin) is a more advanced C# plugin. It includes server and client side code, both sides talking to each other, server side permission checks on everything, live state pushed out to the menu (live menu updates), rows in [Online Players](#player-actions), and a saved config file of its own.
 
 For theme related plugins, see [vMenu.ThemePicker](https://github.com/TomGrobbe/vMenu.ThemePicker),
 and [vMenu.CustomThemesPlugin](https://github.com/TomGrobbe/vMenu.CustomThemesPlugin), and read [registering themes](#adding-themes-of-your-own) to see how you can make your own themes for your server.
 
-All four are listed on the [plugins page](/vmenu/enhanced/plugins/).
+All of them are listed on the [plugins page](/vmenu/enhanced/plugins/).
 :::
 
 :::caution[Read the license section]
@@ -23,52 +24,38 @@ Plugins must be open source, under GPL-3.0 or AGPL-3.0. See [License](#license) 
 
 ## How it fits together
 
-Your resource has two halves, and both talk to vMenu over events. Neither side references the other's assemblies.
+Your resource has two halves, and both talk to vMenu over events. Neither side references vMenu's code.
 
 The **client** half describes the menu: rows, translations, and which rows are hidden or locked. The **server** half declares the permissions and settings the server owner controls. Use the same names on both sides and vMenu does all the checking for you.
 
-| Package                    | Used by            |
-| -------------------------- | ------------------ |
-| `vMenu.Enhanced.ClientAPI` | your client script |
-| `vMenu.Enhanced.ServerAPI` | your server script |
+| Language   | Plugin API                                                     | Setup                                                 |
+| ---------- | -------------------------------------------------------------- | ----------------------------------------------------- |
+| C#         | NuGet `vMenu.Enhanced.ClientAPI` and `vMenu.Enhanced.ServerAPI` | [C# setup](/vmenu/enhanced/plugins/csharp/)           |
+| Lua        | `vmenu.lua`, from the `plugin-api` folder of the vMenu zip     | [Lua setup](/vmenu/enhanced/plugins/lua/)             |
+| JavaScript | `vmenu.js`, from the `plugin-api` folder of the vMenu zip      | [JavaScript setup](/vmenu/enhanced/plugins/javascript/) |
+| TypeScript | npm `@vespura/vmenu-plugin`                                    | [TypeScript setup](/vmenu/enhanced/plugins/typescript/) |
 
-Pin both to the vMenu Enhanced version your server runs. They bring the CitizenFX assemblies with them, so you do not reference those yourself.
+Every form of the API carries the same version number as the vMenu Enhanced release it belongs to. Use the one matching the vMenu your server runs. Your plugin ships its own copy, so it never depends on vMenu's files at runtime.
 
-## Project layout
+### Names in each language
 
-Keep the two halves in separate output folders. Each package ships its own copy of `CitizenFX.Base.dll` and `CitizenFX.FiveM.Shared.dll`, and two files with the same name cannot share a folder.
+The text on this page uses the C# names. The other languages follow their own conventions:
 
-```
-MyPlugin/
-    fxmanifest.lua
-    client/     the client assembly and everything it depends on
-    server/     the server assembly and everything it depends on
-```
+| C#                         | Lua                                       | JavaScript and TypeScript          |
+| -------------------------- | ----------------------------------------- | ---------------------------------- |
+| `row.Description = x`      | `row:SetDescription(x)`                   | `row.description = x`              |
+| `row.Checked` (read)       | `row:GetChecked()`                        | `row.checked`                      |
+| `row.Selected += handler`  | `row:OnSelected(handler)`                 | `row.onSelected(handler)`          |
+| `menu.AddList(text, options, selectedIndex: 1)` | `menu:AddList(text, options, { SelectedIndex = 2 })` | `menu.addList(text, options, { selectedIndex: 1 })` |
+| `await plugin.ConnectAsync()` | `plugin:Connect()` inside a thread     | `await plugin.connect()`           |
+| `PluginGate.Permission("A") & PluginGate.Setting(s)` | `vMenu.Gate.Permission('A') & vMenu.Gate.Setting(s)` | `Gate.permission('A').and(Gate.setting(s))` |
 
-Every client side DLL has to be listed in `files`, because players download those rather than reading them off the server's disk:
-
-```lua
-fx_version 'cerulean'
-games { 'gta5' }
-
-files {
-    'client/CitizenFX.Base.dll',
-    'client/CitizenFX.FiveM.Shared.dll',
-    'client/CitizenFX.FiveM.Client.dll',
-    'client/MessagePack.dll',
-    'client/MessagePack.Annotations.dll',
-    'client/Microsoft.NET.StringTools.dll',
-    'client/vMenu.Enhanced.PluginContracts.dll',
-    'client/vMenu.Enhanced.ClientAPI.dll',
-}
-
-client_script 'client/MyPlugin.Client.dll'
-server_script 'server/MyPlugin.Server.dll'
-```
-
-Add a package reference, check for a new DLL in your client output, add a line for it. Miss one and players get an assembly load error the moment they open the menu. The server half needs no `files` entries.
+Lua counts list positions from 1, like every Lua table. The other three count from 0. Optional arguments are an options table in Lua and an options object in JavaScript, and properties set there ride along with the row when it is added. Event subscriptions in Lua, JavaScript and TypeScript return a function that unsubscribes again.
 
 ## The smallest plugin that works
+
+<Tabs syncKey="lang">
+<TabItem label="C#">
 
 Client:
 
@@ -118,21 +105,132 @@ public sealed class Main : IScript
 }
 ```
 
-:::caution[Call at least one native in Initialize]
-An `Initialize` that calls no FiveM code fails to load. This looks like a FiveM Enhanced bug. A logging statement is enough to work around it.
-:::
+</TabItem>
+<TabItem label="Lua">
 
-The gate is the point of declaring the permission and the setting. Without it the button is always there for everybody and the owner's config file does nothing. With it, the button only works for a player who has `Greet` while `Enabled` is on, and it follows along by itself when either changes. Read a value directly with `enabled.Value` when you want the value rather than a gate.
+Client:
 
-`ConnectAsync` and `RegisterAsync` never throw. A refusal comes back with `Accepted` false and a reason in `Errors`, and anything vMenu accepted but was unhappy about is in `Warnings`. Both are logged for you too.
+```lua
+local plugin = vMenu.CreatePlugin('My Plugin')
+
+local greet = plugin.RootMenu:AddButton('Say hello', {
+    Description = 'Shows a notification, to prove this thing works.',
+})
+
+greet:OnSelected(function()
+    plugin:Notify('success', 'Hello!')
+end)
+
+local enabled = plugin.Settings:Bool('Enabled', true, 'Turns my plugin on or off.')
+greet:SetGate(vMenu.Gate.Permission('Greet') & vMenu.Gate.Setting(enabled))
+greet:SetHideWhenLocked(true)
+
+CreateThread(function()
+    local result = plugin:Connect()
+    print(('[My Plugin] Registered with vMenu: %s.'):format(tostring(result.Accepted)))
+end)
+```
+
+Server:
+
+```lua
+local declaration = vMenu.ServerPluginDeclaration('My Plugin')
+    :AddPermission('Greet', 'Lets someone use the greet button.')
+    :AddBoolSetting('Enabled', true, 'Turns my plugin on or off.')
+
+CreateThread(function()
+    local result = vMenu.Server.Register(declaration)
+    print(('[My Plugin] Registered with vMenu: %s.'):format(tostring(result.Accepted)))
+end)
+```
+
+</TabItem>
+<TabItem label="JavaScript">
+
+Client:
+
+```js
+const { VMenuPlugin, Gate } = vMenu;
+
+const plugin = VMenuPlugin.create('My Plugin');
+
+const greet = plugin.rootMenu.addButton('Say hello', {
+  description: 'Shows a notification, to prove this thing works.',
+});
+
+greet.onSelected(() => plugin.notify('success', 'Hello!'));
+
+const enabled = plugin.settings.bool('Enabled', true, 'Turns my plugin on or off.');
+greet.gate = Gate.permission('Greet').and(Gate.setting(enabled));
+greet.hideWhenLocked = true;
+
+plugin.connect().then((result) => console.log(`[My Plugin] Registered with vMenu: ${result.accepted}.`));
+```
+
+Server:
+
+```js
+const { VMenuServer, ServerPluginDeclaration } = vMenu;
+
+const declaration = new ServerPluginDeclaration('My Plugin')
+  .addPermission('Greet', 'Lets someone use the greet button.')
+  .addBoolSetting('Enabled', true, 'Turns my plugin on or off.');
+
+VMenuServer.register(declaration).then((result) => console.log(`[My Plugin] Registered with vMenu: ${result.accepted}.`));
+```
+
+</TabItem>
+<TabItem label="TypeScript">
+
+Client:
+
+```ts
+import { Gate, NotifyStyle, VMenuPlugin } from '@vespura/vmenu-plugin/client';
+
+const plugin = VMenuPlugin.create('My Plugin');
+
+const greet = plugin.rootMenu.addButton('Say hello', {
+  description: 'Shows a notification, to prove this thing works.',
+});
+
+greet.onSelected(() => plugin.notify(NotifyStyle.Success, 'Hello!'));
+
+const enabled = plugin.settings.bool('Enabled', true, 'Turns my plugin on or off.');
+greet.gate = Gate.permission('Greet').and(Gate.setting(enabled));
+greet.hideWhenLocked = true;
+
+plugin.connect().then((result) => console.log(`[My Plugin] Registered with vMenu: ${result.accepted}.`));
+```
+
+Server:
+
+```ts
+import { ServerPluginDeclaration, VMenuServer } from '@vespura/vmenu-plugin/server';
+
+const declaration = new ServerPluginDeclaration('My Plugin')
+  .addPermission('Greet', 'Lets someone use the greet button.')
+  .addBoolSetting('Enabled', true, 'Turns my plugin on or off.');
+
+VMenuServer.register(declaration).then((result) => console.log(`[My Plugin] Registered with vMenu: ${result.accepted}.`));
+```
+
+</TabItem>
+</Tabs>
+
+The gate is the point of declaring the permission and the setting. Without it the button is always there for everybody and the owner's config file does nothing. With it, the button only works for a player who has `Greet` while `Enabled` is on, and it follows along by itself when either changes. Read a value directly when you want the value rather than a gate: `enabled.Value` in C#, `enabled:GetValue()` in Lua, `enabled.value` in JavaScript and TypeScript.
+
+Connecting and registering never fail with an error. A refusal comes back with `Accepted` false and a reason in `Errors`, and anything vMenu accepted but was unhappy about is in `Warnings`. Both are logged for you too.
 
 ## Start order and reconnecting
 
-Your plugin can start before or after vMenu and registers either way. If vMenu restarts, the packages re-register everything you declared. If your plugin restarts, vMenu drops your menus while you are gone and rebuilds them when you return. `IsConnected` tells you where you stand, and the `Disconnected` and `RegistrationAnswered` events fire on the way through.
+Your plugin can start before or after vMenu and registers either way. If vMenu restarts, the plugin API registers everything you declared again. If your plugin restarts, vMenu drops your menus while you are gone and rebuilds them when you return. `IsConnected` tells you where you stand, and the `Disconnected` and `RegistrationAnswered` events fire on the way through.
 
 ## Rows
 
 Everything vMenu's own menus can do is available:
+
+<Tabs syncKey="lang">
+<TabItem label="C#">
 
 ```csharp
 var menu = plugin.RootMenu;
@@ -150,15 +248,77 @@ var sub = menu.AddSubmenu("A submenu", subtitle: "My Plugin");
 sub.Menu.AddButton("A row inside it");
 ```
 
+</TabItem>
+<TabItem label="Lua">
+
+```lua
+local menu = plugin.RootMenu
+
+menu:AddButton('A button')
+menu:AddConfirmButton('Something destructive')         -- asks for a second press
+menu:AddCheckbox('A checkbox', { Checked = true })
+menu:AddList('A list', { 'One', 'Two' })
+menu:AddConfirmList('A list that asks first', options)
+menu:AddSlider('A slider', 0, 10, 5)
+menu:AddDynamicList('A list built as you scroll', 'start')
+menu:AddSeparator('A heading')
+
+local sub = menu:AddSubmenu('A submenu', { Subtitle = 'My Plugin' })
+sub.Menu:AddButton('A row inside it')
+```
+
+</TabItem>
+<TabItem label="JavaScript">
+
+```js
+const menu = plugin.rootMenu;
+
+menu.addButton('A button');
+menu.addConfirmButton('Something destructive');        // asks for a second press
+menu.addCheckbox('A checkbox', { checked: true });
+menu.addList('A list', ['One', 'Two']);
+menu.addConfirmList('A list that asks first', options);
+menu.addSlider('A slider', 0, 10, 5);
+menu.addDynamicList('A list built as you scroll', 'start');
+menu.addSeparator('A heading');
+
+const sub = menu.addSubmenu('A submenu', { subtitle: 'My Plugin' });
+sub.menu.addButton('A row inside it');
+```
+
+</TabItem>
+<TabItem label="TypeScript">
+
+```ts
+const menu = plugin.rootMenu;
+
+menu.addButton('A button');
+menu.addConfirmButton('Something destructive');        // asks for a second press
+menu.addCheckbox('A checkbox', { checked: true });
+menu.addList('A list', ['One', 'Two']);
+menu.addConfirmList('A list that asks first', options);
+menu.addSlider('A slider', 0, 10, 5);
+menu.addDynamicList('A list built as you scroll', 'start');
+menu.addSeparator('A heading');
+
+const sub = menu.addSubmenu('A submenu', { subtitle: 'My Plugin' });
+sub.menu.addButton('A row inside it');
+```
+
+</TabItem>
+</Tabs>
+
 Each returns an object you can change at any time, before or after connecting: `Text`, `Description`, `Label`, `LockedDescription`, `Visible`, `Enabled`, `Gate`, `SetIcons`, plus whatever that row type has of its own. Changes after connecting update the live menu.
 
 :::tip[Write a description for every row]
 `Description` is the line at the bottom of the screen while a row is highlighted. A menu where half the rows explain themselves and half say nothing looks unfinished.
 :::
 
-A checkbox can remember itself between sessions with `persist: true`, which stores the choice in your own resource's key value store. Pass a stable `id` with it, because automatic ids follow creation order and reordering your code would hand a saved value to the wrong box.
+A checkbox can remember itself between sessions with `persist`, which stores the choice in your own resource's key value store. Pass a stable `id` with it, because automatic ids follow creation order and reordering your code would hand a saved value to the wrong box.
 
 A menu's `subtitle` is the bar under the banner. Leave it out and vMenu uses the menu's title instead, so it is never empty.
+
+A dynamic list asks your code for its next value every time the player scrolls it. Give it a function through `ChangeRequested`, which gets the current value and whether the player went left, and returns the new value. In Lua that is `row:SetChangeRequested(fn)`, in JavaScript `row.changeRequested = fn`.
 
 ### Changing a menu while it is live
 
@@ -166,7 +326,7 @@ You can connect first and build afterwards. Your row under Plugins appears as so
 
 Everything about a menu can change while players use it. Each change only touches the rows involved, the rest of the menu stays as it is and the highlighted row stays highlighted.
 
-| What                    | How                                                                                       |
+| What                    | How (C#)                                                                                  |
 | ----------------------- | ----------------------------------------------------------------------------------------- |
 | Add a row at the bottom | `menu.AddButton(...)` and the other `Add` methods                                         |
 | Add rows at a position  | `using (menu.InsertAt(2)) { menu.AddButton(...); }`                                       |
@@ -178,11 +338,16 @@ Everything about a menu can change while players use it. Each change only touche
 | Rename a menu           | `menu.Title`, `menu.Subtitle`                                                             |
 | Change a row            | any property, such as `Text`, `Visible` or `HideWhenLocked`                               |
 
+`InsertAt` takes a function in the other languages, and rows added inside it go in at that position: `menu:InsertAt(3, function() ... end)` in Lua, `menu.insertAt(2, () => ...)` in JavaScript.
+
 `Filter` hides the rows it answers false for. Rows you add later are checked too. Inside a batch that happens when the batch ends, so properties you set right after adding a row count. When the filter looks at something that changed, call `Filter` again.
 
 Setting a property to the value it already has sends nothing, so you can set everything on every update without worrying about the cost.
 
 Wrap many changes in a batch and vMenu repaints once instead of once per change:
+
+<Tabs syncKey="lang">
+<TabItem label="C#">
 
 ```csharp
 using (plugin.BeginBatch())
@@ -194,11 +359,50 @@ using (plugin.BeginBatch())
 }
 ```
 
-Batches nest safely. Only the outermost one sends, so a helper that batches internally cannot cut your batch short.
+</TabItem>
+<TabItem label="Lua">
+
+```lua
+plugin:Batch(function()
+    for _, thing in ipairs(things) do
+        menu:AddButton(thing.Name)
+    end
+end)
+```
+
+</TabItem>
+<TabItem label="JavaScript">
+
+```js
+plugin.batch(() => {
+  for (const thing of things) {
+    menu.addButton(thing.name);
+  }
+});
+```
+
+</TabItem>
+<TabItem label="TypeScript">
+
+```ts
+plugin.batch(() => {
+  for (const thing of things) {
+    menu.addButton(thing.name);
+  }
+});
+```
+
+</TabItem>
+</Tabs>
+
+Batches nest safely. Only the outermost one sends, so a helper that batches internally cannot cut your batch short. In JavaScript and TypeScript the batch ends when the function returns, so changes after an `await` inside it go out on their own.
 
 ### Keys
 
 A menu can have keys of its own. A key only does something while that menu is open, and it shows up as an instructional button, which is the little row of key hints at the bottom right of the screen. This is handy for shortcuts that act on the row the player is standing on:
+
+<Tabs syncKey="lang">
+<TabItem label="C#">
 
 ```csharp
 var edit = menu.AddKey("edit_value", "Type a value", defaultKey: "X", defaultButton: "RUP_INDEX");
@@ -212,6 +416,50 @@ edit.Pressed += press =>
 };
 ```
 
+</TabItem>
+<TabItem label="Lua">
+
+```lua
+local edit = menu:AddKey('edit_value', 'Type a value', 'X', { DefaultButton = 'RUP_INDEX' })
+
+edit:OnPressed(function(press)
+    if press.Item == myList then
+        -- the player pressed X while the cursor was on this list
+    end
+end)
+```
+
+</TabItem>
+<TabItem label="JavaScript">
+
+```js
+const edit = menu.addKey('edit_value', 'Type a value', 'X', { defaultButton: 'RUP_INDEX' });
+
+edit.onPressed((press) => {
+  if (press.item instanceof vMenu.PluginList) {
+    // the player pressed X while the cursor was on this list
+  }
+});
+```
+
+</TabItem>
+<TabItem label="TypeScript">
+
+```ts
+import { PluginList } from '@vespura/vmenu-plugin/client';
+
+const edit = menu.addKey('edit_value', 'Type a value', 'X', { defaultButton: 'RUP_INDEX' });
+
+edit.onPressed((press) => {
+  if (press.item instanceof PluginList) {
+    // the player pressed X while the cursor was on this list
+  }
+});
+```
+
+</TabItem>
+</Tabs>
+
 `Pressed` tells you which row the cursor was on. When the player may use that row, you get it as `Item`. When the row is locked by its gate or switched off with `Enabled`, `Item` stays empty and you get the row as `DisabledItem` instead. That way a key never quietly lets a player use a row they are not allowed to, but you can still decide to react to it yourself, for example to explain why nothing happened. Both are empty when the menu has no rows or the row is not one of yours.
 
 The player can change the key in the game's own key settings, under vMenu, where it is listed with your plugin's name in front of it. The game remembers that choice by the key's id, so pick an id once and never change it, or players lose the key they picked. Ids may only use letters, digits and underscores.
@@ -222,7 +470,10 @@ The player can change the key in the game's own key settings, under vMenu, where
 
 ## Text and translations
 
-Every piece of text is a `Text` object, either a literal or a key into your own translation tables:
+Every piece of text is either a literal or a key into your own translation tables:
+
+<Tabs syncKey="lang">
+<TabItem label="C#">
 
 ```csharp
 plugin.Translations.Add("en", new Dictionary<string, string>
@@ -233,11 +484,52 @@ plugin.Translations.Add("en", new Dictionary<string, string>
 menu.AddButton(Text.Key("greet", ("name", Text.Literal("world"))));
 ```
 
+</TabItem>
+<TabItem label="Lua">
+
+```lua
+plugin.Translations:Add('en', {
+    greet = 'Greet {name}',
+})
+
+menu:AddButton(vMenu.Text.Key('greet', { name = 'world' }))
+```
+
+</TabItem>
+<TabItem label="JavaScript">
+
+```js
+plugin.translations.add('en', {
+  greet: 'Greet {name}',
+});
+
+menu.addButton(vMenu.Text.key('greet', { name: 'world' }));
+```
+
+</TabItem>
+<TabItem label="TypeScript">
+
+```ts
+import { Text } from '@vespura/vmenu-plugin/client';
+
+plugin.translations.add('en', {
+  greet: 'Greet {name}',
+});
+
+menu.addButton(Text.key('greet', { name: 'world' }));
+```
+
+</TabItem>
+</Tabs>
+
 A plain string is a literal, so translating is always deliberate. Keys are looked up in the player's current vMenu language and then in your English table, which is why an `en` table is required as soon as you provide any. Your keys are yours alone, so they never collide with vMenu's or another plugin's. When the player changes language, your menu follows.
 
 ## Permissions and settings
 
 Declare both on the server, use them on the client.
+
+<Tabs syncKey="lang">
+<TabItem label="C#">
 
 ```csharp
 // Server
@@ -245,16 +537,65 @@ new ServerPluginDeclaration("My Plugin")
     .AddPermission("Greet", "Lets someone use the greet button.")
     .AddPermission("Poke", "Lets someone poke other players.", staffOnly: true)
     .AddBoolSetting("Enabled", true, "Turns my plugin on or off.");
-```
 
-```csharp
 // Client
 var enabled = plugin.Settings.Bool("Enabled", true, "Turns my plugin on or off.");
 
 greet.Gate = PluginGate.Permission("Greet") & PluginGate.Setting(enabled);
 ```
 
-Gates combine with `&` and `|`, are evaluated live, and refresh by themselves when the owner changes a permission or setting. `HideWhenLocked` decides whether a row the player may not use is greyed out with a lock or gone entirely.
+</TabItem>
+<TabItem label="Lua">
+
+```lua
+-- Server
+vMenu.ServerPluginDeclaration('My Plugin')
+    :AddPermission('Greet', 'Lets someone use the greet button.')
+    :AddPermission('Poke', 'Lets someone poke other players.', true)
+    :AddBoolSetting('Enabled', true, 'Turns my plugin on or off.')
+
+-- Client
+local enabled = plugin.Settings:Bool('Enabled', true, 'Turns my plugin on or off.')
+
+greet:SetGate(vMenu.Gate.Permission('Greet') & vMenu.Gate.Setting(enabled))
+```
+
+</TabItem>
+<TabItem label="JavaScript">
+
+```js
+// Server
+new vMenu.ServerPluginDeclaration('My Plugin')
+  .addPermission('Greet', 'Lets someone use the greet button.')
+  .addPermission('Poke', 'Lets someone poke other players.', true)
+  .addBoolSetting('Enabled', true, 'Turns my plugin on or off.');
+
+// Client
+const enabled = plugin.settings.bool('Enabled', true, 'Turns my plugin on or off.');
+
+greet.gate = vMenu.Gate.permission('Greet').and(vMenu.Gate.setting(enabled));
+```
+
+</TabItem>
+<TabItem label="TypeScript">
+
+```ts
+// Server
+new ServerPluginDeclaration('My Plugin')
+  .addPermission('Greet', 'Lets someone use the greet button.')
+  .addPermission('Poke', 'Lets someone poke other players.', true)
+  .addBoolSetting('Enabled', true, 'Turns my plugin on or off.');
+
+// Client
+const enabled = plugin.settings.bool('Enabled', true, 'Turns my plugin on or off.');
+
+greet.gate = Gate.permission('Greet').and(Gate.setting(enabled));
+```
+
+</TabItem>
+</Tabs>
+
+Gates combine with `&` and `|` in C# and Lua, and with `and`, `or`, `Gate.all` and `Gate.any` in JavaScript. They are evaluated live, and refresh by themselves when the owner changes a permission or setting. Anywhere a gate is expected, a plain permission name works too. `HideWhenLocked` decides whether a row the player may not use is greyed out with a lock or gone entirely.
 
 Names are short and vMenu scopes them to your resource, so `Greet` becomes `vMenu.Enhanced.Plugins.MyPlugin.Greet`. Only letters, digits and underscores are allowed.
 
@@ -262,17 +603,71 @@ Settings come in `Bool`, `Int`, `Float` and `String`. Declare them on both sides
 
 For anything that matters, check on the server before you act:
 
+<Tabs syncKey="lang">
+<TabItem label="C#">
+
 ```csharp
 if (VMenuServer.IsPlayerAllowed(source, "Poke")) { ... }
 ```
+
+</TabItem>
+<TabItem label="Lua">
+
+```lua
+if vMenu.Server.IsPlayerAllowed(source, 'Poke') then ... end
+```
+
+</TabItem>
+<TabItem label="JavaScript">
+
+```js
+if (vMenu.VMenuServer.isPlayerAllowed(source, 'Poke')) { ... }
+```
+
+</TabItem>
+<TabItem label="TypeScript">
+
+```ts
+if (VMenuServer.isPlayerAllowed(source, 'Poke')) { ... }
+```
+
+</TabItem>
+</Tabs>
 
 Use this rather than FiveM's `IsPlayerAceAllowed`, because it checks parent permissions too. An owner who granted the whole plugin instead of each individual permission then works out of the box.
 
 There is a second version of that check for the case where a refusal means somebody is up to no good:
 
+<Tabs syncKey="lang">
+<TabItem label="C#">
+
 ```csharp
 if (!VMenuServer.RequirePermission(source, "Poke")) { return; }
 ```
+
+</TabItem>
+<TabItem label="Lua">
+
+```lua
+if not vMenu.Server.RequirePermission(source, 'Poke') then return end
+```
+
+</TabItem>
+<TabItem label="JavaScript">
+
+```js
+if (!vMenu.VMenuServer.requirePermission(source, 'Poke')) { return; }
+```
+
+</TabItem>
+<TabItem label="TypeScript">
+
+```ts
+if (!VMenuServer.requirePermission(source, 'Poke')) { return; }
+```
+
+</TabItem>
+</Tabs>
 
 It answers exactly the same, and it also tells vMenu, which puts a line in the server owner's security log naming the player and the permission they were missing. Only reach for it when a normal, unmodified client could not possibly have sent you the thing you are handling, which is the usual case for an event behind a menu row you gated. Keep `IsPlayerAllowed` for everything else, such as deciding which of two things to do, or the owner ends up with a log full of ordinary play and stops reading it.
 
@@ -280,13 +675,46 @@ It answers exactly the same, and it also tells vMenu, which puts a line in the s
 
 vMenu sends a player their permissions once and does not send them again on its own, so an ace you add or remove at runtime does not reach a player who already has the menu open. Ask vMenu to send them again from your server code:
 
+<Tabs syncKey="lang">
+<TabItem label="C#">
+
 ```csharp
 VMenuServer.RefreshPermissions();          // every connected player
 VMenuServer.RefreshPermissions(playerId);  // one player, by their server id
 VMenuServer.RefreshPermissions(1, 4, 9);   // several players at once
 ```
 
-Any resource can do the same by triggering the event on the server, with no ids for everyone or a list of server ids for specific players:
+</TabItem>
+<TabItem label="Lua">
+
+```lua
+vMenu.Server.RefreshPermissions()          -- every connected player
+vMenu.Server.RefreshPermissions(playerId)  -- one player, by their server id
+vMenu.Server.RefreshPermissions(1, 4, 9)   -- several players at once
+```
+
+</TabItem>
+<TabItem label="JavaScript">
+
+```js
+vMenu.VMenuServer.refreshPermissions();          // every connected player
+vMenu.VMenuServer.refreshPermissions(playerId);  // one player, by their server id
+vMenu.VMenuServer.refreshPermissions(1, 4, 9);   // several players at once
+```
+
+</TabItem>
+<TabItem label="TypeScript">
+
+```ts
+VMenuServer.refreshPermissions();          // every connected player
+VMenuServer.refreshPermissions(playerId);  // one player, by their server id
+VMenuServer.refreshPermissions(1, 4, 9);   // several players at once
+```
+
+</TabItem>
+</Tabs>
+
+Any resource can do the same without the plugin API by triggering the event on the server, with no ids for everyone or a list of server ids for specific players:
 
 ```lua
 TriggerEvent("vMenu.Enhanced:Permissions:Refresh")
@@ -297,6 +725,9 @@ TriggerEvent("vMenu.Enhanced:Permissions:Refresh", { 4, 9 })
 
 A server owner can have vMenu write a line to their Discord log whenever somebody uses one of your rows. It takes both halves of your plugin, and that is on purpose:
 
+<Tabs syncKey="lang">
+<TabItem label="C#">
+
 ```csharp
 // Server
 new ServerPluginDeclaration("My Plugin")
@@ -304,14 +735,59 @@ new ServerPluginDeclaration("My Plugin")
     .AddLoggedItem("payout", "paid everybody out");
 
 // Client
-var shield = plugin.RootMenu.AddCheckbox("Shield");
+var shield = plugin.RootMenu.AddCheckbox("Shield", id: "shield");
 shield.Log = true;
 
-var payout = plugin.RootMenu.AddButton("Pay everyone");
+var payout = plugin.RootMenu.AddButton("Pay everyone", id: "payout");
 payout.Log = true;
 ```
 
-Setting `Log` on its own does nothing. The list your server half declares is the one vMenu actually trusts, because the client half runs on the player's own machine, and somebody with a modified copy of it could otherwise choose what text appears in the owner's Discord channel. Declaring it on the server means the worst a modified client can do is replay a row you already said was fine to log.
+</TabItem>
+<TabItem label="Lua">
+
+```lua
+-- Server
+vMenu.ServerPluginDeclaration('My Plugin')
+    :AddLoggedItem('shield', 'their shield')
+    :AddLoggedItem('payout', 'paid everybody out')
+
+-- Client
+plugin.RootMenu:AddCheckbox('Shield', { Id = 'shield', Log = true })
+plugin.RootMenu:AddButton('Pay everyone', { Id = 'payout', Log = true })
+```
+
+</TabItem>
+<TabItem label="JavaScript">
+
+```js
+// Server
+new vMenu.ServerPluginDeclaration('My Plugin')
+  .addLoggedItem('shield', 'their shield')
+  .addLoggedItem('payout', 'paid everybody out');
+
+// Client
+plugin.rootMenu.addCheckbox('Shield', { id: 'shield', log: true });
+plugin.rootMenu.addButton('Pay everyone', { id: 'payout', log: true });
+```
+
+</TabItem>
+<TabItem label="TypeScript">
+
+```ts
+// Server
+new ServerPluginDeclaration('My Plugin')
+  .addLoggedItem('shield', 'their shield')
+  .addLoggedItem('payout', 'paid everybody out');
+
+// Client
+plugin.rootMenu.addCheckbox('Shield', { id: 'shield', log: true });
+plugin.rootMenu.addButton('Pay everyone', { id: 'payout', log: true });
+```
+
+</TabItem>
+</Tabs>
+
+Setting `Log` on its own does nothing. The list your server half declares is the one vMenu actually trusts, because the client half runs on the player's own machine, and somebody with a modified copy of it could otherwise choose what text appears in the owner's Discord channel. Declaring it on the server means the worst a modified client can do is replay a row you already said was fine to log. The ids on both sides have to match, so give logged rows an id of your own.
 
 The description is not the row's name, and for most rows it is not a whole sentence either. vMenu builds the sentence around it, so the shape it needs depends on the kind of row.
 
@@ -358,6 +834,9 @@ Write a real `description` for every permission and setting. It becomes the comm
 
 The one place a plugin reaches outside its own submenu is the **Plugin Actions** submenu inside every player's page in **Online Players**:
 
+<Tabs syncKey="lang">
+<TabItem label="C#">
+
 ```csharp
 var poke = plugin.PlayerActions.AddButton("Poke");
 poke.Description = "Pokes this player.";
@@ -365,24 +844,236 @@ poke.Gate = PluginGate.Permission("Poke");
 poke.Selected += target => plugin.Notify(NotifyStyle.Info, $"You poked {target.Name}.");
 ```
 
+</TabItem>
+<TabItem label="Lua">
+
+```lua
+local poke = plugin.PlayerActions:AddButton('Poke', { Description = 'Pokes this player.', Gate = 'Poke' })
+
+poke:OnSelected(function(target)
+    plugin:Notify('info', ('You poked %s.'):format(target.Name))
+end)
+```
+
+</TabItem>
+<TabItem label="JavaScript">
+
+```js
+const poke = plugin.playerActions.addButton('Poke', { description: 'Pokes this player.', gate: 'Poke' });
+
+poke.onSelected((target) => plugin.notify('info', `You poked ${target.name}.`));
+```
+
+</TabItem>
+<TabItem label="TypeScript">
+
+```ts
+const poke = plugin.playerActions.addButton('Poke', { description: 'Pokes this player.', gate: 'Poke' });
+
+poke.onSelected((target) => plugin.notify(NotifyStyle.Info, `You poked ${target.name}.`));
+```
+
+</TabItem>
+</Tabs>
+
 The same rows serve every player, and the selected one is handed to your callback with their name and server id. vMenu adds a line naming your resource to these descriptions, so players can see which resource added it.
 
 ## Talking to the player
 
+<Tabs syncKey="lang">
+<TabItem label="C#">
+
 ```csharp
 plugin.Notify(NotifyStyle.Success, "That worked.");
+```
 
-if (await plugin.GetTextAsync("What is your name?", maxLength: 32) is { } name)
+</TabItem>
+<TabItem label="Lua">
+
+```lua
+plugin:Notify('success', 'That worked.')
+```
+
+</TabItem>
+<TabItem label="JavaScript">
+
+```js
+plugin.notify('success', 'That worked.');
+```
+
+</TabItem>
+<TabItem label="TypeScript">
+
+```ts
+plugin.notify(NotifyStyle.Success, 'That worked.');
+```
+
+</TabItem>
+</Tabs>
+
+Notifications appear in vMenu's notification area, credited to your plugin. The style is `info`, `success`, `warning` or `error`, or `NotifyStyle.Success` and so on in TypeScript, and an optional third argument sets how long it stays, in milliseconds.
+
+### Asking the player for text
+
+`GetText` opens vMenu's input box and gives back what the player typed, or nothing when they cancel. Call it from a row's handler:
+
+<Tabs syncKey="lang">
+<TabItem label="C#">
+
+```csharp
+var rename = menu.AddButton("Rename vehicle");
+
+rename.Selected += async () =>
 {
-    // they typed something
+    var name = await plugin.GetTextAsync(
+        "New name",
+        maxLength: 32,
+        initialValue: "My car",
+        suggestions: [new PromptSuggestion("Daily driver"), new PromptSuggestion("Race car", "For the track")]);
+
+    if (name is null)
+    {
+        return; // cancelled
+    }
+
+    plugin.Notify(NotifyStyle.Success, $"Renamed to {name}.");
+};
+```
+
+</TabItem>
+<TabItem label="Lua">
+
+```lua
+local rename = menu:AddButton('Rename vehicle')
+
+rename:OnSelected(function()
+    local name = plugin:GetText('New name', {
+        MaxLength = 32,
+        InitialValue = 'My car',
+        Suggestions = { { Value = 'Daily driver' }, { Value = 'Race car', Description = 'For the track' } },
+    })
+
+    if not name then
+        return -- cancelled
+    end
+
+    plugin:Notify('success', ('Renamed to %s.'):format(name))
+end)
+```
+
+</TabItem>
+<TabItem label="JavaScript">
+
+```js
+const rename = menu.addButton('Rename vehicle');
+
+rename.onSelected(async () => {
+  const name = await plugin.getText('New name', {
+    maxLength: 32,
+    initialValue: 'My car',
+    suggestions: [{ value: 'Daily driver' }, { value: 'Race car', description: 'For the track' }],
+  });
+
+  if (name === null) {
+    return; // cancelled
+  }
+
+  plugin.notify('success', `Renamed to ${name}.`);
+});
+```
+
+</TabItem>
+<TabItem label="TypeScript">
+
+```ts
+const rename = menu.addButton('Rename vehicle');
+
+rename.onSelected(async () => {
+  const name = await plugin.getText('New name', {
+    maxLength: 32,
+    initialValue: 'My car',
+    suggestions: [{ value: 'Daily driver' }, { value: 'Race car', description: 'For the track' }],
+  });
+
+  if (name === null) {
+    return; // cancelled
+  }
+
+  plugin.notify(NotifyStyle.Success, `Renamed to ${name}.`);
+});
+```
+
+</TabItem>
+</Tabs>
+
+All options are optional. `maxLength` defaults to 60 and vMenu caps it at 500. Suggestions show as a list while the player types, and picking one fills in its value.
+
+To ask several questions in a row, pass them all at once. You get every answer back in order, or nothing if the player cancelled any of them:
+
+<Tabs syncKey="lang">
+<TabItem label="C#">
+
+```csharp
+var answers = await plugin.GetTextAsync(
+    new PluginPrompt("First name", maxLength: 20),
+    new PluginPrompt("Last name", maxLength: 20));
+
+if (answers is [var first, var last]) { ... }
+```
+
+</TabItem>
+<TabItem label="Lua">
+
+```lua
+local answers = plugin:GetTexts({
+    { Title = 'First name', MaxLength = 20 },
+    { Title = 'Last name', MaxLength = 20 },
+})
+
+if answers then
+    local first, last = answers[1], answers[2]
+end
+```
+
+</TabItem>
+<TabItem label="JavaScript">
+
+```js
+const answers = await plugin.getTexts([
+  { title: 'First name', maxLength: 20 },
+  { title: 'Last name', maxLength: 20 },
+]);
+
+if (answers !== null) {
+  const [first, last] = answers;
 }
 ```
 
-Notifications appear in vMenu's notification area, credited to your plugin. `GetTextAsync` opens vMenu's input box and returns null when the player cancels. It can ask several questions in a row, and refuses when something else is already using the box.
+</TabItem>
+<TabItem label="TypeScript">
+
+```ts
+const answers = await plugin.getTexts([
+  { title: 'First name', maxLength: 20 },
+  { title: 'Last name', maxLength: 20 },
+]);
+
+if (answers !== null) {
+  const [first, last] = answers;
+}
+```
+
+</TabItem>
+</Tabs>
+
+The box refuses, and you get nothing back, when something else is already using it. In Lua these calls wait for the answer, so call them from a menu event handler or a `CreateThread`, or pass a callback as the last argument.
 
 ## The menu's theme
 
 vMenu can draw its menus in a few different looks, called themes. The server owner picks one for everybody with a convar, and a plugin can put one player in a different one:
+
+<Tabs syncKey="lang">
+<TabItem label="C#">
 
 ```csharp
 plugin.Themes.Changed += () =>
@@ -398,13 +1089,61 @@ plugin.Themes.Set("dark");   // this player sees the dark theme from now on
 plugin.Themes.Reset();       // back to the theme the server picked
 ```
 
+</TabItem>
+<TabItem label="Lua">
+
+```lua
+plugin.Themes:OnChanged(function()
+    for _, theme in ipairs(plugin.Themes:GetAvailable()) do
+        -- theme.Id is what you send back, theme.Name is what a player reads,
+        -- theme.IsCurrent says whether it is the one on screen.
+    end
+end)
+
+plugin.Themes:Set('dark')   -- this player sees the dark theme from now on
+plugin.Themes:Reset()       -- back to the theme the server picked
+```
+
+</TabItem>
+<TabItem label="JavaScript">
+
+```js
+plugin.themes.onChanged(() => {
+  for (const theme of plugin.themes.available) {
+    // theme.id is what you send back, theme.name is what a player reads,
+    // theme.isCurrent says whether it is the one on screen.
+  }
+});
+
+plugin.themes.set('dark');   // this player sees the dark theme from now on
+plugin.themes.reset();       // back to the theme the server picked
+```
+
+</TabItem>
+<TabItem label="TypeScript">
+
+```ts
+plugin.themes.onChanged(() => {
+  for (const theme of plugin.themes.available) {
+    // theme.id is what you send back, theme.name is what a player reads,
+    // theme.isCurrent says whether it is the one on screen.
+  }
+});
+
+plugin.themes.set('dark');   // this player sees the dark theme from now on
+plugin.themes.reset();       // back to the theme the server picked
+```
+
+</TabItem>
+</Tabs>
+
 vMenu sends the list right after your plugin registers and again on every change, whoever caused it, so build your rows from the `Changed` event rather than straight after connecting. `Available` is empty until that first message arrives, and stays empty against a vMenu too old to know about themes.
 
 A theme set this way beats the server's convar, and it belongs to that one player. vMenu saves nothing, so reconnecting puts the server's choice back, and `Reset` does the same without the wait. Remembering a choice is your plugin's job: keep the id in your own resource's key value store and set it again on the first list vMenu sends you, which is what the Theme Picker plugin does. No permission and no setting gates any of this, because it changes nothing except what that player sees.
 
 ### Adding themes of your own
 
-A resource can also hand vMenu new themes, so a server does not have to edit vMenu's own files to get a look of its own. This one needs no C# and no plugin registration at all, it is a single event, so a plain JavaScript or Lua resource can do it:
+A resource can also hand vMenu new themes, so a server does not have to edit vMenu's own files to get a look of its own. This one needs no plugin API and no plugin registration at all, it is a single event that any resource can send:
 
 ```js
 emit(
@@ -443,7 +1182,7 @@ Once registered, a theme is a theme like any other. It shows up for plugins read
 
 ## License
 
-vMenu and both NuGet packages are **GPL-3.0-or-later**. A plugin built on those packages is a work based on vMenu, so you cannot put a closed license on the result. **Your plugin must be licensed GPL-3.0 (or later) or AGPL-3.0 (or later).** The GPL explicitly allows being combined with the AGPL, and the AGPL keeps your code open just as well.
+vMenu and every form of the plugin API are **GPL-3.0-or-later**. A plugin built on them is a work based on vMenu, so you cannot put a closed license on the result. **Your plugin must be licensed GPL-3.0 (or later) or AGPL-3.0 (or later).** The GPL explicitly allows being combined with the AGPL, and the AGPL keeps your code open just as well.
 
 A permissive license such as MIT or Apache is not enough on its own. Those let anyone take the code and close it again, which is exactly what vMenu's license is there to prevent.
 
