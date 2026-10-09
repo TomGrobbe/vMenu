@@ -5,7 +5,7 @@ namespace vMenu.Enhanced.PluginContracts;
 /// operations are skipped, so the version only moves on breaking changes.</summary>
 public static class PluginProtocol
 {
-    public const int Version = 1;
+    public const int Version = 2;
 
     /// <summary>The resource name vMenu Enhanced runs under, enforced by vMenu itself.</summary>
     public const string VMenuResource = "vMenu.Enhanced";

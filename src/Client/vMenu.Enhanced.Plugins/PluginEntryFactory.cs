@@ -22,36 +22,37 @@ internal static class PluginEntryFactory
     {
         state.Builders[menuNode.Id] = builder;
 
-        var events = menuNode.Events;
+        builder.SetUserFilter(state.VisibilityFilter);
 
-        if (events is not null && events.Contains(NodeEvents.Opened))
+        builder.OnOpened += _ =>
         {
-            builder.OnOpened += _ => PluginHost.Emit(state, new PluginCallback
+            if (Wants(menuNode.Events, NodeEvents.Opened))
             {
-                Type = CallbackTypes.MenuOpened,
-                MenuId = menuNode.Id,
-            });
-        }
+                PluginHost.Emit(state, new PluginCallback { Type = CallbackTypes.MenuOpened, MenuId = menuNode.Id });
+            }
+        };
 
-        if (events is not null && events.Contains(NodeEvents.Closed))
+        builder.OnClosed += _ =>
         {
-            builder.OnClosed += _ => PluginHost.Emit(state, new PluginCallback
+            if (Wants(menuNode.Events, NodeEvents.Closed))
             {
-                Type = CallbackTypes.MenuClosed,
-                MenuId = menuNode.Id,
-            });
-        }
+                PluginHost.Emit(state, new PluginCallback { Type = CallbackTypes.MenuClosed, MenuId = menuNode.Id });
+            }
+        };
 
-        if (events is not null && events.Contains(NodeEvents.IndexChanged))
+        builder.OnIndexChanged += changed =>
         {
-            builder.OnIndexChanged += changed => PluginHost.Emit(state, new PluginCallback
+            if (Wants(menuNode.Events, NodeEvents.IndexChanged))
             {
-                Type = CallbackTypes.MenuIndexChanged,
-                MenuId = menuNode.Id,
-                OldIndex = changed.OldIndex,
-                NewIndex = changed.NewIndex,
-            });
-        }
+                PluginHost.Emit(state, new PluginCallback
+                {
+                    Type = CallbackTypes.MenuIndexChanged,
+                    MenuId = menuNode.Id,
+                    OldIndex = changed.OldIndex,
+                    NewIndex = changed.NewIndex,
+                });
+            }
+        };
 
         foreach (var key in menuNode.Keys ?? [])
         {
@@ -67,7 +68,7 @@ internal static class PluginEntryFactory
         }
     }
 
-    private static MenuKey CreateKey(PluginState state, KeyNode key, string menuId) => new()
+    internal static MenuKey CreateKey(PluginState state, KeyNode key, string menuId) => new()
     {
         // Key mappings are global, so the plugin id keeps plugins apart. Neither id can contain a colon.
         Name = $"plugin:{state.Id}:{key.Id}",
@@ -106,6 +107,18 @@ internal static class PluginEntryFactory
 
     internal static MenuEntry? CreateEntry(PluginState state, ItemNode node, string menuId)
     {
+        var entry = Build(state, node, menuId);
+
+        if (entry is not null)
+        {
+            state.EntriesById[node.Id] = entry;
+        }
+
+        return entry;
+    }
+
+    private static MenuEntry? Build(PluginState state, ItemNode node, string menuId)
+    {
         switch (node.Type)
         {
             case EntryTypes.Button:
@@ -116,7 +129,7 @@ internal static class PluginEntryFactory
                     Label = LiveText(state, () => node.Label),
                     LockedDescription = LiveText(state, () => node.LockedDescription),
                     Gate = GateFor(state, node),
-                    Behaviour = BehaviourFor(node),
+                    ReadBehaviour = () => BehaviourFor(node),
                     ReadEnabled = () => node.Enabled != false,
                     ReadLeftIcon = () => ParseIcon(node.LeftIcon),
                     ReadRightIcon = () => ParseIcon(node.RightIcon),
@@ -134,7 +147,7 @@ internal static class PluginEntryFactory
                     LockedDescription = LiveText(state, () => node.LockedDescription),
                     ConfirmationDescription = ConfirmTextFor(state, node),
                     Gate = GateFor(state, node),
-                    Behaviour = BehaviourFor(node),
+                    ReadBehaviour = () => BehaviourFor(node),
                     ReadEnabled = () => node.Enabled != false,
                     ReadLeftIcon = () => ParseIcon(node.LeftIcon),
                     ReadRightIcon = () => ParseIcon(node.RightIcon),
@@ -150,7 +163,7 @@ internal static class PluginEntryFactory
                     Description = LiveText(state, () => node.Description),
                     LockedDescription = LiveText(state, () => node.LockedDescription),
                     Gate = GateFor(state, node),
-                    Behaviour = BehaviourFor(node),
+                    ReadBehaviour = () => BehaviourFor(node),
                     ReadEnabled = () => node.Enabled != false,
                     ReadLeftIcon = () => ParseIcon(node.LeftIcon),
                     ReadRightIcon = () => ParseIcon(node.RightIcon),
@@ -187,7 +200,7 @@ internal static class PluginEntryFactory
                     Description = LiveText(state, () => node.Description),
                     LockedDescription = LiveText(state, () => node.LockedDescription),
                     Gate = GateFor(state, node),
-                    Behaviour = BehaviourFor(node),
+                    ReadBehaviour = () => BehaviourFor(node),
                     ReadEnabled = () => node.Enabled != false,
                     ReadLeftIcon = () => ParseIcon(node.LeftIcon),
                     ReadRightIcon = () => ParseIcon(node.RightIcon),
@@ -222,7 +235,7 @@ internal static class PluginEntryFactory
                     Text = LiveText(state, () => node.Text),
                     Description = LiveText(state, () => node.Description),
                     Gate = GateFor(state, node),
-                    Behaviour = BehaviourFor(node),
+                    ReadBehaviour = () => BehaviourFor(node),
                     Configure = item => state.NodesByItem[item] = node,
                 };
 
@@ -239,7 +252,7 @@ internal static class PluginEntryFactory
                     Label = LiveText(state, () => node.Label),
                     LockedDescription = LiveText(state, () => node.LockedDescription),
                     Gate = GateFor(state, node),
-                    Behaviour = BehaviourFor(node),
+                    ReadBehaviour = () => BehaviourFor(node),
                     ReadEnabled = () => node.Enabled != false,
                     ReadLeftIcon = () => ParseIcon(node.LeftIcon),
                     ReadRightIcon = () => ParseIcon(node.RightIcon),
@@ -266,7 +279,7 @@ internal static class PluginEntryFactory
             Description = LiveText(state, () => node.Description),
             LockedDescription = LiveText(state, () => node.LockedDescription),
             Gate = GateFor(state, node),
-            Behaviour = BehaviourFor(node),
+            ReadBehaviour = () => BehaviourFor(node),
             ReadEnabled = () => node.Enabled != false,
             ReadLeftIcon = () => ParseIcon(node.LeftIcon),
             ReadRightIcon = () => ParseIcon(node.RightIcon),
@@ -305,7 +318,7 @@ internal static class PluginEntryFactory
             LockedDescription = LiveText(state, () => node.LockedDescription),
             ConfirmationDescription = ConfirmTextFor(state, node),
             Gate = GateFor(state, node),
-            Behaviour = BehaviourFor(node),
+            ReadBehaviour = () => BehaviourFor(node),
             ReadEnabled = () => node.Enabled != false,
             ReadLeftIcon = () => ParseIcon(node.LeftIcon),
             ReadRightIcon = () => ParseIcon(node.RightIcon),
@@ -344,7 +357,7 @@ internal static class PluginEntryFactory
             Description = LiveText(state, () => node.Description),
             LockedDescription = LiveText(state, () => node.LockedDescription),
             Gate = GateFor(state, node),
-            Behaviour = BehaviourFor(node),
+            ReadBehaviour = () => BehaviourFor(node),
             ReadEnabled = () => node.Enabled != false,
             ReadLeftIcon = () => ParseIcon(node.LeftIcon),
             ReadRightIcon = () => ParseIcon(node.RightIcon),
@@ -427,14 +440,30 @@ internal static class PluginEntryFactory
             ? state.Resolve(wording)
             : Localizer.Current.Get(Loc.Framework.ConfirmDescription));
 
-    private static Action<MenuItem>? HighlightFor(PluginState state, ItemNode node, string menuId)
+    private static Action<MenuItem> HighlightFor(PluginState state, ItemNode node, string menuId) => _ =>
     {
-        if (node.Events is null || !node.Events.Contains(NodeEvents.Highlighted))
+        if (Wants(node.Events, NodeEvents.Highlighted))
         {
-            return null;
+            PluginHost.Emit(state, Callback(CallbackTypes.ItemHighlighted, menuId, node));
+        }
+    };
+
+    private static bool Wants(List<string>? events, string name)
+    {
+        if (events is null)
+        {
+            return false;
         }
 
-        return _ => PluginHost.Emit(state, Callback(CallbackTypes.ItemHighlighted, menuId, node));
+        foreach (var subscribed in events)
+        {
+            if (string.Equals(subscribed, name, StringComparison.Ordinal))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private static int Clamp(int index, int count) => count == 0 ? 0 : Math.Clamp(index, 0, count - 1);

@@ -37,6 +37,12 @@ public class UpdateOp
 
     public List<string>? ItemIds { get; set; }
 
+    public string? BeforeItemId { get; set; }
+
+    public List<string>? Events { get; set; }
+
+    public List<KeyNode>? Keys { get; set; }
+
     /// <summary>Language code for mergeTranslations.</summary>
     public string? Language { get; set; }
 

@@ -153,20 +153,26 @@ public static class PluginHost
         Pending.Remove(resource);
         LastPayload.Remove(resource);
 
-        if (!Plugins.ContainsKey(resource))
+        if (!Plugins.Remove(resource, out var state))
         {
             return;
         }
 
-        // Before the plugin is dropped, since the check walks the registered set and a plugin already out of
-        // it can no longer be recognised as the owner of the menu on screen.
-        CloseIfInsideAPluginMenu();
-
-        Plugins.Remove(resource);
+        CloseIfInside(state);
 
         Log.Info($"[Plugins] '{resource}' unregistered, removing its menus.");
 
-        RebuildRows();
+        if (_pluginsBuilder is { } builder && state.Row is { } row)
+        {
+            builder.Remove(row);
+        }
+
+        state.Row = null;
+
+        if (Plugins.Count == 0)
+        {
+            RefreshMainMenu();
+        }
 
         RaiseChanged();
     }
@@ -262,16 +268,24 @@ public static class PluginHost
             }
         }
 
-        // Before the dictionary is written, since the check reads it and the state going in is a fresh one
-        // that knows nothing of the menus the player may be standing in right now.
-        CloseIfInsideAPluginMenu();
+        Plugins.TryGetValue(resource, out var replaced);
 
-        var firstRegistration = !Plugins.ContainsKey(resource);
+        if (replaced is not null)
+        {
+            CloseIfInside(replaced);
+        }
+
+        var firstRegistration = replaced is null;
 
         Plugins[resource] = state;
         LastPayload[resource] = json;
 
-        RebuildRows();
+        PlaceRow(state, replaced);
+
+        if (Plugins.Count == 1 && firstRegistration)
+        {
+            RefreshMainMenu();
+        }
 
         RaiseChanged();
 
@@ -366,19 +380,21 @@ public static class PluginHost
         }
     }
 
-    private static void RebuildRows()
+    private static void PlaceRow(PluginState state, PluginState? previous)
     {
         if (_pluginsBuilder is not { } builder)
         {
             return;
         }
 
-        builder.ClearEntries();
-
-        var rows = new List<MenuEntry>();
-
-        foreach (var state in Plugins.Values.OrderBy(static plugin => plugin.Resource, StringComparer.OrdinalIgnoreCase))
+        using (builder.BeginUpdate())
         {
+            if (previous?.Row is { } old)
+            {
+                builder.Remove(old);
+                previous.Row = null;
+            }
+
             state.Builders.Clear();
             state.NodesByItem.Clear();
 
@@ -386,33 +402,61 @@ public static class PluginHost
             // advertise a menu with nothing in it. The first rows it adds bring the row into being.
             if (state.RootMenu is not { Items.Count: > 0 } root)
             {
-                continue;
+                return;
             }
 
-            var plugin = state;
+            state.Row = CreateRow(state, root);
 
-            rows.Add(new SubmenuEntry
+            builder.Insert(RowIndex(builder, state), state.Row);
+        }
+    }
+
+    private static SubmenuEntry CreateRow(PluginState plugin, MenuNode root) => new()
+    {
+        Text = MenuText.From(() => DisplayNameOf(plugin)),
+        Description = MenuText.From(() => RowDescriptionOf(plugin)),
+        // Live, so a plugin renaming its own menu after it connected lands.
+        MenuTitle = MenuText.From(() => root.Title is { } title
+            ? plugin.Resolve(title)
+            : DisplayNameOf(plugin)),
+        MenuSubtitle = PluginEntryFactory.LiveText(plugin, () => root.Subtitle),
+        Build = childBuilder => PluginEntryFactory.BuildMenu(plugin, root, childBuilder),
+    };
+
+    private static int RowIndex(MenuBuilder builder, PluginState state)
+    {
+        for (var index = 0; index < builder.Entries.Count; index++)
+        {
+            var entry = builder.Entries[index];
+
+            foreach (var other in Plugins.Values)
             {
-                Text = MenuText.From(() => DisplayNameOf(plugin)),
-                Description = MenuText.From(() => RowDescriptionOf(plugin)),
-                // Live, so a plugin renaming its own menu after it connected lands.
-                MenuTitle = MenuText.From(() => root.Title is { } title
-                    ? plugin.Resolve(title)
-                    : DisplayNameOf(plugin)),
-                MenuSubtitle = PluginEntryFactory.LiveText(plugin, () => root.Subtitle),
-                Build = childBuilder => PluginEntryFactory.BuildMenu(plugin, root, childBuilder),
-            });
+                if (ReferenceEquals(other.Row, entry)
+                    && StringComparer.OrdinalIgnoreCase.Compare(other.Resource, state.Resource) > 0)
+                {
+                    return index;
+                }
+            }
         }
 
-        builder.AddRange(rows);
+        return builder.Entries.Count;
+    }
 
-        // After materialisation, so the filter never runs over a menu that has no items yet.
-        foreach (var state in Plugins.Values)
+    private static void RefreshMainMenu()
+    {
+        if (MenuRegistry.MainMenu is { } main)
         {
-            foreach (var menuBuilder in state.Builders.Values)
-            {
-                menuBuilder.SetUserFilter(state.VisibilityFilter);
-            }
+            MenuRegistry.Refresh(main);
+        }
+
+        MenuRegistry.BackOutIfUnreachable();
+    }
+
+    internal static void RefreshRow(PluginState state)
+    {
+        if (state.Row is not null)
+        {
+            _pluginsBuilder?.Refresh();
         }
     }
 
@@ -437,37 +481,30 @@ public static class PluginHost
 
     // For a plugin whose menu was empty at registration and has just been given its first rows. Until
     // then it has no row, and so no live menu to add anything to.
-    internal static void MaterialiseRows()
+    internal static void MaterialiseRow(PluginState state)
     {
-        CloseIfInsideAPluginMenu();
-
-        RebuildRows();
-    }
-
-    // Call this before the registered set changes, never after: it recognises the menu on screen by
-    // walking that set, so a plugin already added or removed makes it answer no.
-    private static void CloseIfInsideAPluginMenu()
-    {
-        if (MenuController.GetCurrentMenu() is { } open && OwnerOf(open) is not null)
+        if (state.Row is null)
         {
-            MenuController.CloseAllMenus();
+            PlaceRow(state, null);
         }
     }
 
-    private static PluginState? OwnerOf(Menu menu)
+    private static void CloseIfInside(PluginState state)
     {
-        foreach (var state in Plugins.Values)
+        if (MenuController.GetCurrentMenu() is not { } open)
         {
-            foreach (var builder in state.Builders.Values)
+            return;
+        }
+
+        foreach (var builder in state.Builders.Values)
+        {
+            if (ReferenceEquals(builder.Menu, open))
             {
-                if (ReferenceEquals(builder.Menu, menu))
-                {
-                    return state;
-                }
+                MenuController.CloseAllMenus();
+
+                return;
             }
         }
-
-        return null;
     }
 
     private static void OnUpdate(string json)
@@ -496,14 +533,6 @@ public static class PluginHost
         catch (Exception exception)
         {
             Log.Error($"[Plugins] An update from '{resource}' failed: {exception}");
-        }
-    }
-
-    internal static void ReapplyFilter(PluginState state, string menuId)
-    {
-        if (state.Builders.TryGetValue(menuId, out var builder))
-        {
-            builder.SetUserFilter(state.VisibilityFilter);
         }
     }
 

@@ -117,6 +117,20 @@ internal static class PluginValidation
         }
     }
 
+    internal static bool IndexLateKey(PluginState state, KeyNode key, RegisterResult result)
+    {
+        if (KeyProblem(state, key) is { } problem)
+        {
+            result.Warnings.Add(problem);
+
+            return false;
+        }
+
+        state.KeysById[key.Id] = key;
+
+        return true;
+    }
+
     private static string? KeyProblem(PluginState state, KeyNode key)
     {
         if (!ConfigPath.IsValidSegment(key.Id))
@@ -292,6 +306,11 @@ internal static class PluginValidation
         state.PlayerActionIds.Remove(node.Id);
         state.OptionsByItemId.Remove(node.Id);
 
+        if (state.EntriesById.Remove(node.Id, out var entry) && entry.Item is { } item)
+        {
+            state.NodesByItem.Remove(item);
+        }
+
         if (node.Type != EntryTypes.Submenu || node.Menu is not { } menu)
         {
             return;
@@ -299,6 +318,7 @@ internal static class PluginValidation
 
         state.MenusById.Remove(menu.Id);
         state.MenuDepths.Remove(menu.Id);
+        state.MenuFilters.Remove(menu.Id);
 
         foreach (var key in menu.Keys ?? [])
         {

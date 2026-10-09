@@ -69,12 +69,24 @@ internal sealed class PluginState
     // The materialised item back to its node, which is what the visibility filter reads.
     internal Dictionary<MenuItem, ItemNode> NodesByItem { get; } = new(ReferenceComparer<MenuItem>.Instance);
 
+    internal Dictionary<string, MenuEntry> EntriesById { get; } = new(StringComparer.Ordinal);
+
+    internal Dictionary<string, HashSet<string>> MenuFilters { get; } = new(StringComparer.Ordinal);
+
+    internal MenuEntry? Row { get; set; }
+
     // The live option lists by item id, mutated in place by a setOptions op.
     internal Dictionary<string, List<MenuText>> OptionsByItemId { get; } = new(StringComparer.Ordinal);
 
     // Hides rows whose node says invisible. Handed to every one of this plugin's menus.
     internal bool VisibilityFilter(MenuItem item) =>
-        !NodesByItem.TryGetValue(item, out var node) || node.Visible != false;
+        !NodesByItem.TryGetValue(item, out var node) || (node.Visible != false && !IsFilteredOut(node));
+
+    private bool IsFilteredOut(ItemNode node) =>
+        MenuFilters.Count > 0
+        && ItemOwners.TryGetValue(node.Id, out var menuId)
+        && MenuFilters.TryGetValue(menuId, out var hidden)
+        && hidden.Contains(node.Id);
 
     // ClearEntries discards the live items, including those of the rows that survive and are made again.
     // Without this every rebuild would leave a dead item behind in the map the filter reads, which for a
@@ -102,6 +114,8 @@ internal sealed class PluginState
         Builders.Clear();
         NodesByItem.Clear();
         OptionsByItemId.Clear();
+        EntriesById.Clear();
+        MenuFilters.Clear();
         PlayerActions.Clear();
     }
 
