@@ -1,0 +1,43 @@
+{
+  "name": "@vespura/vmenu-plugin",
+  "version": "0.0.0-local",
+  "description": "Build vMenu Enhanced plugins in TypeScript or JavaScript.",
+  "license": "GPL-3.0-or-later",
+  "author": "Tom Grobbe",
+  "homepage": "https://docs.vespura.com/vmenu/enhanced/plugins/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TomGrobbe/vMenu.git",
+    "directory": "src/PluginApi/vMenu.Enhanced.JsAPI"
+  },
+  "keywords": [
+    "fivem",
+    "vmenu",
+    "plugin"
+  ],
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    "./client": {
+      "types": "./dist/types/client/index.d.ts",
+      "import": "./dist/client.js"
+    },
+    "./server": {
+      "types": "./dist/types/server/index.d.ts",
+      "import": "./dist/server.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE.md"
+  ],
+  "scripts": {
+    "check": "tsc --noEmit && node scripts/check-contracts.mjs",
+    "build": "node scripts/check-contracts.mjs && node scripts/build.mjs"
+  },
+  "devDependencies": {
+    "esbuild": "0.28.2",
+    "typescript": "7.0.2"
+  }
+}
