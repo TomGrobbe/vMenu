@@ -110,7 +110,6 @@ public sealed class VMenuPlugin
         _firstResult ??= new TaskCompletionSource<RegisterResult>();
 
         EnsureHandlers();
-        SendRegistration();
 
         PluginEmit.Local(PluginEvents.Probe);
 
