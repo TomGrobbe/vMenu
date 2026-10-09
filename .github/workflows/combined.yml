@@ -357,6 +357,44 @@ jobs:
           name: enhanced-packages
           path: packages/*.nupkg
 
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      # Older tags have no Lua or JavaScript API. LF only, the example plugin's update check reads the version off the first line.
+      - name: Build the Lua and JavaScript plugin APIs
+        shell: bash
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          if [ ! -d src/PluginApi/vMenu.Enhanced.JsAPI ] || [ ! -f src/PluginApi/vMenu.Enhanced.LuaAPI/vmenu.lua ]; then
+            echo "No Lua or JavaScript plugin API on this ref, skipping."
+            exit 0
+          fi
+
+          mkdir -p npm-package build/vMenu.Enhanced/plugin-api
+
+          (
+            cd src/PluginApi/vMenu.Enhanced.JsAPI
+            npm ci --no-audit --no-fund
+            npm version "$VERSION" --no-git-tag-version --allow-same-version
+            npm run check
+            npm run build
+            npm pack --pack-destination ../../../npm-package
+          )
+
+          tr -d '\r' < src/PluginApi/vMenu.Enhanced.JsAPI/dist/vmenu.js > build/vMenu.Enhanced/plugin-api/vmenu.js
+          sed "s/versiongoeshere/$VERSION/g" src/PluginApi/vMenu.Enhanced.LuaAPI/vmenu.lua | tr -d '\r' > build/vMenu.Enhanced/plugin-api/vmenu.lua
+          head -n 1 build/vMenu.Enhanced/plugin-api/vmenu.lua build/vMenu.Enhanced/plugin-api/vmenu.js
+
+      - name: Upload npm package
+        uses: actions/upload-artifact@v4
+        with:
+          name: enhanced-npm
+          path: npm-package/*.tgz
+          if-no-files-found: ignore
+
       - name: Translation coverage
         if: always()
         shell: pwsh
@@ -593,6 +631,10 @@ jobs:
             echo "| **v$ENHANCED_VERSION** | FiveM Enhanced | \`$ENHANCED_ZIP\` |"
             echo "| **v$LEGACY_VERSION** | FiveM (legacy runtime) | \`$LEGACY_ZIP\` |"
             echo ""
+            if unzip -l "release-assets/$ENHANCED_ZIP" | grep -q 'plugin-api/vmenu.lua'; then
+              echo "Writing a plugin? The \`plugin-api\` folder in \`$ENHANCED_ZIP\` holds \`vmenu.lua\` and \`vmenu.js\`, the plugin API for Lua and JavaScript. C# and TypeScript get the same version from NuGet and npm. See the [plugin docs](https://docs.vespura.com/vmenu/enhanced/plugins/developing/)."
+              echo ""
+            fi
             echo "## Changes in vMenu Enhanced v$ENHANCED_VERSION"
             cat changelog-enhanced.txt
             echo ""
@@ -700,9 +742,53 @@ jobs:
             --api-key "${{ steps.login.outputs.NUGET_API_KEY }}" \
             --skip-duplicate
 
+  publish-npm:
+    name: Publish npm package
+    needs: [plan, release]
+    if: needs.plan.outputs.enhanced_moved == 'true'
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write
+
+    steps:
+      - name: Download package
+        uses: actions/download-artifact@v4
+        with:
+          pattern: enhanced-npm
+          merge-multiple: true
+          path: npm-package
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+
+      # Trusted publishing, so no token: npm checks this workflow against the package's trusted publisher.
+      - name: Publish
+        shell: bash
+        env:
+          VERSION: ${{ needs.plan.outputs.enhanced_version }}
+        run: |
+          shopt -s nullglob
+          PACKAGES=(npm-package/*.tgz)
+
+          if [ ${#PACKAGES[@]} -eq 0 ]; then
+            echo "No npm package on this ref, skipping."
+            exit 0
+          fi
+
+          if npm view "@vespura/vmenu-plugin@$VERSION" version >/dev/null 2>&1; then
+            echo "@vespura/vmenu-plugin $VERSION is already published."
+            exit 0
+          fi
+
+          npm publish "${PACKAGES[0]}" --access public --provenance
+
   notify:
     name: Discord Notification
-    needs: [plan, build-legacy, build-enhanced, release, publish-nuget]
+    needs: [plan, build-legacy, build-enhanced, release, publish-nuget, publish-npm]
     if: always() && needs.plan.result != 'skipped'
     runs-on: ubuntu-latest
 
@@ -716,6 +802,7 @@ jobs:
           ENHANCED_RESULT: ${{ needs.build-enhanced.result }}
           RELEASE_RESULT: ${{ needs.release.result }}
           NUGET_RESULT: ${{ needs.publish-nuget.result }}
+          NPM_RESULT: ${{ needs.publish-npm.result }}
           LEGACY_VERSION: ${{ needs.plan.outputs.legacy_version }}
           ENHANCED_VERSION: ${{ needs.plan.outputs.enhanced_version }}
           RELEASE: ${{ needs.plan.outputs.release }}
@@ -747,13 +834,15 @@ jobs:
 
           if [ "$ENHANCED_MOVED" = "true" ]; then
             NUGET_TEXT="$(icon "$NUGET_RESULT") $NUGET_RESULT"
+            NPM_TEXT="$(icon "$NPM_RESULT") $NPM_RESULT"
           else
             NUGET_TEXT="⏭️ not needed, Enhanced did not change"
+            NPM_TEXT="$NUGET_TEXT"
           fi
 
           FAILED=false
           CANCELLED=false
-          for RESULT in "$PLAN_RESULT" "$LEGACY_RESULT" "$ENHANCED_RESULT" "$RELEASE_RESULT" "$NUGET_RESULT"; do
+          for RESULT in "$PLAN_RESULT" "$LEGACY_RESULT" "$ENHANCED_RESULT" "$RELEASE_RESULT" "$NUGET_RESULT" "$NPM_RESULT"; do
             case "$RESULT" in
               cancelled) CANCELLED=true ;;
               success|skipped) ;;
@@ -800,6 +889,7 @@ jobs:
             --arg  enhanced   "$(line "$ENHANCED_RESULT" "$ENHANCED_VERSION" "$ENHANCED_MOVED")" \
             --arg  legacy     "$(line "$LEGACY_RESULT" "$LEGACY_VERSION" "$LEGACY_MOVED")" \
             --arg  nuget      "$NUGET_TEXT" \
+            --arg  npm        "$NPM_TEXT" \
             --arg  branch     "${{ github.ref_name }}" \
             --arg  link_name  "$LINK_NAME" \
             --arg  link_url   "$LINK_URL" \
@@ -816,6 +906,7 @@ jobs:
                   { name: "vMenu Enhanced", value: $enhanced, inline: true },
                   { name: "vMenu (legacy)", value: $legacy,   inline: true },
                   { name: "NuGet",          value: $nuget,    inline: true },
+                  { name: "npm",            value: $npm,      inline: true },
                   { name: "Branch",         value: $branch,   inline: true },
                   { name: $link_name,       value: ("[Link](" + $link_url + ")"), inline: true },
                   { name: "Commit",         value: ("[`" + $short_sha + "`](" + $commit_url + ") " + $commit_msg), inline: false }
