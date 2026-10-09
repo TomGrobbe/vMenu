@@ -23,6 +23,10 @@ public sealed class PluginMenu
 
     private Action<int, int>? _indexChanged;
 
+    private int? _insertAt;
+
+    private Func<PluginItem, bool>? _filter;
+
     internal PluginMenu(VMenuPlugin plugin, MenuNode node)
     {
         _plugin = plugin;
@@ -37,14 +41,25 @@ public sealed class PluginMenu
 
     public IReadOnlyList<PluginKey> Keys => _keys;
 
+    /// <summary>Whether <see cref="Filter"/> is hiding rows right now.</summary>
+    public bool IsFiltered => _filter is not null;
+
     public Text Title
     {
         get => _title;
         set
         {
             _title = value;
-            Node.Title = value.ToRef();
-            _plugin.EmitOp(new UpdateOp { Op = UpdateOps.SetMenuTitle, MenuId = Id, TextValue = Node.Title });
+
+            var title = value.ToRef();
+
+            if (PluginDiff.Same(Node.Title, title))
+            {
+                return;
+            }
+
+            Node.Title = title;
+            _plugin.EmitOp(new UpdateOp { Op = UpdateOps.SetMenuTitle, MenuId = Id, TextValue = title });
         }
     }
 
@@ -54,8 +69,16 @@ public sealed class PluginMenu
         set
         {
             _subtitle = value;
-            Node.Subtitle = value.ToRef();
-            _plugin.EmitOp(new UpdateOp { Op = UpdateOps.SetMenuSubtitle, MenuId = Id, TextValue = Node.Subtitle });
+
+            var subtitle = value.ToRef();
+
+            if (PluginDiff.Same(Node.Subtitle, subtitle))
+            {
+                return;
+            }
+
+            Node.Subtitle = subtitle;
+            _plugin.EmitOp(new UpdateOp { Op = UpdateOps.SetMenuSubtitle, MenuId = Id, TextValue = subtitle });
         }
     }
 
@@ -183,8 +206,7 @@ public sealed class PluginMenu
 
     /// <summary>Adds a key that works while this menu is open, with an instructional button at the bottom
     /// of the screen. Keep the id stable: it names the binding in the player's key settings, so changing
-    /// it loses a key they picked themselves. Declare keys before connecting, a key added later re-sends
-    /// the whole registration.</summary>
+    /// it loses a key they picked themselves.</summary>
     /// <param name="id">Letters, digits and underscores, unique within your plugin.</param>
     /// <param name="text">The instructional button's label.</param>
     /// <param name="defaultKey">A keyboard key name as the game knows it, for example "X" or "F5".</param>
@@ -217,9 +239,96 @@ public sealed class PluginMenu
 
         _keys.Add(key);
         _plugin.RegisterKey(key);
-        _plugin.ReRegisterIfConnected();
+        _plugin.EmitOp(new UpdateOp { Op = UpdateOps.AddKeys, MenuId = Id, Keys = [node] });
 
         return key;
+    }
+
+    /// <summary>Rows added inside the returned scope go in at <paramref name="index"/>, one after another,
+    /// instead of at the bottom. Dispose it to go back to adding at the bottom.</summary>
+    public IDisposable InsertAt(int index)
+    {
+        var previous = _insertAt;
+
+        _insertAt = Math.Clamp(index, 0, _items.Count);
+
+        return new InsertScope(this, previous);
+    }
+
+    /// <summary>Moves a row of this menu to <paramref name="index"/>. A submenu row keeps its menu, and the
+    /// highlighted row stays highlighted.</summary>
+    public void Move(PluginItem item, int index)
+    {
+        var from = IndexOf(item);
+
+        if (from < 0)
+        {
+            return;
+        }
+
+        index = Math.Clamp(index, 0, _items.Count - 1);
+
+        if (index == from)
+        {
+            return;
+        }
+
+        _items.RemoveAt(from);
+        _items.Insert(index, item);
+
+        Node.Items.RemoveAt(from);
+        Node.Items.Insert(index, item.Node);
+
+        var before = index + 1 < _items.Count ? _items[index + 1].Id : null;
+
+        _plugin.EmitOp(new UpdateOp { Op = UpdateOps.MoveItem, ItemId = item.Id, BeforeItemId = before });
+    }
+
+    /// <summary>Shows only the rows <paramref name="keep"/> answers true for. Rows added later are checked too:
+    /// inside a batch when the batch ends, so properties set right after adding count, otherwise as they come in.
+    /// Call it again after changing what it looks at.</summary>
+    public void Filter(Func<PluginItem, bool> keep)
+    {
+        _filter = keep;
+
+        _plugin.FilterChanged(this);
+    }
+
+    /// <summary>Shows every row again after <see cref="Filter"/>.</summary>
+    public void ClearFilter()
+    {
+        if (_filter is null)
+        {
+            return;
+        }
+
+        _filter = null;
+
+        _plugin.FilterChanged(this);
+    }
+
+    internal bool HasFilter => _filter is not null;
+
+    internal bool Hides(PluginItem item) => _filter is { } keep && !keep(item);
+
+    internal UpdateOp FilterOp()
+    {
+        if (_filter is not { } keep)
+        {
+            return new UpdateOp { Op = UpdateOps.ClearFilter, MenuId = Id };
+        }
+
+        var hidden = new List<string>();
+
+        foreach (var item in _items)
+        {
+            if (!keep(item))
+            {
+                hidden.Add(item.Id);
+            }
+        }
+
+        return new UpdateOp { Op = UpdateOps.SetFilter, MenuId = Id, ItemIds = hidden };
     }
 
     /// <summary>Removes one row. For a submenu row, everything beneath it goes too.</summary>
@@ -253,6 +362,16 @@ public sealed class PluginMenu
     /// <summary>Closes this plugin's menu if one is open.</summary>
     public void Close() => _plugin.EmitOp(new UpdateOp { Op = UpdateOps.CloseMenu, MenuId = Id });
 
+    /// <summary>Moves the cursor to a row of this menu. Raises <c>Highlighted</c> and <c>IndexChanged</c> as if
+    /// the player had moved there. Does nothing for a hidden row or one from another menu.</summary>
+    public void Select(PluginItem item)
+    {
+        if (IndexOf(item) >= 0)
+        {
+            _plugin.EmitOp(new UpdateOp { Op = UpdateOps.SelectItem, MenuId = Id, ItemId = item.Id });
+        }
+    }
+
     internal void HandleMenu(PluginCallback callback)
     {
         switch (callback.Type)
@@ -283,22 +402,58 @@ public sealed class PluginMenu
     {
         item.Plugin = _plugin;
 
-        _items.Add(item);
-        Node.Items.Add(item.Node);
+        string? before = null;
+
+        if (_insertAt is { } index && index < _items.Count)
+        {
+            before = _items[index].Id;
+
+            _items.Insert(index, item);
+            Node.Items.Insert(index, item.Node);
+
+            _insertAt = index + 1;
+        }
+        else
+        {
+            _items.Add(item);
+            Node.Items.Add(item.Node);
+
+            if (_insertAt is not null)
+            {
+                _insertAt = _items.Count;
+            }
+        }
 
         _plugin.RegisterItem(item);
 
-        _plugin.EmitOp(new UpdateOp
-        {
-            Op = UpdateOps.AddItems,
-            MenuId = Id,
-            Items = [AsAdded(item.Node)],
-        });
+        _plugin.EmitAdd(
+            this,
+            item,
+            new UpdateOp
+            {
+                Op = UpdateOps.AddItems,
+                MenuId = Id,
+                Items = [item.Node],
+                BeforeItemId = before,
+            });
 
         return item;
     }
 
-    private static ItemNode AsAdded(ItemNode node)
+    private int IndexOf(PluginItem item)
+    {
+        for (var index = 0; index < _items.Count; index++)
+        {
+            if (ReferenceEquals(_items[index], item))
+            {
+                return index;
+            }
+        }
+
+        return -1;
+    }
+
+    internal static ItemNode AsAdded(ItemNode node)
     {
         if (node.Menu is not { } menu)
         {
@@ -351,10 +506,29 @@ public sealed class PluginMenu
     {
         Node.Events ??= [];
 
-        if (!Node.Events.Contains(name))
+        if (Node.Events.Exists(existing => string.Equals(existing, name, StringComparison.Ordinal)))
         {
-            Node.Events.Add(name);
-            _plugin.ReRegisterIfConnected();
+            return;
+        }
+
+        Node.Events.Add(name);
+        _plugin.EmitOp(new UpdateOp { Op = UpdateOps.SetMenuEvents, MenuId = Id, Events = [.. Node.Events] });
+    }
+
+    private sealed class InsertScope(PluginMenu menu, int? previous) : IDisposable
+    {
+        private bool _disposed;
+
+        public void Dispose()
+        {
+            if (_disposed)
+            {
+                return;
+            }
+
+            _disposed = true;
+
+            menu._insertAt = previous;
         }
     }
 }

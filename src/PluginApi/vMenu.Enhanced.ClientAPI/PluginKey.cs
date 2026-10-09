@@ -31,8 +31,16 @@ public sealed class PluginKey
         set
         {
             _text = value;
-            Node.Text = value.ToRef();
-            _plugin.EmitOp(new UpdateOp { Op = UpdateOps.SetKeyText, KeyId = Id, TextValue = Node.Text });
+
+            var text = value.ToRef();
+
+            if (PluginDiff.Same(Node.Text, text))
+            {
+                return;
+            }
+
+            Node.Text = text;
+            _plugin.EmitOp(new UpdateOp { Op = UpdateOps.SetKeyText, KeyId = Id, TextValue = text });
         }
     }
 
@@ -42,6 +50,11 @@ public sealed class PluginKey
         get => Node.Enabled != false;
         set
         {
+            if (Enabled == value)
+            {
+                return;
+            }
+
             Node.Enabled = value;
             _plugin.EmitOp(new UpdateOp { Op = UpdateOps.SetKeyEnabled, KeyId = Id, Flag = value });
         }
@@ -54,8 +67,16 @@ public sealed class PluginKey
         set
         {
             _gate = value;
-            Node.Gate = value?.ToNode();
-            _plugin.EmitOp(new UpdateOp { Op = UpdateOps.SetKeyGate, KeyId = Id, Gate = Node.Gate });
+
+            var gate = value?.ToNode();
+
+            if (PluginDiff.Same(Node.Gate, gate))
+            {
+                return;
+            }
+
+            Node.Gate = gate;
+            _plugin.EmitOp(new UpdateOp { Op = UpdateOps.SetKeyGate, KeyId = Id, Gate = gate });
         }
     }
 

@@ -39,13 +39,11 @@ public sealed class PluginConfirmButton : PluginItem
         set
         {
             _confirmationDescription = value;
-            Node.ConfirmationDescription = value.ToRef();
-            Emit(new UpdateOp
-            {
-                Op = UpdateOps.SetConfirmationDescription,
-                ItemId = Id,
-                TextValue = Node.ConfirmationDescription,
-            });
+            SetText(
+                Node.ConfirmationDescription,
+                value.ToRef(),
+                reference => Node.ConfirmationDescription = reference,
+                UpdateOps.SetConfirmationDescription);
         }
     }
 
@@ -78,6 +76,11 @@ public sealed class PluginCheckbox : PluginItem
         get => Node.Checked == true;
         set
         {
+            if (Checked == value)
+            {
+                return;
+            }
+
             Node.Checked = value;
             Remember(value);
             Emit(new UpdateOp { Op = UpdateOps.SetChecked, ItemId = Id, Flag = value });
@@ -120,6 +123,11 @@ public class PluginList : PluginItem
         get => Node.SelectedIndex ?? 0;
         set
         {
+            if (SelectedIndex == value)
+            {
+                return;
+            }
+
             Node.SelectedIndex = value;
             Emit(new UpdateOp { Op = UpdateOps.SetSelectedIndex, ItemId = Id, Index = value });
         }
@@ -128,7 +136,14 @@ public class PluginList : PluginItem
     /// <summary>Replaces the options, optionally moving the selection at the same time.</summary>
     public void SetOptions(IEnumerable<Text> options, int? selectedIndex = null)
     {
-        Node.Options = ToRefs(options);
+        var refs = ToRefs(options);
+
+        if (PluginDiff.Same(Node.Options, refs) && (selectedIndex is null || selectedIndex == SelectedIndex))
+        {
+            return;
+        }
+
+        Node.Options = refs;
 
         if (selectedIndex is { } index)
         {
@@ -209,13 +224,11 @@ public sealed class PluginConfirmList : PluginList
         set
         {
             _confirmationDescription = value;
-            Node.ConfirmationDescription = value.ToRef();
-            Emit(new UpdateOp
-            {
-                Op = UpdateOps.SetConfirmationDescription,
-                ItemId = Id,
-                TextValue = Node.ConfirmationDescription,
-            });
+            SetText(
+                Node.ConfirmationDescription,
+                value.ToRef(),
+                reference => Node.ConfirmationDescription = reference,
+                UpdateOps.SetConfirmationDescription);
         }
     }
 
@@ -241,6 +254,11 @@ public sealed class PluginSlider : PluginItem
         get => Node.Position ?? Min;
         set
         {
+            if (Position == value)
+            {
+                return;
+            }
+
             Node.Position = value;
             Emit(new UpdateOp { Op = UpdateOps.SetSliderPosition, ItemId = Id, Index = value });
         }
@@ -282,6 +300,11 @@ public sealed class PluginDynamicList : PluginItem
         get => Node.Value ?? string.Empty;
         set
         {
+            if (string.Equals(Value, value, StringComparison.Ordinal))
+            {
+                return;
+            }
+
             Node.Value = value;
             Emit(new UpdateOp { Op = UpdateOps.SetValue, ItemId = Id, Value = value });
         }

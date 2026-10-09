@@ -32,8 +32,7 @@ public abstract class PluginItem
         set
         {
             _text = value;
-            Node.Text = value.ToRef();
-            EmitText(UpdateOps.SetText, Node.Text);
+            SetText(Node.Text, value.ToRef(), reference => Node.Text = reference, UpdateOps.SetText);
         }
     }
 
@@ -43,8 +42,7 @@ public abstract class PluginItem
         set
         {
             _description = value;
-            Node.Description = value.ToRef();
-            EmitText(UpdateOps.SetDescription, Node.Description);
+            SetText(Node.Description, value.ToRef(), reference => Node.Description = reference, UpdateOps.SetDescription);
         }
     }
 
@@ -55,8 +53,7 @@ public abstract class PluginItem
         set
         {
             _label = value;
-            Node.Label = value.ToRef();
-            EmitText(UpdateOps.SetLabel, Node.Label);
+            SetText(Node.Label, value.ToRef(), reference => Node.Label = reference, UpdateOps.SetLabel);
         }
     }
 
@@ -67,8 +64,7 @@ public abstract class PluginItem
         set
         {
             _lockedDescription = value;
-            Node.LockedDescription = value.ToRef();
-            EmitText(UpdateOps.SetLockedDescription, Node.LockedDescription);
+            SetText(Node.LockedDescription, value.ToRef(), reference => Node.LockedDescription = reference, UpdateOps.SetLockedDescription);
         }
     }
 
@@ -78,8 +74,16 @@ public abstract class PluginItem
         set
         {
             _gate = value;
-            Node.Gate = value?.ToNode();
-            Emit(new UpdateOp { Op = UpdateOps.SetGate, ItemId = Id, Gate = Node.Gate });
+
+            var gate = value?.ToNode();
+
+            if (PluginDiff.Same(Node.Gate, gate))
+            {
+                return;
+            }
+
+            Node.Gate = gate;
+            Emit(new UpdateOp { Op = UpdateOps.SetGate, ItemId = Id, Gate = gate });
         }
     }
 
@@ -89,8 +93,15 @@ public abstract class PluginItem
         get => string.Equals(Node.Behaviour, "hide", StringComparison.OrdinalIgnoreCase);
         set
         {
-            Node.Behaviour = value ? "hide" : "lock";
-            Plugin?.ReRegisterIfConnected();
+            var behaviour = value ? "hide" : "lock";
+
+            if (string.Equals(Node.Behaviour, behaviour, StringComparison.Ordinal))
+            {
+                return;
+            }
+
+            Node.Behaviour = behaviour;
+            Emit(new UpdateOp { Op = UpdateOps.SetBehaviour, ItemId = Id, Value = behaviour });
         }
     }
 
@@ -99,6 +110,11 @@ public abstract class PluginItem
         get => Node.Visible != false;
         set
         {
+            if (Visible == value)
+            {
+                return;
+            }
+
             Node.Visible = value;
             Emit(new UpdateOp { Op = UpdateOps.SetVisible, ItemId = Id, Flag = value });
         }
@@ -110,6 +126,11 @@ public abstract class PluginItem
         get => Node.Enabled != false;
         set
         {
+            if (Enabled == value)
+            {
+                return;
+            }
+
             Node.Enabled = value;
             Emit(new UpdateOp { Op = UpdateOps.SetEnabled, ItemId = Id, Flag = value });
         }
@@ -122,6 +143,11 @@ public abstract class PluginItem
         get => Node.Log == true;
         set
         {
+            if (Log == value)
+            {
+                return;
+            }
+
             Node.Log = value;
             Emit(new UpdateOp { Op = UpdateOps.SetLog, ItemId = Id, Flag = value });
         }
@@ -130,6 +156,12 @@ public abstract class PluginItem
     /// <summary>Icon names from the vMenu icon set, for example "LOCK" or "STAR".</summary>
     public void SetIcons(string? leftIcon, string? rightIcon)
     {
+        if (string.Equals(Node.LeftIcon, leftIcon, StringComparison.Ordinal)
+            && string.Equals(Node.RightIcon, rightIcon, StringComparison.Ordinal))
+        {
+            return;
+        }
+
         Node.LeftIcon = leftIcon;
         Node.RightIcon = rightIcon;
 
@@ -159,15 +191,25 @@ public abstract class PluginItem
     {
         Node.Events ??= [];
 
-        if (!Node.Events.Contains(name))
+        if (Node.Events.Exists(existing => string.Equals(existing, name, StringComparison.Ordinal)))
         {
-            Node.Events.Add(name);
-            Plugin?.ReRegisterIfConnected();
+            return;
         }
+
+        Node.Events.Add(name);
+        Emit(new UpdateOp { Op = UpdateOps.SetItemEvents, ItemId = Id, Events = [.. Node.Events] });
     }
 
     private protected void Emit(UpdateOp op) => Plugin?.EmitOp(op);
 
-    private void EmitText(string opName, TextRef? value) =>
-        Emit(new UpdateOp { Op = opName, ItemId = Id, TextValue = value });
+    private protected void SetText(TextRef? current, TextRef? next, Action<TextRef?> store, string opName)
+    {
+        if (PluginDiff.Same(current, next))
+        {
+            return;
+        }
+
+        store(next);
+        Emit(new UpdateOp { Op = opName, ItemId = Id, TextValue = next });
+    }
 }

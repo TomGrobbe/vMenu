@@ -26,6 +26,12 @@ public sealed class VMenuPlugin
 
     private List<UpdateOp>? _batch;
 
+    private readonly HashSet<string> _pendingItems = new(StringComparer.Ordinal);
+
+    private readonly HashSet<string> _pendingMenus = new(StringComparer.Ordinal);
+
+    private readonly List<PluginMenu> _dirtyFilters = [];
+
     /// <summary>Open batch handles. A helper that batches internally must not flush its caller's.</summary>
     private int _batchDepth;
 
@@ -251,16 +257,123 @@ public sealed class VMenuPlugin
             return;
         }
 
-        if (_batch is { } batch)
+        if (_batch is not { } batch)
         {
-            batch.Add(op);
+            Send([op]);
             return;
         }
 
-        var single = new UpdateBatch();
-        single.Ops.Add(op);
+        if (CarriedByPendingAdd(op))
+        {
+            return;
+        }
 
-        PluginEmit.Local(PluginEvents.Update, PluginJson.Serialize(single));
+        if (op.Op == UpdateOps.AddItems)
+        {
+            foreach (var node in op.Items ?? [])
+            {
+                _pendingItems.Add(node.Id);
+
+                if (node.Menu is { } menu)
+                {
+                    _pendingMenus.Add(menu.Id);
+                }
+            }
+        }
+
+        batch.Add(op);
+    }
+
+    internal void FilterChanged(PluginMenu menu)
+    {
+        if (!IsConnected)
+        {
+            return;
+        }
+
+        if (_batch is null)
+        {
+            Send([menu.FilterOp()]);
+            return;
+        }
+
+        MarkFilterDirty(menu);
+    }
+
+    internal void EmitAdd(PluginMenu menu, PluginItem item, UpdateOp add)
+    {
+        if (!IsConnected)
+        {
+            return;
+        }
+
+        if (_batch is not null)
+        {
+            EmitOp(add);
+
+            if (menu.HasFilter)
+            {
+                MarkFilterDirty(menu);
+            }
+
+            return;
+        }
+
+        var ops = new List<UpdateOp> { add };
+
+        if (menu.Hides(item))
+        {
+            ops.Add(new UpdateOp { Op = UpdateOps.SetFilter, MenuId = menu.Id, ItemIds = [item.Id], Flag = true });
+        }
+
+        Send(ops);
+    }
+
+    private void MarkFilterDirty(PluginMenu menu)
+    {
+        if (!_dirtyFilters.Exists(dirty => ReferenceEquals(dirty, menu)))
+        {
+            _dirtyFilters.Add(menu);
+        }
+    }
+
+    private bool CarriedByPendingAdd(UpdateOp op) => op.Op switch
+    {
+        UpdateOps.SetText
+            or UpdateOps.SetDescription
+            or UpdateOps.SetLabel
+            or UpdateOps.SetLockedDescription
+            or UpdateOps.SetConfirmationDescription
+            or UpdateOps.SetIcons
+            or UpdateOps.SetChecked
+            or UpdateOps.SetOptions
+            or UpdateOps.SetSelectedIndex
+            or UpdateOps.SetSliderPosition
+            or UpdateOps.SetValue
+            or UpdateOps.SetVisible
+            or UpdateOps.SetEnabled
+            or UpdateOps.SetGate
+            or UpdateOps.SetLog
+            or UpdateOps.SetBehaviour
+            or UpdateOps.SetItemEvents => op.ItemId is { } itemId && _pendingItems.Contains(itemId),
+        UpdateOps.SetMenuTitle
+            or UpdateOps.SetMenuSubtitle
+            or UpdateOps.SetMenuEvents
+            or UpdateOps.AddKeys => op.MenuId is { } menuId && _pendingMenus.Contains(menuId),
+        _ => false,
+    };
+
+    private void Send(List<UpdateOp> ops)
+    {
+        foreach (var op in ops)
+        {
+            if (op.Op == UpdateOps.AddItems && op.Items is { } items)
+            {
+                op.Items = items.ConvertAll(PluginMenu.AsAdded);
+            }
+        }
+
+        PluginEmit.Local(PluginEvents.Update, PluginJson.Serialize(new UpdateBatch { Ops = ops }));
     }
 
     internal void MergeTranslations(string code, Dictionary<string, string> entries)
@@ -268,15 +381,6 @@ public sealed class VMenuPlugin
         if (IsConnected)
         {
             EmitOp(new UpdateOp { Op = UpdateOps.MergeTranslations, Language = code, Entries = entries });
-        }
-    }
-
-    /// <summary>Re-sends the whole registration, replacing the tree. For changes ops cannot express.</summary>
-    internal void ReRegisterIfConnected()
-    {
-        if (IsConnected)
-        {
-            SendRegistration();
         }
     }
 
@@ -354,6 +458,19 @@ public sealed class VMenuPlugin
         if (!IsConnected)
         {
             CancelPendingPrompts();
+        }
+        else
+        {
+            using (BeginBatch())
+            {
+                foreach (var menu in _menusById.Values)
+                {
+                    if (menu.HasFilter)
+                    {
+                        FilterChanged(menu);
+                    }
+                }
+            }
         }
 
         _firstResult?.TrySetResult(result);
@@ -486,15 +603,22 @@ public sealed class VMenuPlugin
             }
 
             _plugin._batch = null;
+            _plugin._pendingItems.Clear();
+            _plugin._pendingMenus.Clear();
+
+            foreach (var menu in _plugin._dirtyFilters)
+            {
+                ops.Add(menu.FilterOp());
+            }
+
+            _plugin._dirtyFilters.Clear();
 
             if (ops.Count == 0 || !_plugin.IsConnected)
             {
                 return;
             }
 
-            var batch = new UpdateBatch { Ops = ops };
-
-            PluginEmit.Local(PluginEvents.Update, PluginJson.Serialize(batch));
+            _plugin.Send(ops);
         }
     }
 }
