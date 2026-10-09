@@ -83,13 +83,13 @@ public static class PluginRegistry
 
     // Call once startup is done, so plugins that started first know to register now.
     public static void AnnounceReady() =>
-        NativeFixer.EmitLocal(PluginEvents.ServerReady, PluginProtocol.Version);
+        NativeFixer.EmitLocal(PluginEvents.ServerReady, PluginProtocol.ServerVersion);
 
     private static void OnProbe()
     {
         if (Sender() is { } resource)
         {
-            NativeFixer.EmitLocal(PluginEvents.ServerReadyFor(resource), PluginProtocol.Version);
+            NativeFixer.EmitLocal(PluginEvents.ServerReadyFor(resource), PluginProtocol.ServerVersion);
         }
     }
 
@@ -125,11 +125,11 @@ public static class PluginRegistry
             return;
         }
 
-        if (request.ProtocolVersion > PluginProtocol.Version)
+        if (request.ProtocolVersion > PluginProtocol.ServerVersion)
         {
             Reply(resource, Refused(
                 $"The plugin speaks protocol {request.ProtocolVersion} but this vMenu only knows "
-                + $"{PluginProtocol.Version}. Update vMenu or use an older plugin API package."));
+                + $"{PluginProtocol.ServerVersion}. Update vMenu or use an older plugin API package."));
             return;
         }
 

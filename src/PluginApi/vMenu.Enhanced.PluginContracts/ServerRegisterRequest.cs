@@ -27,7 +27,7 @@ public class LoggedItemDeclaration
 /// Registration is idempotent.</summary>
 public class ServerRegisterRequest
 {
-    public int ProtocolVersion { get; set; } = PluginProtocol.Version;
+    public int ProtocolVersion { get; set; } = PluginProtocol.ServerVersion;
 
     /// <summary>Used in the generated example files so owners see which plugin a section belongs to.</summary>
     public string DisplayName { get; set; } = string.Empty;

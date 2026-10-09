@@ -89,7 +89,7 @@ public sealed class ServerPluginDeclaration(string displayName)
 
     internal ServerRegisterRequest ToRequest() => new()
     {
-        ProtocolVersion = PluginProtocol.Version,
+        ProtocolVersion = PluginProtocol.ServerVersion,
         DisplayName = DisplayName,
         Permissions = [.. _permissions],
         Settings = [.. _settings],
