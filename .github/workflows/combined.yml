@@ -784,7 +784,7 @@ jobs:
             exit 0
           fi
 
-          npm publish "${PACKAGES[0]}" --access public --provenance
+          npm publish "./${PACKAGES[0]}" --access public --provenance
 
   notify:
     name: Discord Notification
