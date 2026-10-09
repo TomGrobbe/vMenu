@@ -45,7 +45,7 @@ public static class MenuSkin
 
     private static string? _override;
 
-    // Read by MenuHost, so a menu built after the skin was applied opens with the right banner.
+    /// <summary>Read by MenuHost, so a menu built after the skin was applied opens with the right banner.</summary>
     public static string? Banner { get; private set; }
 
     public static string CurrentId => Current().Id;
@@ -73,7 +73,7 @@ public static class MenuSkin
         return choices;
     }
 
-    // Call after ClientConfig.Initialize, before the menus are built.
+    /// <summary>Call after ClientConfig.Initialize, before the menus are built.</summary>
     public static void Initialize()
     {
         foreach (var (_, _, theme, path, _) in Skins)

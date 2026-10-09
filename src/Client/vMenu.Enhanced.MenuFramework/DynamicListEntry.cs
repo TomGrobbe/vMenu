@@ -6,12 +6,12 @@ namespace vMenu.Enhanced.MenuFramework;
 
 public sealed class DynamicListEntry : MenuEntry<MenuDynamicListItem>
 {
-    // The value to show. Re-read on every refresh.
+    /// <summary>The value to show. Re-read on every refresh.</summary>
     public required Func<string> ReadValue { get; init; }
 
-    // Produces the next value. The framework wraps this before handing it to MenuAPI, because MenuAPI
-    // invokes it directly from GoLeft/GoRight without checking whether the item is enabled, so an
-    // unwrapped callback would run on a locked row.
+    /// <summary>Produces the next value. The framework wraps this before handing it to MenuAPI, because MenuAPI
+    /// invokes it directly from GoLeft/GoRight without checking whether the item is enabled, so an
+    /// unwrapped callback would run on a locked row.</summary>
     public required Func<DynamicListChanging, string> Change { get; init; }
 
     public Action<DynamicListChanged>? OnChanged { get; init; }

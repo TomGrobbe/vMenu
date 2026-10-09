@@ -1,10 +1,11 @@
 namespace vMenu.Enhanced.MenuFramework;
 
-// One row the input prompt can offer while the player types. Value lands in the box when it is
-// picked, Label is what the player reads, and both are matched against.
-//
-// A class rather than a record: generated equality routes through
-// EqualityComparer<string>.Default, which the sandbox refuses to load.
+/// <summary>
+/// <para>One row the input prompt can offer while the player types. Value lands in the box when it is
+/// picked, Label is what the player reads, and both are matched against.</para>
+/// <para>A class rather than a record: generated equality routes through
+/// EqualityComparer&lt;string&gt;.Default, which the sandbox refuses to load.</para>
+/// </summary>
 public sealed class InputSuggestion
 {
     public required string Value { get; init; }

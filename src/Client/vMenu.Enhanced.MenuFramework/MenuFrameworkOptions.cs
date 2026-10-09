@@ -1,9 +1,9 @@
 namespace vMenu.Enhanced.MenuFramework;
 
-// Framework-wide defaults, overridable per menu and then per entry.
+/// <summary>Framework-wide defaults, overridable per menu and then per entry.</summary>
 public static class MenuFrameworkOptions
 {
-    // Lock, because a player who can see why something is unavailable asks a better question than one
-    // looking at a menu that seems broken.
+    /// <summary>Lock, because a player who can see why something is unavailable asks a better question than one
+    /// looking at a menu that seems broken.</summary>
     public static GateBehaviour DefaultGateBehaviour { get; set; } = GateBehaviour.Lock;
 }

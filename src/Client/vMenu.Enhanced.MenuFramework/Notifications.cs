@@ -7,13 +7,13 @@ using vMenu.Enhanced.Ticks;
 
 namespace vMenu.Enhanced.MenuFramework;
 
-// Short messages stacked above the minimap, drawn by the NUI page rather than the game's feed.
-// Nothing here takes focus or waits for an answer, so the page needs no handshake. Where the stack
-// sits depends on the safe zone and the map state, neither of which the page can see, so the client
-// works it out and sends it once per notification.
+/// <summary>Short messages stacked above the minimap, drawn by the NUI page rather than the game's feed.
+/// Nothing here takes focus or waits for an answer, so the page needs no handshake. Where the stack
+/// sits depends on the safe zone and the map state, neither of which the page can see, so the client
+/// works it out and sends it once per notification.</summary>
 public static class Notifications
 {
-    // Long enough to read a sentence without hurrying, short enough not to sit in the way.
+    /// <summary>Long enough to read a sentence without hurrying, short enough not to sit in the way.</summary>
     public const int DefaultDurationMs = 8500;
 
     public const int SpawnDurationMs = 4000;
@@ -56,9 +56,9 @@ public static class Notifications
     public static void Error(MenuText text, int durationMs = DefaultDurationMs) =>
         Show(NotificationStyle.Error, text, durationMs);
 
-    // For anything raised during startup. The page is not listening that early, and the stack draws
-    // above the minimap, which is behind the loading screen anyway. Returns immediately when the player
-    // is already in, so a caller that runs both at startup and at runtime can use it unconditionally.
+    /// <summary>For anything raised during startup. The page is not listening that early, and the stack draws
+    /// above the minimap, which is behind the loading screen anyway. Returns immediately when the player
+    /// is already in, so a caller that runs both at startup and at runtime can use it unconditionally.</summary>
     public static async Task ShowWhenVisibleAsync(NotificationStyle style, MenuText text, int durationMs = DefaultDurationMs)
     {
         for (var attempt = 0; attempt < MaxVisibilityChecks; attempt++)

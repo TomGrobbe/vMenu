@@ -4,20 +4,20 @@ using vMenu.Enhanced.MenuFramework.Localization;
 
 namespace vMenu.Enhanced.MenuFramework;
 
-// The gate applies to the link item, which is enough to close the door: MenuAPI checks Enabled
-// before consulting its bound submenu table, so a locked link cannot open anything.
+/// <summary>The gate applies to the link item, which is enough to close the door: MenuAPI checks Enabled
+/// before consulting its bound submenu table, so a locked link cannot open anything.</summary>
 public sealed class SubmenuEntry : MenuEntry<MenuItem>
 {
-    // Defaults to Text, so most declarations name the menu once.
+    /// <summary>Defaults to Text, so most declarations name the menu once.</summary>
     public MenuText MenuTitle { get; init; }
 
     public MenuText MenuSubtitle { get; init; }
 
-    // A child that is its own menu class. Mutually exclusive with Build.
+    /// <summary>A child that is its own menu class. Mutually exclusive with Build.</summary>
     public MenuDefinition? Definition { get; init; }
 
-    // A child that only exists underneath this entry and is not worth its own class. Mutually exclusive
-    // with Definition.
+    /// <summary>A child that only exists underneath this entry and is not worth its own class. Mutually exclusive
+    /// with Definition.</summary>
     public Action<MenuBuilder>? Build { get; init; }
 
     public Action<MenuOpened>? OnOpened { get; init; }
@@ -29,8 +29,8 @@ public sealed class SubmenuEntry : MenuEntry<MenuItem>
     // The host built for this row, so dropping the row can drop the menu behind it too.
     internal MenuHost? Child { get; set; }
 
-    // The row that opens a menu class, taking its text and gate from the definition. No Gate here, since
-    // EffectiveGate folds the definition's in.
+    /// <summary>The row that opens a menu class, taking its text and gate from the definition. No Gate here, since
+    /// EffectiveGate folds the definition's in.</summary>
     public static SubmenuEntry For(MenuDefinition definition) => new()
     {
         Text = definition.LinkText,

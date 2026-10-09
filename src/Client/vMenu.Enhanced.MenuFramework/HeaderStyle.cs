@@ -11,7 +11,7 @@ public static class HeaderStyle
 {
     private static string? _reportedAlignment;
 
-    // Call after ClientConfig.Initialize, before the menus are built.
+    /// <summary>Call after ClientConfig.Initialize, before the menus are built.</summary>
     public static void Initialize()
     {
         ClientConfig.AddEventListenerFor(

@@ -10,21 +10,21 @@ internal interface IConfirmable
     void ResetConfirmation();
 }
 
-// A row that does nothing on its first press. It swaps its description for a warning and only runs
-// its handler if the next press comes without the player leaving the row in between.
+/// <summary>A row that does nothing on its first press. It swaps its description for a warning and only runs
+/// its handler if the next press comes without the player leaving the row in between.</summary>
 public abstract class ConfirmEntry<TItem> : MenuEntry<TItem>, IConfirmable
     where TItem : MenuItem
 {
     private bool _armed;
 
-    // What the description says while the row waits. Colour it yourself with the game's markup, the same
-    // way the rest of the tables do.
+    /// <summary>What the description says while the row waits. Colour it yourself with the game's markup, the same
+    /// way the rest of the tables do.</summary>
     public MenuText ConfirmationDescription { get; init; } = MenuText.Key(Loc.Framework.ConfirmDescription);
 
-    // Drops a second confirmation while the asynchronous handler is still running.
+    /// <summary>Drops a second confirmation while the asynchronous handler is still running.</summary>
     public bool SingleFlight { get; init; } = true;
 
-    // Whether the row is waiting for its confirming press right now.
+    /// <summary>Whether the row is waiting for its confirming press right now.</summary>
     public bool IsArmed => _armed;
 
     public void ResetConfirmation()

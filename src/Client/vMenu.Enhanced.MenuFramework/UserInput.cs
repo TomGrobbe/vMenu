@@ -33,7 +33,7 @@ public static class UserInput
     private static TaskCompletionSource<bool>? _ready;
     private static int _maxLength = DefaultMaxLength;
 
-    // What was typed, or null if the player cancelled.
+    /// <summary>What was typed, or null if the player cancelled.</summary>
     public static async Task<string?> GetTextAsync(
         MenuText title,
         int maxLength,
@@ -48,9 +48,9 @@ public static class UserInput
         return answers?[0];
     }
 
-    // Asks for several things one after another, answering null if the player cancelled any of them.
-    // One session rather than repeated GetTextAsync calls: the page is only closed and NUI focus only
-    // dropped at the end, so the next prompt does not need a delay in front of it to come up focused.
+    /// <summary>Asks for several things one after another, answering null if the player cancelled any of them.
+    /// One session rather than repeated GetTextAsync calls: the page is only closed and NUI focus only
+    /// dropped at the end, so the next prompt does not need a delay in front of it to come up focused.</summary>
     public static async Task<string[]?> GetTextAsync(params InputPrompt[] prompts)
     {
         if (prompts.Length == 0 || _open)

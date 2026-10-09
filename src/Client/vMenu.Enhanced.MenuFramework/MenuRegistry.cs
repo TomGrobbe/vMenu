@@ -15,8 +15,8 @@ using LocalizationSettings = vMenu.Enhanced.Data.Configuration.Settings.Localiza
 
 namespace vMenu.Enhanced.MenuFramework;
 
-// Subscribes to the three change events once and fans out from here rather than one subscription per
-// menu, for one place to unsubscribe and a deterministic order.
+/// <summary>Subscribes to the three change events once and fans out from here rather than one subscription per
+/// menu, for one place to unsubscribe and a deterministic order.</summary>
 public static class MenuRegistry
 {
     // Settings that provably cannot change what any menu shows, so a refresh pass over every gate and
@@ -43,8 +43,8 @@ public static class MenuRegistry
 
     public static Menu? MainMenu => _root?.Menu;
 
-    // MenuController has no way to remove a menu, its tables being static and append only, so a second
-    // call would leave the first tree in place and duplicate every row.
+    /// <summary>MenuController has no way to remove a menu, its tables being static and append only, so a second
+    /// call would leave the first tree in place and duplicate every row.</summary>
     public static async Task BuildAsync(IReadOnlyList<MenuDefinition> definitions)
     {
         if (_built)
@@ -155,29 +155,35 @@ public static class MenuRegistry
         _built = false;
     }
 
-    internal static void MaterialiseLate(MenuHost host, MenuEntry entry)
-    {
-        MaterialiseOne(host, entry, Localizer.Current);
-
-        // Whole tree, so a submenu created here is gated too.
-        RefreshAll();
-    }
-
-    // RefreshAll walks every menu in the resource, so doing it per row turns adding a thousand rows into
-    // a thousand full tree passes.
-    internal static void MaterialiseLateBatch(MenuHost host, IEnumerable<MenuEntry> entries)
+    internal static MenuHost? MaterialiseLate(MenuHost host, MenuEntry entry, int position)
     {
         var localizer = Localizer.Current;
+        var item = host.Materialise(entry, localizer, position);
 
-        foreach (var entry in entries)
+        if (entry is SubmenuEntry submenu && Prepared(submenu) && CreateChild(host, submenu, item, localizer) is { } child)
         {
-            MaterialiseOne(host, entry, localizer);
+            MaterialiseSync(child, localizer);
+
+            return child;
         }
 
-        RefreshAll();
-
-        host.RefreshFilter();
+        return null;
     }
+
+    internal static void RefreshBranch(MenuHost host, ILocalizer localizer)
+    {
+        host.Refresh(localizer, deferFilter: true);
+        host.ApplyPendingFilter();
+
+        foreach (var child in host.Children)
+        {
+            RefreshBranch(child, localizer);
+        }
+    }
+
+    /// <summary>Closes the open menu when its gate or one of its parents no longer lets the player in, and opens the
+    /// nearest menu that does.</summary>
+    public static void BackOutIfUnreachable() => BackOutOfUnreachableMenu();
 
     internal static DetachedMenu CreateDetached(
         MenuHost parent,
@@ -204,16 +210,6 @@ public static class MenuRegistry
         MaterialiseSync(child, localizer);
 
         return new DetachedMenu(child);
-    }
-
-    private static void MaterialiseOne(MenuHost host, MenuEntry entry, ILocalizer localizer)
-    {
-        var item = host.Materialise(entry, localizer);
-
-        if (entry is SubmenuEntry submenu && Prepared(submenu) && CreateChild(host, submenu, item, localizer) is { } child)
-        {
-            MaterialiseSync(child, localizer);
-        }
     }
 
     // For entries added once the menu is live. There is nowhere to await from there, so a definition
@@ -362,7 +358,7 @@ public static class MenuRegistry
     }
 
     // By reference rather than List.Remove, which would reach for EqualityComparer<MenuHost>.Default.
-    private static void RemoveByReference(List<MenuHost> hosts, MenuHost host)
+    internal static void RemoveByReference(List<MenuHost> hosts, MenuHost host)
     {
         for (var index = hosts.Count - 1; index >= 0; index--)
         {

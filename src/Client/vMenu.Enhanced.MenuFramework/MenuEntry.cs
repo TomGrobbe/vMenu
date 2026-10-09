@@ -4,26 +4,30 @@ using vMenu.Enhanced.MenuFramework.Localization;
 
 namespace vMenu.Enhanced.MenuFramework;
 
-// Non generic so a MenuHost can hold every entry in one list and dispatch without knowing the item
-// type. An entry declares its item rather than holding a pre-made one, which is what lets the
-// framework rewrite text on a language change and the description on a permission change.
+/// <summary>Non generic so a MenuHost can hold every entry in one list and dispatch without knowing the item
+/// type. An entry declares its item rather than holding a pre-made one, which is what lets the
+/// framework rewrite text on a language change and the description on a permission change.</summary>
 public abstract class MenuEntry
 {
     public required MenuText Text { get; init; }
 
     public MenuText Description { get; init; }
 
-    // Right aligned text. Ignored for list, slider, checkbox and dynamic list items, whose label MenuAPI
-    // rewrites on every frame it draws them.
+    /// <summary>Right aligned text. Ignored for list, slider, checkbox and dynamic list items, whose label MenuAPI
+    /// rewrites on every frame it draws them.</summary>
     public MenuText Label { get; init; }
 
     public MenuGate Gate { get; init; } = MenuGate.Always;
 
-    // What to say while this entry is locked. Empty falls back to the framework's own wording.
+    /// <summary>What to say while this entry is locked. Empty falls back to the framework's own wording.</summary>
     public MenuText LockedDescription { get; init; }
 
-    // Null inherits the menu's default, which inherits MenuFrameworkOptions.
+    /// <summary>Null inherits the menu's default, which inherits MenuFrameworkOptions.</summary>
     public GateBehaviour? Behaviour { get; init; }
+
+    /// <summary>Read on every refresh instead of <see cref="Behaviour"/>, for a behaviour that can change while the
+    /// menu is live. Null falls back to <see cref="Behaviour"/>.</summary>
+    public Func<GateBehaviour?>? ReadBehaviour { get; init; }
 
     public MenuItem.Icon LeftIcon { get; init; } = MenuItem.Icon.NONE;
 
@@ -33,23 +37,23 @@ public abstract class MenuEntry
 
     public Func<MenuItem.Icon>? ReadRightIcon { get; init; }
 
-    // Greys the item out without locking or hiding it. Independent of the gate: a gated item is a right
-    // the player lacks, a disabled one is an action that currently makes no sense.
+    /// <summary>Greys the item out without locking or hiding it. Independent of the gate: a gated item is a right
+    /// the player lacks, a disabled one is an action that currently makes no sense.</summary>
     public Func<bool>? ReadEnabled { get; init; }
 
     public Func<VehicleStats?>? VehicleStats { get; init; }
 
-    // The lighter "upgraded" overlay on the vehicle panel. Zeroed when not supplied.
+    /// <summary>The lighter "upgraded" overlay on the vehicle panel. Zeroed when not supplied.</summary>
     public Func<VehicleStats?>? VehicleUpgradeStats { get; init; }
 
     public Func<WeaponStats?>? WeaponStats { get; init; }
 
     public Func<WeaponStats?>? WeaponComponentStats { get; init; }
 
-    // Null until the owning menu has been materialised.
+    /// <summary>Null until the owning menu has been materialised.</summary>
     public MenuItem? Item { get; private protected set; }
 
-    // Result of the last gate evaluation, so a filter pass does not re-run predicates.
+    /// <summary>Result of the last gate evaluation, so a filter pass does not re-run predicates.</summary>
     public bool IsAllowed { get; internal set; } = true;
 
     // Used when Label is not set; lets a submenu default to an arrow.
@@ -99,8 +103,8 @@ public abstract class MenuEntry
 public abstract class MenuEntry<TItem> : MenuEntry
     where TItem : MenuItem
 {
-    // Applied once, right after the item is created. The escape hatch for what the declaration does not
-    // model, such as ItemData, colour panels and slider bar colours.
+    /// <summary>Applied once, right after the item is created. The escape hatch for what the declaration does not
+    /// model, such as ItemData, colour panels and slider bar colours.</summary>
     public Action<TItem>? Configure { get; init; }
 
     public Action<TItem>? OnHighlighted { get; init; }

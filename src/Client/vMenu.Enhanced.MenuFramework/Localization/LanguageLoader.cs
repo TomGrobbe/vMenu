@@ -15,9 +15,9 @@ public static class LanguageLoader
     // The generated template, which is a file to copy rather than a language to load.
     private const string Template = "example";
 
-    // Reads the convar and registers every language it names. English is not loaded from a file and is
-    // registered by LanguageCatalog itself. Call after ClientConfig.Initialize and before the menus are
-    // built, since the picker's options are fixed once its item exists.
+    /// <summary>Reads the convar and registers every language it names. English is not loaded from a file and is
+    /// registered by LanguageCatalog itself. Call after ClientConfig.Initialize and before the menus are
+    /// built, since the picker's options are fixed once its item exists.</summary>
     public static void Load()
     {
         var resource = Native.GetCurrentResourceName();

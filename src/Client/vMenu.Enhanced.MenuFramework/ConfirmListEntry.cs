@@ -4,21 +4,21 @@ using vMenu.Enhanced.MenuFramework.Localization;
 
 namespace vMenu.Enhanced.MenuFramework;
 
-// A row that picks a value from a list and asks before it acts on it. The first press only turns its
-// description into a warning; the second one runs the handler. Scrolling the value away puts the row
-// back to asking, so nobody confirms one thing and deletes another.
+/// <summary>A row that picks a value from a list and asks before it acts on it. The first press only turns its
+/// description into a warning; the second one runs the handler. Scrolling the value away puts the row
+/// back to asking, so nobody confirms one thing and deletes another.</summary>
 public sealed class ConfirmListEntry : ConfirmEntry<MenuListItem>
 {
     public required IReadOnlyList<MenuText> Options { get; init; }
 
-    // The starting selection. Ignored when ReadSelectedIndex is set.
+    /// <summary>The starting selection. Ignored when ReadSelectedIndex is set.</summary>
     public int SelectedIndex { get; init; }
 
     public Func<int>? ReadSelectedIndex { get; init; }
 
     public Action<ListSelected>? OnConfirmed { get; init; }
 
-    // Runs after OnConfirmed. Exceptions are logged, never left unobserved.
+    /// <summary>Runs after OnConfirmed. Exceptions are logged, never left unobserved.</summary>
     public Func<ListSelected, Task>? OnConfirmedAsync { get; init; }
 
     public Action<ListIndexChanged>? OnIndexChanged { get; init; }

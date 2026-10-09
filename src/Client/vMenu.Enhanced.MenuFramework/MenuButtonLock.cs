@@ -4,10 +4,10 @@ using MenuAPI;
 
 namespace vMenu.Enhanced.MenuFramework;
 
-// Two of these screens can overlap: the second opens inside the grace delay of the first, while
-// MenuController.DisableMenuButtons is still held by us and still true. Reading that flag on the way
-// in therefore cannot tell whether we own it or somebody else does, so ownership is counted here
-// instead. Without this the second screen hands the buttons back to nobody and the menu locks up.
+/// <summary>Two of these screens can overlap: the second opens inside the grace delay of the first, while
+/// MenuController.DisableMenuButtons is still held by us and still true. Reading that flag on the way
+/// in therefore cannot tell whether we own it or somebody else does, so ownership is counted here
+/// instead. Without this the second screen hands the buttons back to nobody and the menu locks up.</summary>
 public static class MenuButtonLock
 {
     // The key or click that closed the screen is still held when focus returns to the game, and

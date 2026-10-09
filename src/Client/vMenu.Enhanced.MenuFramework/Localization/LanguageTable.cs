@@ -2,15 +2,15 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace vMenu.Enhanced.MenuFramework.Localization;
 
-// One language's strings. Only English is expected to be complete. Every other table may be partial
-// and falls back key by key, so a half finished translation is still usable.
+/// <summary>One language's strings. Only English is expected to be complete. Every other table may be partial
+/// and falls back key by key, so a half finished translation is still usable.</summary>
 public sealed class LanguageTable(LanguageId id, string nativeName, IReadOnlyDictionary<string, string> strings)
 {
     private readonly Dictionary<string, string> _strings = new(strings, StringComparer.Ordinal);
 
     public LanguageId Id { get; } = id;
 
-    // The language's name in itself ("Nederlands", not "Dutch"), for the language picker.
+    /// <summary>The language's name in itself ("Nederlands", not "Dutch"), for the language picker.</summary>
     public string NativeName { get; } = nativeName;
 
     public IReadOnlyCollection<string> Keys => _strings.Keys;

@@ -12,23 +12,23 @@ public abstract class MenuDefinition
 
     public virtual MenuText Subtitle => Metadata.Subtitle;
 
-    // Text of the item that opens this menu from its parent.
+    /// <summary>Text of the item that opens this menu from its parent.</summary>
     public virtual MenuText LinkText => Title;
 
     public virtual MenuText LinkDescription => Metadata.LinkDescription;
 
     public virtual MenuText LinkLabel => Metadata.LinkLabel;
 
-    // Gates the item that opens this menu, which gates the menu as a whole.
+    /// <summary>Gates the item that opens this menu, which gates the menu as a whole.</summary>
     public virtual MenuGate Gate => Metadata.Gate;
 
-    // Null inherits MenuFrameworkOptions.DefaultGateBehaviour.
+    /// <summary>Null inherits MenuFrameworkOptions.DefaultGateBehaviour.</summary>
     public virtual GateBehaviour? DefaultGateBehaviour => null;
 
-    // What the item that opens this menu looks like when Gate denies.
+    /// <summary>What the item that opens this menu looks like when Gate denies.</summary>
     public virtual GateBehaviour? LinkBehaviour => null;
 
-    // Anything to fetch or compute before Build can declare entries.
+    /// <summary>Anything to fetch or compute before Build can declare entries.</summary>
     public virtual Task PrepareAsync() => Task.CompletedTask;
 
     // Declares the menu's contents by appending to MenuBuilder.Entries.

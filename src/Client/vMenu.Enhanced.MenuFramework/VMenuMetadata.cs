@@ -33,10 +33,10 @@ internal sealed class VMenuMetadata
 
     public MenuGate Gate { get; }
 
-    // Not cached here: MenuDefinition already holds the result per instance, and a static
-    // Dictionary<Type, ...> would be one more default comparer for the sandbox to object to. Guarded
-    // because the sandbox decides at call time which framework members an assembly may touch, and a
-    // refusal here would take the resource down during startup.
+    /// <summary>Not cached here: MenuDefinition already holds the result per instance, and a static
+    /// Dictionary&lt;Type, ...&gt; would be one more default comparer for the sandbox to object to. Guarded
+    /// because the sandbox decides at call time which framework members an assembly may touch, and a
+    /// refusal here would take the resource down during startup.</summary>
     public static VMenuMetadata For(Type type)
     {
         try

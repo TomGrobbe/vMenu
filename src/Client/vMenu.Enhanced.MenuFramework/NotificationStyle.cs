@@ -1,6 +1,6 @@
 namespace vMenu.Enhanced.MenuFramework;
 
-// What a notification is telling the player, which is all that decides how it looks.
+/// <summary>What a notification is telling the player, which is all that decides how it looks.</summary>
 public enum NotificationStyle
 {
     // Something happened. No judgement attached.

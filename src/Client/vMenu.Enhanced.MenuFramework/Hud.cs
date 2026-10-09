@@ -2,8 +2,8 @@ using CitizenFX.FiveM.Client;
 
 namespace vMenu.Enhanced.MenuFramework;
 
-// Text drawn straight onto the screen by the game, for overlays that have to sit in the world or
-// track the minimap rather than live in the NUI page like Notifications.
+/// <summary>Text drawn straight onto the screen by the game, for overlays that have to sit in the world or
+/// track the minimap rather than live in the NUI page like Notifications.</summary>
 public static class Hud
 {
     public enum TextAlignment
@@ -13,15 +13,15 @@ public static class Hud
         Right = 2,
     }
 
-    // The line break the game's text renderer understands. A \n is drawn literally.
+    /// <summary>The line break the game's text renderer understands. A \n is drawn literally.</summary>
     public const string NewLine = "~n~";
 
     private const int DefaultFont = 6;
 
     private const float DefaultSize = 0.48f;
 
-    // Whether the game is in a state where drawing anything would be wrong: mid player switch, in the
-    // pause menu, faded out, or with the HUD turned off by the player or by a script.
+    /// <summary>Whether the game is in a state where drawing anything would be wrong: mid player switch, in the
+    /// pause menu, faded out, or with the HUD turned off by the player or by a script.</summary>
     public static bool CanDraw =>
         !SceneLock.IsActive
         && Native.IsHudPreferenceSwitchedOn()
@@ -32,8 +32,8 @@ public static class Hud
         && !Native.IsFrontendFading()
         && !Native.IsPauseMenuRestarting();
 
-    // Draws at screen coordinates, or relative to the current draw origin when one is set by
-    // SetDrawOrigin. The outline is what keeps text readable over a bright sky.
+    /// <summary>Draws at screen coordinates, or relative to the current draw origin when one is set by
+    /// SetDrawOrigin. The outline is what keeps text readable over a bright sky.</summary>
     public static void DrawText(
         string text,
         float x,
@@ -70,8 +70,8 @@ public static class Hud
         Native.EndTextCommandDisplayText(x, y, 0);
     }
 
-    // Draws text at a point in the world. Multi-line text runs downward from z, so the caller decides
-    // what sits on top.
+    /// <summary>Draws text at a point in the world. Multi-line text runs downward from z, so the caller decides
+    /// what sits on top.</summary>
     public static void DrawText3D(
         string text,
         float x,

@@ -4,9 +4,9 @@ using vMenu.Enhanced.Logging;
 
 namespace vMenu.Enhanced.MenuFramework.Localization;
 
-// Reports localization gaps once at startup. A Loc constant guarantees the key exists in code, not
-// that any table has text for it, and without this the first sign of a gap is a marker in a menu
-// nobody opened yet.
+/// <summary>Reports localization gaps once at startup. A Loc constant guarantees the key exists in code, not
+/// that any table has text for it, and without this the first sign of a gap is a marker in a menu
+/// nobody opened yet.</summary>
 public static class LocalizationSelfCheck
 {
     public static void Run()

@@ -37,6 +37,14 @@ internal sealed class MenuHost : IDisposable
 
     private bool _noticeShown;
 
+    private readonly List<MenuHost> _newChildren = [];
+
+    private int _updateDepth;
+
+    private bool _needsRefresh;
+
+    private bool _needsFilter;
+
     internal MenuHost(
         Menu menu,
         MenuHost? parent,
@@ -90,17 +98,235 @@ internal sealed class MenuHost : IDisposable
     }
 
     // Gating does not happen here: the filter needs the complete item list, so it runs afterwards.
-    internal MenuItem Materialise(MenuEntry entry, ILocalizer localizer)
+    internal MenuItem Materialise(MenuEntry entry, ILocalizer localizer, int position = -1)
     {
         var item = entry.Materialise(localizer);
 
-        Menu.AddMenuItem(item);
+        if (position < 0)
+        {
+            Menu.AddMenuItem(item);
+        }
+        else
+        {
+            Menu.InsertMenuItem(position, item);
+        }
+
         _byItem[item] = entry;
 
         return item;
     }
 
     internal bool IsLive => _attached;
+
+    internal IDisposable BeginUpdate()
+    {
+        _updateDepth++;
+
+        return new UpdateScope(this);
+    }
+
+    internal void InsertEntry(int index, MenuEntry entry)
+    {
+        index = Math.Clamp(index, 0, Builder.Entries.Count);
+
+        Builder.Entries.Insert(index, entry);
+
+        if (!_attached)
+        {
+            return;
+        }
+
+        if (MenuRegistry.MaterialiseLate(this, entry, index) is { } child)
+        {
+            _newChildren.Add(child);
+        }
+
+        _needsRefresh = true;
+        _needsFilter = true;
+
+        Settle();
+    }
+
+    internal bool RemoveEntry(MenuEntry entry)
+    {
+        var index = IndexOfEntry(entry);
+
+        if (index < 0)
+        {
+            return false;
+        }
+
+        Builder.Entries.RemoveAt(index);
+
+        if (entry is SubmenuEntry { Child: { } child })
+        {
+            MenuRegistry.RemoveByReference(_newChildren, child);
+            MenuRegistry.Untrack(child);
+        }
+
+        if (entry.Item is { } item)
+        {
+            Menu.RemoveMenuItem(item);
+
+            _byItem.Remove(item);
+            _hidden.Remove(item);
+        }
+
+        _inFlight.Remove(entry);
+
+        if (ReferenceEquals(_awaitingConfirmation, entry))
+        {
+            _awaitingConfirmation = null;
+        }
+
+        if (_attached)
+        {
+            _needsFilter = true;
+
+            Settle();
+        }
+
+        return true;
+    }
+
+    internal bool MoveEntry(MenuEntry entry, int index)
+    {
+        var from = IndexOfEntry(entry);
+
+        if (from < 0)
+        {
+            return false;
+        }
+
+        Builder.Entries.RemoveAt(from);
+
+        index = Math.Clamp(index, 0, Builder.Entries.Count);
+
+        Builder.Entries.Insert(index, entry);
+
+        if (_attached && entry.Item is { } item)
+        {
+            Menu.MoveMenuItem(item, index);
+
+            _needsFilter = true;
+
+            Settle();
+        }
+
+        return true;
+    }
+
+    internal bool SelectEntry(MenuEntry entry)
+    {
+        if (entry.Item is not { } item)
+        {
+            return false;
+        }
+
+        var index = Menu.GetMenuItems().IndexOf(item);
+
+        if (index < 0)
+        {
+            return false;
+        }
+
+        var oldIndex = Menu.CurrentIndex;
+        var old = Menu.GetCurrentMenuItem();
+
+        if (ReferenceEquals(old, item))
+        {
+            return true;
+        }
+
+        var max = Menu.MaxItemsOnScreen;
+        var offset = Math.Min(Menu.ViewIndexOffset, Math.Max(Menu.Size - max, 0));
+
+        Menu.RefreshIndex(index, Math.Clamp(offset, Math.Max(index - max + 1, 0), index));
+
+        HandleIndexChange(Menu, old ?? item, item, oldIndex, index);
+
+        return true;
+    }
+
+    private int IndexOfEntry(MenuEntry entry)
+    {
+        for (var index = 0; index < Builder.Entries.Count; index++)
+        {
+            if (ReferenceEquals(Builder.Entries[index], entry))
+            {
+                return index;
+            }
+        }
+
+        return -1;
+    }
+
+    internal void Invalidate(bool refresh, bool filter)
+    {
+        _needsRefresh |= refresh;
+        _needsFilter |= filter;
+
+        Settle();
+    }
+
+    private void Settle()
+    {
+        if (_updateDepth > 0)
+        {
+            return;
+        }
+
+        if (!_attached)
+        {
+            _needsRefresh = false;
+            _needsFilter = false;
+            _newChildren.Clear();
+
+            return;
+        }
+
+        if (_needsRefresh)
+        {
+            _needsRefresh = false;
+
+            var localizer = Localizer.Current;
+
+            Refresh(localizer, deferFilter: true);
+
+            foreach (var child in _newChildren)
+            {
+                MenuRegistry.RefreshBranch(child, localizer);
+            }
+
+            _newChildren.Clear();
+        }
+
+        if (_needsFilter || _filterDirty)
+        {
+            _needsFilter = false;
+
+            ApplyFilter();
+        }
+    }
+
+    private sealed class UpdateScope(MenuHost host) : IDisposable
+    {
+        private bool _disposed;
+
+        public void Dispose()
+        {
+            if (_disposed)
+            {
+                return;
+            }
+
+            _disposed = true;
+
+            host._updateDepth--;
+
+            host.Settle();
+        }
+    }
 
     // Everything that remembers an item has to be emptied together, or a later refresh would gate rows
     // the menu no longer has.
@@ -125,6 +351,10 @@ internal sealed class MenuHost : IDisposable
 
         _awaitingConfirmation = null;
         _filterDirty = false;
+
+        _newChildren.Clear();
+        _needsRefresh = false;
+        _needsFilter = false;
 
         // ClearMenuItems took the notice with everything else, so the record of it has to go too or it would
         // never be added back.
@@ -194,7 +424,9 @@ internal sealed class MenuHost : IDisposable
 
     // Used for both a permission resync and a language change, which cannot be allowed to disagree about
     // what an item says. Synchronous, or menus would show stale state after the notifier already returned.
-    internal void Refresh(ILocalizer localizer)
+    internal void Refresh(ILocalizer localizer) => Refresh(localizer, deferFilter: false);
+
+    internal void Refresh(ILocalizer localizer, bool deferFilter)
     {
         RefreshHeader(localizer);
 
@@ -218,7 +450,7 @@ internal sealed class MenuHost : IDisposable
         {
             entry.IsAllowed = entry.EffectiveGate.Evaluate();
 
-            var behaviour = entry.Behaviour ?? fallback;
+            var behaviour = entry.ReadBehaviour?.Invoke() ?? entry.Behaviour ?? fallback;
 
             entry.ApplyPresentation(localizer, behaviour);
 
@@ -245,6 +477,12 @@ internal sealed class MenuHost : IDisposable
         if (!visibilityChanged && _noticeShown == NoticeWanted())
         {
             // Leave the filter alone so the player's cursor does not jump.
+            return;
+        }
+
+        if (deferFilter)
+        {
+            _needsFilter = true;
             return;
         }
 
@@ -276,7 +514,24 @@ internal sealed class MenuHost : IDisposable
     {
         _userFilter = predicate;
 
-        ApplyFilter();
+        if (_attached)
+        {
+            ApplyFilter();
+        }
+        else
+        {
+            _needsFilter = true;
+        }
+    }
+
+    internal void ApplyPendingFilter()
+    {
+        if (_needsFilter && _attached && _updateDepth == 0)
+        {
+            _needsFilter = false;
+
+            ApplyFilter();
+        }
     }
 
     internal void RefreshFilter() => ApplyFilter();

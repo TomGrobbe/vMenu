@@ -6,10 +6,10 @@ using vMenu.Enhanced.MenuFramework.Localization;
 
 namespace vMenu.Enhanced.MenuFramework;
 
-// Wraps an item the caller built by hand, so it keeps its place in declaration order and still takes
-// part in gating. Without the dispatch registration a locked raw list or slider would still move
-// under the arrow keys. Text is left alone, there being no declaration to re-derive it from, so a
-// raw item does not translate: use a real entry type for anything the player reads.
+/// <summary>Wraps an item the caller built by hand, so it keeps its place in declaration order and still takes
+/// part in gating. Without the dispatch registration a locked raw list or slider would still move
+/// under the arrow keys. Text is left alone, there being no declaration to re-derive it from, so a
+/// raw item does not translate: use a real entry type for anything the player reads.</summary>
 public sealed class RawEntry : MenuEntry<MenuItem>
 {
     private readonly MenuItem _item;
