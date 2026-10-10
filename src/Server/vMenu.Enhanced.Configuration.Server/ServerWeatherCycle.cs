@@ -15,6 +15,8 @@ public static class ServerWeatherCycle
 {
     private const string ConfigFile = "config/weather-cycle.json";
 
+    private static string? _published;
+
     public static void Initialize()
     {
         Load();
@@ -46,9 +48,16 @@ public static class ServerWeatherCycle
 
         WeatherCycle.Use(wanted, custom);
 
-        Native.SetConvarReplicated(
-            WorldStateConvars.CustomCycle,
-            custom is null ? string.Empty : ServerJson.Serialize(custom.Cleaned));
+        var payload = custom is null ? string.Empty : ServerJson.Serialize(custom.Cleaned);
+
+        // Set loads, and so does the convar listener its own write triggers.
+        if (payload == _published
+            || !ServerStateBags.Set(WorldStateBag.Name, WorldStateBag.CustomCycle, payload))
+        {
+            return;
+        }
+
+        _published = payload;
 
         if (custom is not null)
         {

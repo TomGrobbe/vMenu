@@ -7,6 +7,7 @@ using vMenu.Enhanced.Configuration;
 using vMenu.Enhanced.Data.Diagnostics;
 using vMenu.Enhanced.Data.Ticks;
 using vMenu.Enhanced.Data.World;
+using vMenu.Enhanced.Events;
 using vMenu.Enhanced.Logging;
 using vMenu.Enhanced.Serialization;
 using vMenu.Enhanced.Ticks;
@@ -115,7 +116,7 @@ public static class WorldState
 
         ClientConfig.AddEventListenerFor([WorldStateConvars.Utc], ReadClock);
         ClientConfig.AddEventListenerFor([WeatherOptionsSettings.WeatherCycle], ReadCycle);
-        ClientConfig.AddEventListenerFor([WorldStateConvars.CustomCycle], ReadCycle);
+        StateBags.Watch(WorldStateBag.CustomCycle, WorldStateBag.Name, (_, _) => ReadCycleNextFrame());
         ClientConfig.AddEventListenerFor(
             [
                 WorldStateConvars.Weather,
@@ -204,9 +205,24 @@ public static class WorldState
         Changed?.Invoke();
     }
 
+    // A change handler runs before the bag holds the new value.
+    private static async void ReadCycleNextFrame()
+    {
+        try
+        {
+            await API.Delay(0);
+
+            ReadCycle();
+        }
+        catch (Exception exception)
+        {
+            Log.Error($"[World] Could not read the custom weather cycle the server sent: {exception}");
+        }
+    }
+
     private static CustomCycle? ReadCustomCycle()
     {
-        var payload = Native.GetConvar(WorldStateConvars.CustomCycle, string.Empty);
+        var payload = StateBags.Get<string>(WorldStateBag.Name, WorldStateBag.CustomCycle);
 
         if (string.IsNullOrWhiteSpace(payload))
         {

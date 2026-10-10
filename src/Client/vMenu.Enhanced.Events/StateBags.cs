@@ -81,7 +81,7 @@ public static class StateBags
 
     // The new value is deliberately not passed to the handler, even though the game offers it. It arrives
     // as a bare MessagePack blob with no type attached, and turning one into a C# object needs a resolver
-    // the runtime does not set up. Watch and StopWatching are not being used yet.
+    // the runtime does not set up. StopWatching is not being used yet.
     public static int Watch(string? key, string? bagName, Action<string, string> handler)
     {
         try

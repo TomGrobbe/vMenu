@@ -138,7 +138,7 @@ public static class NativeFixer
     // AddStateBagChangeHandler can neither produce the func reference nor pass the nulls this native
     // expects. Null is how it spells "anything", but NativeApi.PushArg matches on string before
     // anything else and throws "Unsupported type" on a null one, so StringArg is the only push that
-    // carries a null pointer through. Reached only through StateBags.Watch, which is not used yet.
+    // carries a null pointer through. Reached only through StateBags.Watch.
     public static int AddStateBagChangeHandler(string? keyName, string? bagName, Delegate handler)
     {
         // Same registry as AddConvarChangeListener, for the same reason.

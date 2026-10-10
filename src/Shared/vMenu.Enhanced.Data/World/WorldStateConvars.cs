@@ -17,9 +17,7 @@ public static class WorldStateConvars
 
     public const string Snow = "vMenu.Enhanced.State.Snow";
 
-    public const string CustomCycle = "vMenu.Enhanced.State.CustomCycle";
-
-    public static readonly string[] All = [Utc, Weather, TimeOffset, Blackout, Snow, CustomCycle];
+    public static readonly string[] All = [Utc, Weather, TimeOffset, Blackout, Snow];
 
     public const string Dynamic = "dynamic";
 
