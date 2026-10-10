@@ -1984,7 +1984,7 @@ internal static class EnglishStrings
             [Loc.World.BlackoutCityAndVehicles] = "City And Vehicle Lights Out",
             [Loc.World.BlackoutSet] = "Blackout is now ~y~{value}~s~.",
             [Loc.World.Cycle] = "Weather Cycle",
-            [Loc.World.CycleDescription] = "Which weather schedule the server follows. Custom uses the server's own schedule. Lasts until the server restarts. Press Enter to apply.",
+            [Loc.World.CycleDescription] = "Which weather schedule the server follows. Custom uses the server's own schedule. Lasts until the server restarts. Press Enter to apply. Current weather cycle: ~b~{cycle}~s~.",
             [Loc.World.CycleDefault] = "Default",
             [Loc.World.CycleSnowy] = "Snowy",
             [Loc.World.CycleCustom] = "Custom",

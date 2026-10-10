@@ -2195,7 +2195,7 @@
     "world.cycle": "Wetterzyklus",
     "world.cycle.custom": "Eigener",
     "world.cycle.default": "Standard",
-    "world.cycle.desc": "Welchem Wetterplan der Server folgt. Eigener nutzt den eigenen Plan des Servers. Gilt bis zum Neustart des Servers. Drücke Enter zum Anwenden.",
+    "world.cycle.desc": "Welchem Wetterplan der Server folgt. Eigener nutzt den eigenen Plan des Servers. Gilt bis zum Neustart des Servers. Drücke Enter zum Anwenden. Aktueller Wetterplan: ~b~{cycle}~s~.",
     "world.cycle.set": "Der Wetterzyklus steht jetzt auf ~y~{value}~s~.",
     "world.cycle.snowy": "Verschneit",
     "world.denied": "Du darfst das nicht ändern.",

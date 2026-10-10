@@ -2195,7 +2195,7 @@
     "world.cycle": "Cycle météo",
     "world.cycle.custom": "Personnalisé",
     "world.cycle.default": "Par défaut",
-    "world.cycle.desc": "Le programme météo que suit le serveur. Personnalisé utilise le programme propre au serveur. Dure jusqu'au redémarrage du serveur. Appuyez sur Entrée pour appliquer.",
+    "world.cycle.desc": "Le programme météo que suit le serveur. Personnalisé utilise le programme propre au serveur. Dure jusqu'au redémarrage du serveur. Appuyez sur Entrée pour appliquer. Programme météo actuel : ~b~{cycle}~s~.",
     "world.cycle.set": "Le cycle météo est maintenant sur ~y~{value}~s~.",
     "world.cycle.snowy": "Enneigé",
     "world.denied": "Vous n'avez pas la permission de changer cela.",

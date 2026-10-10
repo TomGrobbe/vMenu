@@ -168,7 +168,9 @@ public sealed class WorldMenu : MenuDefinition
         menu.Entries.Add(new ListEntry
         {
             Text = MenuText.Key(Loc.World.Cycle),
-            Description = MenuText.Key(Loc.World.CycleDescription),
+            Description = MenuText.Key(
+                Loc.World.CycleDescription,
+                ("cycle", MenuText.From(static () => Localizer.Current.Get(Loc.World.CycleName(WeatherCycle.CurrentCycle))))),
             Gate = CycleAllowed,
             Options = ModeOptions(WeatherCycles.Selectable, Loc.World.CycleName),
             ReadSelectedIndex = static () =>
@@ -350,6 +352,8 @@ public sealed class WorldMenu : MenuDefinition
         // State convars are quiet, so the framework's blanket refresh never sees them.
         WorldState.Changed -= RefreshOpen;
         WorldState.Changed += RefreshOpen;
+
+        RefreshOpen();
 
         _status ??= TickRegistry.Register(
             "World.MenuStatus",

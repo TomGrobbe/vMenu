@@ -2195,7 +2195,7 @@
     "world.cycle": "Weercyclus",
     "world.cycle.custom": "Eigen",
     "world.cycle.default": "Standaard",
-    "world.cycle.desc": "Welk weerschema de server volgt. Eigen gebruikt het eigen schema van de server. Blijft tot de server herstart. Druk op enter om toe te passen.",
+    "world.cycle.desc": "Welk weerschema de server volgt. Eigen gebruikt het eigen schema van de server. Blijft tot de server herstart. Druk op enter om toe te passen. Huidig weerschema: ~b~{cycle}~s~.",
     "world.cycle.set": "De weercyclus staat nu op ~y~{value}~s~.",
     "world.cycle.snowy": "Sneeuw",
     "world.denied": "Je mag dat niet aanpassen.",
