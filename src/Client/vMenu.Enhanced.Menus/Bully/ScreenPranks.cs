@@ -3,21 +3,14 @@ using System.Numerics;
 using CitizenFX.FiveM.Client;
 
 using vMenu.Enhanced.Menus.Misc;
+using vMenu.Enhanced.Menus.Players;
 using vMenu.Enhanced.Menus.Players.Appearance;
 
 namespace vMenu.Enhanced.Menus.Bully;
 
 internal static class ScreenPranks
 {
-    private const string DrunkWalk = "move_m@drunk@verydrunk";
-
-    private const string DrunkShake = "DRUNK_SHAKE";
-
     private const string ExplosionShake = "SMALL_EXPLOSION_SHAKE";
-
-    private const string DrugsIn = "DrugsMichaelAliensFightIn";
-
-    private const string DrugsOut = "DrugsMichaelAliensFightOut";
 
     private const string Flash = "MP_TransformRaceFlash";
 
@@ -49,7 +42,10 @@ internal static class ScreenPranks
 
     private const int DrugsOutMs = 3500;
 
+    private const int OnFootPollMs = 250;
+
     private const int FlashMs = 1500;
+
 
     private const int FireworkCount = 8;
 
@@ -99,11 +95,15 @@ internal static class ScreenPranks
 
     public static int SoundCount => Sounds.Count + 1;
 
+    public static bool IsColouring => Coloured.IsOpen;
+
     private static readonly Window Intoxicated = new();
 
     private static readonly Window Coloured = new();
 
     private static bool _beast;
+
+    private static bool _drugged;
 
     private static int _colourPicks;
 
@@ -118,25 +118,34 @@ internal static class ScreenPranks
         var started = Intoxicated.Extend(IntoxicatedMs);
         var ped = Native.PlayerPedId();
 
+        _drugged = drugged;
+
         run.Started();
 
-        if (await Streaming.ClipSetAsync(DrunkWalk))
+        if (await Streaming.ClipSetAsync(Intoxication.DrunkWalk))
         {
-            Native.SetPedMovementClipset(ped, DrunkWalk, 1f);
+            Native.SetPedMovementClipset(ped, Intoxication.DrunkWalk, 1f);
         }
 
         Native.SetPedIsDrunk(ped, true);
-        Native.ShakeGameplayCam(DrunkShake, drugged ? 2f : 1.2f);
-        Native.SetTransitionTimecycleModifier(drugged ? "stoned_aliens" : "DRUNK", 3f);
+        Native.ShakeGameplayCam(Intoxication.Shake, Intoxication.ShakeAmplitude(drugged));
+        Native.SetTransitionTimecycleModifier(Intoxication.Timecycle(drugged), 3f);
 
-        if (drugged && !Native.AnimpostfxIsRunning(DrugsIn))
+        if (drugged && !Native.AnimpostfxIsRunning(Intoxication.DrugsIn))
         {
-            Native.AnimpostfxPlay(DrugsIn, 0, true);
+            Native.AnimpostfxPlay(Intoxication.DrugsIn, 0, true);
         }
 
         if (started)
         {
-            await Intoxicated.WaitAsync();
+            var steering = new DrunkSteering();
+
+            while (Intoxicated.IsOpen)
+            {
+                await API.Delay(steering.Update(_drugged) ? 0 : OnFootPollMs);
+            }
+
+            steering.Release();
 
             if (Intoxicated.Close())
             {
@@ -145,12 +154,20 @@ internal static class ScreenPranks
         }
     }
 
+    public static async Task EndIntoxicationAsync()
+    {
+        if (Intoxicated.Close())
+        {
+            await SoberUpAsync();
+        }
+    }
+
     private static async Task SoberUpAsync()
     {
         var ped = Native.PlayerPedId();
-        var drugged = Native.AnimpostfxIsRunning(DrugsIn);
+        var drugged = Native.AnimpostfxIsRunning(Intoxication.DrugsIn);
 
-        Native.AnimpostfxStop(DrugsIn);
+        Native.AnimpostfxStop(Intoxication.DrugsIn);
         Native.SetPedIsDrunk(ped, false);
         Native.StopGameplayCamShaking(false);
         Native.ResetPedMovementClipset(ped, 1f);
@@ -161,7 +178,7 @@ internal static class ScreenPranks
 
         if (drugged)
         {
-            await PostFxAsync(DrugsOut, DrugsOutMs);
+            await PostFxAsync(Intoxication.DrugsOut, DrugsOutMs);
         }
     }
 

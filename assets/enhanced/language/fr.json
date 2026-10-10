@@ -260,7 +260,7 @@
     "bully.effect.dance": "Danser",
     "bully.effect.dance.desc": "Le fait se lancer dans une danse au hasard pendant un petit moment. Fonctionne seulement à pied.",
     "bully.effect.drunk": "Ivre",
-    "bully.effect.drunk.desc": "Le rend complètement ivre pendant un petit moment. Démarche titubante, caméra qui tangue et couleurs floues.",
+    "bully.effect.drunk.desc": "Le rend complètement ivre pendant un petit moment. Démarche titubante, caméra qui tangue, couleurs floues et une voiture qui dévie sans cesse de sa trajectoire.",
     "bully.effect.drugged": "Drogué",
     "bully.effect.drugged.desc": "Comme ivre, mais avec un vrai trip en plus.",
     "bully.effect.timecycle": "Couleurs de l'écran",

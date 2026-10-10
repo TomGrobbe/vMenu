@@ -1469,7 +1469,7 @@ internal static class EnglishStrings
             [Loc.Bully.Dance] = "Dance",
             [Loc.Bully.DanceDescription] = "Makes them break out in a random dance for a little while. Only works on foot.",
             [Loc.Bully.Drunk] = "Drunk",
-            [Loc.Bully.DrunkDescription] = "Makes them very drunk for a little while. Wobbly walking, a swaying camera and blurry colours.",
+            [Loc.Bully.DrunkDescription] = "Makes them very drunk for a little while. Wobbly walking, a swaying camera, blurry colours and a car that keeps drifting off course.",
             [Loc.Bully.Drugged] = "Drugged",
             [Loc.Bully.DruggedDescription] = "Like drunk, but with a proper trip on top.",
             [Loc.Bully.Timecycle] = "Screen Colours",
