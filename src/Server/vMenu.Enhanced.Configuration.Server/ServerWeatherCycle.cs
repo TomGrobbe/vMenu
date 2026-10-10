@@ -42,13 +42,16 @@ public static class ServerWeatherCycle
     private static void Load()
     {
         var wanted = Wanted();
-        var custom = wanted == WeatherCycleType.Custom && ServerConfig.Value(WeatherOptionsSettings.Enabled)
+        var read = wanted == WeatherCycleType.Custom && ServerConfig.Value(WeatherOptionsSettings.Enabled)
             ? ReadFile()
             : null;
 
-        WeatherCycle.Use(wanted, custom);
+        var payload = read is null ? string.Empty : read.Pack();
 
-        var payload = custom is null ? string.Empty : ServerJson.Serialize(custom.Cleaned);
+        // Runs what the clients unpack, so rounding in the packed hours cannot put them out of step.
+        var custom = read is null ? null : CustomCycle.Build(CustomCycle.Unpack(payload), _ => { });
+
+        WeatherCycle.Use(wanted, custom);
 
         // Set loads, and so does the convar listener its own write triggers.
         if (payload == _published

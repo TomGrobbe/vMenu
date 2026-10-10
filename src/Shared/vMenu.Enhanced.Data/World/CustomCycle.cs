@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Text;
 
 namespace vMenu.Enhanced.Data.World;
 
@@ -20,12 +21,11 @@ public sealed class CustomCycleBlock
 
 public sealed class CustomCycle
 {
-    private CustomCycle(CycleEntry[] entries, double lengthGameHours, bool snowPass, CustomCycleFile cleaned)
+    private CustomCycle(CycleEntry[] entries, double lengthGameHours, bool snowPass)
     {
         Entries = entries;
         LengthGameHours = lengthGameHours;
         SnowPass = snowPass;
-        Cleaned = cleaned;
         HasBlackouts = entries.Any(entry => entry.Blackout != BlackoutMode.Off);
     }
 
@@ -37,8 +37,86 @@ public sealed class CustomCycle
 
     public bool HasBlackouts { get; }
 
-    // Only the entries that survived, with names normalised, so the clients never see a bad one.
-    public CustomCycleFile Cleaned { get; }
+    // Not JSON, because FiveM wants a replicated state bag value under 1024 bytes.
+    public string Pack()
+    {
+        var packed = new StringBuilder(SnowPass ? "1|" : "0|");
+
+        for (var i = 0; i < Entries.Length; i++)
+        {
+            var entry = Entries[i];
+            var end = i + 1 < Entries.Length ? Entries[i + 1].GameHour : LengthGameHours;
+
+            packed.Append((end - entry.GameHour).ToString("0.######", CultureInfo.InvariantCulture));
+            packed.Append((char)('A' + (int)entry.Type));
+
+            if (entry.Blackout == BlackoutMode.City)
+            {
+                packed.Append('c');
+            }
+            else if (entry.Blackout == BlackoutMode.CityAndVehicles)
+            {
+                packed.Append('a');
+            }
+        }
+
+        return packed.ToString();
+    }
+
+    public static CustomCycleFile? Unpack(string packed)
+    {
+        if (packed.Length < 2 || packed[0] is not ('0' or '1') || packed[1] != '|')
+        {
+            return null;
+        }
+
+        var cycle = new List<CustomCycleBlock>();
+        var number = 2;
+
+        for (var i = 2; i < packed.Length; i++)
+        {
+            var letter = packed[i];
+
+            if (letter is (>= '0' and <= '9') or '.')
+            {
+                continue;
+            }
+
+            if (letter is < 'A' or > 'Z'
+                || !double.TryParse(
+                    packed.Substring(number, i - number),
+                    NumberStyles.Float,
+                    CultureInfo.InvariantCulture,
+                    out var hours))
+            {
+                return null;
+            }
+
+            var weather = letter - 'A';
+            var blackout = i + 1 < packed.Length ? packed[i + 1] : ' ';
+
+            if (blackout is 'c' or 'a')
+            {
+                i++;
+            }
+
+            cycle.Add(new CustomCycleBlock
+            {
+                Hours = hours,
+                Weather = weather < WeatherTypes.Selectable.Count ? WeatherTypes.NameOf((WeatherType)weather) : null,
+                Blackout = blackout switch
+                {
+                    'c' => BlackoutModes.NameOf(BlackoutMode.City),
+                    'a' => BlackoutModes.NameOf(BlackoutMode.CityAndVehicles),
+                    _ => null,
+                },
+            });
+
+            number = i + 1;
+        }
+
+        return number == packed.Length ? new CustomCycleFile { SnowPass = packed[0] == '1', Cycle = cycle } : null;
+    }
 
     // Turns "this many hours of this weather" into the running start hours the schedule is built on.
     public static CustomCycle? Build(CustomCycleFile? file, Action<string> warn)
@@ -51,7 +129,6 @@ public sealed class CustomCycle
         }
 
         var entries = new List<CycleEntry>(blocks.Count);
-        var kept = new List<CustomCycleBlock>(blocks.Count);
         var start = 0.0;
 
         for (var i = 0; i < blocks.Count; i++)
@@ -84,12 +161,6 @@ public sealed class CustomCycle
             }
 
             entries.Add(new CycleEntry(start, type, blackout));
-            kept.Add(new CustomCycleBlock
-            {
-                Hours = block.Hours,
-                Weather = WeatherTypes.NameOf(type),
-                Blackout = blackout == BlackoutMode.Off ? null : BlackoutModes.NameOf(blackout),
-            });
 
             start += block.Hours;
         }
@@ -104,7 +175,6 @@ public sealed class CustomCycle
         return new CustomCycle(
             [.. entries],
             start,
-            file.SnowPass,
-            new CustomCycleFile { SnowPass = file.SnowPass, Cycle = kept });
+            file.SnowPass);
     }
 }

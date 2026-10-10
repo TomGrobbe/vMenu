@@ -9,7 +9,6 @@ using vMenu.Enhanced.Data.Ticks;
 using vMenu.Enhanced.Data.World;
 using vMenu.Enhanced.Events;
 using vMenu.Enhanced.Logging;
-using vMenu.Enhanced.Serialization;
 using vMenu.Enhanced.Ticks;
 
 using TimeOptionsSettings = vMenu.Enhanced.Data.Configuration.Settings.TimeOptions;
@@ -229,7 +228,7 @@ public static class WorldState
             return null;
         }
 
-        if (!ClientJson.TryDeserialize<CustomCycleFile>(payload, out var read))
+        if (CustomCycle.Unpack(payload) is not { } read)
         {
             Log.Error($"[World] The custom weather cycle the server sent could not be read: {payload}");
 
