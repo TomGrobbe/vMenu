@@ -18,18 +18,156 @@
   //
   // A block with a typo is skipped and the server console says which one. If nothing usable is
   // left, the default GTA Online schedule is used instead.
+  //
+  // The schedule below is the GTA Online one, with a few rainy and stormy nights added. The comment
+  // behind each block is the in-game day and time it starts. The schedule always starts at midnight,
+  // so these times stay right as long as all hours together add up to whole days (a multiple of 24)
+  // and nobody has moved or frozen the in-game clock. This one is 384 hours, which is 16 days.
 
   "snowPass": false,
   "cycle": [
-    { "hours": 4, "weather": "EXTRASUNNY" },
-    { "hours": 3, "weather": "CLEAR" },
-    { "hours": 2, "weather": "CLOUDS" },
-    { "hours": 2, "weather": "OVERCAST" },
-    { "hours": 2, "weather": "RAIN" },
-    { "hours": 1, "weather": "THUNDER", "blackout": "city" },
-    { "hours": 1, "weather": "THUNDER", "blackout": "all" },
-    { "hours": 2, "weather": "CLEARING" },
-    { "hours": 3, "weather": "FOGGY" },
-    { "hours": 4, "weather": "SMOG" }
+    { "hours": 2, "weather": "EXTRASUNNY" },                  // Day 1, 00:00
+    { "hours": 1, "weather": "CLEAR" },                       // Day 1, 02:00
+    { "hours": 4, "weather": "SMOG" },                        // Day 1, 03:00
+    { "hours": 1, "weather": "EXTRASUNNY" },                  // Day 1, 07:00
+    { "hours": 3, "weather": "SMOG" },                        // Day 1, 08:00
+    { "hours": 3, "weather": "EXTRASUNNY" },                  // Day 1, 11:00
+    { "hours": 1, "weather": "OVERCAST" },                    // Day 1, 14:00
+    { "hours": 2, "weather": "EXTRASUNNY" },                  // Day 1, 15:00
+    { "hours": 3, "weather": "SMOG" },                        // Day 1, 17:00
+    { "hours": 2, "weather": "CLOUDS" },                      // Day 1, 20:00
+    { "hours": 5, "weather": "CLEAR" },                       // Day 1, 22:00
+    { "hours": 1, "weather": "EXTRASUNNY" },                  // Day 2, 03:00
+    { "hours": 3, "weather": "SMOG" },                        // Day 2, 04:00
+    { "hours": 3, "weather": "EXTRASUNNY" },                  // Day 2, 07:00
+    { "hours": 5, "weather": "CLOUDS" },                      // Day 2, 10:00
+    { "hours": 2, "weather": "CLEAR" },                       // Day 2, 15:00
+    { "hours": 2, "weather": "SMOG" },                        // Day 2, 17:00
+    { "hours": 2, "weather": "CLOUDS" },                      // Day 2, 19:00
+    { "hours": 1, "weather": "OVERCAST" },                    // Day 2, 21:00
+    { "hours": 2, "weather": "RAIN" },                        // Day 2, 22:00
+    { "hours": 2, "weather": "CLEARING" },                    // Day 3, 00:00
+    { "hours": 2, "weather": "SMOG" },                        // Day 3, 02:00
+    { "hours": 1, "weather": "CLEAR" },                       // Day 3, 04:00
+    { "hours": 3, "weather": "EXTRASUNNY" },                  // Day 3, 05:00
+    { "hours": 2, "weather": "CLEAR" },                       // Day 3, 08:00
+    { "hours": 2, "weather": "EXTRASUNNY" },                  // Day 3, 10:00
+    { "hours": 3, "weather": "SMOG" },                        // Day 3, 12:00
+    { "hours": 1, "weather": "FOGGY" },                       // Day 3, 15:00
+    { "hours": 2, "weather": "SMOG" },                        // Day 3, 16:00
+    { "hours": 4, "weather": "CLOUDS" },                      // Day 3, 18:00
+    { "hours": 1, "weather": "SMOG" },                        // Day 3, 22:00
+    { "hours": 3, "weather": "EXTRASUNNY" },                  // Day 3, 23:00
+    { "hours": 2, "weather": "SMOG" },                        // Day 4, 02:00
+    { "hours": 1, "weather": "OVERCAST" },                    // Day 4, 04:00
+    { "hours": 1, "weather": "CLOUDS" },                      // Day 4, 05:00
+    { "hours": 1, "weather": "EXTRASUNNY" },                  // Day 4, 06:00
+    { "hours": 1, "weather": "FOGGY" },                       // Day 4, 07:00
+    { "hours": 12, "weather": "CLEAR" },                      // Day 4, 08:00
+    { "hours": 4, "weather": "EXTRASUNNY" },                  // Day 4, 20:00
+    { "hours": 3, "weather": "SMOG" },                        // Day 5, 00:00
+    { "hours": 1, "weather": "OVERCAST" },                    // Day 5, 03:00
+    { "hours": 3, "weather": "SMOG" },                        // Day 5, 04:00
+    { "hours": 3, "weather": "OVERCAST" },                    // Day 5, 07:00
+    { "hours": 1, "weather": "THUNDER" },                     // Day 5, 10:00
+    { "hours": 1, "weather": "SMOG" },                        // Day 5, 11:00
+    { "hours": 1, "weather": "CLEAR" },                       // Day 5, 12:00
+    { "hours": 3, "weather": "EXTRASUNNY" },                  // Day 5, 13:00
+    { "hours": 4, "weather": "CLEAR" },                       // Day 5, 16:00
+    { "hours": 2, "weather": "CLOUDS" },                      // Day 5, 20:00
+    { "hours": 1, "weather": "OVERCAST" },                    // Day 5, 22:00
+    { "hours": 2, "weather": "THUNDER", "blackout": "city" }, // Day 5, 23:00
+    { "hours": 1, "weather": "RAIN" },                        // Day 6, 01:00
+    { "hours": 2, "weather": "CLEARING" },                    // Day 6, 02:00
+    { "hours": 4, "weather": "CLEAR" },                       // Day 6, 04:00
+    { "hours": 1, "weather": "SMOG" },                        // Day 6, 08:00
+    { "hours": 2, "weather": "CLOUDS" },                      // Day 6, 09:00
+    { "hours": 1, "weather": "RAIN" },                        // Day 6, 11:00
+    { "hours": 5, "weather": "SMOG" },                        // Day 6, 12:00
+    { "hours": 2, "weather": "CLOUDS" },                      // Day 6, 17:00
+    { "hours": 1, "weather": "EXTRASUNNY" },                  // Day 6, 19:00
+    { "hours": 2, "weather": "SMOG" },                        // Day 6, 20:00
+    { "hours": 3, "weather": "EXTRASUNNY" },                  // Day 6, 22:00
+    { "hours": 8, "weather": "CLEAR" },                       // Day 7, 01:00
+    { "hours": 3, "weather": "SMOG" },                        // Day 7, 09:00
+    { "hours": 2, "weather": "FOGGY" },                       // Day 7, 12:00
+    { "hours": 1, "weather": "CLEAR" },                       // Day 7, 14:00
+    { "hours": 4, "weather": "EXTRASUNNY" },                  // Day 7, 15:00
+    { "hours": 2, "weather": "SMOG" },                        // Day 7, 19:00
+    { "hours": 1, "weather": "OVERCAST" },                    // Day 7, 21:00
+    { "hours": 3, "weather": "RAIN" },                        // Day 7, 22:00
+    { "hours": 2, "weather": "CLEARING" },                    // Day 8, 01:00
+    { "hours": 3, "weather": "SMOG" },                        // Day 8, 03:00
+    { "hours": 3, "weather": "EXTRASUNNY" },                  // Day 8, 06:00
+    { "hours": 8, "weather": "CLEAR" },                       // Day 8, 09:00
+    { "hours": 3, "weather": "SMOG" },                        // Day 8, 17:00
+    { "hours": 2, "weather": "EXTRASUNNY" },                  // Day 8, 20:00
+    { "hours": 1, "weather": "SMOG" },                        // Day 8, 22:00
+    { "hours": 2, "weather": "OVERCAST" },                    // Day 8, 23:00
+    { "hours": 3, "weather": "SMOG" },                        // Day 9, 01:00
+    { "hours": 4, "weather": "FOGGY" },                       // Day 9, 04:00
+    { "hours": 1, "weather": "SMOG" },                        // Day 9, 08:00
+    { "hours": 7, "weather": "EXTRASUNNY" },                  // Day 9, 09:00
+    { "hours": 5, "weather": "CLEAR" },                       // Day 9, 16:00
+    { "hours": 2, "weather": "SMOG" },                        // Day 9, 21:00
+    { "hours": 5, "weather": "CLEAR" },                       // Day 9, 23:00
+    { "hours": 3, "weather": "EXTRASUNNY" },                  // Day 10, 04:00
+    { "hours": 5, "weather": "CLEAR" },                       // Day 10, 07:00
+    { "hours": 1, "weather": "SMOG" },                        // Day 10, 12:00
+    { "hours": 5, "weather": "CLEAR" },                       // Day 10, 13:00
+    { "hours": 1, "weather": "EXTRASUNNY" },                  // Day 10, 18:00
+    { "hours": 5, "weather": "CLEAR" },                       // Day 10, 19:00
+    { "hours": 6, "weather": "SMOG" },                        // Day 11, 00:00
+    { "hours": 1, "weather": "OVERCAST" },                    // Day 11, 06:00
+    { "hours": 2, "weather": "THUNDER" },                     // Day 11, 07:00
+    { "hours": 1, "weather": "CLEARING" },                    // Day 11, 09:00
+    { "hours": 2, "weather": "EXTRASUNNY" },                  // Day 11, 10:00
+    { "hours": 2, "weather": "CLEAR" },                       // Day 11, 12:00
+    { "hours": 3, "weather": "EXTRASUNNY" },                  // Day 11, 14:00
+    { "hours": 5, "weather": "CLEAR" },                       // Day 11, 17:00
+    { "hours": 3, "weather": "SMOG" },                        // Day 11, 22:00
+    { "hours": 1, "weather": "OVERCAST" },                    // Day 12, 01:00
+    { "hours": 2, "weather": "RAIN" },                        // Day 12, 02:00
+    { "hours": 2, "weather": "CLEARING" },                    // Day 12, 04:00
+    { "hours": 1, "weather": "CLOUDS" },                      // Day 12, 06:00
+    { "hours": 1, "weather": "SMOG" },                        // Day 12, 07:00
+    { "hours": 5, "weather": "CLEAR" },                       // Day 12, 08:00
+    { "hours": 2, "weather": "EXTRASUNNY" },                  // Day 12, 13:00
+    { "hours": 3, "weather": "SMOG" },                        // Day 12, 15:00
+    { "hours": 3, "weather": "EXTRASUNNY" },                  // Day 12, 18:00
+    { "hours": 8, "weather": "CLEAR" },                       // Day 12, 21:00
+    { "hours": 3, "weather": "SMOG" },                        // Day 13, 05:00
+    { "hours": 2, "weather": "OVERCAST" },                    // Day 13, 08:00
+    { "hours": 2, "weather": "SMOG" },                        // Day 13, 10:00
+    { "hours": 4, "weather": "CLEAR" },                       // Day 13, 12:00
+    { "hours": 7, "weather": "EXTRASUNNY" },                  // Day 13, 16:00
+    { "hours": 5, "weather": "SMOG" },                        // Day 13, 23:00
+    { "hours": 2, "weather": "EXTRASUNNY" },                  // Day 14, 04:00
+    { "hours": 3, "weather": "SMOG" },                        // Day 14, 06:00
+    { "hours": 3, "weather": "EXTRASUNNY" },                  // Day 14, 09:00
+    { "hours": 5, "weather": "CLOUDS" },                      // Day 14, 12:00
+    { "hours": 2, "weather": "CLEAR" },                       // Day 14, 17:00
+    { "hours": 2, "weather": "SMOG" },                        // Day 14, 19:00
+    { "hours": 5, "weather": "CLEAR" },                       // Day 14, 21:00
+    { "hours": 3, "weather": "EXTRASUNNY" },                  // Day 15, 02:00
+    { "hours": 3, "weather": "CLEAR" },                       // Day 15, 05:00
+    { "hours": 1, "weather": "EXTRASUNNY" },                  // Day 15, 08:00
+    { "hours": 5, "weather": "CLEAR" },                       // Day 15, 09:00
+    { "hours": 3, "weather": "SMOG" },                        // Day 15, 14:00
+    { "hours": 4, "weather": "OVERCAST" },                    // Day 15, 17:00
+    { "hours": 1, "weather": "RAIN" },                        // Day 15, 21:00
+    { "hours": 2, "weather": "THUNDER", "blackout": "city" }, // Day 15, 22:00
+    { "hours": 1, "weather": "RAIN" },                        // Day 16, 00:00
+    { "hours": 2, "weather": "CLEARING" },                    // Day 16, 01:00
+    { "hours": 3, "weather": "SMOG" },                        // Day 16, 03:00
+    { "hours": 1, "weather": "OVERCAST" },                    // Day 16, 06:00
+    { "hours": 2, "weather": "CLOUDS" },                      // Day 16, 07:00
+    { "hours": 1, "weather": "RAIN" },                        // Day 16, 09:00
+    { "hours": 3, "weather": "THUNDER" },                     // Day 16, 10:00
+    { "hours": 1, "weather": "RAIN" },                        // Day 16, 13:00
+    { "hours": 2, "weather": "CLEARING" },                    // Day 16, 14:00
+    { "hours": 1, "weather": "CLOUDS" },                      // Day 16, 16:00
+    { "hours": 4, "weather": "EXTRASUNNY" },                  // Day 16, 17:00
+    { "hours": 3, "weather": "SMOG" }                         // Day 16, 21:00
   ]
 }

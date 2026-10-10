@@ -32,7 +32,9 @@ Changes apply live. The file is only read while `vMenu.Enhanced.WeatherOptions.E
 }
 ```
 
-The blocks play from top to bottom and then repeat.
+The blocks play from top to bottom and then repeat. The schedule starts at in-game midnight, so the start times only stay in step with the clock when all hours add up to a multiple of 24 and nobody has moved or frozen the in-game clock.
+
+The file that ships with vMenu is the GTA Online schedule (384 hours, 16 in-game days) with a few rainy and stormy nights added. The comment behind every block is the in-game day and time it starts.
 
 | Field | Meaning |
 | --- | --- |
