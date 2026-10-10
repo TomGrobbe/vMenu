@@ -36,6 +36,8 @@ public static class PlayerOptions
 
     public const string SwimSpeed = "vMenu.Enhanced.Menus.PlayerOptions.SwimSpeed";
 
+    public const string Intoxication = "vMenu.Enhanced.Menus.PlayerOptions.Intoxication";
+
     public const string NeverWanted = "vMenu.Enhanced.Menus.PlayerOptions.NeverWanted";
 
     public const string SetWanted = "vMenu.Enhanced.Menus.PlayerOptions.SetWanted";

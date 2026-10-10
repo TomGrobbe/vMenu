@@ -2,6 +2,7 @@ using System.Numerics;
 
 using CitizenFX.FiveM.Client;
 
+using vMenu.Enhanced.Data.Bullying;
 using vMenu.Enhanced.Menus.Misc;
 using vMenu.Enhanced.Menus.Players;
 using vMenu.Enhanced.Menus.Players.Appearance;
@@ -115,6 +116,13 @@ internal static class ScreenPranks
 
     private static async Task IntoxicateAsync(BullyRun run, bool drugged)
     {
+        if (PlayerIntoxication.Enabled)
+        {
+            run.Skip(BullyEvents.RefusedIntoxicated);
+
+            return;
+        }
+
         var started = Intoxicated.Extend(IntoxicatedMs);
         var ped = Native.PlayerPedId();
 

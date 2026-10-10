@@ -151,6 +151,20 @@ public static class UserDefaults
     // 0 off, 1 solid, 2 fade, 3 flash.
     public static IntDefault PlayerClothingGlow { get; } = new("playerClothingGlow") { Default = 0 };
 
+    public static BoolDefault PlayerIntoxication { get; } = new("playerIntoxication") { Default = false };
+
+    public static BoolDefault PlayerIntoxicationDrugged { get; } = new("playerIntoxicationDrugged") { Default = false };
+
+    public static BoolDefault PlayerIntoxicationScreen { get; } = new("playerIntoxicationScreen") { Default = true };
+
+    public static IntDefault PlayerIntoxicationStrength { get; } = new("playerIntoxicationStrength") { Default = 10 };
+
+    public static BoolDefault PlayerIntoxicationWalk { get; } = new("playerIntoxicationWalk") { Default = true };
+
+    public static BoolDefault PlayerIntoxicationNoSprint { get; } = new("playerIntoxicationNoSprint") { Default = true };
+
+    public static BoolDefault PlayerIntoxicationDriving { get; } = new("playerIntoxicationDriving") { Default = true };
+
     #endregion
 
     #region Vehicle Options
@@ -405,6 +419,13 @@ public static class UserDefaults
         PlayerNeverWanted,
         PlayerWalkingStyle,
         PlayerClothingGlow,
+        PlayerIntoxication,
+        PlayerIntoxicationDrugged,
+        PlayerIntoxicationScreen,
+        PlayerIntoxicationStrength,
+        PlayerIntoxicationWalk,
+        PlayerIntoxicationNoSprint,
+        PlayerIntoxicationDriving,
 
         VehicleGodMode,
         VehicleGodInvincible,

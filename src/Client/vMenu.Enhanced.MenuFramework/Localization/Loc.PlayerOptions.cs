@@ -30,6 +30,44 @@ public static partial class Loc
 
         public const string FastSwimDescription = "playeroptions.fastswim.desc";
 
+        public const string Intoxication = "playeroptions.intoxication";
+
+        public const string IntoxicationSubtitle = "playeroptions.intoxication.subtitle";
+
+        public const string IntoxicationDescription = "playeroptions.intoxication.desc";
+
+        public const string IntoxicationEnabled = "playeroptions.intoxication.enabled";
+
+        public const string IntoxicationEnabledDescription = "playeroptions.intoxication.enabled.desc";
+
+        public const string IntoxicationType = "playeroptions.intoxication.type";
+
+        public const string IntoxicationTypeDescription = "playeroptions.intoxication.type.desc";
+
+        public const string IntoxicationDrunk = "playeroptions.intoxication.drunk";
+
+        public const string IntoxicationDrugged = "playeroptions.intoxication.drugged";
+
+        public const string IntoxicationScreen = "playeroptions.intoxication.screen";
+
+        public const string IntoxicationScreenDescription = "playeroptions.intoxication.screen.desc";
+
+        public const string IntoxicationStrength = "playeroptions.intoxication.strength";
+
+        public const string IntoxicationStrengthDescription = "playeroptions.intoxication.strength.desc";
+
+        public const string IntoxicationWalk = "playeroptions.intoxication.walk";
+
+        public const string IntoxicationWalkDescription = "playeroptions.intoxication.walk.desc";
+
+        public const string IntoxicationNoSprint = "playeroptions.intoxication.nosprint";
+
+        public const string IntoxicationNoSprintDescription = "playeroptions.intoxication.nosprint.desc";
+
+        public const string IntoxicationDriving = "playeroptions.intoxication.driving";
+
+        public const string IntoxicationDrivingDescription = "playeroptions.intoxication.driving.desc";
+
         public const string MpStats = "playeroptions.mpstats";
 
         public const string MpStatsDescription = "playeroptions.mpstats.desc";

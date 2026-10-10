@@ -69,4 +69,6 @@ public static class BullyEvents
     public const string RefusedNoVehicle = "novehicle";
 
     public const string RefusedFailed = "failed";
+
+    public const string RefusedIntoxicated = "intoxicated";
 }

@@ -27,7 +27,10 @@ public static class PedWalkingStyle
 
         if (string.IsNullOrWhiteSpace(clipset))
         {
-            Native.ResetPedMovementClipset(ped, 0f);
+            if (!PlayerIntoxication.HoldsWalk)
+            {
+                Native.ResetPedMovementClipset(ped, 0f);
+            }
 
             UserDefaults.PlayerWalkingStyle.Value = string.Empty;
 
@@ -39,7 +42,10 @@ public static class PedWalkingStyle
             return false;
         }
 
-        Native.SetPedMovementClipset(ped, clipset, BlendSeconds);
+        if (!PlayerIntoxication.HoldsWalk)
+        {
+            Native.SetPedMovementClipset(ped, clipset, BlendSeconds);
+        }
 
         UserDefaults.PlayerWalkingStyle.Value = clipset;
 
@@ -50,7 +56,7 @@ public static class PedWalkingStyle
     // only when the player picks one.
     public static async Task ReapplyAsync()
     {
-        if (Current is not { Length: > 0 } clipset)
+        if (PlayerIntoxication.HoldsWalk || Current is not { Length: > 0 } clipset)
         {
             return;
         }

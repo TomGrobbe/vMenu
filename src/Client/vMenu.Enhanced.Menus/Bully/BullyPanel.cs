@@ -231,6 +231,7 @@ internal sealed class BullyPanel
                 BullyEvents.RefusedBusy => Loc.Bully.Busy,
                 BullyEvents.RefusedNoVehicle => Loc.Bully.NoVehicle,
                 BullyEvents.RefusedFailed => Loc.Bully.DidNotWork,
+                BullyEvents.RefusedIntoxicated => Loc.Bully.AlreadyIntoxicated,
                 _ => Loc.Bully.Disabled,
             };
 

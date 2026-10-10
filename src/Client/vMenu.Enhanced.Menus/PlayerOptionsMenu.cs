@@ -149,6 +149,8 @@ public sealed class PlayerOptionsMenu : MenuDefinition
             Loc.PlayerOptions.SwimSpeedRate,
             Loc.PlayerOptions.SwimSpeedRateDescription);
 
+        menu.Entries.Add(SubmenuEntry.For(new IntoxicationMenu()));
+
         menu.Entries.Add(Group(Loc.PlayerOptions.GroupWanted, Loc.PlayerOptions.GroupWantedDescription));
 
         menu.Entries.Add(new CheckboxEntry

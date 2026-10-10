@@ -142,6 +142,7 @@ public sealed class Main : IScript
         PlayerFreeze.Initialize();
         EveryoneIgnoresPlayer.Initialize();
         PlayerNeverWanted.Initialize();
+        PlayerIntoxication.Initialize();
         PedIlluminatedClothing.Initialize();
         PedKeepProps.Initialize();
         VehicleGodMode.Initialize();

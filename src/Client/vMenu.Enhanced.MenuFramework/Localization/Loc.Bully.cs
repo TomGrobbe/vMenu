@@ -96,6 +96,8 @@ public static partial class Loc
 
         public const string Busy = "bully.busy";
 
+        public const string AlreadyIntoxicated = "bully.alreadyintoxicated";
+
         public const string NoVehicle = "bully.novehicle";
 
         public const string DidNotWork = "bully.didnotwork";
