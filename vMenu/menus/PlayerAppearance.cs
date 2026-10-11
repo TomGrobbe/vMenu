@@ -2345,7 +2345,7 @@ namespace vMenuClient.menus
             ["s_m_m_highsec_05"] = "Highsec05SMM", // mpsecurity
             ["s_m_m_highsec_06"] = "Highsec06SMM", // mp2025_02
             ["s_m_m_janitor"] = "JanitorSMM",
-            ["s_m_m_kortzsecurity_01"] = "KortzSecurity01SMM",  // mp2026_01
+            ["s_m_m_kortzsecurity_01"] = "KortzSecurity01SMM", // mp2026_01
             ["s_m_m_lathandy_01"] = "Lathandy01SMM",
             ["s_m_m_lifeinvad_01"] = "Lifeinvad01SMM",
             ["s_m_m_linecook"] = "LinecookSMM",
