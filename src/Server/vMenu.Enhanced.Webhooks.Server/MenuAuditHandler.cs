@@ -151,6 +151,9 @@ public static class MenuAuditHandler
         AuditActions.LoadoutEquipped => value.Length == 0
             ? "equipped a weapon loadout."
             : "equipped the weapon loadout '" + value + "'.",
+        AuditActions.GameLoadoutEquipped => value.Length == 0
+            ? "equipped a game loadout."
+            : "equipped the game loadout '" + value + "'.",
         AuditActions.VehicleModsChanged => value.Length == 0
             ? "changed the mods on their vehicle."
             : "changed the mods on their " + value + ".",

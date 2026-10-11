@@ -27,6 +27,7 @@ public sealed class PlayerMenu : MenuDefinition
         | MenuGate.Permission(SavedPedsPermissions.Menu)
         | MenuGate.Permission(WeaponOptionsPermissions.Menu)
         | MenuGate.Permission(WeaponLoadoutsPermissions.Menu)
+        | MenuGate.Permission(WeaponOptionsPermissions.GameLoadouts)
         | MenuGate.Permission(AutoPilotPermissions.Menu);
 
     protected override void Build(MenuBuilder menu)
@@ -40,6 +41,7 @@ public sealed class PlayerMenu : MenuDefinition
 
         menu.Entries.Add(SubmenuEntry.For(new WeaponOptionsMenu()));
         menu.Entries.Add(SubmenuEntry.For(new WeaponLoadoutsMenu()));
+        menu.Entries.Add(SubmenuEntry.For(new GameLoadoutsMenu()));
 
         menu.Entries.Add(SubmenuEntry.For(new VehicleAutoPilotMenu()));
     }

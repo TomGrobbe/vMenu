@@ -13,6 +13,8 @@ public static class WeaponOptions
 
     public const string RemoveAll = "vMenu.Enhanced.Menus.WeaponOptions.RemoveAll";
 
+    public const string GameLoadouts = "vMenu.Enhanced.Menus.WeaponOptions.GameLoadouts";
+
     public const string UnlimitedAmmo = "vMenu.Enhanced.Menus.WeaponOptions.UnlimitedAmmo";
 
     public const string NoReload = "vMenu.Enhanced.Menus.WeaponOptions.NoReload";

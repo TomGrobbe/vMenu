@@ -22,6 +22,94 @@ public static partial class Loc
 
         public const string RemoveAllDone = "weaponoptions.removeall.done";
 
+        public const string GameLoadout = "weaponoptions.gameloadout";
+
+        public const string GameLoadoutSubtitle = "weaponoptions.gameloadout.subtitle";
+
+        public const string GameLoadoutDescription = "weaponoptions.gameloadout.desc";
+
+        public const string GameLoadoutServices = "weaponoptions.gameloadout.services";
+
+        public const string GameLoadoutGangs = "weaponoptions.gameloadout.gangs";
+
+        public const string GameLoadoutCheats = "weaponoptions.gameloadout.cheats";
+
+        public const string GameLoadoutAnimals = "weaponoptions.gameloadout.animals";
+
+        public const string GameLoadoutDone = "weaponoptions.gameloadout.done";
+
+        public const string GameLoadoutEmpty = "weaponoptions.gameloadout.empty";
+
+        public const string GameLoadoutRemoved = "weaponoptions.gameloadout.removed";
+
+        public const string GameLoadoutLost = "weaponoptions.gameloadout.lost";
+
+        public const string GameLoadoutMexican = "weaponoptions.gameloadout.mexican";
+
+        public const string GameLoadoutFamily = "weaponoptions.gameloadout.family";
+
+        public const string GameLoadoutAsian = "weaponoptions.gameloadout.asian";
+
+        public const string GameLoadoutHillbilly = "weaponoptions.gameloadout.hillbilly";
+
+        public const string GameLoadoutCult = "weaponoptions.gameloadout.cult";
+
+        public const string GameLoadoutSecurity = "weaponoptions.gameloadout.security";
+
+        public const string GameLoadoutGuard = "weaponoptions.gameloadout.guard";
+
+        public const string GameLoadoutPoliceGuard = "weaponoptions.gameloadout.policeguard";
+
+        public const string GameLoadoutCop = "weaponoptions.gameloadout.cop";
+
+        public const string GameLoadoutCopShotgun = "weaponoptions.gameloadout.copshotgun";
+
+        public const string GameLoadoutCopHeli = "weaponoptions.gameloadout.copheli";
+
+        public const string GameLoadoutCopBoat = "weaponoptions.gameloadout.copboat";
+
+        public const string GameLoadoutSwat = "weaponoptions.gameloadout.swat";
+
+        public const string GameLoadoutSwatNoLaser = "weaponoptions.gameloadout.swatnolaser";
+
+        public const string GameLoadoutFireman = "weaponoptions.gameloadout.fireman";
+
+        public const string GameLoadoutArmy = "weaponoptions.gameloadout.army";
+
+        public const string GameLoadoutCheat = "weaponoptions.gameloadout.cheat";
+
+        public const string GameLoadoutAnimal = "weaponoptions.gameloadout.animal";
+
+        public const string GameLoadoutCougar = "weaponoptions.gameloadout.cougar";
+
+        public const string GameLoadoutRetriever = "weaponoptions.gameloadout.retriever";
+
+        public const string GameLoadoutSmallDog = "weaponoptions.gameloadout.smalldog";
+
+        public const string GameLoadoutCat = "weaponoptions.gameloadout.cat";
+
+        public const string GameLoadoutCoyote = "weaponoptions.gameloadout.coyote";
+
+        public const string GameLoadoutBoar = "weaponoptions.gameloadout.boar";
+
+        public const string GameLoadoutPig = "weaponoptions.gameloadout.pig";
+
+        public const string GameLoadoutCow = "weaponoptions.gameloadout.cow";
+
+        public const string GameLoadoutDeer = "weaponoptions.gameloadout.deer";
+
+        public const string GameLoadoutRabbit = "weaponoptions.gameloadout.rabbit";
+
+        public const string GameLoadoutHen = "weaponoptions.gameloadout.hen";
+
+        public const string GameLoadoutTigerShark = "weaponoptions.gameloadout.tigershark";
+
+        public const string GameLoadoutHammerheadShark = "weaponoptions.gameloadout.hammerheadshark";
+
+        public const string GameLoadoutKillerWhale = "weaponoptions.gameloadout.killerwhale";
+
+        public const string GameLoadoutLevel = "weaponoptions.gameloadout.level";
+
         public const string UnlimitedAmmo = "weaponoptions.unlimitedammo";
 
         public const string UnlimitedAmmoDescription = "weaponoptions.unlimitedammo.desc";

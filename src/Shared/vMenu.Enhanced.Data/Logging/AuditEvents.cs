@@ -36,5 +36,7 @@ public static class AuditActions
 
     public const string LoadoutEquipped = "loadout.equipped";
 
+    public const string GameLoadoutEquipped = "gameloadout.equipped";
+
     public const string VehicleModsChanged = "vehicle.mods";
 }
