@@ -45,48 +45,6 @@ namespace vMenuClient
         public string Name => player.Name;
     }
 
-    public class NativePlayerList : IPlayerList
-    {
-        private readonly PlayerList playerList;
-
-        public NativePlayerList(PlayerList playerList)
-        {
-            this.playerList = playerList;
-        }
-
-        public IEnumerator<IPlayer> GetEnumerator()
-        {
-            foreach (var player in playerList)
-            {
-                yield return new NativePlayer(player);
-            }
-        }
-
-        public void RequestPlayerList()
-        {
-            // we are a local-only player list
-        }
-
-        public void ReceivedPlayerList(IList<object> players)
-        {
-
-        }
-
-        public Task WaitRequested()
-        {
-            // we instantly complete, as we always have all players
-            return Task.FromResult(0);
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            foreach (var player in playerList)
-            {
-                yield return new NativePlayer(player);
-            }
-        }
-    }
-
     public class InfinityPlayer : IPlayer
     {
         public InfinityPlayer(int serverId, string name)

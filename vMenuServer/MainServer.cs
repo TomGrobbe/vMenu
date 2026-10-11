@@ -284,8 +284,6 @@ namespace vMenuServer
                 {
                     Tick += TimeLoop;
                 }
-
-                GlobalState.Set("vmenu_onesync", GetConvar("onesync", "off") == "on", true);
             }
         }
         #endregion

@@ -71,7 +71,8 @@ namespace vMenuClient
         /// </summary>
         public MainMenu()
         {
-            PlayersList = new NativePlayerList(Players);
+            // GetActivePlayers only holds players in scope, so the server provides the rest.
+            PlayersList = new InfinityPlayerList(Players);
 
             #region cleanup unused kvps
             var tmp_kvp_handle = StartFindKvp("");
@@ -331,11 +332,6 @@ namespace vMenuClient
 
             // Clear all previous pause menu info/brief messages on resource start.
             ClearBrief();
-
-            if (GlobalState.Get("vmenu_onesync") is bool value && value)
-            {
-                PlayersList = new InfinityPlayerList(Players);
-            }
         }
 
         #region Infinity bits
