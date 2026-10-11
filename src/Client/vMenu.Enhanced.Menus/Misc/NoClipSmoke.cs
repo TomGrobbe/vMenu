@@ -1,3 +1,5 @@
+using System.Numerics;
+
 using CitizenFX.FiveM.Client;
 
 using vMenu.Enhanced.Configuration;
@@ -5,6 +7,7 @@ using vMenu.Enhanced.Data.Configuration.Settings;
 using vMenu.Enhanced.Data.PlayerState;
 using vMenu.Enhanced.Data.Ticks;
 using vMenu.Enhanced.Events;
+using vMenu.Enhanced.Menus.Bully;
 using vMenu.Enhanced.Menus.Players;
 using vMenu.Enhanced.Ticks;
 
@@ -26,11 +29,17 @@ public static class NoClipSmoke
 
     private const int ScanMs = 200;
 
+    private const int HoldMs = 5000;
+
     private static Dictionary<int, bool> _known = [];
 
     private static Dictionary<int, bool> _seen = [];
 
     private static TickHandle? _tick;
+
+    private static Task<bool>? _loading;
+
+    private static int _releaseAt;
 
     private static bool Enabled => ClientConfig.Value(Gameplay.NoClipSmoke);
 
@@ -41,7 +50,6 @@ public static class NoClipSmoke
             Scan,
             TickRate.Every(ScanMs),
             () => Enabled,
-            onStarted: () => Native.RequestNamedPtfxAsset(Asset),
             onStopped: Stop);
 
         ClientConfig.AddEventListenerFor([Gameplay.NoClipSmoke], () => _tick?.Reevaluate());
@@ -59,25 +67,33 @@ public static class NoClipSmoke
 
             if (_known.TryGetValue(player.ServerId, out var was) && was != noClip)
             {
-                Puff(player, noClip);
+                _ = PuffAsync(player.Position, noClip);
             }
 
             _seen[player.ServerId] = noClip;
         }
 
         (_known, _seen) = (_seen, _known);
+
+        if (_loading is { IsCompleted: true } && Native.GetGameTimer() >= _releaseAt)
+        {
+            Unload();
+        }
     }
 
-    private static void Puff(RosteredPlayer player, bool entering)
+    // The particle set is about 25 MiB, so it is only held for a while after a puff instead of all session.
+    private static async Task PuffAsync(Vector3 position, bool entering)
     {
-        if (!Native.HasNamedPtfxAssetLoaded(Asset))
+        _loading ??= Streaming.PtfxAsync(Asset);
+
+        if (!await _loading)
         {
-            Native.RequestNamedPtfxAsset(Asset);
+            _loading = null;
 
             return;
         }
 
-        var position = player.Position;
+        _releaseAt = Native.GetGameTimer() + HoldMs;
 
         Native.UseParticleFxAssetNextCall(Asset);
         Native.StartParticleFxNonLoopedAtCoord(
@@ -98,6 +114,26 @@ public static class NoClipSmoke
     {
         _known.Clear();
 
-        Native.RemoveNamedPtfxAsset(Asset);
+        Unload();
+    }
+
+    private static void Unload()
+    {
+        if (_loading is not { } loading)
+        {
+            return;
+        }
+
+        _loading = null;
+
+        _ = ReleaseAsync(loading);
+    }
+
+    private static async Task ReleaseAsync(Task<bool> loading)
+    {
+        if (await loading)
+        {
+            Streaming.ReleasePtfx(Asset);
+        }
     }
 }
