@@ -197,7 +197,7 @@ namespace vMenuClient.menus
 
                     if (item == spawnLoadout) // spawn
                     {
-                        await SpawnWeaponLoadoutAsync(SelectedSavedLoadoutName, false, true, false);
+                        await SpawnWeaponLoadoutAsync(SelectedSavedLoadoutName, false, false, false);
                     }
                     else if (item == renameLoadout || item == cloneLoadout) // rename or clone
                     {
