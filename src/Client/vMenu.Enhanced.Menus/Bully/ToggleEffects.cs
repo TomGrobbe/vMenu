@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Numerics;
 
 using CitizenFX.FiveM.Client;
 
@@ -25,11 +26,25 @@ internal static class ToggleEffects
 
     private const int ShockCooldownMs = 3000;
 
+    private const float DoorPulled = 0.05f;
+
+    private const int NoBone = -1;
+
+    private const int RightHandBone = 57005;
+
+    private const int LeftHandBone = 18905;
+
+    private const float HandReach = 0.2f;
+
     private const float NormalLod = 1f;
 
     private const float BrokenLod = -1f;
 
     private static readonly uint HandContactWithDoor = Streaming.Hash("HandContactWithDoor");
+
+    private static readonly string[] HandleBones = ["handle_dside_f", "handle_pside_f", "handle_dside_r", "handle_pside_r"];
+
+    private static readonly List<ClosedDoor> ClosedDoors = [];
 
     private static readonly HashSet<int> LodApplied = [];
 
@@ -50,6 +65,8 @@ internal static class ToggleEffects
     private static bool _entering;
 
     private static int _shockCooldownUntil;
+
+    private static int _enteringVehicle;
 
     private static bool Enabled => ClientConfig.Value(BullySettings.Enabled);
 
@@ -177,20 +194,66 @@ internal static class ToggleEffects
         var ped = Native.PlayerPedId();
         var vehicle = Native.GetVehiclePedIsTryingToEnter(ped);
 
-        _entering = vehicle != 0;
+        _entering = vehicle != 0 && Electrifies(vehicle);
 
-        if (!_entering
-            || Native.GetGameTimer() < _shockCooldownUntil
-            || !Native.HasAnimEventFired(ped, HandContactWithDoor)
-            || !Electrifies(vehicle))
+        if (!_entering)
+        {
+            _enteringVehicle = 0;
+
+            return;
+        }
+
+        TrackDoors(vehicle);
+
+        if (Native.GetGameTimer() < _shockCooldownUntil || !TouchedDoor(ped, vehicle))
         {
             return;
         }
 
         _shockCooldownUntil = Native.GetGameTimer() + ShockCooldownMs;
+        _enteringVehicle = 0;
 
         PedPranks.ShockFromDoor(ped);
     }
+
+    private static void TrackDoors(int vehicle)
+    {
+        if (vehicle == _enteringVehicle)
+        {
+            return;
+        }
+
+        _enteringVehicle = vehicle;
+        ClosedDoors.Clear();
+
+        for (var door = 0; door < HandleBones.Length; door++)
+        {
+            if (Native.GetIsDoorValid(vehicle, door) && Native.GetVehicleDoorAngleRatio(vehicle, door) <= DoorPulled)
+            {
+                ClosedDoors.Add(new ClosedDoor(door, Native.GetEntityBoneIndexByName(vehicle, HandleBones[door])));
+            }
+        }
+    }
+
+    // Only some door opening clips carry the hand contact tag, so a hand reaching a handle or a door swinging open counts too.
+    private static bool TouchedDoor(int ped, int vehicle) =>
+        Native.HasAnimEventFired(ped, HandContactWithDoor)
+        || ClosedDoors.Exists(door => GrabbedHandle(ped, vehicle, door.HandleBone) || Native.GetVehicleDoorAngleRatio(vehicle, door.Door) > DoorPulled);
+
+    private static bool GrabbedHandle(int ped, int vehicle, int handleBone)
+    {
+        if (handleBone == NoBone)
+        {
+            return false;
+        }
+
+        var handle = Native.GetWorldPositionOfEntityBone(vehicle, handleBone);
+
+        return HandNear(ped, RightHandBone, handle) || HandNear(ped, LeftHandBone, handle);
+    }
+
+    private static bool HandNear(int ped, int hand, Vector3 handle) =>
+        Vector3.DistanceSquared(Native.GetPedBoneCoords(ped, hand, 0f, 0f, 0f), handle) <= HandReach * HandReach;
 
     private static bool Electrifies(int vehicle) =>
         BullyState.IsOn(BullyToggles.ShockOnEntry)
@@ -237,6 +300,8 @@ internal static class ToggleEffects
             Reevaluate();
         }
     }
+
+    private readonly record struct ClosedDoor(int Door, int HandleBone);
 
     private sealed class VehicleFlag
     {
