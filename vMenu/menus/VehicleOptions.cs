@@ -217,8 +217,7 @@ namespace vMenuClient.menus
             #region Submenus
             // Submenu's
             VehicleModMenu = new Menu("Mod Menu", "Vehicle Mods");
-            VehicleModMenu.InstructionalButtons.Add(Control.Jump, "Toggle Vehicle Doors");
-            VehicleModMenu.ButtonPressHandlers.Add(new Menu.ButtonPressHandler(Control.Jump, Menu.ControlPressCheckType.JUST_PRESSED, new Action<Menu, Control>((m, c) =>
+            VehicleModMenu.AddKeyBinding("toggle_vehicle_doors", "vMenu: toggle vehicle doors", "SPACE", "RLEFT_INDEX", MenuKeyPressType.JUST_PRESSED, new Action<Menu, MenuKeyBinding>((m, c) =>
             {
                 var veh = GetVehicle();
                 if (veh != null && veh.Exists() && !veh.IsDead && veh.Driver == Game.PlayerPed)
@@ -236,7 +235,7 @@ namespace vMenuClient.menus
                         SetVehicleDoorsShut(veh.Handle, false);
                     }
                 }
-            }), false));
+            }), "Toggle Vehicle Doors");
             VehicleDoorsMenu = new Menu("Vehicle Doors", "Vehicle Doors Management");
             VehicleWindowsMenu = new Menu("Vehicle Windows", "Vehicle Windows Management");
             VehicleComponentsMenu = new Menu("Vehicle Extras", "Vehicle Extras/Components");

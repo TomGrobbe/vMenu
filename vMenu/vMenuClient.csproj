@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="MenuAPI.FiveM" Version="3.2.28" />
+    <PackageReference Include="MenuAPI.FiveM" Version="4.0.1" />
 
     <Reference Include="Microsoft.CSharp" />
     
@@ -32,6 +32,11 @@
   
   <ItemGroup>
     <Resource Include="data\overlays.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- The NUI page MenuAPI draws the menus on. -->
+    <None Include="..\assets\index.html" Link="index.html" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
   
   <ItemGroup>

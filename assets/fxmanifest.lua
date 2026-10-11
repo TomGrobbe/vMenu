@@ -16,10 +16,15 @@ server_debug_mode 'false'
 -- Adds extra commands for testing and development
 experimental_features_enabled '0'
 
+-- MenuAPI draws the menus on this NUI page.
+ui_page 'index.html'
+
 -- Files & scripts
 files {
     'Newtonsoft.Json.dll',
     'MenuAPI.dll',
+    'index.html',
+    'menuapi/**/*',
     'config/*.json'
 }
 

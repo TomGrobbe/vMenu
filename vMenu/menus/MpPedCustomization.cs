@@ -983,37 +983,37 @@ namespace vMenuClient.menus
 
             menu.RefreshIndex();
 
-            createCharacterMenu.InstructionalButtons.Add(Control.MoveLeftRight, "Turn Head");
-            inheritanceMenu.InstructionalButtons.Add(Control.MoveLeftRight, "Turn Head");
-            appearanceMenu.InstructionalButtons.Add(Control.MoveLeftRight, "Turn Head");
-            faceShapeMenu.InstructionalButtons.Add(Control.MoveLeftRight, "Turn Head");
-            tattoosMenu.InstructionalButtons.Add(Control.MoveLeftRight, "Turn Head");
-            clothesMenu.InstructionalButtons.Add(Control.MoveLeftRight, "Turn Head");
-            propsMenu.InstructionalButtons.Add(Control.MoveLeftRight, "Turn Head");
+            createCharacterMenu.CustomInstructionalButtons.Add(new Menu.InstructionalButton(GetControlInstructionalButton(0, (int)Control.MoveLeftRight, 1), "Turn Head"));
+            inheritanceMenu.CustomInstructionalButtons.Add(new Menu.InstructionalButton(GetControlInstructionalButton(0, (int)Control.MoveLeftRight, 1), "Turn Head"));
+            appearanceMenu.CustomInstructionalButtons.Add(new Menu.InstructionalButton(GetControlInstructionalButton(0, (int)Control.MoveLeftRight, 1), "Turn Head"));
+            faceShapeMenu.CustomInstructionalButtons.Add(new Menu.InstructionalButton(GetControlInstructionalButton(0, (int)Control.MoveLeftRight, 1), "Turn Head"));
+            tattoosMenu.CustomInstructionalButtons.Add(new Menu.InstructionalButton(GetControlInstructionalButton(0, (int)Control.MoveLeftRight, 1), "Turn Head"));
+            clothesMenu.CustomInstructionalButtons.Add(new Menu.InstructionalButton(GetControlInstructionalButton(0, (int)Control.MoveLeftRight, 1), "Turn Head"));
+            propsMenu.CustomInstructionalButtons.Add(new Menu.InstructionalButton(GetControlInstructionalButton(0, (int)Control.MoveLeftRight, 1), "Turn Head"));
 
-            createCharacterMenu.InstructionalButtons.Add(Control.PhoneExtraOption, "Turn Character");
-            inheritanceMenu.InstructionalButtons.Add(Control.PhoneExtraOption, "Turn Character");
-            appearanceMenu.InstructionalButtons.Add(Control.PhoneExtraOption, "Turn Character");
-            faceShapeMenu.InstructionalButtons.Add(Control.PhoneExtraOption, "Turn Character");
-            tattoosMenu.InstructionalButtons.Add(Control.PhoneExtraOption, "Turn Character");
-            clothesMenu.InstructionalButtons.Add(Control.PhoneExtraOption, "Turn Character");
-            propsMenu.InstructionalButtons.Add(Control.PhoneExtraOption, "Turn Character");
+            createCharacterMenu.CustomInstructionalButtons.Add(new Menu.InstructionalButton(GetControlInstructionalButton(0, (int)Control.PhoneExtraOption, 1), "Turn Character"));
+            inheritanceMenu.CustomInstructionalButtons.Add(new Menu.InstructionalButton(GetControlInstructionalButton(0, (int)Control.PhoneExtraOption, 1), "Turn Character"));
+            appearanceMenu.CustomInstructionalButtons.Add(new Menu.InstructionalButton(GetControlInstructionalButton(0, (int)Control.PhoneExtraOption, 1), "Turn Character"));
+            faceShapeMenu.CustomInstructionalButtons.Add(new Menu.InstructionalButton(GetControlInstructionalButton(0, (int)Control.PhoneExtraOption, 1), "Turn Character"));
+            tattoosMenu.CustomInstructionalButtons.Add(new Menu.InstructionalButton(GetControlInstructionalButton(0, (int)Control.PhoneExtraOption, 1), "Turn Character"));
+            clothesMenu.CustomInstructionalButtons.Add(new Menu.InstructionalButton(GetControlInstructionalButton(0, (int)Control.PhoneExtraOption, 1), "Turn Character"));
+            propsMenu.CustomInstructionalButtons.Add(new Menu.InstructionalButton(GetControlInstructionalButton(0, (int)Control.PhoneExtraOption, 1), "Turn Character"));
 
-            createCharacterMenu.InstructionalButtons.Add(Control.ParachuteBrakeRight, "Turn Camera Right");
-            inheritanceMenu.InstructionalButtons.Add(Control.ParachuteBrakeRight, "Turn Camera Right");
-            appearanceMenu.InstructionalButtons.Add(Control.ParachuteBrakeRight, "Turn Camera Right");
-            faceShapeMenu.InstructionalButtons.Add(Control.ParachuteBrakeRight, "Turn Camera Right");
-            tattoosMenu.InstructionalButtons.Add(Control.ParachuteBrakeRight, "Turn Camera Right");
-            clothesMenu.InstructionalButtons.Add(Control.ParachuteBrakeRight, "Turn Camera Right");
-            propsMenu.InstructionalButtons.Add(Control.ParachuteBrakeRight, "Turn Camera Right");
+            createCharacterMenu.CustomInstructionalButtons.Add(new Menu.InstructionalButton(GetControlInstructionalButton(0, (int)Control.ParachuteBrakeRight, 1), "Turn Camera Right"));
+            inheritanceMenu.CustomInstructionalButtons.Add(new Menu.InstructionalButton(GetControlInstructionalButton(0, (int)Control.ParachuteBrakeRight, 1), "Turn Camera Right"));
+            appearanceMenu.CustomInstructionalButtons.Add(new Menu.InstructionalButton(GetControlInstructionalButton(0, (int)Control.ParachuteBrakeRight, 1), "Turn Camera Right"));
+            faceShapeMenu.CustomInstructionalButtons.Add(new Menu.InstructionalButton(GetControlInstructionalButton(0, (int)Control.ParachuteBrakeRight, 1), "Turn Camera Right"));
+            tattoosMenu.CustomInstructionalButtons.Add(new Menu.InstructionalButton(GetControlInstructionalButton(0, (int)Control.ParachuteBrakeRight, 1), "Turn Camera Right"));
+            clothesMenu.CustomInstructionalButtons.Add(new Menu.InstructionalButton(GetControlInstructionalButton(0, (int)Control.ParachuteBrakeRight, 1), "Turn Camera Right"));
+            propsMenu.CustomInstructionalButtons.Add(new Menu.InstructionalButton(GetControlInstructionalButton(0, (int)Control.ParachuteBrakeRight, 1), "Turn Camera Right"));
 
-            createCharacterMenu.InstructionalButtons.Add(Control.ParachuteBrakeLeft, "Turn Camera Left");
-            inheritanceMenu.InstructionalButtons.Add(Control.ParachuteBrakeLeft, "Turn Camera Left");
-            appearanceMenu.InstructionalButtons.Add(Control.ParachuteBrakeLeft, "Turn Camera Left");
-            faceShapeMenu.InstructionalButtons.Add(Control.ParachuteBrakeLeft, "Turn Camera Left");
-            tattoosMenu.InstructionalButtons.Add(Control.ParachuteBrakeLeft, "Turn Camera Left");
-            clothesMenu.InstructionalButtons.Add(Control.ParachuteBrakeLeft, "Turn Camera Left");
-            propsMenu.InstructionalButtons.Add(Control.ParachuteBrakeLeft, "Turn Camera Left");
+            createCharacterMenu.CustomInstructionalButtons.Add(new Menu.InstructionalButton(GetControlInstructionalButton(0, (int)Control.ParachuteBrakeLeft, 1), "Turn Camera Left"));
+            inheritanceMenu.CustomInstructionalButtons.Add(new Menu.InstructionalButton(GetControlInstructionalButton(0, (int)Control.ParachuteBrakeLeft, 1), "Turn Camera Left"));
+            appearanceMenu.CustomInstructionalButtons.Add(new Menu.InstructionalButton(GetControlInstructionalButton(0, (int)Control.ParachuteBrakeLeft, 1), "Turn Camera Left"));
+            faceShapeMenu.CustomInstructionalButtons.Add(new Menu.InstructionalButton(GetControlInstructionalButton(0, (int)Control.ParachuteBrakeLeft, 1), "Turn Camera Left"));
+            tattoosMenu.CustomInstructionalButtons.Add(new Menu.InstructionalButton(GetControlInstructionalButton(0, (int)Control.ParachuteBrakeLeft, 1), "Turn Camera Left"));
+            clothesMenu.CustomInstructionalButtons.Add(new Menu.InstructionalButton(GetControlInstructionalButton(0, (int)Control.ParachuteBrakeLeft, 1), "Turn Camera Left"));
+            propsMenu.CustomInstructionalButtons.Add(new Menu.InstructionalButton(GetControlInstructionalButton(0, (int)Control.ParachuteBrakeLeft, 1), "Turn Camera Left"));
 
 
             var randomizeButton = new MenuItem("Randomize Character", "Randomize character appearance.");

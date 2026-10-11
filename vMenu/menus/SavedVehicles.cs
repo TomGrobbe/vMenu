@@ -638,9 +638,7 @@ namespace vMenuClient.menus
                 vehicleCategoryMenu.OpenMenu();
             };
 
-            unavailableVehiclesMenu.InstructionalButtons.Add(Control.FrontendDelete, "Delete Vehicle!");
-
-            unavailableVehiclesMenu.ButtonPressHandlers.Add(new Menu.ButtonPressHandler(Control.FrontendDelete, Menu.ControlPressCheckType.JUST_RELEASED, new Action<Menu, Control>((m, c) =>
+            unavailableVehiclesMenu.AddKeyBinding("delete_unavailable_vehicle", "vMenu: delete unavailable saved vehicle", "DELETE", "RUP_INDEX", MenuKeyPressType.JUST_RELEASED, new Action<Menu, MenuKeyBinding>((m, c) =>
             {
                 if (m.Size > 0)
                 {
@@ -676,7 +674,7 @@ namespace vMenuClient.menus
                 {
                     Notify.Error("There are currrently no unavailable vehicles to delete!");
                 }
-            }), true));
+            }), "Delete Vehicle!");
 
             void ResetAreYouSure()
             {
