@@ -67,4 +67,4 @@ Transform Vehicle gives the old vehicle back after fifteen seconds, at the spot 
 
 ### Personal Vehicle
 
-- **Electric Door Handles:** anybody other than the owner who tries to open a door of the vehicle gets an electric shock. It switches off when the personal vehicle changes, is forgotten, or the owner leaves.
+- **Electric Door Handles:** anybody other than the owner who tries to open a door of the vehicle, or grabs the handlebars of a bike or quad, gets an electric shock. It switches off when the personal vehicle changes, is forgotten, or the owner leaves.

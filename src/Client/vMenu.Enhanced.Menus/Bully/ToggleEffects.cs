@@ -30,6 +30,8 @@ internal static class ToggleEffects
 
     private const int NoBone = -1;
 
+    private const int NoDoor = -1;
+
     private const int RightHandBone = 57005;
 
     private const int LeftHandBone = 18905;
@@ -44,7 +46,9 @@ internal static class ToggleEffects
 
     private static readonly string[] HandleBones = ["handle_dside_f", "handle_pside_f", "handle_dside_r", "handle_pside_r"];
 
-    private static readonly List<ClosedDoor> ClosedDoors = [];
+    private static readonly string[] HandlebarBones = ["hbgrip_l", "hbgrip_r"];
+
+    private static readonly List<Grip> Grips = [];
 
     private static readonly HashSet<int> LodApplied = [];
 
@@ -203,9 +207,9 @@ internal static class ToggleEffects
             return;
         }
 
-        TrackDoors(vehicle);
+        TrackGrips(vehicle);
 
-        if (Native.GetGameTimer() < _shockCooldownUntil || !TouchedDoor(ped, vehicle))
+        if (Native.GetGameTimer() < _shockCooldownUntil || !Touched(ped, vehicle))
         {
             return;
         }
@@ -216,7 +220,7 @@ internal static class ToggleEffects
         PedPranks.ShockFromDoor(ped);
     }
 
-    private static void TrackDoors(int vehicle)
+    private static void TrackGrips(int vehicle)
     {
         if (vehicle == _enteringVehicle)
         {
@@ -224,36 +228,44 @@ internal static class ToggleEffects
         }
 
         _enteringVehicle = vehicle;
-        ClosedDoors.Clear();
+        Grips.Clear();
 
         for (var door = 0; door < HandleBones.Length; door++)
         {
             if (Native.GetIsDoorValid(vehicle, door) && Native.GetVehicleDoorAngleRatio(vehicle, door) <= DoorPulled)
             {
-                ClosedDoors.Add(new ClosedDoor(door, Native.GetEntityBoneIndexByName(vehicle, HandleBones[door])));
+                Grips.Add(new Grip(Native.GetEntityBoneIndexByName(vehicle, HandleBones[door]), door));
+            }
+        }
+
+        foreach (var name in HandlebarBones)
+        {
+            if (Native.GetEntityBoneIndexByName(vehicle, name) is var bone and not NoBone)
+            {
+                Grips.Add(new Grip(bone, NoDoor));
             }
         }
     }
 
-    // Only some door opening clips carry the hand contact tag, so a hand reaching a handle or a door swinging open counts too.
-    private static bool TouchedDoor(int ped, int vehicle) =>
+    // Only some door opening clips carry the hand contact tag, so a hand reaching a grip or a door swinging open counts too.
+    private static bool Touched(int ped, int vehicle) =>
         Native.HasAnimEventFired(ped, HandContactWithDoor)
-        || ClosedDoors.Exists(door => GrabbedHandle(ped, vehicle, door.HandleBone) || Native.GetVehicleDoorAngleRatio(vehicle, door.Door) > DoorPulled);
+        || Grips.Exists(grip => Grabbed(ped, vehicle, grip.Bone) || (grip.Door != NoDoor && Native.GetVehicleDoorAngleRatio(vehicle, grip.Door) > DoorPulled));
 
-    private static bool GrabbedHandle(int ped, int vehicle, int handleBone)
+    private static bool Grabbed(int ped, int vehicle, int bone)
     {
-        if (handleBone == NoBone)
+        if (bone == NoBone)
         {
             return false;
         }
 
-        var handle = Native.GetWorldPositionOfEntityBone(vehicle, handleBone);
+        var grip = Native.GetWorldPositionOfEntityBone(vehicle, bone);
 
-        return HandNear(ped, RightHandBone, handle) || HandNear(ped, LeftHandBone, handle);
+        return HandNear(ped, RightHandBone, grip) || HandNear(ped, LeftHandBone, grip);
     }
 
-    private static bool HandNear(int ped, int hand, Vector3 handle) =>
-        Vector3.DistanceSquared(Native.GetPedBoneCoords(ped, hand, 0f, 0f, 0f), handle) <= HandReach * HandReach;
+    private static bool HandNear(int ped, int hand, Vector3 grip) =>
+        Vector3.DistanceSquared(Native.GetPedBoneCoords(ped, hand, 0f, 0f, 0f), grip) <= HandReach * HandReach;
 
     private static bool Electrifies(int vehicle) =>
         BullyState.IsOn(BullyToggles.ShockOnEntry)
@@ -301,7 +313,7 @@ internal static class ToggleEffects
         }
     }
 
-    private readonly record struct ClosedDoor(int Door, int HandleBone);
+    private readonly record struct Grip(int Bone, int Door);
 
     private sealed class VehicleFlag
     {
