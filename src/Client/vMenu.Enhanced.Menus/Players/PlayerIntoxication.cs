@@ -291,15 +291,23 @@ public static class PlayerIntoxication
             _walk = false;
 
             Native.ResetPedMovementClipset(Native.PlayerPedId(), BlendSeconds);
+            Native.RemoveClipSet(Intoxication.DrunkWalk);
 
             await PedWalkingStyle.ReapplyAsync();
 
             return;
         }
 
-        // Checked again after the load, because the player may have turned it off while it streamed in.
-        if (!await Streaming.ClipSetAsync(Intoxication.DrunkWalk) || !HoldsWalk)
+        if (!await Streaming.ClipSetAsync(Intoxication.DrunkWalk))
         {
+            return;
+        }
+
+        // Checked again after the load, because the player may have turned it off while it streamed in.
+        if (!HoldsWalk)
+        {
+            Native.RemoveClipSet(Intoxication.DrunkWalk);
+
             return;
         }
 

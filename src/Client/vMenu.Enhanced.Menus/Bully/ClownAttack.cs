@@ -76,6 +76,9 @@ internal static class ClownAttack
 
             if (!await Streaming.ModelAsync(van) || !await Streaming.ModelAsync(clown))
             {
+                Native.SetModelAsNoLongerNeeded(van);
+                Native.SetModelAsNoLongerNeeded(clown);
+
                 run.Failed();
 
                 return;

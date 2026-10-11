@@ -14,18 +14,32 @@ internal static class Streaming
 
     public static uint Hash(string name) => (uint)Native.GetHashKey(name);
 
-    public static Task<bool> AnimDictAsync(string dictionary)
+    public static async Task<bool> AnimDictAsync(string dictionary)
     {
         Native.RequestAnimDict(dictionary);
 
-        return WaitAsync(() => Native.HasAnimDictLoaded(dictionary));
+        if (await WaitAsync(() => Native.HasAnimDictLoaded(dictionary)))
+        {
+            return true;
+        }
+
+        Native.RemoveAnimDict(dictionary);
+
+        return false;
     }
 
-    public static Task<bool> ClipSetAsync(string clipSet)
+    public static async Task<bool> ClipSetAsync(string clipSet)
     {
         Native.RequestClipSet(clipSet);
 
-        return WaitAsync(() => Native.HasClipSetLoaded(clipSet));
+        if (await WaitAsync(() => Native.HasClipSetLoaded(clipSet)))
+        {
+            return true;
+        }
+
+        Native.RemoveClipSet(clipSet);
+
+        return false;
     }
 
     public static async Task<bool> PtfxAsync(string asset)
@@ -34,6 +48,8 @@ internal static class Streaming
 
         if (!await WaitAsync(() => Native.HasNamedPtfxAssetLoaded(asset)))
         {
+            Native.RemoveNamedPtfxAsset(asset);
+
             return false;
         }
 
@@ -52,16 +68,23 @@ internal static class Streaming
 
     public static Task<bool> ModelAsync(string model) => ModelAsync(Hash(model));
 
-    public static Task<bool> ModelAsync(uint model)
+    public static async Task<bool> ModelAsync(uint model)
     {
         if (!Native.IsModelInCdimage(model) || !Native.IsModelValid(model))
         {
-            return Task.FromResult(false);
+            return false;
         }
 
         Native.RequestModel(model);
 
-        return WaitAsync(() => Native.HasModelLoaded(model));
+        if (await WaitAsync(() => Native.HasModelLoaded(model)))
+        {
+            return true;
+        }
+
+        Native.SetModelAsNoLongerNeeded(model);
+
+        return false;
     }
 
     public static async Task<bool> AudioBankAsync(string bank)

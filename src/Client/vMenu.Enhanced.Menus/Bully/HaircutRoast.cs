@@ -245,6 +245,11 @@ internal static class HaircutRoast
         {
             if (!await Streaming.ModelAsync(model))
             {
+                foreach (var (loaded, _, _) in SceneProps)
+                {
+                    Native.SetModelAsNoLongerNeeded(Streaming.Hash(loaded));
+                }
+
                 return false;
             }
         }

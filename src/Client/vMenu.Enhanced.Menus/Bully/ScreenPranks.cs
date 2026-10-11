@@ -179,6 +179,7 @@ internal static class ScreenPranks
         Native.SetPedIsDrunk(ped, false);
         Native.StopGameplayCamShaking(false);
         Native.ResetPedMovementClipset(ped, 1f);
+        Native.RemoveClipSet(Intoxication.DrunkWalk);
 
         RestoreTimecycle();
 
