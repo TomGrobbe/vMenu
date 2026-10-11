@@ -332,8 +332,8 @@ internal sealed class MenuHost : IDisposable
     // the menu no longer has.
     internal void ClearEntries()
     {
-        // MenuAPI drops the menu a bound row opened along with the row, so the host for it is untracked to
-        // match. Before the entries, which is what ClearMenuItems reads.
+        // MenuAPI keeps the menu a bound row opened when the row is cleared, so untracking the host for it is
+        // what removes it. Before the entries, which is where the children are read from.
         foreach (var entry in Builder.Entries)
         {
             if (entry is SubmenuEntry { Child: { } child })

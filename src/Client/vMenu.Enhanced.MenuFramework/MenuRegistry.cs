@@ -348,8 +348,7 @@ public static class MenuRegistry
         host.Children.Clear();
         host.Dispose();
 
-        // A detached child has no row pointing at it, so MenuAPI cannot work out on its own that it went
-        // with its parent. Harmless for a bound one, which MenuAPI has already dropped.
+        // MenuAPI keeps a menu registered until it is removed, even once no row opens it anymore.
         MenuController.RemoveMenu(host.Menu);
 
         RemoveByReference(Hosts, host);
