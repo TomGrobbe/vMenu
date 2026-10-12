@@ -78,6 +78,9 @@ namespace vMenuShared
 
             // Key Mapping
             vmenu_keymapping_id,
+            
+            // theme
+            vmenu_theme,
         }
 
         /// <summary>

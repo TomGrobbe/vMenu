@@ -540,6 +540,17 @@ namespace vMenuClient
             }), false);
 
             TriggerEvent("vMenu:SetupTickFunctions");
+            
+            string currentTheme = GetSettingsString(Setting.vmenu_theme);
+            if (currentTheme == "custom")
+            {
+                NuiTuning.RegisterTheme("custom", "themes/custom.css");
+                NuiTuning.SetTheme("custom");
+                foreach (Menu m in MenuController.Menus)
+                {
+                    m.HeaderImage = "custom";
+                }
+            }
         }
 
         /// <summary>
