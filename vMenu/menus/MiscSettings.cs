@@ -50,6 +50,12 @@ namespace vMenuClient.menus
         public bool RestorePlayerWeapons { get; private set; } = UserDefaults.MiscRestorePlayerWeapons;
         public bool DrawTimeOnScreen { get; internal set; } = UserDefaults.MiscShowTime;
         public bool MiscRightAlignMenu { get; private set; } = UserDefaults.MiscRightAlignMenu;
+        // Offset in percent of the screen, the middle of the slider (0) is the default position.
+        // index.html keeps the menu inside the screen, so the far ends just stick it to the edge.
+        private const int MenuOffsetMax = 100;
+        private const int MenuOffsetStep = 2;
+        public int MiscMenuOffsetX { get; private set; } = Math.Max(-MenuOffsetMax, Math.Min(MenuOffsetMax, UserDefaults.MiscMenuOffsetX));
+        public int MiscMenuOffsetY { get; private set; } = Math.Max(-MenuOffsetMax, Math.Min(MenuOffsetMax, UserDefaults.MiscMenuOffsetY));
         private bool _disablePrivateMessages;
         public bool MiscDisablePrivateMessages
         {
@@ -83,6 +89,15 @@ namespace vMenuClient.menus
         {
             // Sets statebag when resource starts
             MiscDisablePrivateMessages = UserDefaults.MiscDisablePrivateMessages;
+        }
+
+        /// <summary>
+        /// Moves the menu by the saved X/Y offset. MenuAPI draws with NUI and its Menu.Position does nothing,
+        /// so index.html applies the offset (and remembers it for the next time the page loads).
+        /// </summary>
+        private void ApplyMenuOffset()
+        {
+            SendNuiMessage(JsonConvert.SerializeObject(new { type = "vmenu:offset", x = MiscMenuOffsetX, y = MiscMenuOffsetY }));
         }
 
         /// <summary>
@@ -129,6 +144,14 @@ namespace vMenuClient.menus
 
             // Create the menu items.
             var rightAlignMenu = new MenuCheckboxItem("Right Align Menu", "If you want vMenu to appear on the left side of your screen, disable this option. This option will be saved immediately. You don't need to click save preferences.", MiscRightAlignMenu);
+            const int menuOffsetSliderMax = MenuOffsetMax / MenuOffsetStep * 2;
+            static int OffsetToSlider(int offset) => (offset / MenuOffsetStep) + (MenuOffsetMax / MenuOffsetStep);
+            static int SliderToOffset(int position) => (position - (MenuOffsetMax / MenuOffsetStep)) * MenuOffsetStep;
+            static string MenuPositionXDescription(int offset) => $"Move the menu left or right. The middle is the default position, the menu always stays on your screen. This option will be saved immediately. You don't need to click save preferences.~n~Current: ~b~{offset}%";
+            static string MenuPositionYDescription(int offset) => $"Move the menu up or down. The middle is the default position, the menu always stays on your screen. This option will be saved immediately. You don't need to click save preferences.~n~Current: ~b~{offset}%";
+            var menuPositionX = new MenuSliderItem("Menu Position X", MenuPositionXDescription(MiscMenuOffsetX), 0, menuOffsetSliderMax, OffsetToSlider(MiscMenuOffsetX), true);
+            var menuPositionY = new MenuSliderItem("Menu Position Y", MenuPositionYDescription(MiscMenuOffsetY), 0, menuOffsetSliderMax, OffsetToSlider(MiscMenuOffsetY), true);
+            ApplyMenuOffset();
             var disablePms = new MenuCheckboxItem("Disable Private Messages", "Prevent others from sending you a private message via the Online Players menu. This also prevents you from sending messages to other players.", MiscDisablePrivateMessages);
             var disableControllerKey = new MenuCheckboxItem("Disable Controller Support", "This disables the controller menu toggle key. This does NOT disable the navigation buttons.", MiscDisableControllerSupport);
             var speedKmh = new MenuCheckboxItem("Show Speed KM/H", "Show a speedometer on your screen indicating your speed in KM/h.", ShowSpeedoKmh);
@@ -601,6 +624,8 @@ namespace vMenuClient.menus
 
             // Always allowed
             menu.AddMenuItem(rightAlignMenu);
+            menu.AddMenuItem(menuPositionX);
+            menu.AddMenuItem(menuPositionY);
             menu.AddMenuItem(disablePms);
             menu.AddMenuItem(disableControllerKey);
             menu.AddMenuItem(speedKmh);
@@ -670,6 +695,25 @@ namespace vMenuClient.menus
             }
 
             menu.AddMenuItem(saveSettings);
+
+            // Handle slider changes.
+            menu.OnSliderPositionChange += (sender, item, oldPosition, newPosition, itemIndex) =>
+            {
+                if (item == menuPositionX)
+                {
+                    MiscMenuOffsetX = SliderToOffset(newPosition);
+                    UserDefaults.MiscMenuOffsetX = MiscMenuOffsetX;
+                    menuPositionX.Description = MenuPositionXDescription(MiscMenuOffsetX);
+                    ApplyMenuOffset();
+                }
+                else if (item == menuPositionY)
+                {
+                    MiscMenuOffsetY = SliderToOffset(newPosition);
+                    UserDefaults.MiscMenuOffsetY = MiscMenuOffsetY;
+                    menuPositionY.Description = MenuPositionYDescription(MiscMenuOffsetY);
+                    ApplyMenuOffset();
+                }
+            };
 
             // Handle checkbox changes.
             menu.OnCheckboxChange += (sender, item, index, _checked) =>

@@ -18,6 +18,65 @@
     <script src="menuapi/glare.min.js"></script>
     <script src="menuapi/colour-list.min.js"></script>
     <script src="menuapi/menuapi.min.js"></script>
+    <script>
+        // Menu Position X/Y from Misc Settings. The offset (percent of the screen) is added to MenuAPI's own origin,
+        // then the menu is clamped so it never leaves the screen. Runs after every MenuAPI draw, because the menu
+        // height changes per (sub)menu.
+        (() => {
+            const root = document.getElementById("menuapi");
+            const storageKey = "vmenu:offset";
+            let offsetX = 0;
+            let offsetY = 0;
+
+            function clamp(value, min, max) {
+                return Math.min(Math.max(value, min), Math.max(min, max));
+            }
+
+            function readOrigin(name) {
+                return parseFloat(root.style.getPropertyValue(name)) || parseFloat(getComputedStyle(root).getPropertyValue(name)) || 0;
+            }
+
+            function place() {
+                if (root.hidden) return;
+                const width = window.innerWidth;
+                const height = window.innerHeight;
+                const zoom = parseFloat(getComputedStyle(root).zoom) || 1;
+                const rect = root.getBoundingClientRect();
+                const left = clamp(readOrigin("--menuapi-origin-x") * width + offsetX / 100 * width, 0, width - rect.width);
+                const top = clamp(readOrigin("--menuapi-origin-y") * height + offsetY / 100 * height, 0, height - rect.height);
+                root.style.left = `${left / zoom}px`;
+                root.style.top = `${top / zoom}px`;
+            }
+
+            function setOffset(x, y) {
+                offsetX = Number(x) || 0;
+                offsetY = Number(y) || 0;
+                place();
+            }
+
+            // The client may send the offset before this page has loaded, so keep the last one.
+            try {
+                const saved = JSON.parse(localStorage.getItem(storageKey));
+                if (saved) setOffset(saved.x, saved.y);
+            } catch { }
+
+            // Registered after menuapi.min.js, so this runs after MenuAPI has drawn the menu.
+            window.addEventListener("message", e => {
+                let data = e.data;
+                if (typeof data === "string") {
+                    try { data = JSON.parse(data); } catch { return; }
+                }
+                if (!data || typeof data !== "object") return;
+                if (data.type === "vmenu:offset") {
+                    setOffset(data.x, data.y);
+                    try { localStorage.setItem(storageKey, JSON.stringify({ x: offsetX, y: offsetY })); } catch { }
+                } else if (data.type === "menuapi") {
+                    place();
+                }
+            });
+            window.addEventListener("resize", place);
+        })();
+    </script>
 </body>
 
 </html>

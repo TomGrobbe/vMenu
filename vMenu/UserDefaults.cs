@@ -294,6 +294,24 @@ namespace vMenuClient
             set { SetSavedSettingsBool("miscRightAlignMenu", value); }
         }
 
+        /// <summary>
+        /// Horizontal menu offset in percent of the screen width.
+        /// </summary>
+        public static int MiscMenuOffsetX
+        {
+            get { return GetSettingsInt("miscMenuOffsetX"); }
+            set { SetSavedSettingsInt("miscMenuOffsetX", value); }
+        }
+
+        /// <summary>
+        /// Vertical menu offset in percent of the screen height.
+        /// </summary>
+        public static int MiscMenuOffsetY
+        {
+            get { return GetSettingsInt("miscMenuOffsetY"); }
+            set { SetSavedSettingsInt("miscMenuOffsetY", value); }
+        }
+
         public static bool MiscDisablePrivateMessages
         {
             get { return GetSettingsBool("miscDisablePrivateMessages"); }
