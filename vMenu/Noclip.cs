@@ -18,16 +18,16 @@ namespace vMenuClient
         private static bool FollowCamMode { get; set; } = true;
 
 
-        private readonly List<string> speeds = new()
+        private static List<string> _speeds = new()
         {
-            "Very Slow",
-            "Slow",
-            "Normal",
-            "Fast",
-            "Very Fast",
-            "Extremely Fast",
-            "Extremely Fast v2.0",
-            "Max Speed"
+            "Very Slow (1/8)",
+            "Slow (2/8)",
+            "Normal (3/8)",
+            "Fast (4/8)",
+            "Very Fast (5/8)",
+            "Extremely Fast (6/8)",
+            "Extremely Fast v2.0 (7/8)",
+            "Max Speed (8/8)"
         };
 
         public NoClip()
@@ -42,43 +42,77 @@ namespace vMenuClient
             if (!active)
             {
                 SetScaleformMovieAsNoLongerNeeded(ref Scale);
+                
+                UpdateNoclip();
 
                 Scale = -1;
             }
+            else
+            {
+                UpdateNoclip();
+            }
+        }
+
+        private static void UpdateNoclip()
+        {
+            if (!IsHudHidden())
+            {
+                BeginScaleformMovieMethod(Scale, "CLEAR_ALL");
+                EndScaleformMovieMethod();
+
+                BeginScaleformMovieMethod(Scale, "SET_DATA_SLOT");
+                ScaleformMovieMethodAddParamInt(0);
+                PushScaleformMovieMethodParameterString("~INPUT_SPRINT~");
+                PushScaleformMovieMethodParameterString("~INPUT_DUCK~");
+                PushScaleformMovieMethodParameterString($"Change Speed ({_speeds[MovingSpeed]})");
+                EndScaleformMovieMethod();
+
+                BeginScaleformMovieMethod(Scale, "SET_DATA_SLOT");
+                ScaleformMovieMethodAddParamInt(1);
+                PushScaleformMovieMethodParameterString("~INPUT_MOVE_LR~");
+                PushScaleformMovieMethodParameterString($"Turn Left/Right");
+                EndScaleformMovieMethod();
+
+                BeginScaleformMovieMethod(Scale, "SET_DATA_SLOT");
+                ScaleformMovieMethodAddParamInt(2);
+                PushScaleformMovieMethodParameterString("~INPUT_MOVE_UD~");
+                PushScaleformMovieMethodParameterString($"Move");
+                EndScaleformMovieMethod();
+
+                BeginScaleformMovieMethod(Scale, "SET_DATA_SLOT");
+                ScaleformMovieMethodAddParamInt(3);
+                PushScaleformMovieMethodParameterString("~INPUT_MULTIPLAYER_INFO~");
+                PushScaleformMovieMethodParameterString($"Down");
+                EndScaleformMovieMethod();
+
+                BeginScaleformMovieMethod(Scale, "SET_DATA_SLOT");
+                ScaleformMovieMethodAddParamInt(4);
+                PushScaleformMovieMethodParameterString("~INPUT_COVER~");
+                PushScaleformMovieMethodParameterString($"Up");
+                EndScaleformMovieMethod();
+
+                BeginScaleformMovieMethod(Scale, "SET_DATA_SLOT");
+                ScaleformMovieMethodAddParamInt(5);
+                PushScaleformMovieMethodParameterString("~INPUT_VEH_HEADLIGHT~");
+                PushScaleformMovieMethodParameterString($"Cam Mode");
+                EndScaleformMovieMethod();
+
+                BeginScaleformMovieMethod(Scale, "SET_DATA_SLOT");
+                ScaleformMovieMethodAddParamInt(6);
+                string KeyMappingID = String.IsNullOrWhiteSpace(GetSettingsString(Setting.vmenu_keymapping_id)) ? "Default" : GetSettingsString(Setting.vmenu_keymapping_id);
+                PushScaleformMovieMethodParameterString($"~INPUT_{Game.GenerateHashASCII($"vMenu:{KeyMappingID}:NoClip").ToString("X")}~");
+                PushScaleformMovieMethodParameterString($"Toggle NoClip");
+                EndScaleformMovieMethod();
+
+                BeginScaleformMovieMethod(Scale, "DRAW_INSTRUCTIONAL_BUTTONS");
+                ScaleformMovieMethodAddParamInt(0);
+                EndScaleformMovieMethod();
+            }    
         }
 
         internal static bool IsNoclipActive()
         {
             return NoclipActive;
-        }
-        static string JOAAT(string command)
-        {
-            uint hash = 0;
-            string str = command.ToLower();
-
-            for (int i = 0; i < str.Length; i++)
-            {
-                uint letter = (uint)str[i];
-                hash += letter;
-                hash += (hash << 10);
-                hash ^= (hash >> 6);
-            }
-
-            hash += (hash << 3);
-            if (hash < 0)
-            {
-                hash = (uint)((int)hash);
-            }
-
-            hash ^= (hash >> 11);
-            hash += (hash << 15);
-
-            if (hash < 0)
-            {
-                hash = (uint)((int)hash);
-            }
-
-            return hash.ToString("X");
         }
         private async Task NoClipHandler()
         {
@@ -91,64 +125,12 @@ namespace vMenuClient
                 }
 
                 DrawScaleformMovieFullscreen(Scale, 255, 255, 255, 0, 0);
+                
+                UpdateNoclip();
             }
+            
             while (NoclipActive)
             {
-                if (!IsHudHidden())
-                {
-                    BeginScaleformMovieMethod(Scale, "CLEAR_ALL");
-                    EndScaleformMovieMethod();
-
-                    BeginScaleformMovieMethod(Scale, "SET_DATA_SLOT");
-                    ScaleformMovieMethodAddParamInt(0);
-                    PushScaleformMovieMethodParameterString("~INPUT_SPRINT~");
-                    PushScaleformMovieMethodParameterString($"Change Speed ({speeds[MovingSpeed]})");
-                    EndScaleformMovieMethod();
-
-                    BeginScaleformMovieMethod(Scale, "SET_DATA_SLOT");
-                    ScaleformMovieMethodAddParamInt(1);
-                    PushScaleformMovieMethodParameterString("~INPUT_MOVE_LR~");
-                    PushScaleformMovieMethodParameterString($"Turn Left/Right");
-                    EndScaleformMovieMethod();
-
-                    BeginScaleformMovieMethod(Scale, "SET_DATA_SLOT");
-                    ScaleformMovieMethodAddParamInt(2);
-                    PushScaleformMovieMethodParameterString("~INPUT_MOVE_UD~");
-                    PushScaleformMovieMethodParameterString($"Move");
-                    EndScaleformMovieMethod();
-
-                    BeginScaleformMovieMethod(Scale, "SET_DATA_SLOT");
-                    ScaleformMovieMethodAddParamInt(3);
-                    PushScaleformMovieMethodParameterString("~INPUT_MULTIPLAYER_INFO~");
-                    PushScaleformMovieMethodParameterString($"Down");
-                    EndScaleformMovieMethod();
-
-                    BeginScaleformMovieMethod(Scale, "SET_DATA_SLOT");
-                    ScaleformMovieMethodAddParamInt(4);
-                    PushScaleformMovieMethodParameterString("~INPUT_COVER~");
-                    PushScaleformMovieMethodParameterString($"Up");
-                    EndScaleformMovieMethod();
-
-                    BeginScaleformMovieMethod(Scale, "SET_DATA_SLOT");
-                    ScaleformMovieMethodAddParamInt(5);
-                    PushScaleformMovieMethodParameterString("~INPUT_VEH_HEADLIGHT~");
-                    PushScaleformMovieMethodParameterString($"Cam Mode");
-                    EndScaleformMovieMethod();
-
-                    BeginScaleformMovieMethod(Scale, "SET_DATA_SLOT");
-                    ScaleformMovieMethodAddParamInt(6);
-                    string KeyMappingID = String.IsNullOrWhiteSpace(GetSettingsString(Setting.vmenu_keymapping_id)) ? "Default" : GetSettingsString(Setting.vmenu_keymapping_id);
-                    PushScaleformMovieMethodParameterString($"~INPUT_{JOAAT($"vMenu:{KeyMappingID}:NoClip")}~");
-                    PushScaleformMovieMethodParameterString($"Toggle NoClip");
-                    EndScaleformMovieMethod();
-
-                    BeginScaleformMovieMethod(Scale, "DRAW_INSTRUCTIONAL_BUTTONS");
-                    ScaleformMovieMethodAddParamInt(0);
-                    EndScaleformMovieMethod();
-
-                    DrawScaleformMovieFullscreen(Scale, 255, 255, 255, 255, 0);
-                }
-
                 var noclipEntity = Game.PlayerPed.IsInVehicle() ? Game.PlayerPed.CurrentVehicle.Handle : Game.PlayerPed.Handle;
 
                 FreezeEntityPosition(noclipEntity, true);
@@ -181,11 +163,25 @@ namespace vMenuClient
                     if (Game.IsControlJustPressed(0, Control.Sprint))
                     {
                         MovingSpeed++;
-                        if (MovingSpeed == speeds.Count)
+                        if (MovingSpeed >= _speeds.Count)
                         {
                             MovingSpeed = 0;
                         }
+
+                        UpdateNoclip();
                     }
+
+                    if (Game.IsControlJustPressed(0, Control.Duck))
+                    {
+                        MovingSpeed--;
+                        if (MovingSpeed < 0)
+                        {
+                            MovingSpeed = _speeds.Count - 1;
+                        }
+
+                        UpdateNoclip();
+                    }
+                    DrawScaleformMovieFullscreen(Scale, 255, 255, 255, 255, 0);
 
                     if (Game.IsDisabledControlPressed(0, Control.MoveUpOnly))
                     {
@@ -217,7 +213,7 @@ namespace vMenuClient
                     }
                 }
                 float moveSpeed = MovingSpeed;
-                if (MovingSpeed > speeds.Count / 2)
+                if (MovingSpeed > _speeds.Count / 2)
                 {
                     moveSpeed *= 1.8f;
                 }
