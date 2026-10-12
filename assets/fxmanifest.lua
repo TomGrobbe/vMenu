@@ -25,6 +25,8 @@ files {
     'MenuAPI.dll',
     'index.html',
     'menuapi/**/*',
+    'menuapi-banners/custom.png',
+    'themes/custom.css',
     'config/*.json'
 }
 
