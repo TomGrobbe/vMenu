@@ -309,6 +309,11 @@ namespace vMenuClient
             if (MainMenu.PlayerOptionsMenu.PlayerSuperJump && IsAllowed(Permission.POSuperjump))
             {
                 SetSuperJumpThisFrame(Game.Player.Handle);
+                ManageSuperJumpLevel(MainMenu.PlayerOptionsMenu.PlayerSuperJumpLevel);
+            }
+            else
+            {
+                ManageSuperJumpLevel(1);
             }
 
             // Manage PlayerNoRagdoll
@@ -333,6 +338,65 @@ namespace vMenuClient
                 DriveToWpTaskActive = false;
             }
             await Task.FromResult(0);
+        }
+
+        /// <summary>
+        /// Extra upward speed (m/s) added per super jump level above 1.
+        /// </summary>
+        private const float SuperJumpBoostPerLevel = 3f;
+        private bool superJumpBoosted = false;
+        private bool superJumpOwnsCollisionProof = false;
+
+        /// <summary>
+        /// Level 1 is the default game super jump. Higher levels push the player up once at the start of a jump,
+        /// and turn on collision proof (fall damage) until they land, restoring whatever it was before.
+        /// </summary>
+        /// <param name="level"></param>
+        private void ManageSuperJumpLevel(int level)
+        {
+            var ped = Game.PlayerPed.Handle;
+
+            if (superJumpBoosted)
+            {
+                if (IsEntityInAir(ped) || IsPedJumping(ped) || IsPedFalling(ped))
+                {
+                    return;
+                }
+
+                // Landed.
+                superJumpBoosted = false;
+                if (superJumpOwnsCollisionProof)
+                {
+                    superJumpOwnsCollisionProof = false;
+                    bool bulletProof = false, fireProof = false, explosionProof = false, collisionProof = false, meleeProof = false, steamProof = false, p7 = false, drownProof = false;
+                    GetEntityProofs(ped, ref bulletProof, ref fireProof, ref explosionProof, ref collisionProof, ref meleeProof, ref steamProof, ref p7, ref drownProof);
+                    SetEntityProofs(ped, bulletProof, fireProof, explosionProof, false, meleeProof, steamProof, p7, drownProof);
+                }
+                return;
+            }
+
+            if (level <= 1 || !IsPedJumping(ped))
+            {
+                return;
+            }
+
+            var velocity = GetEntityVelocity(ped);
+            if (velocity.Z <= 1f)
+            {
+                // Still crouching for the jump, wait until the ped actually leaves the ground.
+                return;
+            }
+
+            superJumpBoosted = true;
+            SetEntityVelocity(ped, velocity.X, velocity.Y, velocity.Z + ((level - 1) * SuperJumpBoostPerLevel));
+
+            bool bp = false, fp = false, ep = false, cp = false, mp = false, sp = false, p7b = false, dp = false;
+            GetEntityProofs(ped, ref bp, ref fp, ref ep, ref cp, ref mp, ref sp, ref p7b, ref dp);
+            if (!cp)
+            {
+                superJumpOwnsCollisionProof = true;
+                SetEntityProofs(ped, bp, fp, ep, true, mp, sp, p7b, dp);
+            }
         }
         #endregion
 

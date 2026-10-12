@@ -53,6 +53,15 @@ namespace vMenuClient
             set { SetSavedSettingsBool("superJump", value); }
         }
 
+        /// <summary>
+        /// Zero based, 0 is level 1 (the default game super jump).
+        /// </summary>
+        public static int SuperJumpLevel
+        {
+            get { return GetSettingsInt("superJumpLevel"); }
+            set { SetSavedSettingsInt("superJumpLevel", value); }
+        }
+
         public static bool NoRagdoll
         {
             get { return GetSettingsBool("noRagdoll"); }
@@ -542,6 +551,9 @@ namespace vMenuClient
 
                 SuperJump = MainMenu.PlayerOptionsMenu.PlayerSuperJump;
                 prefs.Add("superJump", SuperJump);
+
+                SuperJumpLevel = MainMenu.PlayerOptionsMenu.PlayerSuperJumpLevel - 1;
+                prefs.Add("superJumpLevel", SuperJumpLevel);
 
                 UnlimitedStamina = MainMenu.PlayerOptionsMenu.PlayerStamina;
                 prefs.Add("unlimitedStamina", UnlimitedStamina);
