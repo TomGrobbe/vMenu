@@ -1123,14 +1123,59 @@ namespace vMenuServer
 
         #region Infinity bits
         // TODO: Replace this logic and all child logic with statebags (server set, client read)
+        /// <summary>
+        /// A player gets at most one player list per this many milliseconds, extra requests are dropped.
+        /// The client only asks when opening the Online Players menu or receiving a private message.
+        /// </summary>
+        private const int PlayerListRequestCooldownMs = 1000;
+        /// <summary>
+        /// The list itself is rebuilt at most once per this many milliseconds and shared by everyone who asks.
+        /// </summary>
+        private const int PlayerListCacheMs = 1000;
+        private const int PlayerListDroppedLogEvery = 50;
+
+        private readonly Dictionary<string, int> playerListLastRequest = new();
+        private readonly Dictionary<string, int> playerListDroppedRequests = new();
+        private object[] playerListCache = new object[0];
+        private int playerListCacheTime = 0;
+        private bool playerListCacheValid = false;
+
         [EventHandler("vMenu:RequestPlayerList")]
         internal void RequestPlayerListFromPlayer([FromSource] Player player)
         {
-            player.TriggerEvent("vMenu:ReceivePlayerList", Players.Select(p => new
+            var now = Environment.TickCount;
+
+            if (playerListLastRequest.TryGetValue(player.Handle, out var lastRequest) && unchecked(now - lastRequest) < PlayerListRequestCooldownMs)
             {
-                n = p.Name,
-                s = int.Parse(p.Handle),
-            }));
+                playerListDroppedRequests.TryGetValue(player.Handle, out var dropped);
+                playerListDroppedRequests[player.Handle] = ++dropped;
+                if (dropped % PlayerListDroppedLogEvery == 0)
+                {
+                    Log($"Player \"{player.Name}\" (#{player.Handle}) is spamming vMenu:RequestPlayerList, {dropped} requests dropped so far.", LogLevel.warning);
+                }
+                return;
+            }
+            playerListLastRequest[player.Handle] = now;
+
+            // Still reply, with an empty list, so the client doesn't keep waiting for an answer.
+            if (!PermissionsManager.IsAllowed(PermissionsManager.Permission.OPMenu, player))
+            {
+                player.TriggerEvent("vMenu:ReceivePlayerList", new object[0]);
+                return;
+            }
+
+            if (!playerListCacheValid || unchecked(now - playerListCacheTime) >= PlayerListCacheMs)
+            {
+                playerListCache = Players.Select(p => (object)new
+                {
+                    n = p.Name,
+                    s = int.Parse(p.Handle),
+                }).ToArray();
+                playerListCacheTime = now;
+                playerListCacheValid = true;
+            }
+
+            player.TriggerEvent("vMenu:ReceivePlayerList", playerListCache);
         }
 
         [EventHandler("vMenu:GetPlayerCoords")]
@@ -1217,6 +1262,10 @@ namespace vMenuServer
         [EventHandler("playerDropped")]
         internal void OnPlayerDropped([FromSource] Player sourcePlayer, string reason)
         {
+            playerListLastRequest.Remove(sourcePlayer.Handle);
+            playerListDroppedRequests.Remove(sourcePlayer.Handle);
+            playerListCacheValid = false;
+
             if (!joinedPlayers.Contains(sourcePlayer.Handle))
             {
                 return;

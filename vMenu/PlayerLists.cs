@@ -149,13 +149,24 @@ namespace vMenuClient
                 }
             }
 
-            updatingPlayerList--;
+            updatingPlayerList = Math.Max(0, updatingPlayerList - 1);
         }
+
+        /// <summary>
+        /// The server drops requests that come in too fast, so don't wait forever for an answer.
+        /// </summary>
+        private const int RequestTimeoutMs = 3000;
 
         public async Task WaitRequested()
         {
+            var start = GetGameTimer();
             while (updatingPlayerList > 0)
             {
+                if (GetGameTimer() - start > RequestTimeoutMs)
+                {
+                    updatingPlayerList = 0;
+                    break;
+                }
                 await BaseScript.Delay(0);
             }
         }
