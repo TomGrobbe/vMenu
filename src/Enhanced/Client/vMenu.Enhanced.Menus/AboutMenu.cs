@@ -14,7 +14,7 @@ public sealed class AboutMenu : MenuDefinition
 {
     public override MenuText Title => MenuText.Literal("About vMenu");
 
-    public override MenuText Subtitle => MenuText.Literal("About vMenu Enhanced");
+    public override MenuText Subtitle => MenuText.Literal("vMenu Enhanced (on Enhanced)");
 
     public override MenuText LinkDescription =>
         MenuText.Literal("Version information, links and credits.");
