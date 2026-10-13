@@ -1,0 +1,236 @@
+using System.Globalization;
+
+using CitizenFX.Core;
+using CitizenFX.Core.Native;
+
+using vMenu.Enhanced.Data.Actions;
+using vMenu.Enhanced.Data.Logging;
+using vMenu.Enhanced.Logging;
+using vMenu.Enhanced.Permissions.Server;
+using vMenu.Enhanced.Webhooks.Server;
+
+using vMenu.Legacy.Hosting;
+
+namespace vMenu.Enhanced.Actions.Server;
+
+public static class ActionRegistry
+{
+    private const string Ungated = "<ungated>";
+
+    private const string DroppedEvent = "playerDropped";
+
+    private static readonly Dictionary<string, RegisteredAction> Actions = new(StringComparer.Ordinal);
+
+    private static bool _registered;
+
+    public static void Register(
+        string actionId,
+        string permission,
+        Func<Player, string[], Task<ActionResponse>> handler,
+        ActionRateLimit? rateLimit = null)
+    {
+        if (!Actions.TryAdd(actionId, new RegisteredAction(permission, handler, rateLimit)))
+        {
+            Log.Error($"[Actions] '{actionId}' is registered twice. The second registration is ignored.");
+        }
+    }
+
+    public static void Register(
+        string actionId,
+        string permission,
+        Func<Player, string[], ActionResponse> handler,
+        ActionRateLimit? rateLimit = null) =>
+        Register(actionId, permission, (source, args) => Task.FromResult(handler(source, args)), rateLimit);
+
+    public static void RegisterUngated(
+        string actionId,
+        Func<Player, string[], Task<ActionResponse>> handler,
+        ActionRateLimit? rateLimit = null) =>
+        Register(actionId, Ungated, handler, rateLimit);
+
+    public static void RegisterUngated(
+        string actionId,
+        Func<Player, string[], ActionResponse> handler,
+        ActionRateLimit? rateLimit = null) =>
+        Register(actionId, Ungated, handler, rateLimit);
+
+    public static void RegisterEventHandlers()
+    {
+        if (_registered)
+        {
+            return;
+        }
+
+        _registered = true;
+
+        Script.EventHandlers[ActionEvents.Invoke] += new Action<Player, string, int, object>(OnInvoke);
+
+        Script.EventHandlers[DroppedEvent] += new Action<string, string?>(OnPlayerDropped);
+
+        Log.Debug($"[Actions] Listening with {Actions.Count} action(s) registered.");
+    }
+
+    // A named method, not a lambda: the binder reads FromSourceAttribute off the delegate's MethodInfo,
+    // and without it the Player binds to wire argument 0 and every argument after it shifts by one.
+    // Hands off rather than awaiting, because the delegate the runtime binds has to be an Action, so a
+    // handler that suspends does not hold up the events queued behind it. The client matches a reply to
+    // its request by id and waits ten seconds for one.
+    private static void OnInvoke([FromSource] Player source, string actionId, int requestId, object args) =>
+        _ = InvokeAsync(source, actionId, requestId, Payload.Strings(args));
+
+    // Nothing observes the returned task, so anything escaping this method would be lost rather than
+    // reaching the runtime's own handler logging. Hence the outer catch.
+    private static async Task InvokeAsync(Player source, string actionId, int requestId, string[] args)
+    {
+        try
+        {
+            if (!Actions.TryGetValue(actionId, out var action))
+            {
+                Log.Warning($"[Actions] {source} asked for '{actionId}', which nothing is registered for.");
+
+                SecurityLog.UnknownAction(source, actionId);
+
+                Reply(source, requestId, ActionStatus.UnknownAction, []);
+
+                return;
+            }
+
+            if (!string.Equals(action.Permission, Ungated, StringComparison.Ordinal)
+                && !ServerPermissions.IsPlayerAllowed(source, action.Permission))
+            {
+                // Not a warning: a stale menu reaches this as readily as somebody poking at the event.
+                Log.Info($"[Actions] {source.Name} was denied '{actionId}': missing {action.Permission}.");
+
+                Audit(source, actionId, Target(actionId, args), ActionStatus.Denied);
+
+                SecurityLog.Denied(source, actionId, action.Permission);
+
+                Reply(source, requestId, ActionStatus.Denied, []);
+
+                return;
+            }
+
+            if (action.RateLimit is { } rateLimit && !rateLimit.TryTake(source, out var retryAfter))
+            {
+                SecurityLog.RateLimited(source, actionId, rateLimit.Allowance);
+
+                Reply(
+                    source,
+                    requestId,
+                    ActionStatus.RateLimited,
+                    [retryAfter.ToString(CultureInfo.InvariantCulture)]);
+
+                return;
+            }
+
+            ActionResponse response;
+
+            var target = Target(actionId, args);
+
+            try
+            {
+                response = await action.Handler(source, args);
+            }
+            catch (Exception exception)
+            {
+                // Every other action, for every other player, is registered against this same event.
+                Log.Error($"[Actions] '{actionId}' threw for {source.Name}: {exception}");
+
+                response = ActionResponse.Failed();
+            }
+
+            Audit(source, actionId, target, response.Status);
+
+            if (response.Status == ActionStatus.InvalidRequest)
+            {
+                SecurityLog.MalformedRequest(source, actionId);
+            }
+
+            Reply(source, requestId, response.Status, response.Data);
+        }
+        catch (Exception exception)
+        {
+            // No reply attempt: whatever just failed may well be the reply. The caller times out.
+            Log.Error($"[Actions] Dispatching '{actionId}' for {source} failed: {exception}");
+        }
+    }
+
+    private static void Audit(Player source, string actionId, WebhookActor? target, ActionStatus status)
+    {
+        if (!StaffActionIds.Includes(actionId))
+        {
+            return;
+        }
+
+        var verb = StaffActionIds.VerbFor(actionId);
+
+        if (status == ActionStatus.Ok)
+        {
+            WebhookLog.Staff(source, target, verb);
+
+            return;
+        }
+
+        WebhookLog.Staff(source, target, "tried to " + verb, ("outcome", status.ToString()));
+    }
+
+    private static WebhookActor? Target(string actionId, string[] args)
+    {
+        if (!StaffActionIds.Includes(actionId)
+            || !StaffActionIds.TakesTarget(actionId)
+            || !WebhookLog.Wants(LogCategory.Staff))
+        {
+            return null;
+        }
+
+        if (args.Length < 1
+            || !int.TryParse(args[0], NumberStyles.Integer, CultureInfo.InvariantCulture, out var serverId)
+            || serverId <= 0)
+        {
+            return null;
+        }
+
+        return WebhookActor.For(serverId);
+    }
+
+    private static void OnPlayerDropped([FromSource] string sourceString, string? reason = null)
+    {
+        if (Script.IsFromPlayer(sourceString))
+        {
+            return;
+        }
+
+        var source = Script.SourceId(sourceString);
+
+        if (source <= 0)
+        {
+            return;
+        }
+
+        SecurityLog.Forget(source);
+
+        foreach (var action in Actions.Values)
+        {
+            action.RateLimit?.Forget(source);
+        }
+    }
+
+    // A handler that awaited can outlive the player it was answering, and the emit asserts a handle that
+    // is still connected.
+    private static void Reply(Player source, int requestId, ActionStatus status, string[] data)
+    {
+        if (!API.DoesPlayerExist(source.ServerId().ToString(CultureInfo.InvariantCulture)))
+        {
+            Log.Debug($"[Actions] Dropping reply {requestId}: {source} is gone.");
+
+            return;
+        }
+
+        Script.TriggerClientEvent(source.ServerId(), ActionEvents.Result, requestId, (int)status, data);
+    }
+
+    private sealed record RegisteredAction(
+        string Permission,
+        Func<Player, string[], Task<ActionResponse>> Handler,
+        ActionRateLimit? RateLimit);
+}

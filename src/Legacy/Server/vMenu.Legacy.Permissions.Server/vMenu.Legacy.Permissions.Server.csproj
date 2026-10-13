@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>vMenu.Enhanced.Permissions.Server</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\vMenu.Legacy.Hosting.Server\vMenu.Legacy.Hosting.Server.csproj" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Shared\vMenu.Enhanced.Data\vMenu.Enhanced.Data.csproj" />
+    <ProjectReference Include="..\..\..\Shared\vMenu.Enhanced.Logging\vMenu.Enhanced.Logging.csproj" />
+    <ProjectReference Include="..\vMenu.Legacy.BrokenNatives.Server\vMenu.Legacy.BrokenNatives.Server.csproj" />
+    <ProjectReference Include="..\vMenu.Legacy.Players.Server\vMenu.Legacy.Players.Server.csproj" />
+    <ProjectReference Include="..\vMenu.Legacy.Serialization.Server\vMenu.Legacy.Serialization.Server.csproj" />
+  </ItemGroup>
+
+</Project>

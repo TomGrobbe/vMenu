@@ -1,0 +1,295 @@
+using System.Globalization;
+
+using CitizenFX.Core;
+using CitizenFX.Core.Native;
+
+using vMenu.Enhanced.Actions.Server.Events;
+using vMenu.Enhanced.Data.Actions;
+using vMenu.Enhanced.Data.OnlinePlayers;
+using vMenu.Enhanced.Data.VehicleData;
+using vMenu.Enhanced.Logging;
+using vMenu.Enhanced.Players.Server;
+using vMenu.Enhanced.Webhooks.Server;
+
+using vMenu.Legacy.Hosting;
+
+using vMenu.Enhanced.BrokenNatives.Server;
+
+namespace vMenu.Enhanced.Actions.Server.Handlers;
+
+public enum RemoteCommandOutcome
+{
+    Ok,
+    IdentityMismatch,
+    NotReady,
+    UnknownAction,
+    BadRequest,
+    NoVehicle,
+    GodMode,
+    Failed,
+}
+
+public readonly record struct RemoteCommandResult(RemoteCommandOutcome Outcome, string? Json = null);
+
+public readonly record struct RemoteCommand(
+    string Action,
+    int ServerId,
+    string Name,
+    string? Discord,
+    string Operator,
+    float X,
+    float Y,
+    string? Text,
+    string? Style,
+    string? Model,
+    bool HasPoint = false,
+    string? Footer = null,
+    float? Z = null,
+    float? Heading = null);
+
+public static class RemotePlayerCommands
+{
+    private const string StaffLabel = "a staff member";
+
+    private const string On = "1";
+
+    private const string Off = "0";
+
+    private const int VehicleEntityType = 2;
+
+    public static bool IsAsync(string action) => action is "explodevehicle" or "status";
+
+    // Must start on the tick thread.
+    public static async Task<RemoteCommandResult> RunAsync(RemoteCommand cmd)
+    {
+        if (!VerifyIdentity(cmd.ServerId, cmd.Name, cmd.Discord))
+        {
+            return new RemoteCommandResult(RemoteCommandOutcome.IdentityMismatch);
+        }
+
+        if (PedOf(cmd.ServerId) is not { } ped)
+        {
+            return new RemoteCommandResult(RemoteCommandOutcome.NotReady);
+        }
+
+        var target = cmd.ServerId;
+        var targetName = API.GetPlayerName(target.ToString(CultureInfo.InvariantCulture));
+
+        switch (cmd.Action)
+        {
+            case "status":
+                var json = await RemotePlayerStatus.CaptureAsync(target, ped);
+
+                Log.Info($"[Integration] {OperatorOf(cmd)} checked the status of {targetName} (#{target}) from the live map.");
+
+                return new RemoteCommandResult(RemoteCommandOutcome.Ok, json);
+
+            case "explodevehicle":
+                if (VehicleOf(ped) is not { } vehicle)
+                {
+                    return new RemoteCommandResult(RemoteCommandOutcome.NoVehicle);
+                }
+
+                var actor = WebhookActor.For(target);
+
+                var response = await RemoteVehicleControl.PerformAsync(
+                    target,
+                    OperatorOf(cmd),
+                    API.NetworkGetNetworkIdFromEntity(vehicle),
+                    vehicle,
+                    RemoteVehicleAction.Explode);
+
+                if (response.Status == ActionStatus.Refused)
+                {
+                    return new RemoteCommandResult(RemoteCommandOutcome.GodMode);
+                }
+
+                if (response.Status != ActionStatus.Ok)
+                {
+                    return new RemoteCommandResult(RemoteCommandOutcome.Failed);
+                }
+
+                Audit(cmd, targetName, actor);
+
+                return new RemoteCommandResult(RemoteCommandOutcome.Ok);
+
+            default:
+                return new RemoteCommandResult(RemoteCommandOutcome.UnknownAction);
+        }
+    }
+
+    public static RemoteCommandOutcome Run(RemoteCommand cmd)
+    {
+        if (!VerifyIdentity(cmd.ServerId, cmd.Name, cmd.Discord))
+        {
+            return RemoteCommandOutcome.IdentityMismatch;
+        }
+
+        if (PedOf(cmd.ServerId) is null)
+        {
+            return RemoteCommandOutcome.NotReady;
+        }
+
+        var target = cmd.ServerId;
+
+        var targetName = API.GetPlayerName(target.ToString(CultureInfo.InvariantCulture));
+        var actor = WebhookActor.For(target);
+
+        switch (cmd.Action)
+        {
+            case "kill":
+                Script.TriggerClientEvent(target, PlayerEvents.Kill, StaffLabel);
+                break;
+
+            case "kick":
+                var by = string.IsNullOrWhiteSpace(cmd.Operator) ? StaffLabel : cmd.Operator.Trim();
+                PlayerDrops.RecordKick(target, DropOrigin.IntegrationKick, by, cmd.Text);
+                NativeFixer.DropPlayer(target.ToString(CultureInfo.InvariantCulture), KickText.For(by, cmd.Text));
+                break;
+
+            case "noclip":
+                var on = !PlayerNoClipState.IsActive(target);
+                PlayerNoClipState.SetForced(target, on);
+                Script.TriggerClientEvent(target, PlayerEvents.SetNoClip, on ? On : Off);
+                break;
+
+            case "notify":
+                if (string.IsNullOrWhiteSpace(cmd.Text))
+                {
+                    return RemoteCommandOutcome.BadRequest;
+                }
+
+                Script.TriggerClientEvent(target, PlayerEvents.Notify, cmd.Style ?? "info", cmd.Text, cmd.Footer ?? string.Empty);
+                break;
+
+            case "waypoint":
+                if (!cmd.HasPoint)
+                {
+                    return RemoteCommandOutcome.BadRequest;
+                }
+
+                Script.TriggerClientEvent(target, PlayerEvents.SetWaypoint, Coord(cmd.X), Coord(cmd.Y));
+                break;
+
+            case "teleport":
+                if (!cmd.HasPoint)
+                {
+                    return RemoteCommandOutcome.BadRequest;
+                }
+
+                if (cmd.Z is { } z)
+                {
+                    Script.TriggerClientEvent(
+                        target,
+                        PlayerEvents.TeleportToCoords,
+                        Coord(cmd.X),
+                        Coord(cmd.Y),
+                        Coord(z),
+                        cmd.Heading is { } heading ? Coord(heading) : string.Empty);
+                }
+                else
+                {
+                    Script.TriggerClientEvent(target, PlayerEvents.TeleportToGround, Coord(cmd.X), Coord(cmd.Y));
+                }
+
+                break;
+
+            case "deletevehicle":
+                if (PedOf(target) is not { } ped || VehicleOf(ped) is not { } vehicle)
+                {
+                    return RemoteCommandOutcome.NoVehicle;
+                }
+
+                NativeFixer.DeleteEntity(vehicle);
+                break;
+
+            case "heal":
+                Script.TriggerClientEvent(target, PlayerEvents.Restore, "heal");
+                break;
+
+            case "armor":
+                Script.TriggerClientEvent(target, PlayerEvents.Restore, "armor");
+                break;
+
+            case "spawnvehicle":
+                if (string.IsNullOrWhiteSpace(cmd.Model))
+                {
+                    return RemoteCommandOutcome.BadRequest;
+                }
+
+                Script.TriggerClientEvent(target, PlayerEvents.SpawnVehicle, cmd.Model.Trim());
+                break;
+
+            default:
+                return RemoteCommandOutcome.UnknownAction;
+        }
+
+        Audit(cmd, targetName, actor);
+
+        return RemoteCommandOutcome.Ok;
+    }
+
+    private static bool VerifyIdentity(int serverId, string name, string? discord)
+    {
+        if (serverId <= 0 || string.IsNullOrWhiteSpace(name))
+        {
+            return false;
+        }
+
+        var handle = serverId.ToString(CultureInfo.InvariantCulture);
+
+        if (!API.DoesPlayerExist(handle))
+        {
+            return false;
+        }
+
+        var current = API.GetPlayerName(handle);
+
+        if (string.IsNullOrWhiteSpace(current)
+            || !string.Equals(current.Trim(), name.Trim(), StringComparison.OrdinalIgnoreCase))
+        {
+            return false;
+        }
+
+        if (!string.IsNullOrWhiteSpace(discord)
+            && !string.Equals(PlayerIdentifiers.Discord(handle), discord, StringComparison.OrdinalIgnoreCase))
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    private static int? PedOf(int serverId)
+    {
+        var ped = API.GetPlayerPed(serverId.ToString(CultureInfo.InvariantCulture));
+
+        return ped != 0 && API.DoesEntityExist(ped) ? ped : null;
+    }
+
+    private static int? VehicleOf(int ped)
+    {
+        var vehicle = API.GetVehiclePedIsIn(ped, false);
+
+        return vehicle != 0 && API.DoesEntityExist(vehicle) && API.GetEntityType(vehicle) == VehicleEntityType
+            ? vehicle
+            : null;
+    }
+
+    private static string OperatorOf(RemoteCommand cmd) =>
+        string.IsNullOrWhiteSpace(cmd.Operator) ? "a linked tool" : cmd.Operator.Trim();
+
+    private static void Audit(RemoteCommand cmd, string targetName, WebhookActor actor)
+    {
+        var op = OperatorOf(cmd);
+
+        Log.Info($"[Integration] {op} used the '{cmd.Action}' action on {targetName} (#{cmd.ServerId}) from the live map.");
+
+        WebhookLog.Staff(
+            actor,
+            null,
+            $"had the '{cmd.Action}' action used on them by {op} from the live map.");
+    }
+
+    private static string Coord(float value) => value.ToString("0.###", CultureInfo.InvariantCulture);
+}

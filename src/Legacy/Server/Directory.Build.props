@@ -1,0 +1,21 @@
+<Project>
+  <Import Project="$([MSBuild]::GetPathOfFileAbove('$(MSBuildThisFile)', '$(MSBuildThisFileDirectory)../'))" />
+
+  <PropertyGroup>
+    <OutputPath>$(IntermediateRoot)server\</OutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CitizenFX.Core.Server" ExcludeAssets="runtime" />
+    <PackageReference Include="PolySharp" PrivateAssets="all" />
+    <PackageReference Include="System.ValueTuple" />
+    <ProjectReference Include="$(RepoRoot)src\Shared\vMenu.Enhanced.Polyfills\vMenu.Enhanced.Polyfills.csproj" />
+    <Reference Include="System.Numerics" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="CitizenFX.Core.Vector3" Alias="Vector3" />
+    <Using Include="vMenu.Enhanced.Polyfills" />
+  </ItemGroup>
+
+</Project>

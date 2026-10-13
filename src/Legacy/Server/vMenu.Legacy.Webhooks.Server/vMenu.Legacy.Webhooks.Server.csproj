@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>vMenu.Enhanced.Webhooks.Server</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\vMenu.Legacy.Hosting.Server\vMenu.Legacy.Hosting.Server.csproj" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Shared\vMenu.Enhanced.Data\vMenu.Enhanced.Data.csproj" />
+    <ProjectReference Include="..\..\..\Shared\vMenu.Enhanced.Logging\vMenu.Enhanced.Logging.csproj" />
+    <ProjectReference Include="..\vMenu.Legacy.Configuration.Server\vMenu.Legacy.Configuration.Server.csproj" />
+    <ProjectReference Include="..\vMenu.Legacy.Http.Server\vMenu.Legacy.Http.Server.csproj" />
+    <ProjectReference Include="..\vMenu.Legacy.Players.Server\vMenu.Legacy.Players.Server.csproj" />
+    <ProjectReference Include="..\vMenu.Legacy.Serialization.Server\vMenu.Legacy.Serialization.Server.csproj" />
+    <ProjectReference Include="..\vMenu.Legacy.Ticks.Server\vMenu.Legacy.Ticks.Server.csproj" />
+  </ItemGroup>
+
+</Project>

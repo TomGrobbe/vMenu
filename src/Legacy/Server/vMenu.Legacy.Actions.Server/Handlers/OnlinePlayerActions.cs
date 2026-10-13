@@ -1,0 +1,1072 @@
+using System.Globalization;
+
+using CitizenFX.Core;
+using CitizenFX.Core.Native;
+
+using vMenu.Enhanced.Actions.Server.Events;
+using vMenu.Enhanced.Configuration.Server;
+using vMenu.Enhanced.Data.Actions;
+using vMenu.Enhanced.Data.OnlinePlayers;
+using vMenu.Enhanced.Data.Permissions;
+using vMenu.Enhanced.Data.Ticks;
+using vMenu.Enhanced.Data.VehicleData;
+using vMenu.Enhanced.Logging;
+using vMenu.Enhanced.Permissions.Server;
+using vMenu.Enhanced.Players.Server;
+using vMenu.Enhanced.Ticks.Server;
+
+using OnlinePlayerSettings = vMenu.Enhanced.Data.Configuration.Settings.OnlinePlayers;
+using OnlinePlayersPermissions = vMenu.Enhanced.Data.Permissions.Menus.OnlinePlayers;
+using PlayerOptionsPermissions = vMenu.Enhanced.Data.Permissions.Menus.PlayerOptions;
+using VehicleOptionsPermissions = vMenu.Enhanced.Data.Permissions.Menus.VehicleOptions;
+
+using vMenu.Legacy.Hosting;
+
+using vMenu.Enhanced.BrokenNatives.Server;
+
+namespace vMenu.Enhanced.Actions.Server.Handlers;
+
+// The list has to come from here rather than from the client: under OneSync most players are not
+// streamed in, so a client asking the game who is online only ever sees its own neighbourhood.
+public static class OnlinePlayerActions
+{
+    // vMenu has never let an IP address out of the server and is not about to start.
+    private const string HiddenIdentifierPrefix = "ip:";
+
+    // Polled rather than hooked onto a join or leave event, because a second of lag before a subtitle
+    // turns red costs nothing and this cannot miss an event it was not listening for.
+    private const long RevisionPollMs = 1000;
+
+    // Comfortably inside the client's own ten second timeout on the action, so a message that is never
+    // acknowledged still comes back as a real answer rather than as a timeout.
+    private const int AckTimeoutMs = 5000;
+
+    private const int MaxWantedLevel = 5;
+
+    private const int VehicleEntityType = 2;
+
+    private const int DriverSeat = -1;
+
+    private const string Deleted = "1";
+
+    private const string Exploded = "1";
+
+    private const string OnFoot = "0";
+
+    private const string NotDriving = "2";
+
+    private const string ExplodeFailed = "3";
+
+    private const string ExplodeGodMode = "4";
+
+    private const string StatusOn = "1";
+
+    private const string StatusOff = "0";
+
+    private const string StatusUnknown = "?";
+
+    private const float NearbyDistance = 5f;
+
+    private const int MaxSeat = 16;
+
+    private const string SummonMoved = "0";
+
+    private const string SummonNearby = "1";
+
+    private const string SummonRiding = "2";
+
+    private const string SummonNoVehicle = "3";
+
+    private const string SummonNoSeat = "4";
+
+    private static readonly HashSet<int> Connected = [];
+
+    private static readonly Dictionary<int, PendingMessage> Unacknowledged = [];
+
+    private static readonly Dictionary<int, PendingWanted> UnansweredWanted = [];
+
+    private static readonly Dictionary<int, PendingStatus> UnansweredStatus = [];
+
+    private static int _revision;
+
+    private static int _lastMessageId;
+
+    private static int _lastWantedId;
+
+    private static int _lastStatusId;
+
+    private static readonly ActionRateLimit Limit = new(
+        "online players",
+        OnlinePlayerSettings.ActionLimit,
+        OnlinePlayerSettings.ActionLimitSeconds);
+
+    public static void Register()
+    {
+        Script.EventHandlers[PlayerEvents.MessageAck] += new Action<Player, string>(OnMessageAcknowledged);
+        Script.EventHandlers[PlayerEvents.WantedLevelAck] += new Action<Player, string, string>(OnWantedLevelAcknowledged);
+        Script.EventHandlers[PlayerEvents.GodModeAck] += new Action<Player, string, bool, bool>(OnGodModeAcknowledged);
+
+        ActionRegistry.Register(ActionIds.OnlinePlayers.GetList, OnlinePlayersPermissions.Menu, GetList);
+
+        ActionRegistry.Register(
+            ActionIds.OnlinePlayers.GetCoordsForTeleport,
+            OnlinePlayersPermissions.TeleportTo,
+            GetCoordsForTeleport,
+            Limit);
+
+        ActionRegistry.Register(
+            ActionIds.OnlinePlayers.GetCoordsForWaypoint,
+            OnlinePlayersPermissions.Waypoint,
+            GetCoords,
+            Limit);
+
+        ActionRegistry.Register(
+            ActionIds.OnlinePlayers.GetVehicleForTeleport,
+            OnlinePlayersPermissions.TeleportIntoVehicle,
+            GetVehicle,
+            Limit);
+
+        ActionRegistry.Register(
+            ActionIds.OnlinePlayers.SetWantedLevel,
+            OnlinePlayersPermissions.SetWantedLevel,
+            SetWantedLevel,
+            Limit);
+
+        ActionRegistry.Register(ActionIds.OnlinePlayers.Kick, OnlinePlayersPermissions.Kick, Kick, Limit);
+        ActionRegistry.Register(ActionIds.OnlinePlayers.Kill, OnlinePlayersPermissions.Kill, Kill, Limit);
+        ActionRegistry.Register(ActionIds.OnlinePlayers.Summon, OnlinePlayersPermissions.Summon, Summon, Limit);
+
+        ActionRegistry.Register(
+            ActionIds.OnlinePlayers.SummonIntoVehicle,
+            OnlinePlayersPermissions.SummonIntoVehicle,
+            SummonIntoVehicle,
+            Limit);
+
+        ActionRegistry.Register(
+            ActionIds.OnlinePlayers.SendMessage,
+            OnlinePlayersPermissions.SendMessage,
+            SendMessage,
+            Limit);
+
+        ActionRegistry.Register(
+            ActionIds.OnlinePlayers.GetIdentifiers,
+            OnlinePlayersPermissions.Identifiers,
+            GetIdentifiers,
+            Limit);
+
+        ActionRegistry.Register(
+            ActionIds.OnlinePlayers.DeleteVehicle,
+            OnlinePlayersPermissions.DeleteVehicle,
+            DeleteVehicle,
+            Limit);
+
+        ActionRegistry.Register(
+            ActionIds.OnlinePlayers.ExplodeVehicle,
+            OnlinePlayersPermissions.ExplodeVehicle,
+            ExplodeVehicle,
+            Limit);
+
+        ActionRegistry.Register(
+            ActionIds.OnlinePlayers.GetStatus,
+            OnlinePlayersPermissions.CheckStatus,
+            GetStatus,
+            Limit);
+
+        ActionRegistry.Register(
+            ActionIds.OnlinePlayers.RefreshPermissions,
+            OnlinePlayersPermissions.RefreshPermissions,
+            RefreshPermissions,
+            Limit);
+
+        ActionRegistry.Register(
+            ActionIds.OnlinePlayers.SetNoClip,
+            OnlinePlayersPermissions.NoClip,
+            SetNoClip,
+            Limit);
+
+        ActionRegistry.Register(
+            ActionIds.OnlinePlayers.SetNoClipAccess,
+            OnlinePlayersPermissions.NoClip,
+            SetNoClipAccess,
+            Limit);
+
+        ActionRegistry.Register(ActionIds.OnlinePlayers.GetNoClip, OnlinePlayersPermissions.NoClip, GetNoClip);
+
+        PublishRevision();
+
+        ServerTickRegistry.Register(
+            "OnlinePlayers.Revision",
+            TrackConnectedPlayers,
+            TickRate.Every(RevisionPollMs));
+    }
+
+    // Only a server id and a name go back. Identifiers are matched here and never sent, which is the
+    // whole reason searching is a server action instead of something the client does to its own list.
+    private static ActionResponse GetList(Player source, string[] args)
+    {
+        var query = (args.Length > 0 ? args[0] : string.Empty).Trim();
+
+        var rows = new List<string>();
+
+        foreach (var player in ConnectedPlayers.All())
+        {
+            if (Matches(player, query))
+            {
+                rows.Add(PlayerRow.Format(player.ServerId, player.Name));
+            }
+        }
+
+        return ActionResponse.Ok([.. rows]);
+    }
+
+    // Only the name is a partial match. A server id is a number, so half of one means nothing, and a
+    // partial identifier match would be a way to go fishing for other people's licenses.
+    private static bool Matches(ConnectedPlayer player, string query)
+    {
+        if (query.Length == 0)
+        {
+            return true;
+        }
+
+        if (int.TryParse(query, NumberStyles.Integer, CultureInfo.InvariantCulture, out var serverId)
+            && serverId == player.ServerId)
+        {
+            return true;
+        }
+
+        if (player.Name.Contains(query, StringComparison.OrdinalIgnoreCase))
+        {
+            return true;
+        }
+
+        return MatchesIdentifier(player.ServerId, query);
+    }
+
+    private static bool MatchesIdentifier(int handle, string query)
+    {
+        var source = handle.ToString(CultureInfo.InvariantCulture);
+        var count = API.GetNumPlayerIdentifiers(source);
+
+        for (var index = 0; index < count; index++)
+        {
+            var identifier = API.GetPlayerIdentifier(source, index);
+
+            if (string.IsNullOrEmpty(identifier) || identifier.StartsWith(HiddenIdentifierPrefix, StringComparison.OrdinalIgnoreCase))
+            {
+                continue;
+            }
+
+            if (string.Equals(identifier, query, StringComparison.OrdinalIgnoreCase))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    // This really does send identifiers to a client, which is why it has its own permission. The IP is
+    // left out on purpose: it says where somebody lives rather than which account they are.
+    private static ActionResponse GetIdentifiers(Player source, string[] args)
+    {
+        if (!TryResolveTarget(args, out var target))
+        {
+            return ActionResponse.NotFound();
+        }
+
+        var handle = target.ToString(CultureInfo.InvariantCulture);
+        var count = API.GetNumPlayerIdentifiers(handle);
+
+        var identifiers = new List<string>(count);
+
+        for (var index = 0; index < count; index++)
+        {
+            var identifier = API.GetPlayerIdentifier(handle, index);
+
+            if (string.IsNullOrEmpty(identifier) || identifier.StartsWith(HiddenIdentifierPrefix, StringComparison.OrdinalIgnoreCase))
+            {
+                continue;
+            }
+
+            identifiers.Add(identifier);
+        }
+
+        Log.Info($"[OnlinePlayers] {source.Name} read the identifiers of {API.GetPlayerName(target.ToString())}.");
+
+        return ActionResponse.Ok([.. identifiers]);
+    }
+
+    private static ActionResponse GetCoordsForTeleport(Player source, string[] args)
+    {
+        if (!TryResolveTarget(args, out var target))
+        {
+            return ActionResponse.NotFound();
+        }
+
+        MatchBucket(source.ServerId(), target);
+
+        return GetCoords(source, args);
+    }
+
+    private static ActionResponse GetCoords(Player source, string[] args)
+    {
+        if (!TryResolveTarget(args, out var target))
+        {
+            return ActionResponse.NotFound();
+        }
+
+        if (PedOf(target) is not { } ped)
+        {
+            return ActionResponse.NotReady();
+        }
+
+        var coords = API.GetEntityCoords(ped);
+
+        return ActionResponse.Ok(
+            coords.X.ToString(CultureInfo.InvariantCulture),
+            coords.Y.ToString(CultureInfo.InvariantCulture),
+            coords.Z.ToString(CultureInfo.InvariantCulture));
+    }
+
+    private static ActionResponse GetVehicle(Player source, string[] args)
+    {
+        if (!TryResolveTarget(args, out var target))
+        {
+            return ActionResponse.NotFound();
+        }
+
+        if (target == source.ServerId())
+        {
+            return ActionResponse.Refused();
+        }
+
+        if (PedOf(target) is not { } ped)
+        {
+            return ActionResponse.NotReady();
+        }
+
+        MatchBucket(source.ServerId(), target);
+
+        var vehicle = API.GetVehiclePedIsIn(ped, false);
+        var riding = vehicle != 0 && API.DoesEntityExist(vehicle);
+
+        var coords = API.GetEntityCoords(riding ? vehicle : ped);
+
+        var networkId = riding ? API.NetworkGetNetworkIdFromEntity(vehicle) : 0;
+
+        Log.Info(
+            $"[OnlinePlayers] {source.Name} is teleporting to {API.GetPlayerName(target.ToString())}"
+            + (riding ? "'s vehicle." : ", who is on foot."));
+
+        return ActionResponse.Ok(
+            riding ? "1" : "0",
+            networkId.ToString(CultureInfo.InvariantCulture),
+            coords.X.ToString(CultureInfo.InvariantCulture),
+            coords.Y.ToString(CultureInfo.InvariantCulture),
+            coords.Z.ToString(CultureInfo.InvariantCulture));
+    }
+
+    private static async Task<ActionResponse> SetWantedLevel(Player source, string[] args)
+    {
+        if (!TryResolveTarget(args, out var target))
+        {
+            return ActionResponse.NotFound();
+        }
+
+        if (args.Length < 2
+            || !int.TryParse(args[1], NumberStyles.Integer, CultureInfo.InvariantCulture, out var stars)
+            || stars < 0
+            || stars > MaxWantedLevel)
+        {
+            return ActionResponse.InvalidRequest();
+        }
+
+        if (PedOf(target) is null)
+        {
+            return ActionResponse.NotReady();
+        }
+
+        var requestId = ++_lastWantedId;
+        var answered = new TaskCompletionSource<int>();
+
+        UnansweredWanted[requestId] = new PendingWanted(target, answered);
+
+        Script.TriggerClientEvent(
+            target,
+            PlayerEvents.SetWantedLevel,
+            requestId.ToString(CultureInfo.InvariantCulture),
+            stars.ToString(CultureInfo.InvariantCulture));
+
+        int reached;
+
+        try
+        {
+            var timeout = BaseScript.Delay(AckTimeoutMs);
+
+            if (await Task.WhenAny(answered.Task, timeout) == timeout)
+            {
+                Log.Warning(
+                    $"[OnlinePlayers] {source.Name} set the wanted level of "
+                    + $"{API.GetPlayerName(target.ToString())}, which was never acknowledged.");
+
+                return ActionResponse.NotReady();
+            }
+
+            reached = answered.Task.Result;
+        }
+        finally
+        {
+            UnansweredWanted.Remove(requestId);
+
+            // Back onto the thread the reply has to go out on, the awaits above having left it.
+            await BaseScript.Delay(0);
+        }
+
+        var landed = reached == stars ? "which stuck." : $"which landed on {reached}.";
+
+        Log.Info(
+            $"[OnlinePlayers] {source.Name} set the wanted level of "
+            + $"{API.GetPlayerName(target.ToString())} to {stars}, {landed}");
+
+        return ActionResponse.Ok(reached.ToString(CultureInfo.InvariantCulture));
+    }
+
+    private static void OnWantedLevelAcknowledged([FromSource] Player source, string requestId, string reached)
+    {
+        if (!int.TryParse(requestId, NumberStyles.Integer, CultureInfo.InvariantCulture, out var id)
+            || !UnansweredWanted.TryGetValue(id, out var pending))
+        {
+            return;
+        }
+
+        if (pending.Target != source.ServerId())
+        {
+            Log.Warning($"[OnlinePlayers] {source.Name} answered wanted level request {id}, which was not theirs. Ignored.");
+
+            return;
+        }
+
+        if (!int.TryParse(reached, NumberStyles.Integer, CultureInfo.InvariantCulture, out var level))
+        {
+            return;
+        }
+
+        pending.Answered.TrySetResult(Math.Clamp(level, 0, MaxWantedLevel));
+    }
+
+    private static ActionResponse Kick(Player source, string[] args)
+    {
+        if (!TryResolveTarget(args, out var target))
+        {
+            return ActionResponse.NotFound();
+        }
+
+        var reason = args.Length > 1 && !string.IsNullOrWhiteSpace(args[1]) ? args[1].Trim() : string.Empty;
+
+        Log.Info(
+            $"[OnlinePlayers] {source.Name} kicked {API.GetPlayerName(target.ToString(CultureInfo.InvariantCulture))}"
+            + (reason.Length > 0 ? $": {reason}" : "."));
+
+        PlayerDrops.RecordKick(target, DropOrigin.MenuKick, source.Name, reason);
+
+        NativeFixer.DropPlayer(target.ToString(CultureInfo.InvariantCulture), KickText.For(source.Name, reason));
+
+        return ActionResponse.Ok();
+    }
+
+    private static ActionResponse Kill(Player source, string[] args)
+    {
+        if (!TryResolveTarget(args, out var target))
+        {
+            return ActionResponse.NotFound();
+        }
+
+        if (PedOf(target) is null)
+        {
+            return ActionResponse.NotReady();
+        }
+
+        Log.Info($"[OnlinePlayers] {source.Name} killed {API.GetPlayerName(target.ToString())}.");
+
+        Script.TriggerClientEvent(target, PlayerEvents.Kill, source.Name);
+
+        return ActionResponse.Ok();
+    }
+
+    private static ActionResponse SetNoClip(Player source, string[] args)
+    {
+        if (!TryResolveTarget(args, out var target))
+        {
+            return ActionResponse.NotFound();
+        }
+
+        if (PedOf(target) is null)
+        {
+            return ActionResponse.NotReady();
+        }
+
+        var on = !PlayerNoClipState.IsActive(target);
+
+        PlayerNoClipState.SetForced(target, on);
+
+        Script.TriggerClientEvent(target, PlayerEvents.SetNoClip, on ? StatusOn : StatusOff);
+
+        var name = NameOf(target);
+
+        Log.Info($"[OnlinePlayers] {source.Name} {(on ? "put" : "took")} {name} {(on ? "into" : "out of")} noclip.");
+
+        return ActionResponse.Ok(on ? StatusOn : StatusOff, name);
+    }
+
+    private static ActionResponse SetNoClipAccess(Player source, string[] args)
+    {
+        if (!TryResolveTarget(args, out var target))
+        {
+            return ActionResponse.NotFound();
+        }
+
+        if (PedOf(target) is null)
+        {
+            return ActionResponse.NotReady();
+        }
+
+        if (CanNoClip(target))
+        {
+            return ActionResponse.InvalidRequest();
+        }
+
+        var granted = !PlayerNoClipState.IsGranted(target);
+
+        PlayerNoClipState.SetGranted(target, granted);
+
+        Script.TriggerClientEvent(target, PlayerEvents.SetNoClipAccess, granted ? StatusOn : StatusOff);
+
+        var name = NameOf(target);
+
+        Log.Info($"[OnlinePlayers] {source.Name} {(granted ? "lent" : "took")} noclip {(granted ? "to" : "from")} {name}.");
+
+        return ActionResponse.Ok(granted ? StatusOn : StatusOff, name);
+    }
+
+    private static ActionResponse GetNoClip(Player source, string[] args)
+    {
+        if (!TryResolveTarget(args, out var target))
+        {
+            return ActionResponse.NotFound();
+        }
+
+        return ActionResponse.Ok(
+            CanNoClip(target) ? StatusOn : StatusOff,
+            PlayerNoClipState.IsGranted(target) ? StatusOn : StatusOff,
+            PlayerNoClipState.IsActive(target) ? StatusOn : StatusOff);
+    }
+
+    private static bool CanNoClip(int serverId) =>
+        ServerPermissions.IsPlayerAllowed(serverId.ToString(CultureInfo.InvariantCulture), Global.NoClip);
+
+    private static string NameOf(int serverId) =>
+        API.GetPlayerName(serverId.ToString(CultureInfo.InvariantCulture));
+
+    private static string Handle(int serverId) => serverId.ToString(CultureInfo.InvariantCulture);
+
+    private static void MatchBucket(int mover, int reference)
+    {
+        if (!ServerConfig.Value(OnlinePlayerSettings.MatchRoutingBucket))
+        {
+            return;
+        }
+
+        var bucket = API.GetPlayerRoutingBucket(Handle(reference));
+
+        if (API.GetPlayerRoutingBucket(Handle(mover)) == bucket)
+        {
+            return;
+        }
+
+        NativeFixer.SetPlayerRoutingBucket(Handle(mover), bucket);
+
+        Log.Info($"[OnlinePlayers] Moved {NameOf(mover)} into routing bucket {bucket}.");
+    }
+
+    // The coordinates go to the target's own client rather than being written here, so it can wait for
+    // the world to stream in. Moving somebody from the server drops them through an unloaded map.
+    private static ActionResponse Summon(Player source, string[] args)
+    {
+        if (!TryResolveTarget(args, out var target))
+        {
+            return ActionResponse.NotFound();
+        }
+
+        if (target == source.ServerId())
+        {
+            return ActionResponse.Refused();
+        }
+
+        // Somebody still on the loading screen has no character to move, and their client is not listening
+        // for this yet either.
+        if (PedOf(target) is not { } targetPed)
+        {
+            return ActionResponse.NotReady();
+        }
+
+        if (SourcePedOf(source) is not { } ped)
+        {
+            return ActionResponse.NotFound();
+        }
+
+        if (SharesVehicle(ped, targetPed))
+        {
+            return ActionResponse.Ok(SummonRiding);
+        }
+
+        var coords = API.GetEntityCoords(ped);
+
+        if (IsNearby(coords, API.GetEntityCoords(targetPed)))
+        {
+            return ActionResponse.Ok(SummonNearby);
+        }
+
+        MatchBucket(target, source.ServerId());
+
+        Log.Info($"[OnlinePlayers] {source.Name} summoned {API.GetPlayerName(target.ToString())}.");
+
+        // Strings, like every other argument that crosses the wire here, so a float never arrives as
+        // something the receiving delegate refuses to bind.
+        Script.TriggerClientEvent(
+            target,
+            PlayerEvents.Teleport,
+            source.Name,
+            coords.X.ToString(CultureInfo.InvariantCulture),
+            coords.Y.ToString(CultureInfo.InvariantCulture),
+            coords.Z.ToString(CultureInfo.InvariantCulture));
+
+        return ActionResponse.Ok(SummonMoved);
+    }
+
+    private static ActionResponse SummonIntoVehicle(Player source, string[] args)
+    {
+        if (!TryResolveTarget(args, out var target))
+        {
+            return ActionResponse.NotFound();
+        }
+
+        if (target == source.ServerId())
+        {
+            return ActionResponse.Refused();
+        }
+
+        if (args.Length < 2
+            || !int.TryParse(args[1], NumberStyles.Integer, CultureInfo.InvariantCulture, out var seat)
+            || seat < DriverSeat
+            || seat > MaxSeat)
+        {
+            return ActionResponse.InvalidRequest();
+        }
+
+        if (PedOf(target) is not { } targetPed)
+        {
+            return ActionResponse.NotReady();
+        }
+
+        if (SourcePedOf(source) is not { } ped)
+        {
+            return ActionResponse.NotFound();
+        }
+
+        var vehicle = API.GetVehiclePedIsIn(ped, false);
+
+        if (vehicle == 0 || !API.DoesEntityExist(vehicle))
+        {
+            return ActionResponse.Ok(SummonNoVehicle);
+        }
+
+        if (API.GetVehiclePedIsIn(targetPed, false) == vehicle)
+        {
+            return ActionResponse.Ok(SummonRiding);
+        }
+
+        if (API.GetPedInVehicleSeat(vehicle, seat) != 0)
+        {
+            return ActionResponse.Ok(SummonNoSeat);
+        }
+
+        MatchBucket(target, source.ServerId());
+
+        var coords = API.GetEntityCoords(vehicle);
+
+        Log.Info($"[OnlinePlayers] {source.Name} summoned {API.GetPlayerName(target.ToString())} into their vehicle.");
+
+        Script.TriggerClientEvent(
+            target,
+            PlayerEvents.TeleportIntoVehicle,
+            source.Name,
+            API.NetworkGetNetworkIdFromEntity(vehicle).ToString(CultureInfo.InvariantCulture),
+            seat.ToString(CultureInfo.InvariantCulture),
+            coords.X.ToString(CultureInfo.InvariantCulture),
+            coords.Y.ToString(CultureInfo.InvariantCulture),
+            coords.Z.ToString(CultureInfo.InvariantCulture));
+
+        return ActionResponse.Ok(SummonMoved);
+    }
+
+    private static int? SourcePedOf(Player source)
+    {
+        var ped = API.GetPlayerPed(source.Handle);
+
+        return ped > 0 && API.DoesEntityExist(ped) ? ped : null;
+    }
+
+    private static bool SharesVehicle(int ped, int other)
+    {
+        var vehicle = API.GetVehiclePedIsIn(ped, false);
+
+        return vehicle != 0 && API.DoesEntityExist(vehicle) && API.GetVehiclePedIsIn(other, false) == vehicle;
+    }
+
+    private static bool IsNearby(Vector3 from, Vector3 to) =>
+        Vector3.DistanceSquared(from, to) <= NearbyDistance * NearbyDistance;
+
+    // The sender is not answered until the other player's client says it put the message on screen.
+    // "Sent" when the other end never showed it is the one thing a sender actually wants to know.
+    private static async Task<ActionResponse> SendMessage(Player source, string[] args)
+    {
+        if (!TryResolveTarget(args, out var target))
+        {
+            return ActionResponse.NotFound();
+        }
+
+        if (args.Length < 2 || string.IsNullOrWhiteSpace(args[1]))
+        {
+            return ActionResponse.InvalidRequest();
+        }
+
+        if (PedOf(target) is null)
+        {
+            return ActionResponse.NotReady();
+        }
+
+        var messageId = ++_lastMessageId;
+        var delivered = new TaskCompletionSource<bool>();
+
+        Unacknowledged[messageId] = new PendingMessage(target, delivered);
+
+        Script.TriggerClientEvent(
+            target,
+            PlayerEvents.Message,
+            messageId.ToString(CultureInfo.InvariantCulture),
+            source.Name,
+            args[1].Trim());
+
+        try
+        {
+            var timeout = BaseScript.Delay(AckTimeoutMs);
+
+            if (await Task.WhenAny(delivered.Task, timeout) == timeout)
+            {
+                Log.Warning($"[OnlinePlayers] {source.Name}'s message to {API.GetPlayerName(target.ToString())} was never acknowledged.");
+
+                return ActionResponse.NotReady();
+            }
+        }
+        finally
+        {
+            Unacknowledged.Remove(messageId);
+
+            // Back onto the thread the reply has to go out on, the awaits above having left it.
+            await BaseScript.Delay(0);
+        }
+
+        return ActionResponse.Ok();
+    }
+
+    // A named method rather than a lambda, so the binder finds FromSourceAttribute on it. Without that
+    // the Player binds to wire argument 0 and the id shifts by one.
+    private static void OnMessageAcknowledged([FromSource] Player source, string messageId)
+    {
+        if (!int.TryParse(messageId, NumberStyles.Integer, CultureInfo.InvariantCulture, out var id)
+            || !Unacknowledged.TryGetValue(id, out var pending))
+        {
+            // Either it already timed out, or somebody is making them up. Neither is worth a log line.
+            return;
+        }
+
+        // Only the player it was sent to can say it arrived, otherwise anyone could confirm delivery of a
+        // message they never received.
+        if (pending.Target != source.ServerId())
+        {
+            Log.Warning($"[OnlinePlayers] {source.Name} acknowledged message {id}, which was sent to {API.GetPlayerName(pending.Target.ToString
+                ())}. Ignored.");
+
+            return;
+        }
+
+        pending.Delivered.TrySetResult(true);
+    }
+
+    private static ActionResponse DeleteVehicle(Player source, string[] args)
+    {
+        Log.Warning($"[OnlinePlayers][VehicleDebug] DeleteVehicle requested by {source.Name} with args [{string.Join(", ", args)}].");
+
+        if (!TryResolveTarget(args, out var target))
+        {
+            Log.Warning("[OnlinePlayers][VehicleDebug] Target did not resolve to a connected player.");
+
+            return ActionResponse.NotFound();
+        }
+
+        if (PedOf(target) is not { } ped)
+        {
+            Log.Warning($"[OnlinePlayers][VehicleDebug] Target {target} has no ped (GetPlayerPed={API.GetPlayerPed(target.ToString(CultureInfo.InvariantCulture))}).");
+
+            return ActionResponse.NotReady();
+        }
+
+        var vehicle = API.GetVehiclePedIsIn(ped, false);
+
+        LogVehicleLookup(target, ped, vehicle);
+
+        if (vehicle == 0 || !API.DoesEntityExist(vehicle) || API.GetEntityType(vehicle) != VehicleEntityType)
+        {
+            return ActionResponse.Ok(OnFoot);
+        }
+
+        if (API.GetPedInVehicleSeat(vehicle, DriverSeat) != ped)
+        {
+            return ActionResponse.Ok(NotDriving);
+        }
+
+        Log.Info($"[OnlinePlayers] {source.Name} deleted the vehicle {API.GetPlayerName(target.ToString())} was driving.");
+
+        NativeFixer.DeleteEntity(vehicle);
+
+        return ActionResponse.Ok(Deleted);
+    }
+
+    private static async Task<ActionResponse> ExplodeVehicle(Player source, string[] args)
+    {
+        Log.Warning($"[OnlinePlayers][VehicleDebug] ExplodeVehicle requested by {source.Name} with args [{string.Join(", ", args)}].");
+
+        if (!TryResolveTarget(args, out var target))
+        {
+            Log.Warning("[OnlinePlayers][VehicleDebug] Target did not resolve to a connected player.");
+
+            return ActionResponse.NotFound();
+        }
+
+        if (PedOf(target) is not { } ped)
+        {
+            Log.Warning($"[OnlinePlayers][VehicleDebug] Target {target} has no ped (GetPlayerPed={API.GetPlayerPed(target.ToString(CultureInfo.InvariantCulture))}).");
+
+            return ActionResponse.NotReady();
+        }
+
+        var vehicle = API.GetVehiclePedIsIn(ped, false);
+
+        LogVehicleLookup(target, ped, vehicle);
+
+        if (vehicle == 0 || !API.DoesEntityExist(vehicle) || API.GetEntityType(vehicle) != VehicleEntityType)
+        {
+            return ActionResponse.Ok(OnFoot);
+        }
+
+        if (API.GetPedInVehicleSeat(vehicle, DriverSeat) != ped)
+        {
+            return ActionResponse.Ok(NotDriving);
+        }
+
+        var response = await RemoteVehicleControl.PerformAsync(
+            source,
+            API.NetworkGetNetworkIdFromEntity(vehicle),
+            vehicle,
+            RemoteVehicleAction.Explode);
+
+        if (response.Status == ActionStatus.Refused)
+        {
+            return ActionResponse.Ok(ExplodeGodMode);
+        }
+
+        if (response.Status != ActionStatus.Ok)
+        {
+            return ActionResponse.Ok(ExplodeFailed);
+        }
+
+        Log.Info($"[OnlinePlayers] {source.Name} blew up the vehicle {API.GetPlayerName(target.ToString())} was driving.");
+
+        return ActionResponse.Ok(Exploded);
+    }
+
+    private static void LogVehicleLookup(int target, int ped, int vehicle)
+    {
+        var last = API.GetVehiclePedIsIn(ped, true);
+        var exists = vehicle != 0 && API.DoesEntityExist(vehicle);
+
+        Log.Warning(
+            $"[OnlinePlayers][VehicleDebug] target={target} ped={ped} pedType={API.GetEntityType(ped)} "
+            + $"vehicle={vehicle} exists={exists} "
+            + $"type={(exists ? API.GetEntityType(vehicle) : -1)} "
+            + $"driver={(exists ? API.GetPedInVehicleSeat(vehicle, DriverSeat) : -1)} "
+            + $"netId={(exists ? API.NetworkGetNetworkIdFromEntity(vehicle) : -1)} "
+            + $"lastVehicle={last} lastExists={last != 0 && API.DoesEntityExist(last)}");
+    }
+
+    private static async Task<ActionResponse> GetStatus(Player source, string[] args)
+    {
+        if (!TryResolveTarget(args, out var target))
+        {
+            return ActionResponse.NotFound();
+        }
+
+        if (PedOf(target) is null)
+        {
+            return ActionResponse.NotReady();
+        }
+
+        var requestId = ++_lastStatusId;
+        var answered = new TaskCompletionSource<(bool Player, bool Vehicle)>();
+
+        UnansweredStatus[requestId] = new PendingStatus(target, answered);
+
+        Script.TriggerClientEvent(target, PlayerEvents.GetGodMode, requestId.ToString(CultureInfo.InvariantCulture));
+
+        (bool Player, bool Vehicle) reported;
+        bool answerable;
+
+        try
+        {
+            var timeout = BaseScript.Delay(AckTimeoutMs);
+
+            answerable = await Task.WhenAny(answered.Task, timeout) != timeout;
+
+            reported = answerable ? answered.Task.Result : default;
+        }
+        finally
+        {
+            UnansweredStatus.Remove(requestId);
+
+            await BaseScript.Delay(0);
+        }
+
+        if (!answerable)
+        {
+            Log.Info(
+                $"[OnlinePlayers] {source.Name} checked the god mode of "
+                + $"{API.GetPlayerName(target.ToString())}, which was never answered.");
+
+            return ActionResponse.Ok(StatusUnknown, StatusUnknown);
+        }
+
+        var handle = target.ToString(CultureInfo.InvariantCulture);
+
+        var playerGod = reported.Player && ServerPermissions.IsPlayerAllowed(handle, PlayerOptionsPermissions.Godmode);
+        var vehicleGod = reported.Vehicle && ServerPermissions.IsPlayerAllowed(handle, VehicleOptionsPermissions.God);
+
+        Log.Info(
+            $"[OnlinePlayers] {source.Name} checked the god mode of {API.GetPlayerName(handle)}: "
+            + $"player {(playerGod ? "on" : "off")}, vehicle {(vehicleGod ? "on" : "off")}.");
+
+        return ActionResponse.Ok(
+            playerGod ? StatusOn : StatusOff,
+            vehicleGod ? StatusOn : StatusOff);
+    }
+
+    private static void OnGodModeAcknowledged([FromSource] Player source, string requestId, bool playerGod, bool vehicleGod)
+    {
+        if (!int.TryParse(requestId, NumberStyles.Integer, CultureInfo.InvariantCulture, out var id)
+            || !UnansweredStatus.TryGetValue(id, out var pending))
+        {
+            return;
+        }
+
+        if (pending.Target != source.ServerId())
+        {
+            Log.Warning($"[OnlinePlayers] {source.Name} answered god mode request {id}, which was not theirs. Ignored.");
+
+            return;
+        }
+
+        pending.Answered.TrySetResult((playerGod, vehicleGod));
+    }
+
+    private static ActionResponse RefreshPermissions(Player source, string[] args)
+    {
+        if (!TryResolveTarget(args, out var target))
+        {
+            return ActionResponse.NotFound();
+        }
+
+        if (!PermissionsSync.RefreshOne(target))
+        {
+            return ActionResponse.Failed();
+        }
+
+        return ActionResponse.Ok();
+    }
+
+    // Somebody still connecting already holds a server id, so they answer DoesPlayerExist while having
+    // nothing in the world. This is what tells them apart from a player who has left.
+    private static int? PedOf(int serverId)
+    {
+        var ped = API.GetPlayerPed(serverId.ToString(CultureInfo.InvariantCulture));
+
+        return ped != 0 && API.DoesEntityExist(ped) ? ped : null;
+    }
+
+    private sealed class PendingMessage(int target, TaskCompletionSource<bool> delivered)
+    {
+        public int Target { get; } = target;
+
+        public TaskCompletionSource<bool> Delivered { get; } = delivered;
+    }
+
+    private sealed class PendingWanted(int target, TaskCompletionSource<int> answered)
+    {
+        public int Target { get; } = target;
+
+        public TaskCompletionSource<int> Answered { get; } = answered;
+    }
+
+    private sealed class PendingStatus(int target, TaskCompletionSource<(bool Player, bool Vehicle)> answered)
+    {
+        public int Target { get; } = target;
+
+        public TaskCompletionSource<(bool Player, bool Vehicle)> Answered { get; } = answered;
+    }
+
+    private static bool TryResolveTarget(string[] args, out int serverId)
+    {
+        serverId = 0;
+
+        if (args.Length < 1 || !int.TryParse(args[0], NumberStyles.Integer, CultureInfo.InvariantCulture, out serverId))
+        {
+            return false;
+        }
+
+        return API.DoesPlayerExist(serverId.ToString(CultureInfo.InvariantCulture));
+    }
+
+    // Compared as a set rather than counted, so one player leaving as another joins still registers.
+    private static void TrackConnectedPlayers()
+    {
+        var current = new HashSet<int>();
+
+        foreach (var player in ConnectedPlayers.All())
+        {
+            current.Add(player.ServerId);
+        }
+
+        if (Connected.SetEquals(current))
+        {
+            return;
+        }
+
+        Connected.Clear();
+        Connected.UnionWith(current);
+
+        _revision++;
+
+        PublishRevision();
+    }
+
+    private static void PublishRevision() =>
+        API.SetConvarReplicated(PlayerEvents.RevisionConvar, _revision.ToString(CultureInfo.InvariantCulture));
+}

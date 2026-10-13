@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <AssemblyName>vMenu.Legacy.Core.Server.net</AssemblyName>
+    <RootNamespace>vMenu.Enhanced.Core.Server</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\vMenu.Legacy.Hosting.Server\vMenu.Legacy.Hosting.Server.csproj" />
+  </ItemGroup>
+  <PropertyGroup>
+    <IsResourceSideProject>true</IsResourceSideProject>
+    <ResourceSide>server</ResourceSide>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Shared\vMenu.Enhanced.Logging\vMenu.Enhanced.Logging.csproj" />
+    <ProjectReference Include="..\vMenu.Legacy.Actions.Server\vMenu.Legacy.Actions.Server.csproj" />
+    <ProjectReference Include="..\vMenu.Legacy.BrokenNatives.Server\vMenu.Legacy.BrokenNatives.Server.csproj" />
+    <ProjectReference Include="..\vMenu.Legacy.Configuration.Server\vMenu.Legacy.Configuration.Server.csproj" />
+    <ProjectReference Include="..\vMenu.Legacy.Http.Server\vMenu.Legacy.Http.Server.csproj" />
+    <ProjectReference Include="..\vMenu.Legacy.Integration.Server\vMenu.Legacy.Integration.Server.csproj" />
+    <ProjectReference Include="..\vMenu.Legacy.Permissions.Server\vMenu.Legacy.Permissions.Server.csproj" />
+    <ProjectReference Include="..\vMenu.Legacy.Players.Server\vMenu.Legacy.Players.Server.csproj" />
+    <ProjectReference Include="..\vMenu.Legacy.Plugins.Server\vMenu.Legacy.Plugins.Server.csproj" />
+    <ProjectReference Include="..\vMenu.Legacy.Ticks.Server\vMenu.Legacy.Ticks.Server.csproj" />
+    <ProjectReference Include="..\vMenu.Legacy.Updates.Server\vMenu.Legacy.Updates.Server.csproj" />
+    <ProjectReference Include="..\vMenu.Legacy.Webhooks.Server\vMenu.Legacy.Webhooks.Server.csproj" />
+    <ProjectReference Include="..\vMenu.Legacy.World.Server\vMenu.Legacy.World.Server.csproj" />
+  </ItemGroup>
+</Project>

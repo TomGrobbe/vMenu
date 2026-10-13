@@ -1,0 +1,132 @@
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+
+using vMenu.Enhanced.Data.Permissions;
+using vMenu.Enhanced.Data.Permissions.SupplementalPermissions;
+using vMenu.Enhanced.Logging;
+
+using vMenu.Enhanced.Serialization.Server;
+
+namespace vMenu.Enhanced.Permissions.Server;
+
+// Models held back from the class permissions and given their own permission instead.
+public static partial class ModelWhitelist
+{
+    internal const string ConfigFile = "config/model-whitelists.json";
+
+    // Tolerant on purpose: server owners hand-edit this file.
+    private static readonly KindDescriptor[] Descriptors =
+    [
+        new(SupplementalModelKind.Vehicle, "vehicles", VehicleModels.ForModel),
+        new(SupplementalModelKind.Ped, "peds", Peds.ForModel),
+        new(SupplementalModelKind.Weapon, "weapons", Weapons.ForModel),
+    ];
+
+    private static readonly Dictionary<SupplementalModelKind, HashSet<string>> Whitelists = [];
+    private static readonly Dictionary<SupplementalModelKind, string[]> Ordered = [];
+
+    // A missing or unreadable file just means nothing is held back.
+    internal static void Load(string? contents)
+    {
+        Whitelists.Clear();
+        Ordered.Clear();
+
+        foreach (var descriptor in Descriptors)
+        {
+            Whitelists[descriptor.Kind] = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            Ordered[descriptor.Kind] = [];
+        }
+
+        if (string.IsNullOrWhiteSpace(contents))
+        {
+            Log.Warning($"[Permissions] No {ConfigFile} found. Every model is governed by its class permission.");
+            return;
+        }
+
+        JToken document;
+
+        try
+        {
+            document = ServerJson.Parse(contents);
+        }
+        catch (JsonException exception)
+        {
+            Log.Error($"[Permissions] {ConfigFile} could not be parsed, so no models are whitelisted: {exception.Message}");
+            return;
+        }
+
+        foreach (var descriptor in Descriptors)
+        {
+            Register(descriptor, ReadModels(document, descriptor.JsonProperty));
+        }
+    }
+
+    public static bool IsWhitelisted(SupplementalModelKind kind, string modelName) =>
+        Whitelists.TryGetValue(kind, out var models) && models.Contains(modelName);
+
+    public static bool IsWhitelistedVehicle(string modelName) =>
+        IsWhitelisted(SupplementalModelKind.Vehicle, modelName);
+
+    // For sending to clients, so they can tell which models their class permissions do not cover.
+    public static string[] GetModels(SupplementalModelKind kind) =>
+        Ordered.TryGetValue(kind, out var models) ? models : [];
+
+    private static void Register(KindDescriptor descriptor, List<string> models)
+    {
+        var accepted = Whitelists[descriptor.Kind];
+
+        foreach (var model in models)
+        {
+            // A name with a space or a dot would produce an ACE nobody could write.
+            if (!PermissionPath.IsValidSegment(model))
+            {
+                Log.Warning($"[Permissions] Skipping whitelisted {descriptor.JsonProperty} entry '{model}': only letters, digits and underscores are usable in a permission.");
+                continue;
+            }
+
+            if (!accepted.Add(model))
+            {
+                Log.Warning($"[Permissions] '{model}' is listed more than once under '{descriptor.JsonProperty}'.");
+                continue;
+            }
+
+            if (descriptor.PermissionFactory is not null)
+            {
+                PermissionRegistry.RegisterDynamic(descriptor.PermissionFactory(model), ConfigFile);
+            }
+        }
+
+        Ordered[descriptor.Kind] = [.. accepted.OrderBy(static model => model, StringComparer.Ordinal)];
+
+        if (accepted.Count > 0)
+        {
+            Log.Debug($"[Permissions] Loaded {accepted.Count} whitelisted model(s) from '{descriptor.JsonProperty}'.");
+        }
+    }
+
+    private static List<string> ReadModels(JToken document, string propertyName)
+    {
+        if (!((JObject)document).TryGetValue(propertyName, StringComparison.Ordinal, out var value) || value is not JArray array)
+        {
+            return [];
+        }
+
+        var models = new List<string>(array.Count);
+
+        foreach (var element in array)
+        {
+            if (element.Type == JTokenType.String && (string?)element is { } text && text.Trim() is { Length: > 0 } model)
+            {
+                models.Add(model.ToLowerInvariant());
+            }
+        }
+
+        return models;
+    }
+
+    // PermissionFactory is null when the kind is read but not yet wired to permissions.
+    private sealed record KindDescriptor(
+        SupplementalModelKind Kind,
+        string JsonProperty,
+        Func<string, string>? PermissionFactory);
+}

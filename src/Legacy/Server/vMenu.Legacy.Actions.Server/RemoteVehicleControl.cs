@@ -1,0 +1,200 @@
+using System.Globalization;
+
+using CitizenFX.Core;
+using CitizenFX.Core.Native;
+
+using vMenu.Enhanced.Configuration.Server;
+using vMenu.Enhanced.Data.VehicleData;
+using vMenu.Enhanced.Logging;
+using vMenu.Enhanced.Players.Server;
+
+using PersonalVehicleSettings = vMenu.Enhanced.Data.Configuration.Settings.PersonalVehicle;
+
+using vMenu.Legacy.Hosting;
+
+namespace vMenu.Enhanced.Actions.Server;
+
+public static class RemoteVehicleControl
+{
+    private const int MaxCandidates = 3;
+
+    private static readonly Dictionary<int, PendingPerform> Unanswered = [];
+
+    private static int _lastRequestId;
+
+    private static bool _registered;
+
+    public static void RegisterEventHandlers()
+    {
+        if (_registered)
+        {
+            return;
+        }
+
+        _registered = true;
+
+        Script.EventHandlers[PersonalVehicleEvents.Performed] += new Action<Player, string, string>(OnPerformed);
+    }
+
+    public static Task<ActionResponse> PerformAsync(
+        Player owner,
+        int networkId,
+        int entity,
+        string action,
+        params string[] args) =>
+        PerformAsync(owner.ServerId(), owner.Name, networkId, entity, action, args);
+
+    // For requests that do not come from a player in game (the web integration). The preferred player is
+    // asked first when they are near the vehicle, the same way the owner is above.
+    public static async Task<ActionResponse> PerformAsync(
+        int preferred,
+        string requester,
+        int networkId,
+        int entity,
+        string action,
+        params string[] args)
+    {
+        var candidates = Candidates(preferred, entity);
+
+        if (candidates.Count == 0)
+        {
+            return ActionResponse.NotReady();
+        }
+
+        var timeoutMs = ServerConfig.Value(PersonalVehicleSettings.ControlTimeout);
+
+        foreach (var candidate in candidates)
+        {
+            var outcome = await AskAsync(candidate, networkId, action, args, timeoutMs);
+
+            if (string.Equals(outcome, RemoteVehicleAction.Done, StringComparison.Ordinal))
+            {
+                Log.Debug($"[PersonalVehicle] '{action}' on {networkId} was carried out by {candidate}.");
+
+                return ActionResponse.Ok();
+            }
+
+            if (string.Equals(outcome, RemoteVehicleAction.GodMode, StringComparison.Ordinal))
+            {
+                Log.Info($"[PersonalVehicle] {requester} asked for '{action}' on {networkId}, which has vehicle god mode on.");
+
+                return ActionResponse.Refused(RemoteVehicleAction.GodMode);
+            }
+        }
+
+        Log.Info(
+            $"[PersonalVehicle] {requester} asked for '{action}' on {networkId}, "
+            + $"which none of the {candidates.Count} player(s) near it could carry out.");
+
+        return ActionResponse.NotReady();
+    }
+
+    private static async Task<string> AskAsync(int target, int networkId, string action, string[] args, int timeoutMs)
+    {
+        var requestId = ++_lastRequestId;
+        var answered = new TaskCompletionSource<string>();
+
+        Unanswered[requestId] = new PendingPerform(target, answered);
+
+        Script.TriggerClientEvent(
+            target,
+            PersonalVehicleEvents.Perform,
+            requestId.ToString(CultureInfo.InvariantCulture),
+            networkId.ToString(CultureInfo.InvariantCulture),
+            action,
+            args);
+
+        try
+        {
+            var timeout = BaseScript.Delay(timeoutMs);
+
+            return await Task.WhenAny(answered.Task, timeout) != timeout ? answered.Task.Result : RemoteVehicleAction.Failed;
+        }
+        finally
+        {
+            Unanswered.Remove(requestId);
+
+            await BaseScript.Delay(0);
+        }
+    }
+
+    private static List<int> Candidates(int preferred, int entity)
+    {
+        var position = API.GetEntityCoords(entity);
+        var bucket = API.GetEntityRoutingBucket(entity);
+        var range = ServerConfig.Value(PersonalVehicleSettings.ControlRange);
+
+        var reachable = new List<(int ServerId, float DistanceSquared)>();
+
+        foreach (var player in ConnectedPlayers.All())
+        {
+            var handle = player.ServerId.ToString(CultureInfo.InvariantCulture);
+            var ped = API.GetPlayerPed(handle);
+
+            if (ped == 0 || !API.DoesEntityExist(ped) || API.GetPlayerRoutingBucket(handle) != bucket)
+            {
+                continue;
+            }
+
+            var distanceSquared = Vector3.DistanceSquared(API.GetEntityCoords(ped), position);
+
+            if (distanceSquared > range * range)
+            {
+                continue;
+            }
+
+            reachable.Add((player.ServerId, distanceSquared));
+        }
+
+        reachable.Sort(ByDistance);
+
+        var picked = new List<int>();
+
+        foreach (var (serverId, _) in reachable)
+        {
+            if (serverId == preferred)
+            {
+                picked.Insert(0, serverId);
+
+                continue;
+            }
+
+            picked.Add(serverId);
+        }
+
+        if (picked.Count > MaxCandidates)
+        {
+            picked.RemoveRange(MaxCandidates, picked.Count - MaxCandidates);
+        }
+
+        return picked;
+    }
+
+    private static int ByDistance((int ServerId, float DistanceSquared) left, (int ServerId, float DistanceSquared) right) =>
+        left.DistanceSquared.CompareTo(right.DistanceSquared);
+
+    private static void OnPerformed([FromSource] Player source, string requestId, string outcome)
+    {
+        if (!int.TryParse(requestId, NumberStyles.Integer, CultureInfo.InvariantCulture, out var id)
+            || !Unanswered.TryGetValue(id, out var pending))
+        {
+            return;
+        }
+
+        if (pending.Target != source.ServerId())
+        {
+            Log.Warning($"[PersonalVehicle] {source.Name} answered request {id}, which was not theirs. Ignored.");
+
+            return;
+        }
+
+        pending.Answered.TrySetResult(outcome ?? RemoteVehicleAction.Failed);
+    }
+
+    private sealed class PendingPerform(int target, TaskCompletionSource<string> answered)
+    {
+        public int Target { get; } = target;
+
+        public TaskCompletionSource<string> Answered { get; } = answered;
+    }
+}
