@@ -7,8 +7,22 @@ description: "Temporary installation instructions for the vMenu Enhanced alpha o
 vMenu Enhanced is still in early development, so be prepared for things not to work properly. These instructions will be replaced with proper documentation once the project settles down.
 :::
 
-You need a FiveM **Enhanced** server.
+You need a FiveM **Enhanced** server, or a regular FiveM server (the "legacy" one, built on the original GTA V).
 
+## On a regular (legacy) FiveM server
+
+Each release has two zips. Use the one for your server:
+
+| Your server | Zip |
+| --- | --- |
+| FiveM Enhanced | `vMenu-Enhanced-v<version>.zip` |
+| Regular FiveM (legacy) | `vMenu-Enhanced-Legacy-v<version>.zip` |
+
+Everything on this page works the same for both, except the txAdmin recipe, which is for FiveM Enhanced only. On a legacy server, follow [the manual way](#the-manual-way) and keep these in mind:
+
+- Use the latest game build. Add `sv_enforceGameBuild` with the newest build number to your `server.cfg`. vMenu uses natives that older builds do not have.
+- Your server artifacts must support `node_version '22'`. On a legacy server, vMenu always sends its HTTPS and WebSocket traffic through a small Node.js script, so the `vMenu.Enhanced.NetBridge` setting further down does not apply.
+- This is not the old vMenu. It does not read the old vMenu's saved vehicles, peds or settings, and it uses its own permission names. You can keep the old `vMenu` folder until you are ready to switch, but never run both at the same time.
 ## The quick way, with txAdmin
 
 txAdmin is the control panel that comes with every FiveM server. When you create a new server in it, it can set everything up for you from a "recipe", which is a list of steps it follows to download and configure your server.

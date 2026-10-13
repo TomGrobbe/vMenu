@@ -1,6 +1,7 @@
 # vMenu Enhanced
 
 vMenu Enhanced is a server side menu for FiveM for GTA V Enhanced, providing full configuration and permissions support.
+It also runs on regular (legacy) FiveM servers, from the `vMenu-Enhanced-Legacy` zip on the releases page.
 It is a from-scratch remake of the original vMenu for FiveM (legacy), containing a complete refactor and performance optimized approach to how the menu is built.
 It also now supports full localization (translations) and custom plugins that anyone can write to create new menu's inside vMenu (see the bottom of this readme).
 

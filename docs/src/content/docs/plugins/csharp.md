@@ -60,3 +60,13 @@ An `Initialize` that calls no FiveM code fails to load. This looks like a FiveM 
 | Batches | `using (plugin.BeginBatch()) { ... }` |
 | Inserting rows | `using (menu.InsertAt(2)) { ... }` |
 | Positions | Counted from 0. |
+## On a regular (legacy) FiveM server
+
+The same two packages also have a .NET Framework 4.6.2 build for the regular FiveM runtime. NuGet picks it when your project targets .NET Framework 4.6.2 or newer.
+
+| Topic | Detail |
+| --- | --- |
+| Entry points | Call `VMenuPlugin.Create` and `VMenuServer.RegisterAsync` from your `BaseScript`, for example on its first tick. |
+| Script files | Your client and server scripts must be named `*.net.dll`. |
+| `files` | List `Newtonsoft.Json.dll`, `System.ValueTuple.dll`, `vMenu.Enhanced.Polyfills.dll`, `vMenu.Enhanced.PluginContracts.dll` and `vMenu.Enhanced.ClientAPI.dll`. The CitizenFX assemblies come with FiveM. |
+| Newtonsoft.Json | The package ships the build legacy vMenu always used, which works in the client sandbox. Do not add the Newtonsoft.Json NuGet package next to it. |
