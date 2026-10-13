@@ -1,6 +1,6 @@
 using vMenu.Enhanced.Logging;
 
-namespace vMenu.Enhanced.MenuFramework.Localization;
+namespace vMenu.Enhanced.Localization;
 
 // Deduplicated reporting for localization gaps. Every relabel pass walks every entry, so an
 // unguarded log would repeat the same line on every permission resync and language switch.

@@ -4,7 +4,7 @@ using MenuAPI;
 
 using vMenu.Enhanced.Data.Logging;
 using vMenu.Enhanced.MenuFramework;
-using vMenu.Enhanced.MenuFramework.Localization;
+using vMenu.Enhanced.Localization;
 using vMenu.Enhanced.Menus.Saved;
 using vMenu.Enhanced.Menus.Weapons;
 using vMenu.Enhanced.Menus.Weapons.Saved;

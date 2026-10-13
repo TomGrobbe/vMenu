@@ -1,12 +1,13 @@
 using System.Diagnostics.CodeAnalysis;
-
-using CitizenFX.FiveM.Shared;
+using System.Globalization;
 
 namespace vMenu.Enhanced.Logging;
 
 public static class Log
 {
     public static LogLevel Level { get; private set; } = LogLevel.Info;
+
+    public static Action<LogLevel, string> Writer { get; set; } = static (_, _) => { };
 
     public static bool IsEnabled(LogLevel level) => level >= Level;
 
@@ -25,67 +26,39 @@ public static class Log
         Info($"[Logging] Log level is now {level}.");
     }
 
-    public static void Debug(string message)
+    public static void Debug(string message) => Write(LogLevel.Debug, message);
+
+    public static void Debug([StringSyntax(StringSyntaxAttribute.CompositeFormat)] string format, params object?[] args) =>
+        Write(LogLevel.Debug, format, args);
+
+    public static void Info(string message) => Write(LogLevel.Info, message);
+
+    public static void Info([StringSyntax(StringSyntaxAttribute.CompositeFormat)] string format, params object?[] args) =>
+        Write(LogLevel.Info, format, args);
+
+    public static void Warning(string message) => Write(LogLevel.Warning, message);
+
+    public static void Warning([StringSyntax(StringSyntaxAttribute.CompositeFormat)] string format, params object?[] args) =>
+        Write(LogLevel.Warning, format, args);
+
+    public static void Error(string message) => Write(LogLevel.Error, message);
+
+    public static void Error([StringSyntax(StringSyntaxAttribute.CompositeFormat)] string format, params object?[] args) =>
+        Write(LogLevel.Error, format, args);
+
+    private static void Write(LogLevel level, string message)
     {
-        if (IsEnabled(LogLevel.Debug))
+        if (IsEnabled(level))
         {
-            SharedAPI.Log.Debug(message);
+            Writer(level, message);
         }
     }
 
-    public static void Debug([StringSyntax(StringSyntaxAttribute.CompositeFormat)] string format, params object?[] args)
+    private static void Write(LogLevel level, string format, object?[] args)
     {
-        if (IsEnabled(LogLevel.Debug))
+        if (IsEnabled(level))
         {
-            SharedAPI.Log.Debug(format, args);
-        }
-    }
-
-    public static void Info(string message)
-    {
-        if (IsEnabled(LogLevel.Info))
-        {
-            SharedAPI.Log.Info(message);
-        }
-    }
-
-    public static void Info([StringSyntax(StringSyntaxAttribute.CompositeFormat)] string format, params object?[] args)
-    {
-        if (IsEnabled(LogLevel.Info))
-        {
-            SharedAPI.Log.Info(format, args);
-        }
-    }
-
-    public static void Warning(string message)
-    {
-        if (IsEnabled(LogLevel.Warning))
-        {
-            SharedAPI.Log.Warn(message);
-        }
-    }
-
-    public static void Warning([StringSyntax(StringSyntaxAttribute.CompositeFormat)] string format, params object?[] args)
-    {
-        if (IsEnabled(LogLevel.Warning))
-        {
-            SharedAPI.Log.Warn(format, args);
-        }
-    }
-
-    public static void Error(string message)
-    {
-        if (IsEnabled(LogLevel.Error))
-        {
-            SharedAPI.Log.Error(message);
-        }
-    }
-
-    public static void Error([StringSyntax(StringSyntaxAttribute.CompositeFormat)] string format, params object?[] args)
-    {
-        if (IsEnabled(LogLevel.Error))
-        {
-            SharedAPI.Log.Error(format, args);
+            Writer(level, string.Format(CultureInfo.InvariantCulture, format, args));
         }
     }
 }

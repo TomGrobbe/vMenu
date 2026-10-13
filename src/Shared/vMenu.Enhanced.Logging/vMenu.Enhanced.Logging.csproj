@@ -1,7 +1,3 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <ItemGroup>
-    <PackageReference Include="CitizenFX.FiveM.Shared" />
-  </ItemGroup>
-
 </Project>

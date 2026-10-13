@@ -2,7 +2,7 @@ using System.Globalization;
 
 using vMenu.Enhanced.Data.Logging;
 using vMenu.Enhanced.MenuFramework;
-using vMenu.Enhanced.MenuFramework.Localization;
+using vMenu.Enhanced.Localization;
 using vMenu.Enhanced.Menus.Weapons;
 
 using WeaponOptionsPermissions = vMenu.Enhanced.Data.Permissions.Menus.WeaponOptions;

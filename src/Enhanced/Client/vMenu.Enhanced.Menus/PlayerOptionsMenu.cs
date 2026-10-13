@@ -2,7 +2,7 @@ using System.Globalization;
 
 using vMenu.Enhanced.Data.PedModels;
 using vMenu.Enhanced.MenuFramework;
-using vMenu.Enhanced.MenuFramework.Localization;
+using vMenu.Enhanced.Localization;
 using vMenu.Enhanced.Menus.Players;
 
 using PlayerOptionsPermissions = vMenu.Enhanced.Data.Permissions.Menus.PlayerOptions;

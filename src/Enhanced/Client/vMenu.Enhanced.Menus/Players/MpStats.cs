@@ -2,7 +2,7 @@ using CitizenFX.FiveM.Client;
 
 using vMenu.Enhanced.Configuration;
 using vMenu.Enhanced.Data.Configuration;
-using vMenu.Enhanced.MenuFramework.Localization;
+using vMenu.Enhanced.Localization;
 using vMenu.Enhanced.Permissions;
 using vMenu.Enhanced.Storage;
 

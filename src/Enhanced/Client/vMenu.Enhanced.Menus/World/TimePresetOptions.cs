@@ -3,7 +3,7 @@ using System.Collections;
 using vMenu.Enhanced.Configuration;
 using vMenu.Enhanced.Data.World;
 using vMenu.Enhanced.Logging;
-using vMenu.Enhanced.MenuFramework.Localization;
+using vMenu.Enhanced.Localization;
 
 using TimeOptionsSettings = vMenu.Enhanced.Data.Configuration.Settings.TimeOptions;
 

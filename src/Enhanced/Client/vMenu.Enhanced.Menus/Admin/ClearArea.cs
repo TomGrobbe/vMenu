@@ -4,7 +4,7 @@ using vMenu.Enhanced.Actions;
 using vMenu.Enhanced.Data.Actions;
 using vMenu.Enhanced.Data.Admin;
 using vMenu.Enhanced.MenuFramework;
-using vMenu.Enhanced.MenuFramework.Localization;
+using vMenu.Enhanced.Localization;
 
 namespace vMenu.Enhanced.Menus.Admin;
 

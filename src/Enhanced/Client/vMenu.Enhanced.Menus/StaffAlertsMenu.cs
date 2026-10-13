@@ -6,7 +6,7 @@ using vMenu.Enhanced.Data.Permissions;
 using vMenu.Enhanced.Data.StaffAlerts;
 using vMenu.Enhanced.Logging;
 using vMenu.Enhanced.MenuFramework;
-using vMenu.Enhanced.MenuFramework.Localization;
+using vMenu.Enhanced.Localization;
 
 using StaffAlertSettings = vMenu.Enhanced.Data.Configuration.Settings.StaffAlerts;
 using StaffAlertsFeature = vMenu.Enhanced.Menus.Misc.StaffAlerts;

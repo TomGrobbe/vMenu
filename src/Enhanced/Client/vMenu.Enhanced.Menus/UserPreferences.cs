@@ -4,7 +4,7 @@ using MenuAPI;
 
 using vMenu.Enhanced.Logging;
 using vMenu.Enhanced.MenuFramework;
-using vMenu.Enhanced.MenuFramework.Localization;
+using vMenu.Enhanced.Localization;
 using vMenu.Enhanced.Menus.Misc;
 using vMenu.Enhanced.Menus.World;
 using vMenu.Enhanced.Storage;

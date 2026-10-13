@@ -1,6 +1,6 @@
 using System.Globalization;
 
-namespace vMenu.Enhanced.MenuFramework.Localization;
+namespace vMenu.Enhanced.Localization;
 
 public static partial class Loc
 {

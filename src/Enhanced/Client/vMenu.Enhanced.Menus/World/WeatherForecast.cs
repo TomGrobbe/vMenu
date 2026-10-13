@@ -5,7 +5,7 @@ using vMenu.Enhanced.Configuration;
 using vMenu.Enhanced.Data.Ticks;
 using vMenu.Enhanced.Data.World;
 using vMenu.Enhanced.MenuFramework;
-using vMenu.Enhanced.MenuFramework.Localization;
+using vMenu.Enhanced.Localization;
 using vMenu.Enhanced.Menus.Misc;
 using vMenu.Enhanced.Permissions;
 using vMenu.Enhanced.Serialization;

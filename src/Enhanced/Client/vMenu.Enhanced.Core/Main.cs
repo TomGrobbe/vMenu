@@ -1,6 +1,7 @@
 using System.Reflection;
 
 using CitizenFX.FiveM.Client;
+using CitizenFX.FiveM.Shared;
 using CitizenFX.FiveM.Shared.Script;
 
 using MenuAPI;
@@ -13,7 +14,7 @@ using vMenu.Enhanced.Data.Diagnostics;
 using vMenu.Enhanced.Events;
 using vMenu.Enhanced.Logging;
 using vMenu.Enhanced.MenuFramework;
-using vMenu.Enhanced.MenuFramework.Localization;
+using vMenu.Enhanced.Localization;
 using vMenu.Enhanced.Menus;
 using vMenu.Enhanced.Menus.Admin;
 using vMenu.Enhanced.Menus.Bully;
@@ -44,6 +45,8 @@ public sealed class Main : IScript
 {
     public async void Initialize()
     {
+        Log.Writer = WriteLog;
+
         var core = typeof(Main).Assembly;
         var version = core.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? core.GetName().Version?.ToString();
 
@@ -227,5 +230,24 @@ public sealed class Main : IScript
 
         await CharacterRespawn.ApplyOnJoinAsync();
         await WeaponLoadoutRespawn.RestoreOnJoinAsync();
+    }
+
+    private static void WriteLog(LogLevel level, string message)
+    {
+        switch (level)
+        {
+            case LogLevel.Debug:
+                SharedAPI.Log.Debug(message);
+                break;
+            case LogLevel.Info:
+                SharedAPI.Log.Info(message);
+                break;
+            case LogLevel.Warning:
+                SharedAPI.Log.Warn(message);
+                break;
+            default:
+                SharedAPI.Log.Error(message);
+                break;
+        }
     }
 }

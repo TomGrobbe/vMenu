@@ -1,12 +1,12 @@
 using System.Diagnostics.CodeAnalysis;
 
-namespace vMenu.Enhanced.MenuFramework.Localization;
+namespace vMenu.Enhanced.Localization;
 
 /// <summary>One language's strings. Only English is expected to be complete. Every other table may be partial
 /// and falls back key by key, so a half finished translation is still usable.</summary>
 public sealed class LanguageTable(LanguageId id, string nativeName, IReadOnlyDictionary<string, string> strings)
 {
-    private readonly Dictionary<string, string> _strings = new(strings, StringComparer.Ordinal);
+    private readonly Dictionary<string, string> _strings = strings.ToDictionary(pair => pair.Key, pair => pair.Value, StringComparer.Ordinal);
 
     public LanguageId Id { get; } = id;
 

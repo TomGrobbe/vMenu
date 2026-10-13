@@ -5,7 +5,7 @@ using vMenu.Enhanced.Configuration;
 using vMenu.Enhanced.Data.Configuration;
 using vMenu.Enhanced.Logging;
 using vMenu.Enhanced.MenuFramework;
-using vMenu.Enhanced.MenuFramework.Localization;
+using vMenu.Enhanced.Localization;
 using vMenu.Enhanced.Permissions;
 
 using AdminPermissions = vMenu.Enhanced.Data.Permissions.Menus.Admin;

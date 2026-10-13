@@ -1,4 +1,4 @@
-namespace vMenu.Enhanced.MenuFramework.Localization;
+namespace vMenu.Enhanced.Localization;
 
 /// <summary>Identifies a language by its lowercase code. Equality is hand written, not from a record: the
 /// generated members route through EqualityComparer&lt;string&gt;.Default, whose internal comparer the

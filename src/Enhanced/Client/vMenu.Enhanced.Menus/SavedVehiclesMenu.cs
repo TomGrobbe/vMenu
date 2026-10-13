@@ -3,7 +3,7 @@ using System.Globalization;
 using CitizenFX.FiveM.Client;
 
 using vMenu.Enhanced.MenuFramework;
-using vMenu.Enhanced.MenuFramework.Localization;
+using vMenu.Enhanced.Localization;
 using vMenu.Enhanced.Menus.Saved;
 using vMenu.Enhanced.Menus.Vehicles;
 using vMenu.Enhanced.Menus.Vehicles.Appearance;

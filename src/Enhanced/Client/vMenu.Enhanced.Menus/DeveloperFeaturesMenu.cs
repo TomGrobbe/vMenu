@@ -1,5 +1,5 @@
 using vMenu.Enhanced.MenuFramework;
-using vMenu.Enhanced.MenuFramework.Localization;
+using vMenu.Enhanced.Localization;
 using vMenu.Enhanced.Menus.Developer;
 using vMenu.Enhanced.Menus.Misc;
 using vMenu.Enhanced.Ticks;

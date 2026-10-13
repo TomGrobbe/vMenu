@@ -1,4 +1,4 @@
-namespace vMenu.Enhanced.MenuFramework.Localization;
+namespace vMenu.Enhanced.Localization;
 
 /// <summary>
 /// <para>A piece of display text resolved late rather than baked in at declaration time, so every label can
@@ -20,9 +20,9 @@ public readonly struct MenuText
     private readonly Kind _kind;
     private readonly string? _text;
     private readonly Func<string>? _factory;
-    private readonly (string Name, MenuText Value)[]? _arguments;
+    private readonly MenuTextArgument[]? _arguments;
 
-    private MenuText(Kind kind, string? text, Func<string>? factory, (string Name, MenuText Value)[]? arguments)
+    private MenuText(Kind kind, string? text, Func<string>? factory, MenuTextArgument[]? arguments)
     {
         _kind = kind;
         _text = text;
@@ -35,7 +35,7 @@ public readonly struct MenuText
 
     public bool IsEmpty => _kind is Kind.Empty;
 
-    internal string? TranslationKey => _kind is Kind.Key ? _text : null;
+    public string? TranslationKey => _kind is Kind.Key ? _text : null;
 
     /// <summary>Text that must not be translated, such as a vehicle model name.</summary>
     public static MenuText Literal(string text) => new(Kind.Literal, text, null, null);
@@ -45,8 +45,17 @@ public readonly struct MenuText
     /// <summary>Arguments are MenuText rather than strings on purpose: an argument that is itself a key or a game
     /// label stays late bound and re-resolves with everything else, instead of freezing whatever it
     /// happened to say when the menu was built.</summary>
-    public static MenuText Key(string key, params (string Name, MenuText Value)[] arguments) =>
-        new(Kind.Key, key, null, arguments);
+    public static MenuText Key(string key, params (string Name, MenuText Value)[] arguments)
+    {
+        var converted = new MenuTextArgument[arguments.Length];
+
+        for (var i = 0; i < arguments.Length; i++)
+        {
+            converted[i] = new MenuTextArgument(arguments[i].Name, arguments[i].Value);
+        }
+
+        return new(Kind.Key, key, null, converted);
+    }
 
     /// <summary>Text produced on demand. This is how GTA's own labels fit: GetLabelText already returns them in
     /// the game's language, so they need no vMenu translation and re-resolve on every relabel pass.</summary>

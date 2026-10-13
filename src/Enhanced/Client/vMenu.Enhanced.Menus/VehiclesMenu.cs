@@ -1,5 +1,5 @@
 using vMenu.Enhanced.MenuFramework;
-using vMenu.Enhanced.MenuFramework.Localization;
+using vMenu.Enhanced.Localization;
 
 using PersonalVehiclePermissions = vMenu.Enhanced.Data.Permissions.Menus.PersonalVehicle;
 using SavedVehiclesPermissions = vMenu.Enhanced.Data.Permissions.Menus.SavedVehicles;

@@ -1,7 +1,7 @@
 using System.Globalization;
 
 using vMenu.Enhanced.MenuFramework;
-using vMenu.Enhanced.MenuFramework.Localization;
+using vMenu.Enhanced.Localization;
 using vMenu.Enhanced.Menus.Props;
 
 using PropSpawnerPermissions = vMenu.Enhanced.Data.Permissions.Menus.PropSpawner;

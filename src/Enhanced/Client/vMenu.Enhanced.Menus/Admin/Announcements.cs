@@ -4,7 +4,7 @@ using vMenu.Enhanced.Actions;
 using vMenu.Enhanced.Configuration;
 using vMenu.Enhanced.Data.Actions;
 using vMenu.Enhanced.MenuFramework;
-using vMenu.Enhanced.MenuFramework.Localization;
+using vMenu.Enhanced.Localization;
 using vMenu.Enhanced.Serialization;
 
 using AdminSettings = vMenu.Enhanced.Data.Configuration.Settings.Admin;

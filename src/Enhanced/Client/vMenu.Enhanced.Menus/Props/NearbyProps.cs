@@ -5,7 +5,7 @@ using CitizenFX.FiveM.Client;
 
 using vMenu.Enhanced.BrokenNatives;
 using vMenu.Enhanced.MenuFramework;
-using vMenu.Enhanced.MenuFramework.Localization;
+using vMenu.Enhanced.Localization;
 using vMenu.Enhanced.Permissions;
 
 using PropSpawnerPermissions = vMenu.Enhanced.Data.Permissions.Menus.PropSpawner;

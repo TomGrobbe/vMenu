@@ -6,7 +6,7 @@ using MenuAPI;
 
 using vMenu.Enhanced.Data.Ticks;
 using vMenu.Enhanced.MenuFramework;
-using vMenu.Enhanced.MenuFramework.Localization;
+using vMenu.Enhanced.Localization;
 using vMenu.Enhanced.Ticks;
 
 namespace vMenu.Enhanced.Menus.Misc;

@@ -1,6 +1,6 @@
 using MenuAPI;
 
-using vMenu.Enhanced.MenuFramework.Localization;
+using vMenu.Enhanced.Localization;
 
 namespace vMenu.Enhanced.MenuFramework;
 

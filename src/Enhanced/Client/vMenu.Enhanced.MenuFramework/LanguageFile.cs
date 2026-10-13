@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace vMenu.Enhanced.MenuFramework.Localization;
+namespace vMenu.Enhanced.MenuFramework;
 
 // The shape of a language/<code>.json file.
 internal sealed class LanguageFile

@@ -1,12 +1,13 @@
 using CitizenFX.FiveM.Client;
 
 using vMenu.Enhanced.Configuration;
+using vMenu.Enhanced.Localization;
 using vMenu.Enhanced.Logging;
 using vMenu.Enhanced.Serialization;
 
 using LocalizationSetting = vMenu.Enhanced.Data.Configuration.Settings.Localization;
 
-namespace vMenu.Enhanced.MenuFramework.Localization;
+namespace vMenu.Enhanced.MenuFramework;
 
 public static class LanguageLoader
 {

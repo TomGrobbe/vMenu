@@ -2,7 +2,7 @@ using CitizenFX.FiveM.Client;
 
 using vMenu.Enhanced.Configuration;
 using vMenu.Enhanced.MenuFramework;
-using vMenu.Enhanced.MenuFramework.Localization;
+using vMenu.Enhanced.Localization;
 using vMenu.Enhanced.Permissions;
 
 using VehicleSpawnerPermissions = vMenu.Enhanced.Data.Permissions.Menus.VehicleSpawner;

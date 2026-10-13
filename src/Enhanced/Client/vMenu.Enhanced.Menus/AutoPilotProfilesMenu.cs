@@ -4,7 +4,7 @@ using MenuAPI;
 
 using vMenu.Enhanced.Data.VehicleData;
 using vMenu.Enhanced.MenuFramework;
-using vMenu.Enhanced.MenuFramework.Localization;
+using vMenu.Enhanced.Localization;
 using vMenu.Enhanced.Menus.Saved;
 using vMenu.Enhanced.Menus.Vehicles.AutoPilot;
 

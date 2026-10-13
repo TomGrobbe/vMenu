@@ -4,7 +4,7 @@ using MenuAPI;
 
 using vMenu.Enhanced.Data.PedModels;
 using vMenu.Enhanced.MenuFramework;
-using vMenu.Enhanced.MenuFramework.Localization;
+using vMenu.Enhanced.Localization;
 
 namespace vMenu.Enhanced.Menus.Players;
 

@@ -1,8 +1,8 @@
 using System.Diagnostics.CodeAnalysis;
 
-using vMenu.Enhanced.MenuFramework.Localization.Languages;
+using vMenu.Enhanced.Localization.Languages;
 
-namespace vMenu.Enhanced.MenuFramework.Localization;
+namespace vMenu.Enhanced.Localization;
 
 /// <summary>English is compiled in and every other language is a file, loaded by LanguageLoader. That split is
 /// deliberate: English is the fallback for every key another language leaves out, so it has to be

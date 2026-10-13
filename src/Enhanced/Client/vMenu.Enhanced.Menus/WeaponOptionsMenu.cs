@@ -7,7 +7,7 @@ using MenuAPI;
 using vMenu.Enhanced.Data.Ticks;
 using vMenu.Enhanced.Data.Weapons;
 using vMenu.Enhanced.MenuFramework;
-using vMenu.Enhanced.MenuFramework.Localization;
+using vMenu.Enhanced.Localization;
 using vMenu.Enhanced.Menus.Weapons;
 using vMenu.Enhanced.Permissions;
 using vMenu.Enhanced.Ticks;

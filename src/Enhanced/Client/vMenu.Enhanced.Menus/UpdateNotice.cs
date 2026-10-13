@@ -3,7 +3,7 @@ using CitizenFX.FiveM.Client;
 using vMenu.Enhanced.Data.Updates;
 using vMenu.Enhanced.Logging;
 using vMenu.Enhanced.MenuFramework;
-using vMenu.Enhanced.MenuFramework.Localization;
+using vMenu.Enhanced.Localization;
 
 namespace vMenu.Enhanced.Menus;
 

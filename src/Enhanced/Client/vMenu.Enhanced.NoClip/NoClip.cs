@@ -5,7 +5,7 @@ using vMenu.Enhanced.Data.Permissions;
 using vMenu.Enhanced.Data.PlayerState;
 using vMenu.Enhanced.Data.Ticks;
 using vMenu.Enhanced.MenuFramework;
-using vMenu.Enhanced.MenuFramework.Localization;
+using vMenu.Enhanced.Localization;
 using vMenu.Enhanced.Permissions;
 using vMenu.Enhanced.Ticks;
 namespace vMenu.Enhanced.NoClip;

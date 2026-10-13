@@ -1,4 +1,4 @@
-namespace vMenu.Enhanced.MenuFramework.Localization;
+namespace vMenu.Enhanced.Localization;
 
 /// <summary>Resolves translation keys to display strings. A seam so the storage can change without touching a
 /// call site: tables are compiled C# today, and a file backed implementation would drop in here.</summary>

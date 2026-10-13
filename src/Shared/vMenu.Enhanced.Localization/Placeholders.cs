@@ -1,12 +1,12 @@
 using System.Text;
 
-namespace vMenu.Enhanced.MenuFramework.Localization;
+namespace vMenu.Enhanced.Localization;
 
 // Named {placeholder} substitution. Named rather than positional, so a translator editing another
 // language sees what the slot holds. Reordering, repeating and omitting one are free consequences.
 internal static class Placeholders
 {
-    internal static string Substitute(string template, (string Name, MenuText Value)[]? arguments, ILocalizer localizer)
+    internal static string Substitute(string template, MenuTextArgument[]? arguments, ILocalizer localizer)
     {
         // The overwhelming majority of strings have no placeholders at all.
         if (string.IsNullOrEmpty(template) || !template.Contains('{'))
@@ -62,15 +62,15 @@ internal static class Placeholders
         return builder.ToString();
     }
 
-    private static string Resolve(string name, string template, (string Name, MenuText Value)[]? arguments, ILocalizer localizer)
+    private static string Resolve(string name, string template, MenuTextArgument[]? arguments, ILocalizer localizer)
     {
         if (arguments is not null)
         {
-            foreach (var (Name, Value) in arguments)
+            foreach (var argument in arguments)
             {
-                if (string.Equals(Name, name, StringComparison.OrdinalIgnoreCase))
+                if (string.Equals(argument.Name, name, StringComparison.OrdinalIgnoreCase))
                 {
-                    return Value.Resolve(localizer);
+                    return argument.Value.Resolve(localizer);
                 }
             }
         }

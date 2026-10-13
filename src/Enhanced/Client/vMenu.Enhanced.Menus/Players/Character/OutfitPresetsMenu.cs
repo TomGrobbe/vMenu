@@ -1,11 +1,11 @@
-﻿using CitizenFX.FiveM.Client;
+using CitizenFX.FiveM.Client;
 
 using vMenu.Enhanced.Actions;
 using vMenu.Enhanced.Data.Actions;
 using vMenu.Enhanced.Data.Appearance;
 using vMenu.Enhanced.Data.Clothing;
 using vMenu.Enhanced.MenuFramework;
-using vMenu.Enhanced.MenuFramework.Localization;
+using vMenu.Enhanced.Localization;
 using vMenu.Enhanced.Menus.Players.Appearance;
 using vMenu.Enhanced.Menus.Players.Appearance.Torso;
 using vMenu.Enhanced.Serialization;

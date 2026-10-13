@@ -2,7 +2,7 @@ using vMenu.Enhanced.Actions;
 using vMenu.Enhanced.Data.Actions;
 using vMenu.Enhanced.Data.Bullying;
 using vMenu.Enhanced.MenuFramework;
-using vMenu.Enhanced.MenuFramework.Localization;
+using vMenu.Enhanced.Localization;
 using vMenu.Enhanced.Menus.Bully;
 
 using BullyPermissions = vMenu.Enhanced.Data.Permissions.Menus.Bully;

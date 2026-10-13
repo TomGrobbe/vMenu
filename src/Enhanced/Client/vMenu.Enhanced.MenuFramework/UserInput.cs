@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 using CitizenFX.FiveM.Client;
 
 using vMenu.Enhanced.Logging;
-using vMenu.Enhanced.MenuFramework.Localization;
+using vMenu.Enhanced.Localization;
 using vMenu.Enhanced.Serialization;
 
 namespace vMenu.Enhanced.MenuFramework;

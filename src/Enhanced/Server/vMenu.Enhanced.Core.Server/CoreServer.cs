@@ -1,6 +1,7 @@
 using System.Reflection;
 
 using CitizenFX.FiveM.Server;
+using CitizenFX.FiveM.Shared;
 using CitizenFX.FiveM.Shared.Script;
 
 using vMenu.Enhanced.Actions.Server;
@@ -28,6 +29,8 @@ public class CoreServer : IScript
 {
     public void Initialize()
     {
+        Log.Writer = WriteLog;
+
         var core = typeof(CoreServer).Assembly;
         var version = core.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? core.GetName().Version?.ToString();
 
@@ -121,5 +124,24 @@ public class CoreServer : IScript
         WebhookLog.Event("vMenu Enhanced started.");
 
         Log.Debug("vMenu Server side started");
+    }
+
+    private static void WriteLog(LogLevel level, string message)
+    {
+        switch (level)
+        {
+            case LogLevel.Debug:
+                SharedAPI.Log.Debug(message);
+                break;
+            case LogLevel.Info:
+                SharedAPI.Log.Info(message);
+                break;
+            case LogLevel.Warning:
+                SharedAPI.Log.Warn(message);
+                break;
+            default:
+                SharedAPI.Log.Error(message);
+                break;
+        }
     }
 }

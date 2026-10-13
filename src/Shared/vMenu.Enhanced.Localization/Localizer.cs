@@ -1,4 +1,4 @@
-namespace vMenu.Enhanced.MenuFramework.Localization;
+namespace vMenu.Enhanced.Localization;
 
 /// <summary>The ambient localizer, plus one event covering every reason resolved text can change. Consumers
 /// subscribe to Changed rather than ILocalizer.LanguageChanged, so swapping the localizer does not

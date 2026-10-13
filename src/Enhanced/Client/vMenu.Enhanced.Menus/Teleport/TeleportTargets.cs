@@ -7,7 +7,7 @@ using CitizenFX.FiveM.Client.Extensions;
 
 using vMenu.Enhanced.Data.Logging;
 using vMenu.Enhanced.MenuFramework;
-using vMenu.Enhanced.MenuFramework.Localization;
+using vMenu.Enhanced.Localization;
 using vMenu.Enhanced.Menus.Players;
 
 namespace vMenu.Enhanced.Menus.Teleport;

@@ -1,7 +1,7 @@
 using CitizenFX.FiveM.Client;
 
 using vMenu.Enhanced.Data.VehicleData;
-using vMenu.Enhanced.MenuFramework.Localization;
+using vMenu.Enhanced.Localization;
 using vMenu.Enhanced.Menus.Misc;
 
 namespace vMenu.Enhanced.Menus.Vehicles.Personal;

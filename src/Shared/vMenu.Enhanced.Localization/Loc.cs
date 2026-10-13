@@ -1,4 +1,4 @@
-namespace vMenu.Enhanced.MenuFramework.Localization;
+namespace vMenu.Enhanced.Localization;
 
 /// <summary>Every translation key, as constants rather than inline strings, so a typo is a compile error and
 /// renaming is a safe refactor. Partial across one file per area, so each area's keys sit next to

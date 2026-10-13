@@ -2,7 +2,7 @@ using CitizenFX.FiveM.Client;
 
 using vMenu.Enhanced.Data.PedModels;
 using vMenu.Enhanced.MenuFramework;
-using vMenu.Enhanced.MenuFramework.Localization;
+using vMenu.Enhanced.Localization;
 using vMenu.Enhanced.Permissions;
 
 using PlayerOptionsPermissions = vMenu.Enhanced.Data.Permissions.Menus.PlayerOptions;

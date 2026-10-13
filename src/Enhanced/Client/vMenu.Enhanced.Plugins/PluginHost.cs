@@ -8,7 +8,7 @@ using vMenu.Enhanced.Configuration;
 using vMenu.Enhanced.Data.Configuration;
 using vMenu.Enhanced.Logging;
 using vMenu.Enhanced.MenuFramework;
-using vMenu.Enhanced.MenuFramework.Localization;
+using vMenu.Enhanced.Localization;
 using vMenu.Enhanced.PluginContracts;
 using vMenu.Enhanced.Serialization;
 

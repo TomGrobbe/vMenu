@@ -2,7 +2,7 @@ using System.Reflection;
 
 using vMenu.Enhanced.Logging;
 
-namespace vMenu.Enhanced.MenuFramework.Localization;
+namespace vMenu.Enhanced.Localization;
 
 /// <summary>Reports localization gaps once at startup. A Loc constant guarantees the key exists in code, not
 /// that any table has text for it, and without this the first sign of a gap is a marker in a menu

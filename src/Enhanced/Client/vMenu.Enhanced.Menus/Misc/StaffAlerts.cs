@@ -12,7 +12,7 @@ using vMenu.Enhanced.Data.Permissions;
 using vMenu.Enhanced.Data.StaffAlerts;
 using vMenu.Enhanced.Logging;
 using vMenu.Enhanced.MenuFramework;
-using vMenu.Enhanced.MenuFramework.Localization;
+using vMenu.Enhanced.Localization;
 using vMenu.Enhanced.Menus.Players;
 using vMenu.Enhanced.Permissions;
 using vMenu.Enhanced.Serialization;

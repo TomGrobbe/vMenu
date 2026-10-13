@@ -8,7 +8,7 @@ using vMenu.Enhanced.Data.Actions;
 using vMenu.Enhanced.Data.VehicleData;
 using vMenu.Enhanced.Events;
 using vMenu.Enhanced.MenuFramework;
-using vMenu.Enhanced.MenuFramework.Localization;
+using vMenu.Enhanced.Localization;
 using vMenu.Enhanced.Menus.Bully;
 using vMenu.Enhanced.Permissions;
 using vMenu.Enhanced.Storage;

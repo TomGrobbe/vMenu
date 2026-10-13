@@ -9,7 +9,7 @@ using vMenu.Enhanced.Configuration;
 using vMenu.Enhanced.Data.Logging;
 using vMenu.Enhanced.Data.VehicleData;
 using vMenu.Enhanced.MenuFramework;
-using vMenu.Enhanced.MenuFramework.Localization;
+using vMenu.Enhanced.Localization;
 using vMenu.Enhanced.Menus.Vehicles.Personal;
 
 using VehicleSpawnerSettings = vMenu.Enhanced.Data.Configuration.Settings.VehicleSpawner;
