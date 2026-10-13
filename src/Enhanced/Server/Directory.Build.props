@@ -2,13 +2,13 @@
   <!--
     MSBuild stops at the FIRST Directory.Build.props it finds walking up from a
     project, so this file shadows src/Directory.Build.props for everything under
-    src/Server/. Import the parent explicitly to keep the shared settings.
+    src/Enhanced/Server/. Import the parent explicitly to keep the shared settings.
   -->
   <Import Project="$([MSBuild]::GetPathOfFileAbove('$(MSBuildThisFile)', '$(MSBuildThisFileDirectory)../'))" />
 
   <PropertyGroup>
     <!--
-      Server assemblies build outside the resource, and src/Assemblies.targets copies them into it.
+      Server assemblies build outside the resource, and src/Enhanced/Assemblies.targets copies them into it.
       They stay in a folder of their own the whole way, because putting them next to the client
       assemblies crashes the server on resource load.
 
@@ -20,7 +20,7 @@
       copies the resolved NuGet graph next to the output, so the server's
       dependencies land in server/ too.
     -->
-    <OutputPath>$(MSBuildThisFileDirectory)..\..\build\intermediate\server\</OutputPath>
+    <OutputPath>$(IntermediateRoot)server\</OutputPath>
   </PropertyGroup>
 
 </Project>

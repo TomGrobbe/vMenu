@@ -6,7 +6,7 @@ using vMenu.Enhanced.Data.Permissions;
 using vMenu.Enhanced.Logging;
 using vMenu.Enhanced.Permissions.Server;
 
-const string DefaultConfigFolder = @"assets\enhanced\config";
+const string DefaultConfigFolder = @"assets\shared\config";
 
 var ready = args.Contains("--ready", StringComparer.OrdinalIgnoreCase);
 var positional = args.Where(static argument => !argument.StartsWith("--", StringComparison.Ordinal)).ToArray();

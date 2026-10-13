@@ -6,12 +6,13 @@
   </Configurations>
   <Folder Name="/assets/">
     <File Path="assets/enhanced/fxmanifest.lua" />
+    <File Path="assets/legacy/fxmanifest.lua" />
   </Folder>
   <Folder Name="/assets/config/">
-    <File Path="assets/enhanced/config/model-whitelists.json" />
-    <File Path="assets/enhanced/config/ped-models.json" />
-    <File Path="assets/enhanced/config/teleport-categories.json" />
-    <File Path="assets/enhanced/config/vehicle-categories.json" />
+    <File Path="assets/shared/config/model-whitelists.json" />
+    <File Path="assets/shared/config/ped-models.json" />
+    <File Path="assets/shared/config/teleport-categories.json" />
+    <File Path="assets/shared/config/vehicle-categories.json" />
   </Folder>
   <Folder Name="/Solution Items/">
     <File Path="README.md" />
@@ -19,59 +20,114 @@
   </Folder>
   <Folder Name="/src/">
     <File Path="src/Directory.Build.props" />
-    <File Path="src/Directory.Build.targets" />
     <File Path="src/Directory.Packages.props" />
+    <File Path="src/LegacyClient.props" />
+    <File Path="src/PluginPackage.props" />
+    <File Path="src/Resource.targets" />
   </Folder>
-  <Folder Name="/src/Client/">
-    <File Path="src/Client/Directory.Build.props" />
-    <Project Path="src/Client/vMenu.Enhanced.Actions/vMenu.Enhanced.Actions.csproj" />
-    <Project Path="src/Client/vMenu.Enhanced.BrokenNatives/vMenu.Enhanced.BrokenNatives.csproj" />
-    <Project Path="src/Client/vMenu.Enhanced.Configuration/vMenu.Enhanced.Configuration.csproj" />
-    <Project Path="src/Client/vMenu.Enhanced.Events/vMenu.Enhanced.Events.csproj" />
-    <Project Path="src/Client/vMenu.Enhanced.NoClip/vMenu.Enhanced.NoClip.csproj" />
-    <Project Path="src/Client/vMenu.Enhanced.Core/vMenu.Enhanced.Core.csproj" />
-    <Project Path="src/Client/vMenu.Enhanced.MenuFramework/vMenu.Enhanced.MenuFramework.csproj" />
-    <Project Path="src/Client/vMenu.Enhanced.Menus/vMenu.Enhanced.Menus.csproj" />
-    <Project Path="src/Client/vMenu.Enhanced.NativeHooks/vMenu.Enhanced.NativeHooks.csproj" />
-    <Project Path="src/Client/vMenu.Enhanced.Permissions/vMenu.Enhanced.Permissions.csproj" />
-    <Project Path="src/Client/vMenu.Enhanced.Plugins/vMenu.Enhanced.Plugins.csproj" />
-    <Project Path="src/Client/vMenu.Enhanced.Serialization/vMenu.Enhanced.Serialization.csproj" />
-    <Project Path="src/Client/vMenu.Enhanced.Storage/vMenu.Enhanced.Storage.csproj" />
-    <Project Path="src/Client/vMenu.Enhanced.Ticks/vMenu.Enhanced.Ticks.csproj" />
+  <Folder Name="/Enhanced/">
+    <File Path="src/Enhanced/Directory.Build.props" />
+    <File Path="src/Enhanced/Directory.Build.targets" />
+    <File Path="src/Enhanced/Assemblies.targets" />
   </Folder>
-  <Folder Name="/src/PluginApi/">
-    <File Path="src/PluginApi/Directory.Build.props" />
-    <Project Path="src/PluginApi/vMenu.Enhanced.ClientAPI/vMenu.Enhanced.ClientAPI.csproj" />
-    <Project Path="src/PluginApi/vMenu.Enhanced.PluginContracts/vMenu.Enhanced.PluginContracts.csproj" />
-    <Project Path="src/PluginApi/vMenu.Enhanced.ServerAPI/vMenu.Enhanced.ServerAPI.csproj" />
+  <Folder Name="/Enhanced/Client/">
+    <File Path="src/Enhanced/Client/Directory.Build.props" />
+    <Project Path="src/Enhanced/Client/vMenu.Enhanced.Actions/vMenu.Enhanced.Actions.csproj" />
+    <Project Path="src/Enhanced/Client/vMenu.Enhanced.BrokenNatives/vMenu.Enhanced.BrokenNatives.csproj" />
+    <Project Path="src/Enhanced/Client/vMenu.Enhanced.Configuration/vMenu.Enhanced.Configuration.csproj" />
+    <Project Path="src/Enhanced/Client/vMenu.Enhanced.Core/vMenu.Enhanced.Core.csproj" />
+    <Project Path="src/Enhanced/Client/vMenu.Enhanced.Events/vMenu.Enhanced.Events.csproj" />
+    <Project Path="src/Enhanced/Client/vMenu.Enhanced.MenuFramework/vMenu.Enhanced.MenuFramework.csproj" />
+    <Project Path="src/Enhanced/Client/vMenu.Enhanced.Menus/vMenu.Enhanced.Menus.csproj" />
+    <Project Path="src/Enhanced/Client/vMenu.Enhanced.NativeHooks/vMenu.Enhanced.NativeHooks.csproj" />
+    <Project Path="src/Enhanced/Client/vMenu.Enhanced.NoClip/vMenu.Enhanced.NoClip.csproj" />
+    <Project Path="src/Enhanced/Client/vMenu.Enhanced.Permissions/vMenu.Enhanced.Permissions.csproj" />
+    <Project Path="src/Enhanced/Client/vMenu.Enhanced.Plugins/vMenu.Enhanced.Plugins.csproj" />
+    <Project Path="src/Enhanced/Client/vMenu.Enhanced.Serialization/vMenu.Enhanced.Serialization.csproj" />
+    <Project Path="src/Enhanced/Client/vMenu.Enhanced.Storage/vMenu.Enhanced.Storage.csproj" />
+    <Project Path="src/Enhanced/Client/vMenu.Enhanced.Ticks/vMenu.Enhanced.Ticks.csproj" />
   </Folder>
-  <Folder Name="/src/Server/">
-    <File Path="src/Server/Directory.Build.props" />
-    <Project Path="src/Server/vMenu.Enhanced.Actions.Server/vMenu.Enhanced.Actions.Server.csproj" />
-    <Project Path="src/Server/vMenu.Enhanced.BrokenNatives.Server/vMenu.Enhanced.BrokenNatives.Server.csproj" />
-    <Project Path="src/Server/vMenu.Enhanced.Configuration.Server/vMenu.Enhanced.Configuration.Server.csproj" />
-    <Project Path="src/Server/vMenu.Enhanced.Core.Server/vMenu.Enhanced.Core.Server.csproj" />
-    <Project Path="src/Server/vMenu.Enhanced.Http.Server/vMenu.Enhanced.Http.Server.csproj" />
-    <Project Path="src/Server/vMenu.Enhanced.Integration.Server/vMenu.Enhanced.Integration.Server.csproj" />
-    <Project Path="src/Server/vMenu.Enhanced.Permissions.Server/vMenu.Enhanced.Permissions.Server.csproj" />
-    <Project Path="src/Server/vMenu.Enhanced.Players.Server/vMenu.Enhanced.Players.Server.csproj" />
-    <Project Path="src/Server/vMenu.Enhanced.Plugins.Server/vMenu.Enhanced.Plugins.Server.csproj" />
-    <Project Path="src/Server/vMenu.Enhanced.Serialization.Server/vMenu.Enhanced.Serialization.Server.csproj" />
-    <Project Path="src/Server/vMenu.Enhanced.Ticks.Server/vMenu.Enhanced.Ticks.Server.csproj" />
-    <Project Path="src/Server/vMenu.Enhanced.Updates.Server/vMenu.Enhanced.Updates.Server.csproj" />
-    <Project Path="src/Server/vMenu.Enhanced.Webhooks.Server/vMenu.Enhanced.Webhooks.Server.csproj" />
-    <Project Path="src/Server/vMenu.Enhanced.World.Server/vMenu.Enhanced.World.Server.csproj" />
+  <Folder Name="/Enhanced/Server/">
+    <File Path="src/Enhanced/Server/Directory.Build.props" />
+    <Project Path="src/Enhanced/Server/vMenu.Enhanced.Actions.Server/vMenu.Enhanced.Actions.Server.csproj" />
+    <Project Path="src/Enhanced/Server/vMenu.Enhanced.BrokenNatives.Server/vMenu.Enhanced.BrokenNatives.Server.csproj" />
+    <Project Path="src/Enhanced/Server/vMenu.Enhanced.Configuration.Server/vMenu.Enhanced.Configuration.Server.csproj" />
+    <Project Path="src/Enhanced/Server/vMenu.Enhanced.Core.Server/vMenu.Enhanced.Core.Server.csproj" />
+    <Project Path="src/Enhanced/Server/vMenu.Enhanced.Http.Server/vMenu.Enhanced.Http.Server.csproj" />
+    <Project Path="src/Enhanced/Server/vMenu.Enhanced.Integration.Server/vMenu.Enhanced.Integration.Server.csproj" />
+    <Project Path="src/Enhanced/Server/vMenu.Enhanced.Permissions.Server/vMenu.Enhanced.Permissions.Server.csproj" />
+    <Project Path="src/Enhanced/Server/vMenu.Enhanced.Players.Server/vMenu.Enhanced.Players.Server.csproj" />
+    <Project Path="src/Enhanced/Server/vMenu.Enhanced.Plugins.Server/vMenu.Enhanced.Plugins.Server.csproj" />
+    <Project Path="src/Enhanced/Server/vMenu.Enhanced.Serialization.Server/vMenu.Enhanced.Serialization.Server.csproj" />
+    <Project Path="src/Enhanced/Server/vMenu.Enhanced.Ticks.Server/vMenu.Enhanced.Ticks.Server.csproj" />
+    <Project Path="src/Enhanced/Server/vMenu.Enhanced.Updates.Server/vMenu.Enhanced.Updates.Server.csproj" />
+    <Project Path="src/Enhanced/Server/vMenu.Enhanced.Webhooks.Server/vMenu.Enhanced.Webhooks.Server.csproj" />
+    <Project Path="src/Enhanced/Server/vMenu.Enhanced.World.Server/vMenu.Enhanced.World.Server.csproj" />
   </Folder>
-  <Folder Name="/src/Shared/">
+  <Folder Name="/Enhanced/PluginApi/">
+    <File Path="src/Enhanced/PluginApi/Directory.Build.props" />
+    <Project Path="src/Enhanced/PluginApi/vMenu.Enhanced.ClientAPI/vMenu.Enhanced.ClientAPI.csproj" />
+    <Project Path="src/Enhanced/PluginApi/vMenu.Enhanced.ServerAPI/vMenu.Enhanced.ServerAPI.csproj" />
+  </Folder>
+  <Folder Name="/Legacy/">
+    <File Path="src/Legacy/Directory.Build.props" />
+    <File Path="src/Legacy/Directory.Build.targets" />
+    <File Path="src/Legacy/Assemblies.targets" />
+  </Folder>
+  <Folder Name="/Legacy/Client/">
+    <File Path="src/Legacy/Client/Directory.Build.props" />
+    <Project Path="src/Legacy/Client/vMenu.Legacy.Actions/vMenu.Legacy.Actions.csproj" />
+    <Project Path="src/Legacy/Client/vMenu.Legacy.BrokenNatives/vMenu.Legacy.BrokenNatives.csproj" />
+    <Project Path="src/Legacy/Client/vMenu.Legacy.Configuration/vMenu.Legacy.Configuration.csproj" />
+    <Project Path="src/Legacy/Client/vMenu.Legacy.Core/vMenu.Legacy.Core.csproj" />
+    <Project Path="src/Legacy/Client/vMenu.Legacy.Events/vMenu.Legacy.Events.csproj" />
+    <Project Path="src/Legacy/Client/vMenu.Legacy.Hosting/vMenu.Legacy.Hosting.csproj" />
+    <Project Path="src/Legacy/Client/vMenu.Legacy.MenuFramework/vMenu.Legacy.MenuFramework.csproj" />
+    <Project Path="src/Legacy/Client/vMenu.Legacy.Menus/vMenu.Legacy.Menus.csproj" />
+    <Project Path="src/Legacy/Client/vMenu.Legacy.NoClip/vMenu.Legacy.NoClip.csproj" />
+    <Project Path="src/Legacy/Client/vMenu.Legacy.Permissions/vMenu.Legacy.Permissions.csproj" />
+    <Project Path="src/Legacy/Client/vMenu.Legacy.Plugins/vMenu.Legacy.Plugins.csproj" />
+    <Project Path="src/Legacy/Client/vMenu.Legacy.Serialization/vMenu.Legacy.Serialization.csproj" />
+    <Project Path="src/Legacy/Client/vMenu.Legacy.Storage/vMenu.Legacy.Storage.csproj" />
+    <Project Path="src/Legacy/Client/vMenu.Legacy.Ticks/vMenu.Legacy.Ticks.csproj" />
+  </Folder>
+  <Folder Name="/Legacy/Server/">
+    <File Path="src/Legacy/Server/Directory.Build.props" />
+    <Project Path="src/Legacy/Server/vMenu.Legacy.Actions.Server/vMenu.Legacy.Actions.Server.csproj" />
+    <Project Path="src/Legacy/Server/vMenu.Legacy.BrokenNatives.Server/vMenu.Legacy.BrokenNatives.Server.csproj" />
+    <Project Path="src/Legacy/Server/vMenu.Legacy.Configuration.Server/vMenu.Legacy.Configuration.Server.csproj" />
+    <Project Path="src/Legacy/Server/vMenu.Legacy.Core.Server/vMenu.Legacy.Core.Server.csproj" />
+    <Project Path="src/Legacy/Server/vMenu.Legacy.Hosting.Server/vMenu.Legacy.Hosting.Server.csproj" />
+    <Project Path="src/Legacy/Server/vMenu.Legacy.Http.Server/vMenu.Legacy.Http.Server.csproj" />
+    <Project Path="src/Legacy/Server/vMenu.Legacy.Integration.Server/vMenu.Legacy.Integration.Server.csproj" />
+    <Project Path="src/Legacy/Server/vMenu.Legacy.Permissions.Server/vMenu.Legacy.Permissions.Server.csproj" />
+    <Project Path="src/Legacy/Server/vMenu.Legacy.Players.Server/vMenu.Legacy.Players.Server.csproj" />
+    <Project Path="src/Legacy/Server/vMenu.Legacy.Plugins.Server/vMenu.Legacy.Plugins.Server.csproj" />
+    <Project Path="src/Legacy/Server/vMenu.Legacy.Serialization.Server/vMenu.Legacy.Serialization.Server.csproj" />
+    <Project Path="src/Legacy/Server/vMenu.Legacy.Ticks.Server/vMenu.Legacy.Ticks.Server.csproj" />
+    <Project Path="src/Legacy/Server/vMenu.Legacy.Updates.Server/vMenu.Legacy.Updates.Server.csproj" />
+    <Project Path="src/Legacy/Server/vMenu.Legacy.Webhooks.Server/vMenu.Legacy.Webhooks.Server.csproj" />
+    <Project Path="src/Legacy/Server/vMenu.Legacy.World.Server/vMenu.Legacy.World.Server.csproj" />
+  </Folder>
+  <Folder Name="/Legacy/PluginApi/">
+    <File Path="src/Legacy/PluginApi/Directory.Build.props" />
+    <Project Path="src/Legacy/PluginApi/vMenu.Legacy.ClientAPI/vMenu.Legacy.ClientAPI.csproj" />
+    <Project Path="src/Legacy/PluginApi/vMenu.Legacy.ServerAPI/vMenu.Legacy.ServerAPI.csproj" />
+  </Folder>
+  <Folder Name="/Shared/">
     <File Path="src/Shared/Directory.Build.props" />
     <Project Path="src/Shared/vMenu.Enhanced.Data/vMenu.Enhanced.Data.csproj" />
+    <Project Path="src/Shared/vMenu.Enhanced.Localization/vMenu.Enhanced.Localization.csproj" />
     <Project Path="src/Shared/vMenu.Enhanced.Logging/vMenu.Enhanced.Logging.csproj" />
+    <Project Path="src/Shared/vMenu.Enhanced.PluginContracts/vMenu.Enhanced.PluginContracts.csproj" />
+    <Project Path="src/Shared/vMenu.Enhanced.Polyfills/vMenu.Enhanced.Polyfills.csproj" />
   </Folder>
   <Folder Name="/tools/">
     <Project Path="tools/ConfigDefaults/ConfigDefaults.csproj">
       <Build Project="false" />
     </Project>
     <Project Path="tools/LanguageTemplate/LanguageTemplate.csproj" />
+    <Project Path="tools/LegacyChecks/LegacyChecks.csproj" />
     <Project Path="tools/vMenu.Enhanced.NativeHooks.Generator/vMenu.Enhanced.NativeHooks.Generator.csproj" />
   </Folder>
 </Solution>

@@ -1,21 +1,7 @@
 <Project>
 
-  <!--
-    Resource-root files (fxmanifest, README, LICENSE) live in the repo, not in
-    any project's output. CI used to copy them into build/vMenu.Enhanced/ as a
-    separate step, which meant a local build produced a resource that FiveM
-    could not load. This target does the same copy on every build.
-
-    Only ONE project may run it: all projects share the same destination, so
-    letting every project copy would make them race for the same three files on
-    a parallel build. vMenu.Enhanced.Core opts in via IsResourceRootProject
-    because it is the resource entry point (the client_script in the manifest).
-    A build of only the server or shared projects therefore does not refresh
-    these files; build the solution to pick up manifest edits.
-  -->
   <PropertyGroup>
-    <RepoRoot>$(MSBuildThisFileDirectory)..\</RepoRoot>
-    <ResourceRoot>$(RepoRoot)build\vMenu.Enhanced\</ResourceRoot>
+    <ResourceManifest>$(RepoRoot)assets\enhanced\fxmanifest.lua</ResourceManifest>
   </PropertyGroup>
 
   <!-- Client projects share one output folder, so a second copier of MenuAPI's fonts races Core's on a rebuild. -->
@@ -23,207 +9,15 @@
     <PackageReference Update="MenuAPI.FiveM.Enhanced" ExcludeAssets="contentFiles" />
   </ItemGroup>
 
+  <Target Name="SetPluginNuspecProperties" BeforeTargets="GenerateNuspec" DependsOnTargets="InitializeSourceControlInformation" Condition="'$(PluginApiSide)' != ''">
+    <PropertyGroup>
+      <EnhancedCitizenFxVersion>@(PackageVersion->WithMetadataValue('Identity', 'CitizenFX.FiveM.$(PluginApiSide)')->'%(Version)')</EnhancedCitizenFxVersion>
+      <LegacyCitizenFxVersion>@(PackageVersion->WithMetadataValue('Identity', 'CitizenFX.Core.$(PluginApiSide)')->'%(Version)')</LegacyCitizenFxVersion>
+      <NuspecProperties>version=$(PackageVersion);commit=$(SourceRevisionId);repoRoot=$(RepoRoot);enhancedOutput=$(OutputPath);legacyOutput=$(RepoRoot)build\intermediate\legacy\vMenu.Legacy.$(PluginApiSide)API\;enhancedCitizenFx=$(EnhancedCitizenFxVersion);legacyCitizenFx=$(LegacyCitizenFxVersion)</NuspecProperties>
+    </PropertyGroup>
+  </Target>
+
   <Import Project="$(MSBuildThisFileDirectory)Assemblies.targets" />
-
-  <ItemGroup Condition="'$(IsResourceRootProject)' == 'true'">
-    <ResourceRootFile Include="$(RepoRoot)assets\enhanced\fxmanifest.lua" />
-    <ResourceRootFile Include="$(RepoRoot)README.md" />
-    <ResourceRootFile Include="$(RepoRoot)LICENSE.md" />
-  </ItemGroup>
-
-  <Target Name="CopyResourceRootFiles"
-          AfterTargets="Build"
-          Condition="'$(IsResourceRootProject)' == 'true'"
-          Inputs="@(ResourceRootFile)"
-          Outputs="@(ResourceRootFile -> '$(ResourceRoot)%(Filename)%(Extension)')">
-    
-      <Copy SourceFiles="@(ResourceRootFile)"
-          DestinationFolder="$(ResourceRoot)"
-          SkipUnchangedFiles="true" />
-  </Target>
-
-  <!-- Overwritten on every build, unlike config below: vMenu's own UI, not a server owner's file. -->
-  <ItemGroup Condition="'$(IsResourceRootProject)' == 'true'">
-    <ResourceUiFile Include="$(RepoRoot)assets\enhanced\ui\**\*" />
-  </ItemGroup>
-
-  <Target Name="CopyResourceUiFiles"
-          AfterTargets="Build"
-          Condition="'$(IsResourceRootProject)' == 'true'"
-          Inputs="@(ResourceUiFile)"
-          Outputs="@(ResourceUiFile -> '$(ResourceRoot)ui\%(RecursiveDir)%(Filename)%(Extension)')">
-
-    <Copy SourceFiles="@(ResourceUiFile)"
-          DestinationFiles="@(ResourceUiFile -> '$(ResourceRoot)ui\%(RecursiveDir)%(Filename)%(Extension)')"
-          SkipUnchangedFiles="true" />
-  </Target>
-
-  <!--
-    MenuAPI's NUI renderer ships its stylesheet, its scripts, its fonts and its sprites inside the
-    NuGet package, and they land next to the client assemblies rather than in the resource. They have
-    to sit under ui/ instead, because ui/index.html reaches them by relative path.
-
-    The ItemGroup is inside the target on purpose: the package content is restored into OutputPath
-    during the build, so a wildcard evaluated when this file is read would find nothing on a clean
-    clone.
-  -->
-  <Target Name="CopyMenuApiUiFiles"
-          AfterTargets="Build"
-          Condition="'$(IsResourceRootProject)' == 'true'">
-
-    <ItemGroup>
-      <MenuApiUiFile Include="$(OutputPath)menuapi\**\*" />
-    </ItemGroup>
-
-    <Copy SourceFiles="@(MenuApiUiFile)"
-          DestinationFiles="@(MenuApiUiFile -> '$(ResourceRoot)ui\menuapi\%(RecursiveDir)%(Filename)%(Extension)')"
-          SkipUnchangedFiles="true" />
-  </Target>
-
-  <!--
-    Overwritten like the UI rather than preserved like config: these are vMenu's own translations,
-    and an update has to be able to deliver keys added since. A language an owner adds themselves is
-    never listed here, so it is never touched.
-  -->
-  <ItemGroup Condition="'$(IsResourceRootProject)' == 'true'">
-    <ResourceLanguageFile Include="$(RepoRoot)assets\enhanced\language\**\*" />
-  </ItemGroup>
-
-  <!--
-    No Inputs/Outputs, for the same reason as the config copy below. Those skip whenever the output
-    is newer, so restoring an older translation (a checkout, a stash pop, switching branch) left the
-    shipped copy on the newer, wrong content. SkipUnchangedFiles compares size and timestamp for
-    equality instead, so anything that differs is copied back either way.
-  -->
-  <Target Name="CopyResourceLanguageFiles"
-          AfterTargets="Build"
-          Condition="'$(IsResourceRootProject)' == 'true'">
-
-    <Copy SourceFiles="@(ResourceLanguageFile)"
-          DestinationFiles="@(ResourceLanguageFile -> '$(ResourceRoot)language\%(RecursiveDir)%(Filename)%(Extension)')"
-          SkipUnchangedFiles="true" />
-  </Target>
-
-  <!--
-    language/example.json is generated rather than checked in, so that the template a translator
-    copies always matches the strings this build actually has. Reads the English table straight out
-    of the built menu framework, so it cannot drift from it. The same pass counts how much of that
-    table each shipped language covers and writes it to TranslationCoverageFile.
-
-    The translations are inputs too, not just the assembly: a build that only changes a language
-    file still has to recount, or the numbers reported below go stale. It watches the copies rather
-    than the originals on purpose. The copy above stamps a fresh timestamp on anything whose content
-    differs, so an older translation restored over a newer one still counts as a change here, which
-    watching the originals by timestamp alone would miss.
-
-    The tool's own source is an input as well, since the header it writes into the template is part
-    of the output and changing that wording otherwise leaves a stale file behind.
-
-    Runs only when one of those is newer than what it produced, which on a normal rebuild is never.
-    Starting this tool costs well over a second, which is far too much to pay on every build.
-  -->
-  <PropertyGroup>
-    <TranslationCoverageFile>$(RepoRoot)build\intermediate\translation-coverage.txt</TranslationCoverageFile>
-  </PropertyGroup>
-
-  <Target Name="GenerateLanguageTemplate"
-          AfterTargets="Build;CopyResourceLanguageFiles"
-          Condition="'$(IsResourceRootProject)' == 'true'"
-          Inputs="$(OutputPath)vMenu.Enhanced.MenuFramework.dll;$(RepoRoot)tools\LanguageTemplate\Program.cs;@(ResourceLanguageFile -> '$(ResourceRoot)language\%(RecursiveDir)%(Filename)%(Extension)')"
-          Outputs="$(ResourceRoot)language\example.json;$(TranslationCoverageFile)">
-
-    <!--
-      Reads build/intermediate/client/ rather than the resource folder. Same assembly either way,
-      and this is the one the build writes itself.
-    -->
-    <Exec Command="dotnet run --project &quot;$(RepoRoot)tools\LanguageTemplate\LanguageTemplate.csproj&quot; -c Release --no-launch-profile -- &quot;$(OutputPath).&quot; &quot;$(ResourceRoot)language\example.json&quot; &quot;$(TranslationCoverageFile)&quot;"
-          WorkingDirectory="$(RepoRoot)"
-          StandardOutputImportance="normal" />
-  </Target>
-
-  <!--
-    Echoes the counts the target above worked out, on every build rather than only the ones that
-    recount. Reading a handful of lines from a file costs nothing measurable, so the numbers are
-    always in the log without a process being started to produce them.
-  -->
-  <Target Name="ReportTranslationCoverage"
-          AfterTargets="GenerateLanguageTemplate"
-          Condition="'$(IsResourceRootProject)' == 'true' And Exists('$(TranslationCoverageFile)')">
-
-    <ReadLinesFromFile File="$(TranslationCoverageFile)">
-      <Output TaskParameter="Lines" ItemName="TranslationCoverageLine" />
-    </ReadLinesFromFile>
-
-    <Message Importance="high" Text="Translations: %(TranslationCoverageLine.Identity)" />
-  </Target>
-
-  <!--
-    Lua that ships alongside the server assemblies. Overwritten every build like the UI: it is
-    vMenu's own code, not something an owner edits. The server projects write their DLLs into the
-    same folder, which is why this copies into server/ rather than a folder of its own.
-  -->
-  <ItemGroup Condition="'$(IsResourceRootProject)' == 'true'">
-    <ResourceServerScriptFile Include="$(RepoRoot)assets\enhanced\server\**\*" />
-  </ItemGroup>
-
-  <Target Name="CopyResourceServerScriptFiles"
-          AfterTargets="Build"
-          Condition="'$(IsResourceRootProject)' == 'true'"
-          Inputs="@(ResourceServerScriptFile)"
-          Outputs="@(ResourceServerScriptFile -> '$(ResourceRoot)server\%(RecursiveDir)%(Filename)%(Extension)')">
-
-    <Copy SourceFiles="@(ResourceServerScriptFile)"
-          DestinationFiles="@(ResourceServerScriptFile -> '$(ResourceRoot)server\%(RecursiveDir)%(Filename)%(Extension)')"
-          SkipUnchangedFiles="true" />
-  </Target>
-
-  <!--
-    Overwritten on every build like the UI and the languages. These are the defaults this build
-    ships, and an update has to be able to deliver entries added since, which a copy-only-when-
-    missing rule can never do. Edits made in build/vMenu.Enhanced/config/ do not survive a build;
-    edit assets/enhanced/config/ instead.
-  -->
-  <ItemGroup Condition="'$(IsResourceRootProject)' == 'true'">
-    <ResourceConfigFile Include="$(RepoRoot)assets\enhanced\config\**\*" />
-  </ItemGroup>
-
-  <!--
-    No Inputs/Outputs, unlike the targets above. Those skip on timestamps alone, which means a file
-    edited in build/vMenu.Enhanced/config/ is newer than the one it came from and would never be put
-    back. SkipUnchangedFiles compares size and timestamp for equality instead, so an edited file is
-    replaced and an untouched one still costs nothing.
-  -->
-  <Target Name="CopyResourceConfigFiles"
-          AfterTargets="Build"
-          Condition="'$(IsResourceRootProject)' == 'true'">
-
-    <Copy SourceFiles="@(ResourceConfigFile)"
-          DestinationFiles="@(ResourceConfigFile -> '$(ResourceRoot)config\%(RecursiveDir)%(Filename)%(Extension)')"
-          SkipUnchangedFiles="true" />
-  </Target>
-
-  <!--
-    Ships the same .example files a clean server writes on its first start, so an owner can set up
-    permissions and settings before ever starting it. Only the .example files: a real
-    permissions.cfg or configuration.cfg in the output would overwrite an owner's own on deploy.
-  -->
-  <ItemGroup Condition="'$(IsResourceRootProject)' == 'true'">
-    <ConfigExampleInput Include="$(RepoRoot)src\Shared\vMenu.Enhanced.Data\**\*.cs"
-                        Exclude="$(RepoRoot)src\Shared\vMenu.Enhanced.Data\obj\**;$(RepoRoot)src\Shared\vMenu.Enhanced.Data\bin\**" />
-    <ConfigExampleInput Include="$(RepoRoot)src\Server\vMenu.Enhanced.Permissions.Server\*.cs" />
-    <ConfigExampleInput Include="$(RepoRoot)tools\ConfigDefaults\*.cs;$(RepoRoot)tools\ConfigDefaults\*.csproj" />
-    <ConfigExampleInput Include="$(RepoRoot)assets\enhanced\config\*.json" />
-  </ItemGroup>
-
-  <Target Name="GenerateConfigExamples"
-          AfterTargets="Build;CopyResourceConfigFiles"
-          Condition="'$(IsResourceRootProject)' == 'true'"
-          Inputs="@(ConfigExampleInput)"
-          Outputs="$(ResourceRoot)config\permissions.cfg.example;$(ResourceRoot)config\configuration.cfg.example">
-
-    <Exec Command="dotnet run --project &quot;$(RepoRoot)tools\ConfigDefaults\ConfigDefaults.csproj&quot; -c Release --no-launch-profile -- &quot;$(ResourceRoot)config&quot; &quot;$(RepoRoot)assets\enhanced\config&quot;"
-          WorkingDirectory="$(RepoRoot)"
-          StandardOutputImportance="normal" />
-  </Target>
+  <Import Project="$(RepoRoot)src\Resource.targets" />
 
 </Project>

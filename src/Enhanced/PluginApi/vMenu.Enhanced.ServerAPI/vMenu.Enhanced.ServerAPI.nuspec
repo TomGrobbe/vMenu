@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata>
+    <id>vMenu.Enhanced.ServerAPI</id>
+    <version>$version$</version>
+    <authors>Tom Grobbe</authors>
+    <license type="expression">GPL-3.0-or-later</license>
+    <licenseUrl>https://licenses.nuget.org/GPL-3.0-or-later</licenseUrl>
+    <readme>README.md</readme>
+    <projectUrl>https://github.com/TomGrobbe/vMenu</projectUrl>
+    <description>Server side plugin API for vMenu Enhanced. Declares plugin permissions and settings with vMenu over events and offers permission checks.</description>
+    <copyright>Copyright (C) 2017-2026 Tom Grobbe</copyright>
+    <tags>fivem vmenu plugin</tags>
+    <repository type="git" url="https://github.com/TomGrobbe/vMenu" commit="$commit$" />
+    <dependencies>
+      <group targetFramework="net10.0">
+        <dependency id="vMenu.Enhanced.PluginContracts" version="$version$" exclude="Build,Analyzers" />
+        <dependency id="CitizenFX.FiveM.Server" version="$enhancedCitizenFx$" exclude="Build,Analyzers" />
+      </group>
+      <group targetFramework="net462">
+        <dependency id="vMenu.Enhanced.PluginContracts" version="$version$" exclude="Build,Analyzers" />
+        <dependency id="CitizenFX.Core.Server" version="$legacyCitizenFx$" exclude="Runtime,Build,Analyzers" />
+      </group>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="README.md" target="" />
+    <file src="$repoRoot$LICENSE.md" target="" />
+    <file src="$enhancedOutput$vMenu.Enhanced.ServerAPI.dll" target="lib\net10.0" />
+    <file src="$enhancedOutput$vMenu.Enhanced.ServerAPI.xml" target="lib\net10.0" />
+    <file src="$legacyOutput$vMenu.Enhanced.ServerAPI.dll" target="lib\net462" />
+    <file src="$legacyOutput$vMenu.Enhanced.ServerAPI.xml" target="lib\net462" />
+    <file src="$repoRoot$dependencies\legacy\Newtonsoft.Json.dll" target="lib\net462" />
+  </files>
+</package>

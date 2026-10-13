@@ -18,14 +18,14 @@
     <Compile Include="..\..\src\Shared\vMenu.Enhanced.Data\**\*.cs"
              Exclude="..\..\src\Shared\vMenu.Enhanced.Data\obj\**;..\..\src\Shared\vMenu.Enhanced.Data\bin\**"
              LinkBase="Data" />
-    <Compile Include="..\..\src\Server\vMenu.Enhanced.Permissions.Server\PermissionRegistry.cs;
-                      ..\..\src\Server\vMenu.Enhanced.Permissions.Server\PermissionNode.cs;
-                      ..\..\src\Server\vMenu.Enhanced.Permissions.Server\PermissionsExampleFile.cs;
-                      ..\..\src\Server\vMenu.Enhanced.Permissions.Server\SupplementalModelKind.cs;
-                      ..\..\src\Server\vMenu.Enhanced.Permissions.Server\ModelWhitelist.cs;
-                      ..\..\src\Server\vMenu.Enhanced.Permissions.Server\VehicleCategories.cs;
-                      ..\..\src\Server\vMenu.Enhanced.Permissions.Server\PedCategories.cs;
-                      ..\..\src\Server\vMenu.Enhanced.Permissions.Server\WeaponCatalog.cs"
+    <Compile Include="..\..\src\Enhanced\Server\vMenu.Enhanced.Permissions.Server\PermissionRegistry.cs;
+                      ..\..\src\Enhanced\Server\vMenu.Enhanced.Permissions.Server\PermissionNode.cs;
+                      ..\..\src\Enhanced\Server\vMenu.Enhanced.Permissions.Server\PermissionsExampleFile.cs;
+                      ..\..\src\Enhanced\Server\vMenu.Enhanced.Permissions.Server\SupplementalModelKind.cs;
+                      ..\..\src\Enhanced\Server\vMenu.Enhanced.Permissions.Server\ModelWhitelist.cs;
+                      ..\..\src\Enhanced\Server\vMenu.Enhanced.Permissions.Server\VehicleCategories.cs;
+                      ..\..\src\Enhanced\Server\vMenu.Enhanced.Permissions.Server\PedCategories.cs;
+                      ..\..\src\Enhanced\Server\vMenu.Enhanced.Permissions.Server\WeaponCatalog.cs"
              LinkBase="Permissions" />
   </ItemGroup>
 </Project>

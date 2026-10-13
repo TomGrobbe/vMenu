@@ -4,7 +4,7 @@
     Every assembly a side builds, copied into that side's folder in the resource.
 
     Projects build into build/intermediate/<side>/ and this assembles
-    build/vMenu.Enhanced/<side>/ from that, so the resource folder only ever holds what actually
+    build/<flavor>/vMenu.Enhanced/<side>/ from that, so the resource folder only ever holds what actually
     ships.
   -->
   <PropertyGroup>

@@ -35,8 +35,8 @@ const string Header = """
 
 """;
 
-const string DefaultClientFolder = @"build\intermediate\client";
-const string DefaultLanguageFolder = @"assets\enhanced\language";
+const string DefaultClientFolder = @"build\intermediate\enhanced\client";
+const string DefaultLanguageFolder = @"assets\shared\language";
 const string TemplateName = "example";
 
 if (args.Length > 0 && string.Equals(args[0], "check", StringComparison.OrdinalIgnoreCase))
@@ -269,7 +269,7 @@ static SortedDictionary<string, string> EnglishStrings(string clientFolder)
 {
     clientFolder = Path.GetFullPath(clientFolder);
 
-    var assemblyPath = Path.Combine(clientFolder, "vMenu.Enhanced.MenuFramework.dll");
+    var assemblyPath = Path.Combine(clientFolder, "vMenu.Enhanced.Localization.dll");
 
     if (!File.Exists(assemblyPath))
     {
@@ -287,7 +287,7 @@ static SortedDictionary<string, string> EnglishStrings(string clientFolder)
     };
 
     var assembly = context.LoadFromAssemblyPath(assemblyPath);
-    var catalog = assembly.GetType("vMenu.Enhanced.MenuFramework.Localization.LanguageCatalog")
+    var catalog = assembly.GetType("vMenu.Enhanced.Localization.LanguageCatalog")
         ?? throw new InvalidOperationException("LanguageCatalog is missing.");
 
     var english = catalog.GetProperty("English")?.GetValue(null)

@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\vMenu.Enhanced.PluginContracts\vMenu.Enhanced.PluginContracts.csproj" />
+    <ProjectReference Include="..\..\..\Shared\vMenu.Enhanced.PluginContracts\vMenu.Enhanced.PluginContracts.csproj" />
   </ItemGroup>
 
 </Project>

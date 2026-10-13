@@ -2,14 +2,14 @@
   <!--
     MSBuild stops at the FIRST Directory.Build.props it finds walking up from a
     project, so this file shadows src/Directory.Build.props for everything under
-    src/Client/. Import the parent explicitly to keep the shared settings.
+    src/Enhanced/Client/. Import the parent explicitly to keep the shared settings.
   -->
   <Import Project="$([MSBuild]::GetPathOfFileAbove('$(MSBuildThisFile)', '$(MSBuildThisFileDirectory)../'))" />
 
   <PropertyGroup>
     <!--
-      Client assemblies build outside the resource, and src/Assemblies.targets copies them into it.
-      Nothing here lands in build/vMenu.Enhanced/client/ except through that.
+      Client assemblies build outside the resource, and src/Enhanced/Assemblies.targets copies them into it.
+      Nothing here lands in build/enhanced/vMenu.Enhanced/client/ except through that.
 
       The client and server sides stay in separate folders all the way through, because
       CitizenFX.FiveM.Client and CitizenFX.FiveM.Server each carry their own copy of
@@ -20,7 +20,7 @@
       copies the resolved NuGet graph next to the output, so MenuAPI and the
       CitizenFX client assemblies land here too.
     -->
-    <OutputPath>$(MSBuildThisFileDirectory)..\..\build\intermediate\client\</OutputPath>
+    <OutputPath>$(IntermediateRoot)client\</OutputPath>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)' == 'NativeHooks'">
@@ -30,7 +30,7 @@
   </PropertyGroup>
 
   <ItemGroup Condition="'$(NativeHooks)' == 'true' And '$(MSBuildProjectName)' != 'vMenu.Enhanced.NativeHooks'">
-    <ProjectReference Include="$(MSBuildThisFileDirectory)..\..\tools\vMenu.Enhanced.NativeHooks.Generator\vMenu.Enhanced.NativeHooks.Generator.csproj"
+    <ProjectReference Include="$(RepoRoot)tools\vMenu.Enhanced.NativeHooks.Generator\vMenu.Enhanced.NativeHooks.Generator.csproj"
                       OutputItemType="Analyzer"
                       ReferenceOutputAssembly="false" />
     <ProjectReference Include="$(MSBuildThisFileDirectory)vMenu.Enhanced.NativeHooks\vMenu.Enhanced.NativeHooks.csproj" />

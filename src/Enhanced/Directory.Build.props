@@ -1,0 +1,10 @@
+<Project>
+  <Import Project="$([MSBuild]::GetPathOfFileAbove('$(MSBuildThisFile)', '$(MSBuildThisFileDirectory)../'))" />
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ResourceRoot>$(RepoRoot)build\enhanced\vMenu.Enhanced\</ResourceRoot>
+    <IntermediateRoot>$(RepoRoot)build\intermediate\enhanced\</IntermediateRoot>
+  </PropertyGroup>
+
+</Project>

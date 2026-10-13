@@ -9,4 +9,10 @@
     <PackageDescription>Protocol contracts for vMenu Enhanced plugins: event names and payload types shared between vMenu and the plugin API packages.</PackageDescription>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Include="$(RepoRoot)build\intermediate\shared\vMenu.Enhanced.Polyfills\net462\vMenu.Enhanced.Polyfills.dll" Pack="true" PackagePath="lib\net462" Visible="false" />
+  </ItemGroup>
+
+  <Import Project="$(RepoRoot)src\PluginPackage.props" />
+
 </Project>

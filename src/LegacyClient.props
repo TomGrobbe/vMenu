@@ -1,0 +1,31 @@
+<Project>
+
+  <PropertyGroup>
+    <Nullable>annotations</Nullable>
+    <Features>$(Features);peverify-compat</Features>
+    <DisableImplicitFrameworkReferences>true</DisableImplicitFrameworkReferences>
+    <NoStdLib>true</NoStdLib>
+    <AddAdditionalExplicitAssemblyReferences>false</AddAdditionalExplicitAssemblyReferences>
+    <GenerateRepositoryUrlAttribute>false</GenerateRepositoryUrlAttribute>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="mscorlib" HintPath="$(RepoRoot)dependencies\legacy\client-ref\mscorlib.dll" Private="false" />
+    <Reference Include="System" HintPath="$(RepoRoot)dependencies\legacy\client-ref\System.dll" Private="false" />
+    <Reference Include="System.Core" HintPath="$(RepoRoot)dependencies\legacy\client-ref\System.Core.dll" Private="false" />
+    <PackageReference Include="PolySharp" PrivateAssets="all" />
+    <PackageReference Include="System.ValueTuple" />
+  </ItemGroup>
+
+  <Target Name="UseClientMscorlib" BeforeTargets="ResolveAssemblyReferences">
+    <ItemGroup>
+      <Reference Remove="@(Reference)" Condition="'%(Reference.Identity)' == 'mscorlib' And '%(Reference.HintPath)' == ''" />
+    </ItemGroup>
+  </Target>
+
+  <ItemGroup Condition="'$(MSBuildProjectName)' != 'vMenu.Enhanced.Polyfills'">
+    <ProjectReference Include="$(RepoRoot)src\Shared\vMenu.Enhanced.Polyfills\vMenu.Enhanced.Polyfills.csproj" PrivateAssets="all" />
+    <Using Include="vMenu.Enhanced.Polyfills" />
+  </ItemGroup>
+
+</Project>

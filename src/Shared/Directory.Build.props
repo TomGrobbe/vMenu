@@ -7,12 +7,11 @@
   <Import Project="$([MSBuild]::GetPathOfFileAbove('$(MSBuildThisFile)', '$(MSBuildThisFileDirectory)../'))" />
 
   <PropertyGroup>
-    <!--
-      Shared assemblies build outside the resource folder. A ProjectReference from either side
-      already copies the output next to that side's assemblies, so a third copy in the resource
-      would be dead weight. CI packages build/vMenu.Enhanced/*, so nothing here ships.
-    -->
-    <OutputPath>$(MSBuildThisFileDirectory)..\..\build\intermediate\$(MSBuildProjectName)\</OutputPath>
+    <TargetFrameworks>net10.0;net462</TargetFrameworks>
+    <AppendTargetFrameworkToOutputPath>true</AppendTargetFrameworkToOutputPath>
+    <OutputPath>$(RepoRoot)build\intermediate\shared\$(MSBuildProjectName)\</OutputPath>
   </PropertyGroup>
+
+  <Import Project="$(MSBuildThisFileDirectory)..\LegacyClient.props" Condition="'$(TargetFramework)' == 'net462'" />
 
 </Project>
