@@ -3,6 +3,13 @@
 const crypto = require('crypto');
 const http = require('http');
 const https = require('https');
+const tls = require('tls');
+
+try {
+    tls.setDefaultCACertificates([...tls.getCACertificates('default'), ...tls.getCACertificates('system')]);
+} catch (error) {
+    console.warn(`[vMenu] Net bridge could not load the system certificates: ${error?.message}`);
+}
 
 const self = GetCurrentResourceName();
 const sockets = new Map();
