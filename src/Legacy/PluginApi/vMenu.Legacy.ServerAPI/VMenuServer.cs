@@ -1,0 +1,151 @@
+using CitizenFX.Core.Native;
+
+using vMenu.Enhanced.PluginContracts;
+
+namespace vMenu.Enhanced.ServerAPI;
+
+/// <summary>The server side entry point for a plugin. Call <see cref="RegisterAsync"/> once at
+/// startup; re-registration after a vMenu restart happens automatically. Then use
+/// <see cref="IsPlayerAllowed"/> to check the permissions you declared.</summary>
+public static class VMenuServer
+{
+    private const string PermissionPrefix = "vMenu.Enhanced.Plugins";
+
+    private const string Everything = "vMenu.Enhanced.Everything";
+
+    private const string RefreshPermissionsEvent = "vMenu.Enhanced:Permissions:Refresh";
+
+    private static ServerPluginDeclaration? _declaration;
+
+    private static TaskCompletionSource<RegisterResult>? _firstResult;
+
+    private static bool _handlersRegistered;
+
+    private static string _resource = string.Empty;
+
+    private static string _pluginId = string.Empty;
+
+    /// <summary>Fires on every registration answer, including automatic re-registrations.</summary>
+    public static event Action<RegisterResult>? RegistrationAnswered;
+
+    /// <summary>Declares the plugin with vMenu. The task completes on vMenu's first answer, which can be
+    /// a while when vMenu starts later than the plugin. It never throws: a refusal arrives as a result
+    /// with <c>Accepted</c> false.</summary>
+    public static Task<RegisterResult> RegisterAsync(ServerPluginDeclaration declaration)
+    {
+        _declaration = declaration;
+        _firstResult ??= new TaskCompletionSource<RegisterResult>();
+
+        EnsureHandlers();
+        PluginEmit.Local(PluginEvents.ServerProbe);
+
+        return _firstResult.Task;
+    }
+
+    /// <summary>Whether a player holds one of the plugin's own permissions, by its short name. Also
+    /// honours the container grants a server owner may have used instead of the exact name.</summary>
+    public static bool IsPlayerAllowed(string playerSource, string permissionName)
+    {
+        if (string.IsNullOrEmpty(playerSource))
+        {
+            return false;
+        }
+
+        EnsureIdentity();
+
+        var scope = PermissionPrefix + "." + _pluginId;
+
+        return API.IsPlayerAceAllowed(playerSource, scope + "." + permissionName)
+            || API.IsPlayerAceAllowed(playerSource, scope + ".All")
+            || API.IsPlayerAceAllowed(playerSource, PermissionPrefix + ".All")
+            || API.IsPlayerAceAllowed(playerSource, Everything);
+    }
+
+    /// <summary>The same check as <see cref="IsPlayerAllowed"/>, but a refusal is also reported to vMenu's
+    /// security webhook. Use it where a legitimate client could only ever have sent the thing you are
+    /// handling while allowed, and keep <see cref="IsPlayerAllowed"/> for ordinary branching, or a server
+    /// owner ends up with a log full of normal play.</summary>
+    public static bool RequirePermission(string playerSource, string permissionName)
+    {
+        if (IsPlayerAllowed(playerSource, permissionName))
+        {
+            return true;
+        }
+
+        if (!string.IsNullOrEmpty(playerSource))
+        {
+            PluginEmit.Local(PluginEvents.ServerDenied, playerSource, permissionName);
+        }
+
+        return false;
+    }
+
+    /// <summary>Refresh permissions for a player or multiple playres. Passing no id's will refresh permissions for all connected players.</summary>
+    public static void RefreshPermissions(params int[] serverIds) =>
+        PluginEmit.Local(RefreshPermissionsEvent, (object)(serverIds ?? []));
+
+    private static void EnsureIdentity()
+    {
+        if (_resource.Length == 0)
+        {
+            _resource = API.GetCurrentResourceName();
+            _pluginId = PluginId.Sanitize(_resource);
+        }
+    }
+
+    private static void EnsureHandlers()
+    {
+        if (_handlersRegistered)
+        {
+            return;
+        }
+
+        _handlersRegistered = true;
+
+        EnsureIdentity();
+
+        PluginScript.On(PluginEvents.ServerReady, OnReady);
+        PluginScript.On(PluginEvents.ServerReadyFor(_resource), OnReady);
+        PluginScript.On(PluginEvents.ServerRegisterResultFor(_resource), OnResult);
+    }
+
+    private static void OnReady(int protocolVersion) => SendRegistration();
+
+    private static void SendRegistration()
+    {
+        if (_declaration is { } declaration)
+        {
+            PluginEmit.Local(PluginEvents.ServerRegister, PluginJson.Serialize(declaration.ToRequest()));
+        }
+    }
+
+    private static void OnResult(string json)
+    {
+        if (!PluginJson.TryDeserialize<RegisterResult>(json, out var result) || result is null)
+        {
+            PluginLog.Warn($"[{_resource}] vMenu sent a registration answer that did not parse.");
+            return;
+        }
+
+        foreach (var error in result.Errors)
+        {
+            PluginLog.Error($"[{_resource}] vMenu refused the plugin registration: {error}");
+        }
+
+        foreach (var warning in result.Warnings)
+        {
+            PluginLog.Warn($"[{_resource}] vMenu accepted the plugin registration with a note: {warning}");
+        }
+
+        _firstResult?.TrySetResult(result);
+
+        try
+        {
+            RegistrationAnswered?.Invoke(result);
+        }
+        catch (Exception exception)
+        {
+            PluginLog.Error($"[{_resource}] A RegistrationAnswered handler threw: {exception}");
+        }
+    }
+}

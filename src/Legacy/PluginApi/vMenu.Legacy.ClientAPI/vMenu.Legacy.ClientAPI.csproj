@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <AssemblyName>vMenu.Enhanced.ClientAPI</AssemblyName>
+    <RootNamespace>vMenu.Enhanced.ClientAPI</RootNamespace>
+  </PropertyGroup>
+
+  <Import Project="$(RepoRoot)src\LegacyClient.props" />
+
+  <ItemGroup>
+    <PackageReference Include="CitizenFX.Core.Client" ExcludeAssets="runtime" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Shared\vMenu.Enhanced.PluginContracts\vMenu.Enhanced.PluginContracts.csproj" />
+  </ItemGroup>
+
+</Project>

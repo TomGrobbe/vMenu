@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <AssemblyName>vMenu.Enhanced.ServerAPI</AssemblyName>
+    <RootNamespace>vMenu.Enhanced.ServerAPI</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CitizenFX.Core.Server" ExcludeAssets="runtime" />
+    <PackageReference Include="PolySharp" PrivateAssets="all" />
+    <PackageReference Include="System.ValueTuple" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Shared\vMenu.Enhanced.PluginContracts\vMenu.Enhanced.PluginContracts.csproj" />
+  </ItemGroup>
+
+</Project>
