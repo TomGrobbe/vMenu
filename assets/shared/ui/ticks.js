@@ -94,7 +94,7 @@
 
             for (const tick of rows) {
                 const row = document.createElement("div");
-                row.className = tick.running ? "row running" : "row";
+                row.className = tick.running ? "row running" : tick.failed ? "row failed" : "row";
 
                 const dot = document.createElement("span");
                 dot.className = "dot";

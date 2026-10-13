@@ -136,6 +136,7 @@ public static class TickOverlay
                 Name = handle.Name,
                 Rate = handle.Rate.ToString(),
                 Running = handle.IsRunning,
+                Failed = handle.HasFailed,
             };
         }
 
@@ -149,6 +150,7 @@ public static class TickOverlay
                 Name = handle.Name,
                 Rate = handle.Rate.ToString(),
                 Running = handle.IsRunning,
+                Failed = false,
             };
         }
 
@@ -184,5 +186,8 @@ public static class TickOverlay
         public required string Rate { get; init; }
 
         public required bool Running { get; init; }
+
+
+        public required bool Failed { get; init; }
     }
 }

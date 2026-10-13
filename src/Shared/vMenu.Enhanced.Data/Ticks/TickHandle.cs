@@ -26,6 +26,7 @@ public sealed class TickHandle : IDisposable
     private bool _manuallyStarted;
 
     private int _failures;
+    private bool _failed;
     private bool _disposed;
 
     internal TickHandle(
@@ -50,6 +51,8 @@ public sealed class TickHandle : IDisposable
     public TickRate Rate => _rate;
 
     public bool IsRunning => _running;
+
+    public bool HasFailed => _failed;
 
     public Action? OnStarted { get; init; }
 
@@ -117,6 +120,7 @@ public sealed class TickHandle : IDisposable
         }
 
         _failures = 0;
+        _failed = false;
 
         Notify(OnStarted);
 
@@ -191,6 +195,7 @@ public sealed class TickHandle : IDisposable
                         _engine.Log(TickLog.Error, $"{Name} stopped after {MaxFailures} consecutive failures.");
 
                         _running = false;
+                        _failed = true;
 
                         _engine.NotifyChanged();
 
