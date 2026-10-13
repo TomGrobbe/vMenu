@@ -1164,7 +1164,7 @@ emit(
 - **id** is what a convar or a plugin names the theme by. Letters, digits, dashes, underscores and dots, and never one of vMenu's own names.
 - **name** is what a player reads, falling back to the id.
 - **css** is a path inside your own resource, or a full `https://cfx-nui-<resource>/` url naming another one. vMenu's menu page loads it from there, so nothing is copied into vMenu. Addresses out on the internet are refused.
-- **banner** is the picture on top of the menu. One of vMenu's own, `default`, `dark`, `cartoon`, or `none` for the plain Grand Theft Auto one, or a `.png`, `.jpg` or `.webp` of your own, given the same way as the stylesheet. An image needs a MenuAPI new enough to load banners out of another resource, and falls back to vMenu's default banner otherwise.
+- **banner** is the picture on top of the menu. One of vMenu's own, `default`, `gold`, `green`, `red`, `dark`, `cartoon`, or `none` for the plain Grand Theft Auto one, or a `.png`, `.jpg` or `.webp` of your own, given the same way as the stylesheet. An image needs a MenuAPI new enough to load banners out of another resource, and falls back to vMenu's default banner otherwise.
 
 Every file the stylesheet uses has to be listed in your `fxmanifest.lua` under `files`, or the game has no copy of it to serve. Fonts and images inside the stylesheet are resolved relative to the stylesheet itself.
 

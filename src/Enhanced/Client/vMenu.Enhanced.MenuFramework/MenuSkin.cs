@@ -30,6 +30,9 @@ public static class MenuSkin
     private static readonly (string[] Aliases, string Name, string? Theme, string? Path, string? Banner)[] Skins =
     [
         (["default", "vmenu"], "Default", "Default", "themes/default.css", "default"),
+        (["gold", "vmenugold", "vmenu-gold"], "vMenu Gold", "Gold", "themes/gold.css", "gold"),
+        (["green", "vmenugreen", "vmenu-green"], "vMenu Green", "Green", "themes/green.css", "green"),
+        (["red", "vmenured", "vmenu-red"], "vMenu Red", "Red", "themes/red.css", "red"),
         (["gta", "none", "vanilla"], "GTA V", null, null, null),
         (["dark", "vmenudark", "vmenu-dark", "vmenu dark"], "Dark", "Dark", "themes/dark.css", "dark"),
         (["cartoon"], "Cartoon", "Cartoon", "themes/cartoon.css", "cartoon"),
@@ -356,7 +359,7 @@ public static class MenuSkin
         }
 
         warning =
-            $"'{value}' is not one of vMenu's banners (default, dark, cartoon, none) and not an image "
+            $"'{value}' is not one of vMenu's banners (default, gold, green, red, dark, cartoon, none) and not an image "
             + $"inside your resource, so '{Skins[0].Aliases[0]}' is used instead. An image is a path "
             + "ending in .png, .jpg or .webp.";
 

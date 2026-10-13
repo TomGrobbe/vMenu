@@ -5,7 +5,7 @@ public static class MenuAppearance
     public static readonly StringSetting Skin = new("vMenu.Enhanced.MenuAppearance.Skin")
     {
         Description =
-            "Choose a default theme: 'default', 'dark', 'cartoon' or 'gta'. You can also choose any plugin-added theme here.",
+            "Choose a default theme: 'default', 'gold', 'green', 'red', 'gta', 'dark' or 'cartoon'. You can also choose any plugin-added theme here.",
         Default = "default",
     };
 

@@ -1,7 +1,7 @@
 # vMenu's own themes
 
-These four stylesheets are the looks vMenu ships with. 
-`default.css`, `dark.css` and `cartoon.css` are here, and the plain Grand Theft Auto look needs no file at all. 
+These stylesheets are the looks vMenu ships with. 
+`default.css`, `gold.css`, `green.css`, `red.css`, `dark.css` and `cartoon.css` are here, and the plain Grand Theft Auto look needs no file at all. 
 The server owner picks one with the `vMenu.Enhanced.MenuAppearance.Skin` setting.
 
 **Please do not add your own theme to this folder.** 
