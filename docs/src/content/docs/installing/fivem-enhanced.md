@@ -1,28 +1,12 @@
 ---
-title: "Getting Started"
-description: "Temporary installation instructions for the vMenu Enhanced alpha on FiveM Enhanced."
+title: "Installing on FiveM Enhanced"
+description: "How to install vMenu Enhanced on a FiveM Enhanced server, with a txAdmin recipe or by hand."
 ---
 
-:::caution[Temporary instructions]
-vMenu Enhanced is still in early development, so be prepared for things not to work properly. These instructions will be replaced with proper documentation once the project settles down.
-:::
+This page is for servers that run **FiveM Enhanced**, the version of FiveM built on GTA V Enhanced. Running the regular FiveM instead? Then you want [Installing on FiveM Legacy](/vmenu/enhanced/installing/fivem-legacy/).
 
-You need a FiveM **Enhanced** server, or a regular FiveM server (the "legacy" one, built on the original GTA V).
+There are two ways to install it. The quick way with txAdmin sets up a whole new server for you. The manual way adds vMenu to a server you already have.
 
-## On a regular (legacy) FiveM server
-
-Each release has two zips. Use the one for your server:
-
-| Your server | Zip |
-| --- | --- |
-| FiveM Enhanced | `vMenu-Enhanced-v<version>.zip` |
-| Regular FiveM (legacy) | `vMenu-Enhanced-Legacy-v<version>.zip` |
-
-Everything on this page works the same for both, except the txAdmin recipe, which is for FiveM Enhanced only. On a legacy server, follow [the manual way](#the-manual-way) and keep these in mind:
-
-- Use the latest game build. Add `sv_enforceGameBuild` with the newest build number to your `server.cfg`. vMenu uses natives that older builds do not have.
-- Your server artifacts must support `node_version '22'`. On a legacy server, vMenu always sends its HTTPS and WebSocket traffic through a small Node.js script, so the `vMenu.Enhanced.NetBridge` setting further down does not apply.
-- This is not the old vMenu. It does not read the old vMenu's saved vehicles, peds or settings, and it uses its own permission names. You can keep the old `vMenu` folder until you are ready to switch, but never run both at the same time.
 ## The quick way, with txAdmin
 
 txAdmin is the control panel that comes with every FiveM server. When you create a new server in it, it can set everything up for you from a "recipe", which is a list of steps it follows to download and configure your server.
@@ -35,13 +19,13 @@ Pick the vMenu Enhanced recipe in txAdmin's setup screen if it is listed there. 
 https://github.com/TomGrobbe/vMenu/releases/latest/download/txadmin-vmenu-enhanced-recipe.yaml
 ```
 
-That link always points to the newest release. When txAdmin is done you can skip the rest of this page, your `server.cfg` already has every line it describes. It also explains how to set up the permissions of the plugins, which only becomes possible after your server has started once.
+That link always points to the newest release. When txAdmin is done you can skip the rest of this page, because your `server.cfg` already has every line it describes. It also explains how to set up the permissions of the plugins, which only becomes possible after your server has started once.
 
 ## The manual way
 
 ### 1. Download and unpack it
 
-Grab the latest pre-release zip from the [GitHub releases page](https://github.com/TomGrobbe/vMenu/releases/) and unpack it into your server's `resources` folder.
+Download `vMenu-Enhanced-v<version>.zip` from the [latest release](https://github.com/TomGrobbe/vMenu/releases/latest) and unpack it into your server's `resources` folder. The same release also has a zip with "Legacy" in its name. That one is for regular FiveM servers, so leave it alone.
 
 :::danger[The folder name matters]
 Name the folder exactly `vMenu.Enhanced`, capital letters and all. Every permission and setting name is built from it, so nothing works under a different name. vMenu checks this itself and refuses to start if the name is wrong.
@@ -120,25 +104,4 @@ ensure vMenu.Enhanced
 
 Restart your server, join, and press `M` to open the menu. For everything else vMenu puts on a key, see [Key Bindings](/vmenu/enhanced/key-bindings/).
 
-## Running on Linux
-
-On a Linux server, vMenu's C# code cannot currently check the security certificates of websites. That breaks everything vMenu sends over the internet, like update checks, webhook logging and integrations. This is a FiveM bug, and it has been reported.
-
-Until it is fixed, vMenu hands that traffic to a small JavaScript helper that ships with it, `server/net_bridge.js`. JavaScript on the same server does not have the bug. This happens by itself, you do not need to set anything up. Your console shows a line saying the net bridge is in use when it starts.
-
-The helper needs a server build that supports Node 22, which is the JavaScript engine FiveM runs. If your console warns that the net bridge never answered, update your server artifacts first.
-
-If you ever need to switch it by hand, add one of these to your `server.cfg`:
-
-```ini
-set vMenu.Enhanced.NetBridge native
-set vMenu.Enhanced.NetBridge js
-```
-
-`native` always uses the normal C# code, and `js` always uses the helper, also on Windows. Leave the line out and vMenu picks by itself.
-
-## Something not working?
-
-Come say hi on the [Discord](https://vespura.com/discord), or take a look at the [GitHub repository](https://github.com/TomGrobbe/vMenu/).
-
-If you are running the current stable version for FiveM Legacy, use the [vMenu Legacy documentation](/vmenu/legacy/) instead.
+Running your server on Linux? Have a look at [Running on Linux](/vmenu/enhanced/running-on-linux/) too.

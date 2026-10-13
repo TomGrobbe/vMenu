@@ -143,7 +143,7 @@ To edit it directly:
 `gender` matters, because a drawable number means a different piece of clothing on each model. An outfit saved on one is hidden on the other rather than applied wrongly. Leave it out and the outfit shows for both.
 
 :::caution
-Writing this file needs `add_filesystem_permission vMenu.Enhanced write vMenu.Enhanced` in your server.cfg, the same line the permissions example file needs. [Getting Started](/vmenu/enhanced/getting-started/) covers it.
+Writing this file needs `add_filesystem_permission vMenu.Enhanced write vMenu.Enhanced` in your server.cfg, the same line the permissions example file needs. The install guide covers it, for [FiveM Enhanced](/vmenu/enhanced/installing/fivem-enhanced/#2-add-the-first-lines-to-your-servercfg) or [FiveM Legacy](/vmenu/enhanced/installing/fivem-legacy/#2-add-the-first-lines-to-your-servercfg).
 :::
 
 ### Outfits that came with the game

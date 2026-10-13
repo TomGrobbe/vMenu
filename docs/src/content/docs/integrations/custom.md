@@ -225,7 +225,7 @@ Your integration can put players in ACE permission groups (called principals in 
 { "type": "role-sync", "payload": { "players": [ { "serverId": 12, "identifier": "discord:123456789", "principals": ["group.admin", "group.vip"] } ] } }
 ```
 
-Always send the full list of groups the player should have, and an empty list removes them all. It needs `AllowActions true` plus the two `add_ace` lines from [Getting started](/vmenu/enhanced/getting-started/). vMenu only ever removes groups it added itself, and it takes them all away again when the player leaves.
+Always send the full list of groups the player should have, and an empty list removes them all. It needs `AllowActions true` plus the two `add_ace` lines from the install guide, for [FiveM Enhanced](/vmenu/enhanced/installing/fivem-enhanced/#2-add-the-first-lines-to-your-servercfg) or [FiveM Legacy](/vmenu/enhanced/installing/fivem-legacy/#2-add-the-first-lines-to-your-servercfg). vMenu only ever removes groups it added itself, and it takes them all away again when the player leaves.
 
 ## Just want weather and time
 

@@ -18,7 +18,7 @@ export default defineConfig({
   integrations: [
     starlight({
       title: 'vMenu Enhanced',
-      description: 'Documentation for vMenu Enhanced, a version of vMenu for FiveM Enhanced.',
+      description: 'Documentation for vMenu Enhanced, the new vMenu for FiveM Enhanced and FiveM Legacy.',
       favicon: '/favicon.png',
       customCss: ['./src/styles/cartoon.css'],
       // Give Expressive Code an explicit dark + light theme pair. Setting custom
@@ -65,7 +65,15 @@ export default defineConfig({
       ],
       sidebar: [
         { label: 'Home', link: '/' },
-        { label: 'Getting Started', link: '/getting-started/' },
+        {
+          label: 'Getting Started',
+          items: [
+            { label: 'Where to begin', link: '/getting-started/' },
+            { label: 'Installing on FiveM Enhanced', link: '/installing/fivem-enhanced/' },
+            { label: 'Installing on FiveM Legacy', link: '/installing/fivem-legacy/' },
+            { label: 'Running on Linux', link: '/running-on-linux/' },
+          ],
+        },
         { label: 'Key Bindings', link: '/key-bindings/' },
         { label: 'Menu Appearance', link: '/menu-appearance/' },
         { label: 'Moving Your Data', link: '/moving-your-data/' },

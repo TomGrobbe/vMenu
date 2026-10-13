@@ -1,24 +1,20 @@
 ---
 title: "vMenu Enhanced"
-description: "Documentation for vMenu Enhanced, a version of vMenu built for FiveM Enhanced (GTA V Enhanced)."
+description: "Documentation for vMenu Enhanced, the new vMenu for FiveM Enhanced and FiveM Legacy."
 ---
 
-_vMenu Enhanced is a fresh build of vMenu for **FiveM Enhanced** (GTA V Enhanced), running on the new .NET runtime._
-
-:::caution[Early alpha]
-vMenu Enhanced is in early development. It is not feature complete, things will change, and there is not much to document yet. This site will grow as the project does.
-:::
+_vMenu Enhanced is the new vMenu, for both **FiveM Enhanced** (GTA V Enhanced) and **FiveM Legacy** (the original GTA V)._
 
 ## What is this?
 
-vMenu is a server-sided trainer/menu for FiveM that server owners configure almost entirely through permissions and configuration options. 
-vMenu Enhanced is a from-scratch version targeting FiveM Enhanced, kept separate from the legacy build so each can evolve on its own.
+vMenu is a server-sided trainer/menu for FiveM that server owners configure almost entirely through permissions and configuration options.
+vMenu Enhanced is a from-scratch remake of it. The same menus and features run on FiveM Enhanced and on FiveM Legacy, so you can use it on whichever your server runs.
 
-Looking for the current, stable version for FiveM Legacy? See the [vMenu Legacy docs](/vmenu/legacy/).
+Looking for the original vMenu? See the [vMenu Legacy docs](/vmenu/legacy/).
 
 ## Next steps
 
-- [Getting Started](/vmenu/enhanced/getting-started/)
+- [Getting Started](/vmenu/enhanced/getting-started/), to install vMenu Enhanced or find your way around plugins
 - [Plugins](/vmenu/enhanced/plugins/), the menus other resources can add inside vMenu
 
 ## Appreciate the work?

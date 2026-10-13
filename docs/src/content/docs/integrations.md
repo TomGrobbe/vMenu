@@ -19,7 +19,7 @@ vMenu Enhanced can be linked to outside tools that watch and manage the resource
 - Send in-game announcements
 - Discord role based allowlist, so only members with the right roles can join
 - Join queue with priority queues, spike protection, a bypass and a reconnect window, plus a live queue embed in Discord
-- Discord role sync to in-game permission groups (needs `AllowActions` and the two `add_ace` lines from [Getting started](/vmenu/enhanced/getting-started/))
+- Discord role sync to in-game permission groups (needs `AllowActions` and the two `add_ace` lines from the install guide, for [FiveM Enhanced](/vmenu/enhanced/installing/fivem-enhanced/#2-add-the-first-lines-to-your-servercfg) or [FiveM Legacy](/vmenu/enhanced/installing/fivem-legacy/#2-add-the-first-lines-to-your-servercfg))
 
 ### Coming soon
 
