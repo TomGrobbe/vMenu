@@ -327,6 +327,18 @@ jobs:
             echo "version=$VERSION"
             echo "assembly_ver=${{ needs.plan.outputs.enhanced_assembly_ver }}"
             echo "zip_name=vMenu-Enhanced-v${VERSION}.zip"
+            echo "legacy_zip_name=vMenu-Enhanced-Legacy-v${VERSION}.zip"
+            if [ -d src/Enhanced ]; then
+              echo "resource=build/enhanced/vMenu.Enhanced"
+              echo "plugin_projects=src/Shared/vMenu.Enhanced.PluginContracts src/Enhanced/PluginApi/vMenu.Enhanced.ClientAPI src/Enhanced/PluginApi/vMenu.Enhanced.ServerAPI"
+              echo "script_api=src/Shared"
+              echo "coverage=build/intermediate/enhanced/translation-coverage.json"
+            else
+              echo "resource=build/vMenu.Enhanced"
+              echo "plugin_projects=src/PluginApi/vMenu.Enhanced.PluginContracts src/PluginApi/vMenu.Enhanced.ClientAPI src/PluginApi/vMenu.Enhanced.ServerAPI"
+              echo "script_api=src/PluginApi"
+              echo "coverage=build/intermediate/translation-coverage.json"
+            fi
           } >> "$GITHUB_OUTPUT"
 
       - name: Restore
@@ -340,12 +352,23 @@ jobs:
             -p:AssemblyVersion="${{ steps.version.outputs.assembly_ver }}" \
             -p:FileVersion="${{ steps.version.outputs.assembly_ver }}"
 
+      - name: Check the Legacy client against FiveM's sandbox
+        shell: bash
+        run: |
+          if [ ! -d tools/LegacyChecks ]; then
+            echo "No Legacy build on this ref, skipping."
+            exit 0
+          fi
+
+          dotnet run --project tools/LegacyChecks -c Release -- --verify-il build/legacy/vMenu.Enhanced/client
+          dotnet run --project tools/LegacyChecks -c Release --no-build -- --check-refs build/legacy/vMenu.Enhanced/client
+
       # Same version as the resource zip, so a plugin author can pin the package matching their server.
       - name: Pack plugin API packages
         shell: bash
         run: |
-          for project in vMenu.Enhanced.PluginContracts vMenu.Enhanced.ClientAPI vMenu.Enhanced.ServerAPI; do
-            dotnet pack "src/PluginApi/$project/$project.csproj" -c Release --no-build \
+          for project in ${{ steps.version.outputs.plugin_projects }}; do
+            dotnet pack "$project/$(basename "$project").csproj" -c Release --no-build \
               -p:Version="${{ steps.version.outputs.version }}" \
               -p:PackageVersion="${{ steps.version.outputs.version }}" \
               -o packages
@@ -368,15 +391,18 @@ jobs:
         env:
           VERSION: ${{ steps.version.outputs.version }}
         run: |
-          if [ ! -d src/PluginApi/vMenu.Enhanced.JsAPI ] || [ ! -f src/PluginApi/vMenu.Enhanced.LuaAPI/vmenu.lua ]; then
+          API="${{ steps.version.outputs.script_api }}"
+          RESOURCE="${{ steps.version.outputs.resource }}"
+
+          if [ ! -d "$API/vMenu.Enhanced.JsAPI" ] || [ ! -f "$API/vMenu.Enhanced.LuaAPI/vmenu.lua" ]; then
             echo "No Lua or JavaScript plugin API on this ref, skipping."
             exit 0
           fi
 
-          mkdir -p npm-package build/vMenu.Enhanced/plugin-api
+          mkdir -p npm-package "$RESOURCE/plugin-api"
 
           (
-            cd src/PluginApi/vMenu.Enhanced.JsAPI
+            cd "$API/vMenu.Enhanced.JsAPI"
             npm ci --no-audit --no-fund
             npm version "$VERSION" --no-git-tag-version --allow-same-version
             npm run check
@@ -384,9 +410,14 @@ jobs:
             npm pack --pack-destination ../../../npm-package
           )
 
-          tr -d '\r' < src/PluginApi/vMenu.Enhanced.JsAPI/dist/vmenu.js > build/vMenu.Enhanced/plugin-api/vmenu.js
-          sed "s/versiongoeshere/$VERSION/g" src/PluginApi/vMenu.Enhanced.LuaAPI/vmenu.lua | tr -d '\r' > build/vMenu.Enhanced/plugin-api/vmenu.lua
-          head -n 1 build/vMenu.Enhanced/plugin-api/vmenu.lua build/vMenu.Enhanced/plugin-api/vmenu.js
+          tr -d '\r' < "$API/vMenu.Enhanced.JsAPI/dist/vmenu.js" > "$RESOURCE/plugin-api/vmenu.js"
+          sed "s/versiongoeshere/$VERSION/g" "$API/vMenu.Enhanced.LuaAPI/vmenu.lua" | tr -d '\r' > "$RESOURCE/plugin-api/vmenu.lua"
+          head -n 1 "$RESOURCE/plugin-api/vmenu.lua" "$RESOURCE/plugin-api/vmenu.js"
+
+          if [ -d build/legacy/vMenu.Enhanced ]; then
+            mkdir -p build/legacy/vMenu.Enhanced/plugin-api
+            cp "$RESOURCE"/plugin-api/vmenu.* build/legacy/vMenu.Enhanced/plugin-api/
+          fi
 
       - name: Upload npm package
         uses: actions/upload-artifact@v4
@@ -399,7 +430,7 @@ jobs:
         if: always()
         shell: pwsh
         run: |
-          $path = 'build/intermediate/translation-coverage.json'
+          $path = '${{ steps.version.outputs.coverage }}'
 
           if (-not (Test-Path $path)) {
             Write-Host 'No translation coverage was produced by this build.'
@@ -443,9 +474,16 @@ jobs:
       - name: Stamp version and zip
         shell: pwsh
         run: |
-          (Get-Content 'build/vMenu.Enhanced/fxmanifest.lua') -replace 'versiongoeshere', '${{ steps.version.outputs.version }}' |
-            Set-Content -Encoding ASCII 'build/vMenu.Enhanced/fxmanifest.lua'
-          Compress-Archive -Path 'build/vMenu.Enhanced/*' -DestinationPath '${{ steps.version.outputs.zip_name }}' -Force
+          $resources = @(@('${{ steps.version.outputs.resource }}', '${{ steps.version.outputs.zip_name }}'))
+          if (Test-Path 'build/legacy/vMenu.Enhanced') {
+            $resources += ,@('build/legacy/vMenu.Enhanced', '${{ steps.version.outputs.legacy_zip_name }}')
+          }
+
+          foreach ($resource in $resources) {
+            (Get-Content "$($resource[0])/fxmanifest.lua") -replace 'versiongoeshere', '${{ steps.version.outputs.version }}' |
+              Set-Content -Encoding ASCII "$($resource[0])/fxmanifest.lua"
+            Compress-Archive -Path "$($resource[0])/*" -DestinationPath $resource[1] -Force
+          }
 
       # Stamped with the release URL by the release job. A tag from before the recipe existed has none.
       - name: Prepare txAdmin recipe
@@ -471,7 +509,9 @@ jobs:
           name: enhanced-zip
           path: |
             ${{ steps.version.outputs.zip_name }}
+            ${{ steps.version.outputs.legacy_zip_name }}
             txadmin/
+          if-no-files-found: warn
 
   release:
     name: Release
@@ -600,6 +640,7 @@ jobs:
           TAG="enhanced-v$ENHANCED_VERSION"
           TITLE="vMenu Enhanced v$ENHANCED_VERSION & vMenu v$LEGACY_VERSION"
           ENHANCED_ZIP="vMenu-Enhanced-v$ENHANCED_VERSION.zip"
+          ENHANCED_LEGACY_ZIP="vMenu-Enhanced-Legacy-v$ENHANCED_VERSION.zip"
           LEGACY_ZIP="vMenu-$LEGACY_VERSION.zip"
 
           {
@@ -629,6 +670,9 @@ jobs:
             echo "| Version | For | Download |"
             echo "| --- | --- | --- |"
             echo "| **v$ENHANCED_VERSION** | FiveM Enhanced | \`$ENHANCED_ZIP\` |"
+            if [ -f "release-assets/$ENHANCED_LEGACY_ZIP" ]; then
+              echo "| **v$ENHANCED_VERSION** | Regular FiveM (legacy runtime) | \`$ENHANCED_LEGACY_ZIP\` |"
+            fi
             echo "| **v$LEGACY_VERSION** | FiveM (legacy runtime) | \`$LEGACY_ZIP\` |"
             echo ""
             if unzip -l "release-assets/$ENHANCED_ZIP" | grep -q 'plugin-api/vmenu.lua'; then
@@ -651,6 +695,9 @@ jobs:
           } > release_notes.md
 
           ASSETS=("release-assets/$ENHANCED_ZIP" "release-assets/$LEGACY_ZIP")
+          if [ -f "release-assets/$ENHANCED_LEGACY_ZIP" ]; then
+            ASSETS+=("release-assets/$ENHANCED_LEGACY_ZIP")
+          fi
 
           # The recipes keep one name forever, so txAdmin can always find them under /releases/latest/download/.
           # What they download is pinned to this release, so a recipe and its files always match.

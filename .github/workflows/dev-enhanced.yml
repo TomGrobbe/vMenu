@@ -67,6 +67,7 @@ jobs:
             echo "version=$VERSION"
             echo "assembly_ver=$NEXT"
             echo "zip_name=$ZIP_NAME"
+            echo "legacy_zip_name=vMenu-Enhanced-Legacy-v${VERSION}.zip"
           } >> "$GITHUB_OUTPUT"
           {
             echo "## Dev version"
@@ -85,11 +86,16 @@ jobs:
             -p:AssemblyVersion="${{ steps.version.outputs.assembly_ver }}" \
             -p:FileVersion="${{ steps.version.outputs.assembly_ver }}"
 
+      - name: Check the Legacy client against FiveM's sandbox
+        run: |
+          dotnet run --project tools/LegacyChecks -c Release -- --verify-il build/legacy/vMenu.Enhanced/client
+          dotnet run --project tools/LegacyChecks -c Release --no-build -- --check-refs build/legacy/vMenu.Enhanced/client
+
       - name: Pack plugin API packages
         shell: bash
         run: |
-          for project in vMenu.Enhanced.PluginContracts vMenu.Enhanced.ClientAPI vMenu.Enhanced.ServerAPI; do
-            dotnet pack "src/PluginApi/$project/$project.csproj" -c Release --no-build \
+          for project in src/Shared/vMenu.Enhanced.PluginContracts src/Enhanced/PluginApi/vMenu.Enhanced.ClientAPI src/Enhanced/PluginApi/vMenu.Enhanced.ServerAPI; do
+            dotnet pack "$project/$(basename "$project").csproj" -c Release --no-build \
               -p:Version="${{ steps.version.outputs.version }}" \
               -p:PackageVersion="${{ steps.version.outputs.version }}" \
               -o packages
@@ -113,10 +119,10 @@ jobs:
           VERSION: ${{ steps.version.outputs.version }}
         run: |
           NPM_VERSION="${VERSION%%+*}"
-          mkdir -p npm-package build/vMenu.Enhanced/plugin-api
+          mkdir -p npm-package build/enhanced/vMenu.Enhanced/plugin-api build/legacy/vMenu.Enhanced/plugin-api
 
           (
-            cd src/PluginApi/vMenu.Enhanced.JsAPI
+            cd src/Shared/vMenu.Enhanced.JsAPI
             npm ci --no-audit --no-fund
             npm version "$NPM_VERSION" --no-git-tag-version --allow-same-version
             npm run check
@@ -124,9 +130,10 @@ jobs:
             npm pack --pack-destination ../../../npm-package
           )
 
-          tr -d '\r' < src/PluginApi/vMenu.Enhanced.JsAPI/dist/vmenu.js > build/vMenu.Enhanced/plugin-api/vmenu.js
-          sed "s/versiongoeshere/$VERSION/g" src/PluginApi/vMenu.Enhanced.LuaAPI/vmenu.lua | tr -d '\r' > build/vMenu.Enhanced/plugin-api/vmenu.lua
-          head -n 1 build/vMenu.Enhanced/plugin-api/vmenu.lua build/vMenu.Enhanced/plugin-api/vmenu.js
+          tr -d '\r' < src/Shared/vMenu.Enhanced.JsAPI/dist/vmenu.js > build/enhanced/vMenu.Enhanced/plugin-api/vmenu.js
+          sed "s/versiongoeshere/$VERSION/g" src/Shared/vMenu.Enhanced.LuaAPI/vmenu.lua | tr -d '\r' > build/enhanced/vMenu.Enhanced/plugin-api/vmenu.lua
+          cp build/enhanced/vMenu.Enhanced/plugin-api/vmenu.* build/legacy/vMenu.Enhanced/plugin-api/
+          head -n 1 build/enhanced/vMenu.Enhanced/plugin-api/vmenu.lua build/enhanced/vMenu.Enhanced/plugin-api/vmenu.js
 
       - name: Upload npm package
         uses: actions/upload-artifact@v4
@@ -138,7 +145,7 @@ jobs:
         if: always()
         shell: pwsh
         run: |
-          $path = 'build/intermediate/translation-coverage.json'
+          $path = 'build/intermediate/enhanced/translation-coverage.json'
 
           if (-not (Test-Path $path)) {
             Write-Host 'No translation coverage was produced by this build.'
@@ -252,15 +259,23 @@ jobs:
       - name: Stamp version and zip
         shell: pwsh
         run: |
-          (Get-Content 'build/vMenu.Enhanced/fxmanifest.lua') -replace 'versiongoeshere', '${{ steps.version.outputs.version }}' |
-            Set-Content -Encoding ASCII 'build/vMenu.Enhanced/fxmanifest.lua'
-          Compress-Archive -Path 'build/vMenu.Enhanced/*' -DestinationPath '${{ steps.version.outputs.zip_name }}' -Force
+          foreach ($flavor in @(@('enhanced', '${{ steps.version.outputs.zip_name }}'), @('legacy', '${{ steps.version.outputs.legacy_zip_name }}'))) {
+            $manifest = "build/$($flavor[0])/vMenu.Enhanced/fxmanifest.lua"
+            (Get-Content $manifest) -replace 'versiongoeshere', '${{ steps.version.outputs.version }}' | Set-Content -Encoding ASCII $manifest
+            Compress-Archive -Path "build/$($flavor[0])/vMenu.Enhanced/*" -DestinationPath $flavor[1] -Force
+          }
 
       - name: Upload zip
         uses: actions/upload-artifact@v4
         with:
           name: enhanced-zip
           path: ${{ steps.version.outputs.zip_name }}
+
+      - name: Upload Legacy zip
+        uses: actions/upload-artifact@v4
+        with:
+          name: enhanced-legacy-zip
+          path: ${{ steps.version.outputs.legacy_zip_name }}
 
   # Pushes only. Pull requests and dependabot runs have no business publishing, and cannot get an id-token anyway.
   publish-nuget-prerelease:
