@@ -1,0 +1,58 @@
+using CitizenFX.Core;
+using CitizenFX.Core.Native;
+
+using vMenu.Enhanced.MenuFramework;
+using vMenu.Enhanced.Localization;
+
+using vMenu.Legacy.Hosting;
+
+namespace vMenu.Enhanced.Menus.Vehicles;
+
+public static class VehicleRepair
+{
+    // Long enough for the game to finish applying damage it had already decided on, short enough that
+    // nobody sees the vehicle flicker.
+    private const int SecondPassDelayMs = 100;
+
+    // Stays client side, unlike deleting. This only ever touches the vehicle the player is already
+    // sitting in, so there is no reach to police and nothing a server check could add.
+    public static async Task RepairCurrentAsync()
+    {
+        var vehicle = OwnVehicle.RequireDriven(Loc.VehicleOptions.RepairNoVehicle, Loc.VehicleOptions.RepairNotDriver);
+
+        if (vehicle is null)
+        {
+            return;
+        }
+
+        await ApplyAsync(vehicle.Handle);
+
+        Notifications.Success(MenuText.Key(Loc.VehicleOptions.Repaired));
+    }
+
+    // Twice, because the game applies some damage a moment after it is dealt: a single pass leaves
+    // windows that were already on their way to breaking bursting again just after the repair lands.
+    internal static async Task ApplyAsync(int vehicle)
+    {
+        Fix(vehicle);
+
+        await BaseScript.Delay(SecondPassDelayMs);
+
+        Fix(vehicle);
+    }
+
+    private static void Fix(int vehicle)
+    {
+        // Re-checked on the second pass, by which point the vehicle may have been deleted underneath it.
+        if (!API.DoesEntityExist(vehicle) || !API.IsEntityAVehicle(vehicle))
+        {
+            return;
+        }
+
+        API.SetVehicleFixed(vehicle);
+
+        // Health alone leaves the dents in place, and a wreck stays flagged as undriveable.
+        API.SetVehicleDeformationFixed(vehicle);
+        API.SetVehicleUndriveable(vehicle, false);
+    }
+}

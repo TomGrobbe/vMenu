@@ -1,0 +1,366 @@
+using CitizenFX.Core;
+using CitizenFX.Core.Native;
+
+using MenuAPI;
+
+using vMenu.Enhanced.Data.Logging;
+using vMenu.Enhanced.MenuFramework;
+using vMenu.Enhanced.Localization;
+using vMenu.Enhanced.Menus.Vehicles.Appearance;
+
+using vMenu.Legacy.Hosting;
+
+using vMenu.Enhanced.BrokenNatives;
+
+namespace vMenu.Enhanced.Menus.Vehicles.Sections;
+
+// The slot list is asked of the game rather than hard coded, so an add-on vehicle with slots the
+// base game never had shows them without vMenu knowing anything about it.
+internal static class ModsSection
+{
+    private static readonly Dictionary<int, int> Before = [];
+
+    private static int _tracked;
+
+    public static void Build(MenuBuilder menu)
+    {
+        menu.AddRange(Rows());
+
+        menu.Keys.Add(new MenuKey
+        {
+            Name = "toggledoors",
+            Description = MenuText.Key(Loc.VehicleOptions.ToggleDoorsBinding),
+            DefaultKey = "SPACE",
+            DefaultButton = "R1_INDEX",
+            ShadowedControl = Control.Jump,
+            Text = MenuText.Key(Loc.VehicleOptions.ToggleDoorsButton),
+            Handler = (_, _) => DoorsSection.ToggleAll(),
+        });
+
+        SectionRows.AutoFill(menu, Rows);
+
+        var closed = menu.OnClosed;
+
+        menu.OnClosed = closing =>
+        {
+            closed?.Invoke(closing);
+
+            Report();
+        };
+    }
+
+    private static IReadOnlyList<MenuEntry> Rows()
+    {
+        if (SectionRows.DrivenWithModKit() is not { } handle)
+        {
+            return SectionRows.BlockedOnly();
+        }
+
+        var rows = new List<MenuEntry>();
+
+        foreach (var slot in VehicleModSlots.Available(handle, includeWheelSlots: false))
+        {
+            rows.Add(SlotRow(handle, slot));
+        }
+
+        rows.Add(new CheckboxEntry
+        {
+            Text = MenuText.Key(Loc.VehicleOptions.Turbo),
+            Description = MenuText.Key(
+                Loc.VehicleOptions.TurboDescription,
+                ("number", VehicleModLabels.SlotNumber(VehicleModSlot.Turbo))),
+            ReadState = () => Toggled(VehicleModSlot.Turbo),
+            OnChanged = changed => Toggle(VehicleModSlot.Turbo, changed.Checked),
+        });
+
+        rows.Add(new CheckboxEntry
+        {
+            Text = MenuText.Key(Loc.VehicleOptions.TyreSmoke),
+            Description = MenuText.Key(
+                Loc.VehicleOptions.TyreSmokeDescription,
+                ("number", VehicleModLabels.SlotNumber(VehicleModSlot.TyreSmoke))),
+            ReadState = TyreSmokeFitted,
+            OnChanged = changed => SetTyreSmoke(changed.Checked),
+        });
+
+        rows.Add(TyreSmokeColorRow());
+        rows.Add(WindowTintRow());
+
+        return rows;
+    }
+
+    // The stock part first, then everything else the game offers.
+    private static ListEntry SlotRow(int handle, VehicleModSlot slot)
+    {
+        var count = API.GetNumVehicleMods(handle, (int)slot);
+
+        var options = new List<MenuText>(count + 1)
+        {
+            VehicleModLabels.StockName(handle, slot, count),
+        };
+
+        for (var index = 0; index < count; index++)
+        {
+            options.Add(VehicleModLabels.ModName(handle, slot, index, count));
+        }
+
+        var description = VehicleModLabels.SlotDescription(
+            handle,
+            slot,
+            VehicleModLabels.BareSlotName(handle, slot),
+            () => Position(slot));
+
+        return new ListEntry
+        {
+            Text = SlotName(handle, slot),
+            Description = description,
+            Options = options,
+
+            // Stock is -1 to the game and the first row here, so everything is shifted by one.
+            ReadSelectedIndex = () => SectionRows.Driven() is { } current
+                ? API.GetVehicleMod(current, (int)slot) + 1
+                : 0,
+
+            // On scroll rather than on enter, so the part appears on the vehicle as it is picked, which is the
+            // only way to see what you are choosing.
+            OnIndexChanged = changed =>
+            {
+                Fit(slot, changed.NewIndex - 1);
+
+                // The description carries which option is showing, and a description is only rewritten on a refresh,
+                // so scrolling would leave it a step behind.
+                changed.Item.Description = description.Resolve(Localizer.Current);
+            },
+        };
+    }
+
+    private static string Position(VehicleModSlot slot) =>
+        SectionRows.DrivenWithModKit() is { } handle
+            ? VehicleModLabels.Position(handle, slot)
+            : string.Empty;
+
+    private static ListEntry TyreSmokeColorRow()
+    {
+        var options = new List<MenuText>(VehicleSmokeColors.All.Count);
+
+        foreach (var color in VehicleSmokeColors.All)
+        {
+            options.Add(MenuText.Key(color.NameKey));
+        }
+
+        return new ListEntry
+        {
+            Text = MenuText.Key(Loc.VehicleOptions.TyreSmokeColor),
+            Description = MenuText.Key(Loc.VehicleOptions.TyreSmokeColorDescription),
+            Options = options,
+            ReadSelectedIndex = ReadTyreSmokeIndex,
+            OnIndexChanged = changed => PaintSmoke(changed.NewIndex),
+        };
+    }
+
+    private static ListEntry WindowTintRow()
+    {
+        var options = new List<MenuText>(VehicleOptionTables.WindowTints.Count);
+
+        foreach (var tint in VehicleOptionTables.WindowTints)
+        {
+            options.Add(tint.Text);
+        }
+
+        return new ListEntry
+        {
+            Text = MenuText.Key(Loc.VehicleOptions.WindowTint),
+            Description = MenuText.Key(Loc.VehicleOptions.WindowTintDescription),
+            Options = options,
+            ReadSelectedIndex = () => SectionRows.Driven() is { } handle
+                ? VehicleOptionTables.IndexOfValue(VehicleOptionTables.WindowTints, API.GetVehicleWindowTint(handle))
+                : 0,
+            OnIndexChanged = changed =>
+            {
+                if (SectionRows.Driven() is not { } handle
+                    || changed.NewIndex < 0
+                    || changed.NewIndex >= VehicleOptionTables.WindowTints.Count)
+                {
+                    return;
+                }
+
+                API.SetVehicleWindowTint(handle, VehicleOptionTables.WindowTints[changed.NewIndex].Value);
+            },
+        };
+    }
+
+    private static int ReadTyreSmokeIndex()
+    {
+        if (SectionRows.Driven() is not { } handle)
+        {
+            return 0;
+        }
+
+        NativeFixer.GetVehicleTyreSmokeColor(handle, out var red, out var green, out var blue);
+
+        var index = VehicleSmokeColors.IndexOfRgb(red, green, blue);
+
+        // A colour mixed by hand, or the white the game uses to mean no smoke at all, matches nothing in the
+        // list, so the row rests on the first entry.
+        return index < 0 ? 0 : index;
+    }
+
+    private static void PaintSmoke(int index)
+    {
+        if (SectionRows.DrivenWithModKit() is not { } handle || VehicleSmokeColors.At(index) is not { } color)
+        {
+            return;
+        }
+
+        API.SetVehicleTyreSmokeColor(handle, color.Red, color.Green, color.Blue);
+    }
+
+    private static bool TyreSmokeFitted()
+    {
+        if (SectionRows.DrivenWithModKit() is not { } handle)
+        {
+            return false;
+        }
+
+        if (!API.IsToggleModOn(handle, (int)VehicleModSlot.TyreSmoke))
+        {
+            return false;
+        }
+
+        // White is how the game says there is no smoke, so a kit left on that colour is not fitted as far as
+        // the player can tell, and the tick has to agree with what they can see.
+        NativeFixer.GetVehicleTyreSmokeColor(handle, out var red, out var green, out var blue);
+
+        return !VehicleSmokeColors.IsOff(red, green, blue);
+    }
+
+    private static void SetTyreSmoke(bool fitted)
+    {
+        if (SectionRows.DrivenWithModKit() is not { } handle)
+        {
+            return;
+        }
+
+        if (!fitted)
+        {
+            // All three, in this order. Toggling the mod off on its own leaves the smoke showing, and the game
+            // only really lets go of it once the colour is back to white and the mod is gone.
+            API.SetVehicleTyreSmokeColor(
+                handle,
+                VehicleSmokeColors.OffRed,
+                VehicleSmokeColors.OffGreen,
+                VehicleSmokeColors.OffBlue);
+
+            API.ToggleVehicleMod(handle, (int)VehicleModSlot.TyreSmoke, false);
+            API.RemoveVehicleMod(handle, (int)VehicleModSlot.TyreSmoke);
+
+            return;
+        }
+
+        API.ToggleVehicleMod(handle, (int)VehicleModSlot.TyreSmoke, true);
+
+        // Switching it on while the colour is still white would fit a kit that shows nothing, so the colour
+        // the list is resting on is applied with it.
+        NativeFixer.GetVehicleTyreSmokeColor(handle, out var red, out var green, out var blue);
+
+        if (VehicleSmokeColors.IsOff(red, green, blue))
+        {
+            PaintSmoke(ReadTyreSmokeIndex());
+        }
+    }
+
+    internal static MenuText SlotName(int handle, VehicleModSlot slot) =>
+        VehicleModLabels.SlotName(handle, slot);
+
+    private static void Fit(VehicleModSlot slot, int value)
+    {
+        if (SectionRows.DrivenWithModKit() is not { } handle)
+        {
+            return;
+        }
+
+        Track(handle, slot);
+
+        // Carried over rather than defaulted, since fitting a spoiler must not silently swap the tyres back
+        // to the standard ones.
+        var customTyres = NativeFixer.GetVehicleModVariation(handle, (int)VehicleModSlot.Wheels) != 0;
+
+        API.SetVehicleMod(handle, (int)slot, value, customTyres);
+    }
+
+    private static bool Toggled(VehicleModSlot slot) =>
+        SectionRows.DrivenWithModKit() is { } handle && API.IsToggleModOn(handle, (int)slot);
+
+    private static void Track(int handle, VehicleModSlot slot)
+    {
+        if (_tracked != handle)
+        {
+            Before.Clear();
+
+            _tracked = handle;
+        }
+
+        if (!Before.ContainsKey((int)slot))
+        {
+            Before[(int)slot] = API.GetVehicleMod(handle, (int)slot);
+        }
+    }
+
+    private static void Report()
+    {
+        if (Before.Count == 0)
+        {
+            return;
+        }
+
+        var handle = _tracked;
+        var changes = new List<string>();
+
+        if (API.DoesEntityExist(handle))
+        {
+            foreach (var (slot, was) in Before)
+            {
+                var now = API.GetVehicleMod(handle, slot);
+
+                if (now != was)
+                {
+                    changes.Add(Describe(handle, (VehicleModSlot)slot, now));
+                }
+            }
+        }
+
+        Before.Clear();
+
+        _tracked = 0;
+
+        if (changes.Count == 0)
+        {
+            return;
+        }
+
+        MenuAudit.ReportAction(
+            AuditActions.VehicleModsChanged,
+            VehicleSpawning.DisplayName(NativeFixer.GetEntityModel(handle)),
+            string.Join(", ", changes));
+    }
+
+    private static string Describe(int handle, VehicleModSlot slot, int fitted)
+    {
+        var localizer = Localizer.Current;
+        var count = API.GetNumVehicleMods(handle, (int)slot);
+
+        var part = fitted < 0
+            ? VehicleModLabels.StockName(handle, slot, count)
+            : VehicleModLabels.ModName(handle, slot, fitted, count);
+
+        return VehicleModLabels.BareSlotName(handle, slot).Resolve(localizer) + ": " + part.Resolve(localizer);
+    }
+
+    private static void Toggle(VehicleModSlot slot, bool on)
+    {
+        if (SectionRows.DrivenWithModKit() is { } handle)
+        {
+            API.ToggleVehicleMod(handle, (int)slot, on);
+        }
+    }
+}

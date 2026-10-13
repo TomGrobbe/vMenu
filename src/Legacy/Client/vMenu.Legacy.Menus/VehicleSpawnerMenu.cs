@@ -1,0 +1,325 @@
+using CitizenFX.Core;
+using CitizenFX.Core.Native;
+
+using vMenu.Enhanced.MenuFramework;
+using vMenu.Enhanced.Localization;
+using vMenu.Enhanced.Menus.Vehicles;
+using vMenu.Enhanced.Permissions;
+
+using VehicleSpawnerPermissions = vMenu.Enhanced.Data.Permissions.Menus.VehicleSpawner;
+
+using vMenu.Legacy.Hosting;
+
+using vMenu.Enhanced.BrokenNatives;
+
+namespace vMenu.Enhanced.Menus;
+
+// Grouped by category: the game's own vehicle classes, plus whatever the server owner defined in
+// config/vehicle-categories.json.
+[VMenu(
+    TitleKey = Loc.VehicleSpawner.Title,
+    SubtitleKey = Loc.VehicleSpawner.Subtitle,
+    DescriptionKey = Loc.VehicleSpawner.LinkDescription,
+    Permission = VehicleSpawnerPermissions.Menu)]
+public sealed class VehicleSpawnerMenu : MenuDefinition
+{
+    private VehicleCategory[] _categories = [];
+
+    private (string Model, int Class, string Label, string CategoryName, string Icon)[] _describedVehicles = [];
+
+    public override Task PrepareAsync()
+    {
+        var vehicles = BrokenNatives.NativeFixer.GetAllVehicleModels();
+
+        if (vehicles is null)
+        {
+            // The menu still exists, it just has no categories in it. Leaving it half-built would be worse than
+            // leaving it empty.
+            return Task.CompletedTask;
+        }
+
+        var described = vehicles
+            .Where(vehicle => !string.IsNullOrWhiteSpace(vehicle))
+            .Select(vehicle =>
+            {
+                var model = vehicle.Trim();
+                var hash = Hashing.Joaat(model);
+
+                return (
+                    Model: model,
+                    Class: API.GetVehicleClassFromName(hash),
+                    Custom: ClientVehiclePermissions.CategoryOfModel(model),
+                    Label: GetVehicleDisplayName(hash));
+            })
+            .OrderBy(vehicle => vehicle.Label)
+                .ThenBy(vehicle => vehicle.Model)
+            .ToArray();
+
+        // A game class every model left behind produces no group at all, so it gets no submenu.
+        var gameClasses = described
+            .Where(vehicle => vehicle.Custom is null)
+            .GroupBy(vehicle => vehicle.Class)
+            .Select(group => new VehicleCategory
+            {
+                Name = ClassName(group.Key),
+                Title = MenuText.From(() => ClassName(group.Key)),
+                Gate = () => ClientVehiclePermissions.CanSpawnVehicleClass(group.Key),
+                Vehicles = [.. group.Select(vehicle => (vehicle.Model, vehicle.Class, vehicle.Label))],
+            });
+
+        var custom = described
+            .Where(vehicle => vehicle.Custom is not null)
+            .GroupBy(vehicle => vehicle.Custom!, StringComparer.OrdinalIgnoreCase)
+            .Select(group => new VehicleCategory
+            {
+                Name = group.Key,
+                Title = MenuText.Literal(group.Key),
+                Gate = () => ClientVehiclePermissions.CanSpawnCustomCategory(group.Key),
+                Vehicles = [.. group.Select(vehicle => (vehicle.Model, vehicle.Class, vehicle.Label))],
+            });
+
+        _categories = [.. gameClasses.Concat(custom).OrderBy(category => category.Name)];
+
+        _describedVehicles = [.. _categories.SelectMany(category => category.Vehicles.Select(vehicle =>
+            (vehicle.Model, vehicle.Class, vehicle.Label, category.Name, VehicleIcon(Hashing.Joaat(vehicle.Model), vehicle.Class))))];
+
+        return Task.CompletedTask;
+    }
+
+    protected override void Build(MenuBuilder menu)
+    {
+        menu.Entries.Add(new ButtonEntry
+        {
+            Text = MenuText.Key(Loc.VehicleSpawner.SpawnByName),
+            Description = MenuText.Key(Loc.VehicleSpawner.SpawnByNameDescription),
+            Gate = VehicleSpawnerPermissions.SpawnByName,
+            OnSelectedAsync = _ => SpawnByNameAsync(),
+        });
+
+        menu.Entries.Add(new SubmenuEntry
+        {
+            Text = MenuText.Key(Loc.VehicleSpawner.SpawnByCategory),
+            Description = MenuText.Key(Loc.VehicleSpawner.SpawnByCategoryDescription),
+            MenuTitle = MenuText.Key(Loc.VehicleSpawner.Title),
+            MenuSubtitle = MenuText.Key(Loc.VehicleSpawner.SpawnByCategorySubtitle),
+            Build = BuildCategoryList,
+        });
+
+        menu.Entries.Add(new CheckboxEntry
+        {
+            Text = MenuText.Key(Loc.VehicleSpawner.SpawnInside),
+            Description = MenuText.Key(Loc.VehicleSpawner.SpawnInsideDescription),
+            ReadState = () => VehicleSpawnOptions.SpawnInside,
+            OnChanged = changed => VehicleSpawnOptions.SetSpawnInside(changed.Checked),
+        });
+
+        menu.Entries.Add(new CheckboxEntry
+        {
+            Text = MenuText.Key(Loc.VehicleSpawner.ReplacePrevious),
+            Description = MenuText.Key(Loc.VehicleSpawner.ReplacePreviousDescription),
+            LockedDescription = MenuText.Key(Loc.VehicleSpawner.ReplacePreviousLocked),
+            Gate = VehicleSpawnerPermissions.AllowKeepPreviousVehicle,
+            ReadState = () => VehicleSpawnOptions.ReplacePrevious,
+            OnChanged = changed => VehicleSpawnOptions.SetReplacePrevious(changed.Checked),
+        });
+
+        VehicleSpawnShortcuts.Attach(menu);
+    }
+
+    private void BuildCategoryList(MenuBuilder byCategory)
+    {
+        VehicleSpawnShortcuts.Attach(byCategory);
+
+        foreach (var category in _categories)
+        {
+            // Copied out of the loop variable so each entry's callbacks capture its own category.
+            var current = category;
+
+            byCategory.Entries.Add(new SubmenuEntry
+            {
+                Text = current.Title,
+                Description = MenuText.Key(
+                    Loc.VehicleSpawner.CategoryDescription,
+                    ("category", current.Title)),
+                Label = MenuText.Literal("→"),
+                MenuTitle = current.Title,
+                MenuSubtitle = MenuText.Key(Loc.VehicleSpawner.CategorySubtitle),
+                Gate = MenuGate.When(current.Gate),
+                Build = categoryMenu => BuildCategoryMenu(categoryMenu, current.Vehicles),
+            });
+        }
+    }
+
+    // Vehicles keep their own class id here, whichever category they ended up in, because the stats and
+    // the icon are read off the game's class rather than off the grouping.
+    private static void BuildCategoryMenu(MenuBuilder categoryMenu, (string Model, int Class, string Label)[] vehicles)
+    {
+        VehicleSpawnShortcuts.Attach(categoryMenu);
+
+        foreach (var (Model, Class, Label) in vehicles)
+        {
+            var modelName = Model;
+            var classId = Class;
+            var stats = VehicleClassStats.Normalise(Hashing.Joaat(modelName), classId);
+
+            categoryMenu.Entries.Add(new ButtonEntry
+            {
+                // Model names are data, not prose, so they are never looked up as a key.
+                Text = MenuText.Literal(Label),
+                Label = MenuText.Literal(modelName),
+                Gate = MenuGate.When(() => ClientVehiclePermissions.CanSpawnVehicle(modelName, classId)),
+                VehicleStats = () => stats,
+                OnSelectedAsync = _ => SpawnVehicleAsync(modelName, classId),
+            });
+        }
+    }
+
+    private async Task SpawnByNameAsync()
+    {
+        var typed = await UserInput.GetTextAsync(
+            MenuText.Key(Loc.VehicleSpawner.SpawnByNamePrompt),
+            maxLength: 30,
+            suggestions: SpawnableSuggestions());
+
+        if (string.IsNullOrWhiteSpace(typed))
+        {
+            return;
+        }
+
+        var modelName = typed.Trim();
+        var hash = Hashing.Joaat(modelName);
+
+        if (!API.IsModelValid(hash) || !API.IsModelAVehicle(hash))
+        {
+            Notifications.Error(MenuText.Key(Loc.VehicleSpawner.SpawnByNameInvalid, ("model", MenuText.Literal(modelName))));
+            return;
+        }
+
+        var vehicleClass = API.GetVehicleClassFromName(hash);
+
+        if (!ClientVehiclePermissions.CanSpawnVehicle(modelName, vehicleClass))
+        {
+            Notifications.Warning(MenuText.Key(Loc.VehicleSpawner.SpawnByNameDenied, ("model", MenuText.Literal(modelName))));
+            return;
+        }
+
+        await SpawnVehicleAsync(modelName, vehicleClass);
+    }
+
+    // Built per opening: a permission refresh in between changes what belongs in it.
+    private IReadOnlyList<InputSuggestion> SpawnableSuggestions() =>
+        [.. _describedVehicles
+            .Where(vehicle => ClientVehiclePermissions.CanSpawnVehicle(vehicle.Model, vehicle.Class))
+            .Select(vehicle => new InputSuggestion
+            {
+                Value = vehicle.Model,
+                Label = vehicle.Label,
+                Icon = vehicle.Icon,
+                Detail = vehicle.CategoryName,
+            })];
+
+    // These natives answer for a model hash, unlike GET_VEHICLE_TYPE_RAW, which needs a vehicle that
+    // already exists.
+    private static string VehicleIcon(uint hash, int vehicleClass)
+    {
+        if (API.IsThisModelATrain(hash))
+        {
+            return "train";
+        }
+
+        if (API.IsThisModelAPlane(hash))
+        {
+            return "plane";
+        }
+
+        if (API.IsThisModelAHeli(hash))
+        {
+            return "heli";
+        }
+
+        if (API.IsThisModelABicycle(hash))
+        {
+            return "bicycle";
+        }
+
+        if (API.IsThisModelABike(hash))
+        {
+            return "motorcycle";
+        }
+
+        if (API.IsThisModelAQuadbike(hash) || NativeFixer.IsThisModelAnAmphibiousQuadbike(hash))
+        {
+            return "quad";
+        }
+
+        if (API.IsThisModelASubmersible(hash))
+        {
+            return "submarine";
+        }
+
+        if (API.IsThisModelABoat(hash) || API.IsThisModelAnEmergencyBoat(hash) || API.IsThisModelAJetski(hash))
+        {
+            return "boat";
+        }
+
+        // A blimp is its own type, a trailer is none of these: what the natives have no word for follows its
+        // class instead.
+        return vehicleClass switch
+        {
+            8 => "motorcycle",
+            13 => "bicycle",
+            14 => "boat",
+            15 => "heli",
+            16 => "plane",
+            21 => "train",
+            10 or 11 or 20 => "truck",
+            12 => "van",
+            _ => "car",
+        };
+    }
+
+    // The game already returns these in the player's game language.
+    private static string ClassName(int vehicleClass) => API.GetLabelText($"VEH_CLASS_{vehicleClass}");
+
+    // A class rather than a record: generated equality routes through
+    // EqualityComparer<string>.Default, which the sandbox refuses to load.
+    private sealed class VehicleCategory
+    {
+        // Resolved once, for the alphabetical ordering and the by name suggestions.
+        public required string Name { get; init; }
+
+        public required MenuText Title { get; init; }
+
+        public required Func<bool> Gate { get; init; }
+
+        public required (string Model, int Class, string Label)[] Vehicles { get; init; }
+    }
+
+    private static string GetVehicleDisplayName(uint hash) => VehicleSpawning.DisplayName(hash);
+
+    private static async Task SpawnVehicleAsync(string modelName, int vehicleClass)
+    {
+        // Re-checked because a permission refresh can land between drawing and selecting. The server decides
+        // for real; this only avoids doing the work.
+        if (!ClientVehiclePermissions.CanSpawnVehicle(modelName, vehicleClass))
+        {
+            return;
+        }
+
+        if (!VehicleSpawnLimit.TryTakeOrWarn())
+        {
+            return;
+        }
+
+        if (await VehicleSpawning.SpawnAsync(modelName) is null)
+        {
+            return;
+        }
+
+        Notifications.Success(
+            MenuText.Key(
+                Loc.VehicleSpawner.Spawned,
+                ("vehicle", MenuText.Literal(GetVehicleDisplayName(Hashing.Joaat(modelName))))),
+            Notifications.SpawnDurationMs);
+    }
+}

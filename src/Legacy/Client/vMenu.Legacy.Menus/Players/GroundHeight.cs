@@ -1,0 +1,166 @@
+using CitizenFX.Core;
+using CitizenFX.Core.Native;
+
+using vMenu.Enhanced.BrokenNatives;
+using vMenu.Enhanced.Logging;
+
+using vMenu.Legacy.Hosting;
+
+namespace vMenu.Enhanced.Menus.Players;
+
+// A ray fired straight down the column, not GetGroundZFor_3dCoord or its ExcludingObjects sibling.
+// Those two fault inside the game itself: the call reaches CitizenFX.Base.NativeApi.Invoke and dies
+// there with an SEHException, on every form of them, and nothing on this side fixes it. The game
+// only answers for terrain it has streamed in, and only streams terrain near something it is
+// rendering, which is why the entity is walked up the column and the ray fired again at each stop.
+internal static class GroundHeight
+{
+    // Put down slightly above what was found, so the player is not standing in the floor.
+    private const float Clearance = 1f;
+
+    // Nothing in the map is above this, so a column that gets here has no ground in it.
+    private const float Ceiling = 1200f;
+
+    // Above everything, so one ray covers the whole column.
+    private const float ColumnTop = 1500f;
+
+    // Below the sea bed, so a ray that hits nothing really had nothing to hit.
+    private const float ColumnBottom = -300f;
+
+    private const int Map = 1;
+
+    private const int MapAndObjects = 1 | 16;
+
+    // Cargo culted from every script in the wild, this one included. Not a considered value.
+    private const int ShapeTestOptions = 7;
+
+    // Let the probe through everything, so only water can stop it.
+    private const int NothingBlocks = 0;
+
+    // The probe reached water. The other two answers are nothing found, and blocked short of it.
+    private const int WaterTestWater = 1;
+
+    private const int ShapeTestNotReady = 1;
+
+    private const int ShapeTestReady = 2;
+
+    private const int MaxResultFrames = 10;
+
+    private static readonly float[] ProbeHeights =
+    [
+        0f, 25f, 50f, 75f, 100f, 150f, 200f, 250f, 300f, 350f,
+        400f, 450f, 500f, 550f, 600f, 650f, 700f, 750f, 800f, Ceiling,
+    ];
+
+    // The height to put the entity at, or null if nothing answered.
+    public static async Task<float?> FindAsync(int entity, float x, float y)
+    {
+        // Probing moves the entity, so a search that comes back with nothing has to put it back rather than
+        // leave the player standing at whatever height it gave up on.
+        var origin = API.GetEntityCoords(entity, false);
+
+        try
+        {
+            foreach (var height in ProbeHeights)
+            {
+                API.SetEntityCoords(entity, x, y, height, false, false, false, true);
+
+                await BaseScript.Delay(0);
+
+                if (await AskAsync(entity, x, y) is { } found)
+                {
+                    return found + Clearance;
+                }
+            }
+
+            if (FromEntity(entity, x, y) is { } last)
+            {
+                return last;
+            }
+        }
+        catch (Exception exception)
+        {
+            // Answered as "no ground" rather than left to unwind, because the entity is sitting at a probe
+            // height by now and a throw would leave the player standing there.
+            Log.Error($"[Teleport] Looking for the ground at {x}, {y} threw: {exception}");
+        }
+
+        API.SetEntityCoords(entity, origin.X, origin.Y, origin.Z, false, false, false, true);
+
+        return null;
+    }
+
+    private static async Task<float?> AskAsync(int entity, float x, float y)
+    {
+        var solid = await CastAsync(entity, x, y, MapAndObjects)
+            // Without objects, for a spot where a prop is all the first ray found and the map underneath it is
+            // what the player actually wants.
+            ?? await CastAsync(entity, x, y, Map);
+
+        if (solid is not { } ground)
+        {
+            return null;
+        }
+
+        // The ray goes straight through water and hits the bed, so a lake would put the player on the bottom
+        // of it. Anything solid below a surface loses to the surface.
+        return Surface(x, y) is { } water && water > ground ? water : ground;
+    }
+
+    // Nothing is allowed to block the probe, because the question here is only ever where the water is.
+    // Guarded on its own rather than left to the caller's catch: this only refines a ground height that
+    // has already been found, so it must never be what turns a good answer into no answer.
+    private static float? Surface(float x, float y)
+    {
+        try
+        {
+            return NativeFixer.TestVerticalProbeAgainstAllWater(x, y, ColumnTop, NothingBlocks, out var height) == WaterTestWater
+                ? height
+                : null;
+        }
+        catch (Exception exception)
+        {
+            Log.Error($"[Teleport] Looking for water at {x}, {y} threw, so the solid ground stands: {exception}");
+
+            return null;
+        }
+    }
+
+    private static async Task<float?> CastAsync(int entity, float x, float y, int flags)
+    {
+        // Synchronous, so it answers in the frame it was started rather than costing one per probe. The
+        // entity is excluded because it is sitting in the column the ray is fired down.
+        var test = API.StartExpensiveSynchronousShapeTestLosProbe(
+            x, y, ColumnTop,
+            x, y, ColumnBottom,
+            flags,
+            entity,
+            ShapeTestOptions);
+
+        for (var frame = 0; frame < MaxResultFrames; frame++)
+        {
+            var status = NativeFixer.GetShapeTestResult(test, out var hit, out var end, out _, out _);
+
+            if (status == ShapeTestNotReady)
+            {
+                await BaseScript.Delay(0);
+
+                continue;
+            }
+
+            return status == ShapeTestReady && hit != 0 ? end.Z : null;
+        }
+
+        return null;
+    }
+
+    // Last resort: a different mechanism to the ray, so it sometimes answers when that has not.
+    private static float? FromEntity(int entity, float x, float y)
+    {
+        API.SetEntityCoords(entity, x, y, Ceiling, false, false, false, true);
+
+        var above = API.GetEntityHeightAboveGround(entity);
+
+        return above is > 0f and < Ceiling ? Ceiling - above + Clearance : null;
+    }
+}

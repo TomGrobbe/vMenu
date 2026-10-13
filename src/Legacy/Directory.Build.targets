@@ -1,0 +1,29 @@
+<Project>
+
+  <PropertyGroup>
+    <ResourceManifest>$(RepoRoot)assets\legacy\fxmanifest.lua</ResourceManifest>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(IsResourceRootProject)' != 'true'">
+    <PackageReference Update="MenuAPI.FiveM" ExcludeAssets="contentFiles" />
+  </ItemGroup>
+
+  <Import Project="$(MSBuildThisFileDirectory)Assemblies.targets" />
+  <Import Project="$(RepoRoot)src\Resource.targets" />
+
+  <ItemGroup Condition="'$(IsResourceRootProject)' == 'true'">
+    <ResourceLegacyClientScriptFile Include="$(RepoRoot)assets\legacy\client\**\*" />
+  </ItemGroup>
+
+  <Target Name="CopyResourceLegacyClientScriptFiles"
+          AfterTargets="Build"
+          Condition="'$(IsResourceRootProject)' == 'true'"
+          Inputs="@(ResourceLegacyClientScriptFile)"
+          Outputs="@(ResourceLegacyClientScriptFile -> '$(ResourceRoot)client\%(RecursiveDir)%(Filename)%(Extension)')">
+
+    <Copy SourceFiles="@(ResourceLegacyClientScriptFile)"
+          DestinationFiles="@(ResourceLegacyClientScriptFile -> '$(ResourceRoot)client\%(RecursiveDir)%(Filename)%(Extension)')"
+          SkipUnchangedFiles="true" />
+  </Target>
+
+</Project>

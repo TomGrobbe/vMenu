@@ -1,0 +1,246 @@
+using System.Globalization;
+
+using CitizenFX.Core;
+using CitizenFX.Core.Native;
+
+using vMenu.Enhanced.Data.VehicleData;
+using vMenu.Enhanced.Logging;
+
+using vMenu.Legacy.Hosting;
+
+using vMenu.Enhanced.BrokenNatives;
+
+namespace vMenu.Enhanced.Menus.Vehicles.Personal;
+
+internal static class RemoteVehicleExecutor
+{
+    private const float OpenAngle = 0.1f;
+
+    public static void Initialize() =>
+        Script.EventHandlers[PersonalVehicleEvents.Perform] += new Action<string, string, string, object>((requestId, networkId, action, args) =>
+            OnPerform(requestId, networkId, action, Payload.Strings(args)));
+
+    private static async void OnPerform(string requestId, string networkId, string action, string[] args)
+    {
+        var outcome = RemoteVehicleAction.Failed;
+
+        try
+        {
+            outcome = await CarryOutAsync(networkId, action, args ?? []);
+        }
+        catch (Exception exception)
+        {
+            Log.Error($"[PersonalVehicle] Carrying out '{action}' failed: {exception}");
+        }
+
+        await BaseScript.Delay(0);
+
+        BaseScript.TriggerServerEvent(PersonalVehicleEvents.Performed, requestId, outcome);
+    }
+
+    private static async Task<string> CarryOutAsync(string networkId, string action, string[] args)
+    {
+        if (!int.TryParse(networkId, NumberStyles.Integer, CultureInfo.InvariantCulture, out var id))
+        {
+            return RemoteVehicleAction.Failed;
+        }
+
+        var entity = await NetworkEntity.ResolveAsync(id);
+
+        if (entity == 0)
+        {
+            return RemoteVehicleAction.Failed;
+        }
+
+        if (string.Equals(action, RemoteVehicleAction.Explode, StringComparison.Ordinal) && HasGodMode(entity))
+        {
+            return RemoteVehicleAction.GodMode;
+        }
+
+        if (!await NetworkEntity.TakeControlAsync(entity))
+        {
+            return RemoteVehicleAction.Failed;
+        }
+
+        await BaseScript.Delay(0);
+
+        return Apply(entity, action, args) ? RemoteVehicleAction.Done : RemoteVehicleAction.Failed;
+    }
+
+    private static bool HasGodMode(int entity) =>
+        NativeFixer.GetEntityProofs(entity, out _, out _, out var explosionProof, out _, out _, out _, out _, out _)
+        && explosionProof;
+
+    private static bool Apply(int entity, string action, string[] args)
+    {
+        switch (action)
+        {
+            case RemoteVehicleAction.Lock:
+                return Lock(entity, Flag(args, 0));
+
+            case RemoteVehicleAction.Engine:
+                API.SetVehicleEngineOn(entity, Flag(args, 0), true, true);
+
+                return true;
+
+            case RemoteVehicleAction.Lights:
+                return Lights(entity, args);
+
+            case RemoteVehicleAction.Door:
+                return Door(entity, args);
+
+            case RemoteVehicleAction.AllDoors:
+                return AllDoors(entity, Mode(args, 0));
+
+            case RemoteVehicleAction.Window:
+                return Window(entity, args);
+
+            case RemoteVehicleAction.AllWindows:
+                return AllWindows(entity, Mode(args, 0));
+
+            case RemoteVehicleAction.Explode:
+                return Explode(entity);
+
+            default:
+                Log.Error($"[PersonalVehicle] Asked to carry out '{action}', which is not something this client knows.");
+
+                return false;
+        }
+    }
+
+    private static bool Lock(int entity, bool locked)
+    {
+        API.SetVehicleDoorsLocked(
+            entity,
+            locked ? RemoteVehicleAction.LockLocked : RemoteVehicleAction.LockUnlocked);
+
+        API.SetVehicleDoorsLockedForAllPlayers(entity, locked);
+
+        return true;
+    }
+
+    private static bool Lights(int entity, string[] args)
+    {
+        if (!Index(args, 0, out var state))
+        {
+            return false;
+        }
+
+        API.SetVehicleLights(entity, state);
+
+        if (state != RemoteVehicleAction.LightsAutomatic)
+        {
+            API.SetVehicleFullbeam(entity, false);
+        }
+
+        return true;
+    }
+
+    private static bool Door(int entity, string[] args)
+    {
+        if (!Index(args, 0, out var door) || !API.GetIsDoorValid(entity, door))
+        {
+            return false;
+        }
+
+        SetDoor(entity, door, Wanted(Mode(args, 1), IsOpen(entity, door)));
+
+        return true;
+    }
+
+    private static bool AllDoors(int entity, string mode)
+    {
+        var open = string.Equals(mode, RemoteVehicleAction.Open, StringComparison.Ordinal);
+
+        for (var door = 0; door < RemoteVehicleAction.DoorCount; door++)
+        {
+            if (API.GetIsDoorValid(entity, door))
+            {
+                SetDoor(entity, door, open);
+            }
+        }
+
+        return true;
+    }
+
+    private static bool Window(int entity, string[] args)
+    {
+        if (!Index(args, 0, out var window) || window < 0 || window >= RemoteVehicleAction.WindowCount)
+        {
+            return false;
+        }
+
+        SetWindow(entity, window, string.Equals(Mode(args, 1), RemoteVehicleAction.Up, StringComparison.Ordinal));
+
+        return true;
+    }
+
+    private static bool AllWindows(int entity, string mode)
+    {
+        var up = string.Equals(mode, RemoteVehicleAction.Up, StringComparison.Ordinal);
+
+        for (var window = 0; window < RemoteVehicleAction.WindowCount; window++)
+        {
+            SetWindow(entity, window, up);
+        }
+
+        return true;
+    }
+
+    private static bool Explode(int entity)
+    {
+        NativeFixer.NetworkExplodeVehicle(entity, true, false, 0);
+
+        var handle = entity;
+
+        NativeFixer.SetEntityAsNoLongerNeeded(ref handle);
+
+        return true;
+    }
+
+    private static void SetDoor(int entity, int door, bool open)
+    {
+        if (open)
+        {
+            API.SetVehicleDoorOpen(entity, door, false, false);
+
+            return;
+        }
+
+        API.SetVehicleDoorShut(entity, door, false);
+    }
+
+    private static void SetWindow(int entity, int window, bool up)
+    {
+        if (up)
+        {
+            NativeFixer.RollUpWindow(entity, window);
+
+            return;
+        }
+
+        NativeFixer.RollDownWindow(entity, window);
+    }
+
+    private static bool IsOpen(int entity, int door) => API.GetVehicleDoorAngleRatio(entity, door) > OpenAngle;
+
+    private static bool Wanted(string mode, bool open) => mode switch
+    {
+        RemoteVehicleAction.Open => true,
+        RemoteVehicleAction.Shut => false,
+        _ => !open,
+    };
+
+    private static bool Flag(string[] args, int index) =>
+        args.Length > index && string.Equals(args[index], RemoteVehicleAction.On, StringComparison.Ordinal);
+
+    private static string Mode(string[] args, int index) => args.Length > index ? args[index] : string.Empty;
+
+    private static bool Index(string[] args, int index, out int value)
+    {
+        value = 0;
+
+        return args.Length > index
+            && int.TryParse(args[index], NumberStyles.Integer, CultureInfo.InvariantCulture, out value);
+    }
+}

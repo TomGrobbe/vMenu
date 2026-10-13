@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>vMenu.Enhanced.Configuration</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\vMenu.Legacy.Hosting\vMenu.Legacy.Hosting.csproj" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Shared\vMenu.Enhanced.Data\vMenu.Enhanced.Data.csproj" />
+    <ProjectReference Include="..\..\..\Shared\vMenu.Enhanced.Logging\vMenu.Enhanced.Logging.csproj" />
+    <ProjectReference Include="..\vMenu.Legacy.BrokenNatives\vMenu.Legacy.BrokenNatives.csproj" />
+  </ItemGroup>
+
+</Project>

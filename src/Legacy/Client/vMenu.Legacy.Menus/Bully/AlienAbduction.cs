@@ -1,0 +1,309 @@
+
+using CitizenFX.Core;
+using CitizenFX.Core.Native;
+
+using vMenu.Enhanced.Data.Bullying;
+using vMenu.Enhanced.Events;
+
+using vMenu.Enhanced.Menus.Players;
+
+using vMenu.Legacy.Hosting;
+
+using vMenu.Enhanced.BrokenNatives;
+
+namespace vMenu.Enhanced.Menus.Bully;
+
+internal static class AlienAbduction
+{
+    private const string Bank = "DLC_MPSUM2/MPSUM2_Generic";
+
+    private const string SoundSet = "Sight_Seeing_Sounds";
+
+    private const string FloatDictionary = "anim@scripted@freemode@ufo_invasion@ufo_float@male@";
+
+    private const float ShipHeight = 120f;
+
+    private const int SoundRange = 250;
+
+    private const string ReactClip = "react_upperbody";
+
+    private const string FloatClip = "float";
+
+    private const int HoverMs = 2500;
+
+    private const int ReactFailsafeMs = 4000;
+
+    private const int FloatFailsafeMs = 12000;
+
+    private const float ReactDone = 0.99f;
+
+    private const float FloatDone = 0.7f;
+
+    private const float MinimumTravel = 250f;
+
+    private const int ReactFlags = 8 | 16 | 131072 | 1048576;
+
+    private const int FloatFlags = 8 | 2 | 131072 | 1048576 | 2048 | 512 | 1024;
+
+    private static readonly (Vector3 Position, float Heading)[] WakeUpSpots =
+    [
+        (new(2445.3259f, 3777.7319f, 40.2572f), 279.8778f),
+        (new(1571.6476f, 3576.7224f, 31.6067f), 120.3943f),
+        (new(1324.4664f, 2981.9822f, 40.3988f), 87.6742f),
+        (new(-294.2128f, 2544.1169f, 74.4209f), 275.1376f),
+        (new(-659.0776f, 2454.7395f, 47.9649f), 68.2270f),
+        (new(-2305.3804f, 2545.9353f, 0.5825f), 0.9353f),
+        (new(-2057.1567f, 3240.1831f, 30.4989f), 60.7713f),
+        (new(-576.3850f, 5462.1582f, 59.8029f), 192.2358f),
+        (new(453.8146f, 5565.7817f, 780.1841f), 280.8828f),
+        (new(424.0188f, 6472.5415f, 34.8781f), 231.9386f),
+        (new(1532.6165f, 6340.1592f, 23.1857f), 105.1666f),
+        (new(3852.0015f, 4463.7583f, 1.7185f), 90.4840f),
+        (new(2394.2075f, 4907.2217f, 41.5675f), 215.0774f),
+        (new(1777.1290f, 4823.7485f, 33.8178f), 23.1621f),
+        (new(-884.9773f, 4429.7158f, 19.9556f), 255.9288f),
+        (new(125.5299f, 630.8699f, 205.4403f), 174.3078f),
+    ];
+
+    private static bool _active;
+
+    public static bool IsActive => _active;
+
+    public static void Initialize() => ResourceShutdown.Stopping += OnShutdown;
+
+    // A restart mid abduction would otherwise leave the target frozen and invisible in the air.
+    private static void OnShutdown()
+    {
+        if (!_active)
+        {
+            return;
+        }
+
+        WakeUp.Uncover();
+
+        var ped = API.PlayerPedId();
+
+        API.FreezeEntityPosition(ped, false);
+        NativeFixer.NetworkFadeInEntity(ped, true, false);
+    }
+
+    public static async Task Start(BullyRun run)
+    {
+        var ped = API.PlayerPedId();
+
+        if (_active || Relocation.IsAway)
+        {
+            run.Busy();
+
+            return;
+        }
+
+        if (!API.IsPedOnFoot(ped))
+        {
+            run.Skip(BullyEvents.RefusedOnFoot);
+
+            return;
+        }
+
+        _active = true;
+
+        run.Started();
+
+        var ship = 0;
+        var sound = -1;
+        var bank = false;
+        var faded = false;
+        var announced = false;
+        var beamGround = Vector3.Zero;
+
+        try
+        {
+            var stopAllCount = BullyState.StopAllCount;
+            var ground = API.GetEntityCoords(ped, false);
+            var shipAt = new Vector3(ground.X, ground.Y, ground.Z + ShipHeight);
+
+            beamGround = ground;
+
+            ship = await CreateShipAsync(shipAt);
+            bank = await Streaming.AudioBankAsync(Bank);
+
+            if (bank)
+            {
+                sound = API.GetSoundId();
+
+                API.PlaySoundFromCoord(sound, "UFO_Ambience", shipAt.X, shipAt.Y, shipAt.Z, SoundSet, true, SoundRange, false);
+            }
+
+            UfoBeam.Announce(true, ground, ShipHeight);
+
+            announced = true;
+
+            var animated = await Streaming.AnimDictAsync(FloatDictionary) && await WakeUp.LoadAsync();
+
+            await BeamAsync(ship, ground, shipAt, HoverMs, stopAllCount, null);
+
+            if (stopAllCount != BullyState.StopAllCount)
+            {
+                return;
+            }
+
+            if (bank)
+            {
+                Fx.Sound("Abducted", SoundSet, shipAt, true, SoundRange);
+            }
+
+            ped = API.PlayerPedId();
+
+            if (animated)
+            {
+                NativeFixer.TaskPlayAnim(ped, FloatDictionary, ReactClip, 8f, -8f, -1, ReactFlags, 0f, false, 0, false);
+
+                await BeamAsync(ship, ground, shipAt, ReactFailsafeMs, stopAllCount, () => Phase(ped, ReactClip) > ReactDone);
+
+                NativeFixer.TaskPlayAnim(ped, FloatDictionary, FloatClip, 8f, -8f, -1, FloatFlags, 0f, false, 0, false);
+
+                await BeamAsync(ship, ground, shipAt, FloatFailsafeMs, stopAllCount, () => Phase(ped, FloatClip) > FloatDone);
+            }
+            else
+            {
+                await BeamAsync(ship, ground, shipAt, ReactFailsafeMs, stopAllCount, null);
+            }
+
+            if (stopAllCount != BullyState.StopAllCount)
+            {
+                return;
+            }
+
+            API.FreezeEntityPosition(ped, true);
+            API.NetworkFadeOutEntity(ped, false, true);
+
+            faded = true;
+
+            await WakeUp.CoverAsync();
+
+            UfoBeam.Announce(false, ground, ShipHeight);
+
+            announced = false;
+
+            await BullySpawnCleanup.DeleteAsync(ship);
+
+            ship = 0;
+
+            StopSound(ref sound);
+
+            var wakeUp = WakeUpSpot(ground);
+
+            await PlayerTeleport.ToCoordsAsync(wakeUp.Position, wakeUp.Heading);
+
+            faded = false;
+
+            await WakeUp.RevealAsync(animated);
+        }
+        finally
+        {
+            WakeUp.Uncover();
+
+            var current = API.PlayerPedId();
+
+            API.FreezeEntityPosition(current, false);
+
+            if (faded)
+            {
+                NativeFixer.NetworkFadeInEntity(current, true, false);
+            }
+
+            if (announced)
+            {
+                UfoBeam.Announce(false, beamGround, ShipHeight);
+            }
+
+            await BullySpawnCleanup.DeleteAsync(ship);
+
+            StopSound(ref sound);
+
+            if (bank)
+            {
+                Streaming.ReleaseAudioBank(Bank);
+            }
+
+            API.RemoveAnimDict(FloatDictionary);
+            WakeUp.Release();
+
+            _active = false;
+        }
+    }
+
+    private static float Phase(int ped, string clip) =>
+        API.IsEntityPlayingAnim(ped, FloatDictionary, clip, 3)
+            ? API.GetEntityAnimCurrentTime(ped, FloatDictionary, clip)
+            : 0f;
+
+    private static (Vector3 Position, float Heading) WakeUpSpot(Vector3 awayFrom)
+    {
+        var far = WakeUpSpots.Where(spot => Vector3.Distance(spot.Position, awayFrom) >= MinimumTravel).ToArray();
+
+        return far.Length > 0 ? far[Dice.Next(far.Length)] : WakeUpSpots[0];
+    }
+
+    private static async Task<int> CreateShipAsync(Vector3 at)
+    {
+        var model = Streaming.Hash(BullyModels.Ship);
+
+        if (!await Streaming.ModelAsync(model))
+        {
+            model = Streaming.Hash(BullyModels.FallbackShip);
+
+            if (!await Streaming.ModelAsync(model))
+            {
+                return 0;
+            }
+        }
+
+        var ship = NativeFixer.CreateObjectNoOffset(model, at.X, at.Y, at.Z, true, false, false, false);
+
+        API.SetModelAsNoLongerNeeded(model);
+
+        if (ship == 0)
+        {
+            return 0;
+        }
+
+        API.SetEntityCollision(ship, false, false);
+        API.FreezeEntityPosition(ship, true);
+        API.SetEntityLodDist(ship, 9000);
+
+        BullySpawnCleanup.TrackForCleanup(ship);
+
+        return ship;
+    }
+
+    private static async Task BeamAsync(int ship, Vector3 ground, Vector3 shipAt, int durationMs, int stopAllCount, Func<bool>? done)
+    {
+        var endsAt = API.GetGameTimer() + durationMs;
+
+        while (API.GetGameTimer() < endsAt && stopAllCount == BullyState.StopAllCount && done?.Invoke() != true)
+        {
+            if (ship != 0 && API.DoesEntityExist(ship))
+            {
+                API.SetEntityHeading(ship, API.GetEntityHeading(ship) + API.GetFrameTime() * 10f);
+            }
+
+            UfoBeam.Draw(ground, shipAt.Z - ground.Z);
+
+            await BaseScript.Delay(0);
+        }
+    }
+
+    private static void StopSound(ref int sound)
+    {
+        if (sound == -1)
+        {
+            return;
+        }
+
+        API.StopSound(sound);
+        API.ReleaseSoundId(sound);
+
+        sound = -1;
+    }
+}

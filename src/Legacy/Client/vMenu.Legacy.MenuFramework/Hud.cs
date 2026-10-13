@@ -1,0 +1,102 @@
+using CitizenFX.Core;
+using CitizenFX.Core.Native;
+
+using vMenu.Legacy.Hosting;
+
+using vMenu.Enhanced.BrokenNatives;
+
+namespace vMenu.Enhanced.MenuFramework;
+
+/// <summary>Text drawn straight onto the screen by the game, for overlays that have to sit in the world or
+/// track the minimap rather than live in the NUI page like Notifications.</summary>
+public static class Hud
+{
+    public enum TextAlignment
+    {
+        Center = 0,
+        Left = 1,
+        Right = 2,
+    }
+
+    /// <summary>The line break the game's text renderer understands. A \n is drawn literally.</summary>
+    public const string NewLine = "~n~";
+
+    private const int DefaultFont = 6;
+
+    private const float DefaultSize = 0.48f;
+
+    /// <summary>Whether the game is in a state where drawing anything would be wrong: mid player switch, in the
+    /// pause menu, faded out, or with the HUD turned off by the player or by a script.</summary>
+    public static bool CanDraw =>
+        !SceneLock.IsActive
+        && API.IsHudPreferenceSwitchedOn()
+        && !API.IsHudHidden()
+        && !API.IsPlayerSwitchInProgress()
+        && API.IsScreenFadedIn()
+        && !API.IsPauseMenuActive()
+        && !API.IsFrontendFading()
+        && !API.IsPauseMenuRestarting();
+
+    /// <summary>Draws at screen coordinates, or relative to the current draw origin when one is set by
+    /// SetDrawOrigin. The outline is what keeps text readable over a bright sky.</summary>
+    public static void DrawText(
+        string text,
+        float x,
+        float y,
+        float size = DefaultSize,
+        TextAlignment alignment = TextAlignment.Left,
+        int font = DefaultFont,
+        bool disableOutline = false)
+    {
+        if (!CanDraw)
+        {
+            return;
+        }
+
+        API.SetTextFont(font);
+        API.SetTextScale(1.0f, size);
+
+        if (alignment is TextAlignment.Right)
+        {
+            API.SetTextWrap(0f, x);
+        }
+
+        API.SetTextJustification((int)alignment);
+
+        if (!disableOutline)
+        {
+            API.SetTextOutline();
+        }
+
+        API.BeginTextCommandDisplayText("STRING");
+        API.AddTextComponentSubstringPlayerName(text);
+
+        // The third argument is new in Enhanced and has no legacy counterpart.
+        NativeFixer.EndTextCommandDisplayText(x, y, 0);
+    }
+
+    /// <summary>Draws text at a point in the world. Multi-line text runs downward from z, so the caller decides
+    /// what sits on top.</summary>
+    public static void DrawText3D(
+        string text,
+        float x,
+        float y,
+        float z,
+        float size = DefaultSize,
+        TextAlignment alignment = TextAlignment.Center,
+        int font = 0)
+    {
+        // Checked before the origin is set rather than leaving it to DrawText, so a hidden HUD costs nothing
+        // for callers drawing one of these per entity per frame.
+        if (!CanDraw)
+        {
+            return;
+        }
+
+        NativeFixer.SetDrawOrigin(x, y, z, false);
+
+        DrawText(text, 0f, 0f, size, alignment, font);
+
+        API.ClearDrawOrigin();
+    }
+}

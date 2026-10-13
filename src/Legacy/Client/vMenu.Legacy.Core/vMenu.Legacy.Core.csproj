@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <AssemblyName>vMenu.Legacy.Core.net</AssemblyName>
+    <RootNamespace>vMenu.Enhanced.Core</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\vMenu.Legacy.Hosting\vMenu.Legacy.Hosting.csproj" />
+  </ItemGroup>
+  <PropertyGroup>
+    <IsResourceRootProject>true</IsResourceRootProject>
+    <IsResourceSideProject>true</IsResourceSideProject>
+    <ResourceSide>client</ResourceSide>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="MenuAPI.FiveM" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Shared\vMenu.Enhanced.Logging\vMenu.Enhanced.Logging.csproj" />
+    <ProjectReference Include="..\vMenu.Legacy.Events\vMenu.Legacy.Events.csproj" />
+    <ProjectReference Include="..\vMenu.Legacy.Menus\vMenu.Legacy.Menus.csproj" />
+    <ProjectReference Include="..\vMenu.Legacy.NoClip\vMenu.Legacy.NoClip.csproj" />
+    <ProjectReference Include="..\vMenu.Legacy.Permissions\vMenu.Legacy.Permissions.csproj" />
+    <ProjectReference Include="..\vMenu.Legacy.Plugins\vMenu.Legacy.Plugins.csproj" />
+    <ProjectReference Include="..\vMenu.Legacy.Serialization\vMenu.Legacy.Serialization.csproj" />
+    <ProjectReference Include="..\vMenu.Legacy.Storage\vMenu.Legacy.Storage.csproj" />
+    <ProjectReference Include="..\vMenu.Legacy.Ticks\vMenu.Legacy.Ticks.csproj" />
+  </ItemGroup>
+</Project>

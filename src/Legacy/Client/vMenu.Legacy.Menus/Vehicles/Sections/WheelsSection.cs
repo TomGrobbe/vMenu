@@ -1,0 +1,290 @@
+using CitizenFX.Core;
+using CitizenFX.Core.Native;
+
+using vMenu.Enhanced.MenuFramework;
+using vMenu.Enhanced.Localization;
+using vMenu.Enhanced.Menus.Vehicles.Appearance;
+
+using vMenu.Legacy.Hosting;
+
+using vMenu.Enhanced.BrokenNatives;
+
+namespace vMenu.Enhanced.Menus.Vehicles.Sections;
+
+internal static class WheelsSection
+{
+    // Low grip tyres arrived in this game build.
+    private const int DriftTyresBuild = 2372;
+
+    private static bool GodModeHoldsTyres => VehicleGodMode.Enabled && VehicleGodMode.BulletproofTyres;
+
+    public static void Build(MenuBuilder menu)
+    {
+        menu.AddRange(Rows());
+
+        SectionRows.AutoFill(menu, Rows);
+    }
+
+    private static IReadOnlyList<MenuEntry> Rows()
+    {
+        if (SectionRows.DrivenWithModKit() is not { } handle)
+        {
+            return SectionRows.BlockedOnly();
+        }
+
+        var rows = new List<MenuEntry>();
+        var model = NativeFixer.GetEntityModel(handle);
+
+        if (HasChangeableWheels(model))
+        {
+            // Declared before the rows above it, which have to be able to put it straight after changing
+            // something that takes the custom tyres off with it. Assigned in two steps so its own handler can
+            // reach it, since a set of rims with no custom tyre refuses the change and the tick has to answer to
+            // the vehicle rather than to the press.
+            CheckboxEntry? customTyres = null;
+
+            customTyres = new CheckboxEntry
+            {
+                Text = MenuText.Key(Loc.VehicleOptions.CustomTyres),
+                Description = MenuText.Key(Loc.VehicleOptions.CustomTyresDescription),
+                ReadState = ReadCustomTyres,
+                OnChanged = changed =>
+                {
+                    SetCustomTyres(changed.Checked);
+
+                    Sync(customTyres!);
+                },
+            };
+
+            rows.Add(WheelTypeRow(customTyres));
+            rows.Add(RimRow(handle, VehicleModSlot.Wheels, customTyres));
+
+            if (API.IsThisModelABike(model))
+            {
+                rows.Add(RimRow(handle, VehicleModSlot.RearWheels, customTyres));
+            }
+
+            rows.Add(customTyres);
+        }
+
+        rows.Add(new CheckboxEntry
+        {
+            Text = MenuText.Key(Loc.VehicleOptions.BulletproofTyres),
+            Description = MenuText.From(() => Localizer.Current.Get(
+                GodModeHoldsTyres
+                    ? Loc.VehicleOptions.BulletproofTyresLocked
+                    : Loc.VehicleOptions.BulletproofTyresDescription)),
+            ReadEnabled = () => !GodModeHoldsTyres,
+            ReadState = () => SectionRows.Driven() is { } current && !API.GetVehicleTyresCanBurst(current),
+            OnChanged = changed =>
+            {
+                if (SectionRows.Driven() is { } current)
+                {
+                    API.SetVehicleTyresCanBurst(current, !changed.Checked);
+                }
+            },
+        });
+
+        if (API.GetGameBuildNumber() >= DriftTyresBuild)
+        {
+            rows.Add(new CheckboxEntry
+            {
+                Text = MenuText.Key(Loc.VehicleOptions.DriftTyres),
+                Description = MenuText.Key(Loc.VehicleOptions.DriftTyresDescription),
+                ReadState = () => SectionRows.Driven() is { } current && API.GetDriftTyresEnabled(current),
+                OnChanged = changed => SetDriftTyres(changed.Checked),
+            });
+        }
+
+        return rows;
+    }
+
+    private static ListEntry WheelTypeRow(CheckboxEntry customTyres)
+    {
+        var options = new List<MenuText>(VehicleOptionTables.WheelTypeKeys.Count);
+
+        foreach (var key in VehicleOptionTables.WheelTypeKeys)
+        {
+            options.Add(MenuText.Key(key));
+        }
+
+        return new ListEntry
+        {
+            Text = MenuText.Key(Loc.VehicleOptions.WheelType),
+            Description = MenuText.Key(Loc.VehicleOptions.WheelTypeDescription),
+            Options = options,
+            ReadSelectedIndex = () => SectionRows.Driven() is { } handle
+                ? Math.Clamp(API.GetVehicleWheelType(handle), 0, options.Count - 1)
+                : 0,
+
+            // Applied as it is scrolled, like every other list in these menus. The rim row below is a dynamic
+            // list precisely so it can follow this without the section being rebuilt.
+            OnIndexChanged = changed => SetWheelType(changed.NewIndex, customTyres),
+        };
+    }
+
+    private static void SetWheelType(int wheelType, CheckboxEntry customTyres)
+    {
+        if (SectionRows.DrivenWithModKit() is not { } handle)
+        {
+            return;
+        }
+
+        var custom = ReadCustomTyres();
+
+        API.SetVehicleWheelType(handle, wheelType);
+
+        // The rims that were on it belong to the family that just went, so they go back to stock.
+        API.SetVehicleMod(handle, (int)VehicleModSlot.Wheels, -1, custom);
+
+        if (API.IsThisModelABike(NativeFixer.GetEntityModel(handle)))
+        {
+            API.SetVehicleMod(handle, (int)VehicleModSlot.RearWheels, -1, custom);
+        }
+
+        Sync(customTyres);
+    }
+
+    // Not every set of rims has a custom tyre to go with it, so fitting one can take the tyres off
+    // whatever was asked for. A tick box only re-reads itself when the menu is refreshed, and the rim row
+    // deliberately does not refresh anything, so it is told directly instead.
+    private static void Sync(CheckboxEntry customTyres)
+    {
+        if (customTyres.Typed is { } item)
+        {
+            item.Checked = ReadCustomTyres();
+        }
+    }
+
+    // A plain list would have to be thrown away and rebuilt every time the wheel family changed, because
+    // each family offers a different number of rims. This asks the game for the count each time it moves
+    // instead, so the row is always right without the menu being rebuilt underneath the player.
+    private static DynamicListEntry RimRow(int handle, VehicleModSlot slot, CheckboxEntry customTyres)
+    {
+        var description = VehicleModLabels.SlotDescription(
+            handle,
+            slot,
+            VehicleModLabels.BareSlotName(handle, slot),
+            () => Position(slot));
+
+        return new DynamicListEntry
+        {
+            Text = ModsSection.SlotName(handle, slot),
+            Description = description,
+            ReadValue = () => RimText(slot),
+            Change = changing =>
+            {
+                var value = Shift(slot, changing.Left, customTyres);
+
+                // The description carries which rim of how many is on, and a description is only rewritten on a
+                // refresh, so scrolling would leave it a step behind.
+                changing.Item.Description = description.Resolve(Localizer.Current);
+
+                return value;
+            },
+        };
+    }
+
+    private static string Shift(VehicleModSlot slot, bool left, CheckboxEntry customTyres)
+    {
+        if (SectionRows.DrivenWithModKit() is not { } handle)
+        {
+            return RimText(slot);
+        }
+
+        var count = API.GetNumVehicleMods(handle, (int)slot);
+
+        if (count <= 0)
+        {
+            return RimText(slot);
+        }
+
+        // Positions run from stock through every rim, so there is one more than the game counts.
+        var positions = count + 1;
+        var position = API.GetVehicleMod(handle, (int)slot) + 1;
+
+        position = (position + (left ? -1 : 1) + positions) % positions;
+
+        API.SetVehicleMod(handle, (int)slot, position - 1, ReadCustomTyres());
+
+        Sync(customTyres);
+
+        return RimText(slot);
+    }
+
+    private static string RimText(VehicleModSlot slot)
+    {
+        if (SectionRows.DrivenWithModKit() is not { } handle)
+        {
+            return string.Empty;
+        }
+
+        var localizer = Localizer.Current;
+
+        var count = API.GetNumVehicleMods(handle, (int)slot);
+        var fitted = API.GetVehicleMod(handle, (int)slot);
+
+        return fitted < 0
+            ? VehicleModLabels.StockName(handle, slot, count).Resolve(localizer)
+            : VehicleModLabels.ModName(handle, slot, fitted, count).Resolve(localizer);
+    }
+
+    private static string Position(VehicleModSlot slot) =>
+        SectionRows.DrivenWithModKit() is { } handle
+            ? VehicleModLabels.Position(handle, slot)
+            : string.Empty;
+
+    // Anything without rims to change: boats, aircraft, trains and pushbikes.
+    private static bool HasChangeableWheels(uint model) =>
+        !API.IsThisModelABoat(model)
+        && !API.IsThisModelAHeli(model)
+        && !API.IsThisModelAPlane(model)
+        && !API.IsThisModelABicycle(model)
+        && !API.IsThisModelATrain(model);
+
+    private static bool ReadCustomTyres() =>
+        SectionRows.DrivenWithModKit() is { } handle
+        && NativeFixer.GetVehicleModVariation(handle, (int)VehicleModSlot.Wheels) != 0;
+
+    // The tyres are a property of the rims rather than a slot of their own, so switching them means
+    // refitting the rims that are already on with the flag flipped.
+    private static void SetCustomTyres(bool custom)
+    {
+        if (SectionRows.DrivenWithModKit() is not { } handle)
+        {
+            return;
+        }
+
+        API.SetVehicleMod(
+            handle,
+            (int)VehicleModSlot.Wheels,
+            API.GetVehicleMod(handle, (int)VehicleModSlot.Wheels),
+            custom);
+
+        if (API.IsThisModelABike(NativeFixer.GetEntityModel(handle)))
+        {
+            API.SetVehicleMod(
+                handle,
+                (int)VehicleModSlot.RearWheels,
+                API.GetVehicleMod(handle, (int)VehicleModSlot.RearWheels),
+                custom);
+        }
+    }
+
+    // Only vehicles built for them will take drift tyres, and the game says nothing when one will not.
+    // Asking it afterwards is the only way to tell the player rather than leave them wondering.
+    private static void SetDriftTyres(bool enabled)
+    {
+        if (SectionRows.DrivenWithModKit() is not { } handle)
+        {
+            return;
+        }
+
+        API.SetDriftTyresEnabled(handle, enabled);
+
+        if (API.GetDriftTyresEnabled(handle) != enabled)
+        {
+            Notifications.Warning(MenuText.Key(Loc.VehicleOptions.DriftTyresUnsupported));
+        }
+    }
+}

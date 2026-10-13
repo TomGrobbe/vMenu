@@ -1,0 +1,506 @@
+
+using CitizenFX.Core;
+using CitizenFX.Core.Native;
+
+using vMenu.Enhanced.Data.Bullying;
+using vMenu.Enhanced.Menus.Misc;
+using vMenu.Enhanced.Menus.Players;
+using vMenu.Enhanced.Menus.Players.Appearance;
+
+using vMenu.Legacy.Hosting;
+
+using vMenu.Enhanced.BrokenNatives;
+
+namespace vMenu.Enhanced.Menus.Bully;
+
+internal static class ScreenPranks
+{
+    private const string ExplosionShake = "SMALL_EXPLOSION_SHAKE";
+
+    private const string Flash = "MP_TransformRaceFlash";
+
+    public const string ClownLaugh = "CLOWN_LAUGH";
+
+    public const string ClownVoice = "CLOWNS";
+
+    public const string ClownSoundSet = "DLC_Tuner_Halloween_Clown_Soundset";
+
+    public const string ClownBank = "DLC_TUNER/DLC_Tuner_Killer_Clown";
+
+    private const string FireworksAsset = "scr_indep_fireworks";
+
+    private const string BeastBank = "DLC_APARTMENT/APT_BEAST";
+
+    private const string BeastSoundSet = "APT_BvS_Soundset";
+
+    private const string BeastAsset = "scr_powerplay";
+
+    private const string FlameAsset = "weap_xs_vehicle_weapons";
+
+    private const int IntoxicatedMs = 25000;
+
+    private const int TimecycleMs = 20000;
+
+    private const int TimecycleFadeMs = 2000;
+
+    private const int TimecycleFadeSteps = 20;
+
+    private const int DrugsOutMs = 3500;
+
+    private const int OnFootPollMs = 250;
+
+    private const int FlashMs = 1500;
+
+
+    private const int FireworkCount = 8;
+
+    private const float FireworkRadius = 6f;
+
+    private const float BeastDistance = 16f;
+
+    private static readonly (string Prop, string Effect)[] Fireworks =
+    [
+        ("ind_prop_firework_03", "scr_indep_firework_fountain"),
+        ("ind_prop_firework_01", "scr_indep_firework_shotburst"),
+    ];
+
+    private static readonly (float Red, float Green, float Blue)[] FireworkColours =
+    [
+        (255f, 0f, 0f),
+        (0f, 255f, 0f),
+        (0f, 0f, 255f),
+        (255f, 255f, 0f),
+        (0f, 255f, 255f),
+        (255f, 0f, 255f),
+        (255f, 255f, 255f),
+    ];
+
+    public static IReadOnlyList<(string Name, int Intensity)> Timecycles { get; } =
+    [
+        ("spectator4", TimecycleState.MaxIntensity),
+        ("CAMERA_BW", TimecycleState.MaxIntensity),
+        ("CAMERA_secuirity_FUZZ", TimecycleState.MaxIntensity),
+        ("spectator5", TimecycleState.MaxIntensity),
+        ("stoned_aliens", TimecycleState.MaxIntensity),
+        ("drug_wobbly", TimecycleState.MaxIntensity),
+        ("REDMIST", TimecycleState.MaxIntensity),
+        ("Broken_camera_fuzz", 13),
+    ];
+
+    private static (string Name, string SoundSet, string? Bank) ClownScare { get; } =
+        ("FE_Spawn", ClownSoundSet, ClownBank);
+
+    public static IReadOnlyList<(string Name, string SoundSet, string? Bank)> Sounds { get; } =
+    [
+        ("Beast_Attack", BeastSoundSet, BeastBank),
+        ClownScare,
+        ("FE_Spawn", "DLC_Tuner_Halloween_Slasher_Soundset", "DLC_TUNER/DLC_Tuner_Killer_SackSlasher"),
+        ("FE_Spawn", "Freemode_Mirror_Slash_sounds", "DLC_MPSUM2/Mirror_Slash"),
+    ];
+
+    public static int SoundCount => Sounds.Count + 1;
+
+    public static bool IsColouring => Coloured.IsOpen;
+
+    private static readonly Window Intoxicated = new();
+
+    private static readonly Window Coloured = new();
+
+    private static bool _beast;
+
+    private static bool _drugged;
+
+    private static int _colourPicks;
+
+    public static void Initialize() => BullyState.Stopped += OnStopped;
+
+    public static Task Drunk(BullyRun run) => IntoxicateAsync(run, drugged: false);
+
+    public static Task Drugged(BullyRun run) => IntoxicateAsync(run, drugged: true);
+
+    private static async Task IntoxicateAsync(BullyRun run, bool drugged)
+    {
+        if (PlayerIntoxication.Enabled)
+        {
+            run.Skip(BullyEvents.RefusedIntoxicated);
+
+            return;
+        }
+
+        var started = Intoxicated.Extend(IntoxicatedMs);
+        var ped = API.PlayerPedId();
+
+        _drugged = drugged;
+
+        run.Started();
+
+        if (await Streaming.ClipSetAsync(Intoxication.DrunkWalk))
+        {
+            API.SetPedMovementClipset(ped, Intoxication.DrunkWalk, 1f);
+        }
+
+        API.SetPedIsDrunk(ped, true);
+        API.ShakeGameplayCam(Intoxication.Shake, Intoxication.ShakeAmplitude(drugged));
+        API.SetTransitionTimecycleModifier(Intoxication.Timecycle(drugged), 3f);
+
+        if (drugged && !API.AnimpostfxIsRunning(Intoxication.DrugsIn))
+        {
+            API.AnimpostfxPlay(Intoxication.DrugsIn, 0, true);
+        }
+
+        if (started)
+        {
+            var steering = new DrunkSteering();
+
+            while (Intoxicated.IsOpen)
+            {
+                await BaseScript.Delay(steering.Update(_drugged) ? 0 : OnFootPollMs);
+            }
+
+            steering.Release();
+
+            if (Intoxicated.Close())
+            {
+                await SoberUpAsync();
+            }
+        }
+    }
+
+    public static async Task EndIntoxicationAsync()
+    {
+        if (Intoxicated.Close())
+        {
+            await SoberUpAsync();
+        }
+    }
+
+    private static async Task SoberUpAsync()
+    {
+        var ped = API.PlayerPedId();
+        var drugged = API.AnimpostfxIsRunning(Intoxication.DrugsIn);
+
+        API.AnimpostfxStop(Intoxication.DrugsIn);
+        API.SetPedIsDrunk(ped, false);
+        API.StopGameplayCamShaking(false);
+        API.ResetPedMovementClipset(ped, 1f);
+        API.RemoveClipSet(Intoxication.DrunkWalk);
+
+        RestoreTimecycle();
+
+        await PedWalkingStyle.ReapplyAsync();
+
+        if (drugged)
+        {
+            await PostFxAsync(Intoxication.DrugsOut, DrugsOutMs);
+        }
+    }
+
+    public static async Task Timecycle(BullyRun run)
+    {
+        var index = run.Option;
+
+        if ((uint)index >= (uint)Timecycles.Count)
+        {
+            run.Failed();
+
+            return;
+        }
+
+        var started = Coloured.Extend(TimecycleMs);
+        var pick = ++_colourPicks;
+        var (name, intensity) = Timecycles[index];
+
+        run.Started();
+
+        if (intensity < TimecycleState.MaxIntensity)
+        {
+            await FadeTimecycleAsync(name, intensity / (float)TimecycleState.MaxIntensity, pick);
+        }
+        else
+        {
+            API.SetTransitionTimecycleModifier(name, 2f);
+        }
+
+        if (started)
+        {
+            await Coloured.WaitAsync();
+
+            if (Coloured.Close())
+            {
+                RestoreTimecycle();
+            }
+        }
+    }
+
+    public static async Task Sound(BullyRun run)
+    {
+        var index = run.Option;
+
+        if (index == Sounds.Count)
+        {
+            await MountainLion.Growl(run);
+
+            return;
+        }
+
+        if ((uint)index >= (uint)Sounds.Count)
+        {
+            run.Failed();
+
+            return;
+        }
+
+        var (name, soundSet, bank) = Sounds[index];
+
+        if (bank is not null && !await Streaming.AudioBankAsync(bank))
+        {
+            run.Failed();
+
+            return;
+        }
+
+        API.PlaySoundFrontend(-1, name, soundSet, true);
+        API.ShakeGameplayCam(ExplosionShake, 0.4f);
+
+        run.Started();
+
+        await PostFxAsync(Flash, FlashMs);
+        await ReleaseSoundAsync(bank);
+    }
+
+    public static async Task ClownScareAsync()
+    {
+        var (name, soundSet, bank) = ClownScare;
+
+        if (bank is not null && !await Streaming.AudioBankAsync(bank))
+        {
+            return;
+        }
+
+        API.PlaySoundFrontend(-1, name, soundSet, true);
+
+        await ReleaseSoundAsync(bank);
+    }
+
+    private static async Task ReleaseSoundAsync(string? bank)
+    {
+        await BaseScript.Delay(8000);
+
+        if (bank is not null)
+        {
+            Streaming.ReleaseAudioBank(bank);
+        }
+    }
+
+    public static async Task Firework(BullyRun run)
+    {
+        if (!await Streaming.PtfxAsync(FireworksAsset))
+        {
+            run.Failed();
+
+            return;
+        }
+
+        var stopAllCount = BullyState.StopAllCount;
+        var centre = API.GetEntityCoords(API.PlayerPedId(), false);
+        var start = Dice.Float(0f, MathF.Tau);
+        var launchers = new List<(int Prop, string Effect)>();
+
+        try
+        {
+            for (var index = 0; index < FireworkCount; index++)
+            {
+                var (model, effect) = Fireworks[index % Fireworks.Length];
+                var angle = start + index * MathF.Tau / FireworkCount;
+                var spot = centre + new Vector3(MathF.Cos(angle) * FireworkRadius, MathF.Sin(angle) * FireworkRadius, 0f);
+
+                if (!await Streaming.ModelAsync(model))
+                {
+                    continue;
+                }
+
+                var prop = NativeFixer.CreateObject(Streaming.Hash(model), spot.X, spot.Y, spot.Z, false, false, false);
+
+                API.SetModelAsNoLongerNeeded(Streaming.Hash(model));
+
+                if (prop != 0)
+                {
+                    API.PlaceObjectOnGroundProperly(prop);
+
+                    launchers.Add((prop, effect));
+                }
+            }
+
+            if (launchers.Count == 0)
+            {
+                run.Failed();
+
+                return;
+            }
+
+            run.Started();
+
+            var ahead = CameraForward(centre);
+
+            foreach (var (prop, effect) in launchers.OrderByDescending(launcher => Vector3.Dot(ahead, API.GetEntityCoords(launcher.Prop, false) - centre)))
+            {
+                if (stopAllCount != BullyState.StopAllCount)
+                {
+                    break;
+                }
+
+                var (red, green, blue) = FireworkColours[Dice.Next(FireworkColours.Length)];
+
+                API.SetParticleFxNonLoopedColour(red, green, blue);
+
+                Fx.Burst(FireworksAsset, effect, API.GetEntityCoords(prop, false) + new Vector3(0f, 0f, 0.12f));
+
+                API.ShakeGameplayCam(ExplosionShake, 0.15f);
+
+                await BaseScript.Delay(Dice.Next(250, 600));
+            }
+
+            await BaseScript.Delay(6000);
+        }
+        finally
+        {
+            foreach (var (prop, _) in launchers)
+            {
+                var doomed = prop;
+
+                NativeFixer.DeleteObject(ref doomed);
+            }
+
+            Streaming.ReleasePtfx(FireworksAsset);
+        }
+    }
+
+    public static async Task Beast(BullyRun run)
+    {
+        if (_beast)
+        {
+            run.Busy();
+
+            return;
+        }
+
+        _beast = true;
+
+        var bank = false;
+        var beast = false;
+        var flame = false;
+
+        try
+        {
+            bank = await Streaming.AudioBankAsync(BeastBank);
+            beast = await Streaming.PtfxAsync(BeastAsset);
+            flame = await Streaming.PtfxAsync(FlameAsset);
+
+            if (!bank || !beast || !flame)
+            {
+                run.Failed();
+
+                return;
+            }
+
+            run.Started();
+
+            var player = API.GetEntityCoords(API.PlayerPedId(), false);
+            var spot = player + CameraForward(player) * BeastDistance;
+
+            Fx.Burst(BeastAsset, "scr_powerplay_beast_appear", spot, 2f);
+            Fx.Sound("Beast_Attack", BeastSoundSet, spot);
+            API.ShakeGameplayCam(ExplosionShake, 0.6f);
+
+            await BaseScript.Delay(500);
+
+            var side = Vector3.Normalize(new Vector3(spot.Y - player.Y, player.X - spot.X, 0f)) * (Dice.Next(2) == 0 ? -1f : 1f);
+            var breath = Fx.Loop(FlameAsset, "muz_xs_turret_flamethrower_looping", spot + new Vector3(0f, 0f, 1.2f), Fx.HeadingTowards(spot, player + side), 3f);
+
+            await BaseScript.Delay(1800);
+
+            API.StopParticleFxLooped(breath, true);
+
+            Fx.Burst(BeastAsset, "scr_powerplay_beast_vanish", spot, 2f);
+            Fx.Sound("Beast_Attack", BeastSoundSet, spot);
+
+            await BaseScript.Delay(3000);
+        }
+        finally
+        {
+            if (beast)
+            {
+                Streaming.ReleasePtfx(BeastAsset);
+            }
+
+            if (flame)
+            {
+                Streaming.ReleasePtfx(FlameAsset);
+            }
+
+            if (bank)
+            {
+                Streaming.ReleaseAudioBank(BeastBank);
+            }
+
+            _beast = false;
+        }
+    }
+
+    // A transition always ends at full strength, so a partial one has to fade in by hand.
+    private static async Task FadeTimecycleAsync(string name, float strength, int pick)
+    {
+        var stopAllCount = BullyState.StopAllCount;
+
+        API.SetTimecycleModifier(name);
+
+        for (var step = 1; step <= TimecycleFadeSteps; step++)
+        {
+            if (pick != _colourPicks || stopAllCount != BullyState.StopAllCount)
+            {
+                return;
+            }
+
+            API.SetTimecycleModifierStrength(strength * step / TimecycleFadeSteps);
+
+            await BaseScript.Delay(TimecycleFadeMs / TimecycleFadeSteps);
+        }
+    }
+
+    private static Vector3 CameraForward(Vector3 player)
+    {
+        var camera = API.GetFinalRenderedCamCoord();
+        var facing = new Vector3(player.X - camera.X, player.Y - camera.Y, 0f);
+
+        return facing.LengthSquared() > 0.01f ? Vector3.Normalize(facing) : Vector3.UnitY;
+    }
+
+    private static async Task PostFxAsync(string effect, int durationMs)
+    {
+        API.AnimpostfxPlay(effect, 0, false);
+
+        await BaseScript.Delay(durationMs);
+
+        API.AnimpostfxStop(effect);
+    }
+
+    private static void RestoreTimecycle()
+    {
+        API.ClearTimecycleModifier();
+
+        TimecycleState.Reapply();
+    }
+
+    private static void OnStopped()
+    {
+        if (Intoxicated.Close())
+        {
+            _ = SoberUpAsync();
+        }
+
+        if (Coloured.Close())
+        {
+            RestoreTimecycle();
+        }
+    }
+}

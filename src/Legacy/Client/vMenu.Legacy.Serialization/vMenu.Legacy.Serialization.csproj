@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>vMenu.Enhanced.Serialization</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\vMenu.Legacy.Hosting\vMenu.Legacy.Hosting.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Shared\vMenu.Enhanced.Logging\vMenu.Enhanced.Logging.csproj" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>vMenu.Enhanced.Ticks</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\vMenu.Legacy.Hosting\vMenu.Legacy.Hosting.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+
+    <!-- Only for MenuController.MenuAlignment, so the tick overlay can sit opposite the menu. -->
+    <PackageReference Include="MenuAPI.FiveM" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Shared\vMenu.Enhanced.Data\vMenu.Enhanced.Data.csproj" />
+    <ProjectReference Include="..\..\..\Shared\vMenu.Enhanced.Logging\vMenu.Enhanced.Logging.csproj" />
+    <ProjectReference Include="..\vMenu.Legacy.Serialization\vMenu.Legacy.Serialization.csproj" />
+
+    <!-- Only for the tick overlay's remembered on/off state. -->
+    <ProjectReference Include="..\vMenu.Legacy.Storage\vMenu.Legacy.Storage.csproj" />
+  </ItemGroup>
+</Project>

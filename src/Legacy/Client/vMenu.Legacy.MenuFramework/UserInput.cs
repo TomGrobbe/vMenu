@@ -1,0 +1,261 @@
+using Newtonsoft.Json;
+
+using CitizenFX.Core;
+using CitizenFX.Core.Native;
+
+using vMenu.Enhanced.Logging;
+using vMenu.Enhanced.Localization;
+using vMenu.Enhanced.Serialization;
+
+using vMenu.Legacy.Hosting;
+
+namespace vMenu.Enhanced.MenuFramework;
+
+public static class UserInput
+{
+    private const string SubmitCallback = "vMenuPromptSubmit";
+
+    private const string CancelCallback = "vMenuPromptCancel";
+
+    private const string ReadyCallback = "vMenuPromptReady";
+
+    private const string CloseMessage = """{"type":"close"}""";
+
+    private const int ReadyTimeoutMs = 3000;
+
+    // The page's first callback of a session takes seconds; every one after is immediate.
+    private const int FirstReadyTimeoutMs = 15000;
+
+    // What the page falls back to when a prompt declares no limit, so both ends agree on the cap.
+    private const int DefaultMaxLength = 255;
+
+    private static bool _callbacksRegistered;
+    private static bool _handshaken;
+    private static bool _open;
+    private static TaskCompletionSource<string?>? _pending;
+    private static TaskCompletionSource<bool>? _ready;
+    private static int _maxLength = DefaultMaxLength;
+
+    /// <summary>What was typed, or null if the player cancelled.</summary>
+    public static async Task<string?> GetTextAsync(
+        MenuText title,
+        int maxLength,
+        string initialValue = "",
+        IReadOnlyList<InputSuggestion>? suggestions = null,
+        bool suggestWhenEmpty = false,
+        MenuText description = default)
+    {
+        var answers = await GetTextAsync(
+            new InputPrompt(title, maxLength, initialValue, suggestions, suggestWhenEmpty, description));
+
+        return answers?[0];
+    }
+
+    /// <summary>Asks for several things one after another, answering null if the player cancelled any of them.
+    /// One session rather than repeated GetTextAsync calls: the page is only closed and NUI focus only
+    /// dropped at the end, so the next prompt does not need a delay in front of it to come up focused.</summary>
+    public static async Task<string[]?> GetTextAsync(params InputPrompt[] prompts)
+    {
+        if (prompts.Length == 0 || _open)
+        {
+            return null;
+        }
+
+        EnsureCallbacks();
+
+        _open = true;
+
+        MenuButtonLock.Take();
+
+        try
+        {
+            var answers = new string[prompts.Length];
+
+            for (var index = 0; index < prompts.Length; index++)
+            {
+                if (await AskAsync(prompts[index]) is not { } answer)
+                {
+                    return null;
+                }
+
+                answers[index] = answer;
+            }
+
+            return answers;
+        }
+        finally
+        {
+            _open = false;
+
+            API.SetNuiFocus(false, false);
+            API.SendNuiMessage(CloseMessage);
+
+            MenuButtonLock.Release();
+        }
+    }
+
+    private static async Task<string?> AskAsync(InputPrompt prompt)
+    {
+        var pending = new TaskCompletionSource<string?>();
+        var ready = new TaskCompletionSource<bool>();
+
+        _pending = pending;
+        _ready = ready;
+        _maxLength = prompt.MaxLength > 0 ? prompt.MaxLength : DefaultMaxLength;
+
+        try
+        {
+            API.SendNuiMessage(BuildOpenMessage(prompt));
+
+            API.SetNuiFocus(true, true);
+
+            var timeout = _handshaken ? ReadyTimeoutMs : FirstReadyTimeoutMs;
+
+            if (await Task.WhenAny(ready.Task, BaseScript.Delay(timeout)) != ready.Task)
+            {
+                Log.Error($"[Input] The prompt did not answer within {timeout}ms. Is ui/index.html part of the resource?");
+
+                return null;
+            }
+
+            return await pending.Task;
+        }
+        finally
+        {
+            _pending = null;
+            _ready = null;
+        }
+    }
+
+
+    private static void EnsureCallbacks()
+    {
+        if (_callbacksRegistered)
+        {
+            return;
+        }
+
+        _callbacksRegistered = true;
+
+        NuiCallbacks.Register(SubmitCallback, body => _pending?.TrySetResult(Text(body)));
+        NuiCallbacks.Register(CancelCallback, _ => _pending?.TrySetResult(null));
+
+        NuiCallbacks.Register(ReadyCallback, _ =>
+        {
+            _handshaken = true;
+            _ready?.TrySetResult(true);
+        });
+    }
+
+    // The page posts what was typed as a JSON string, so the body arrives quoted and escaped.
+    private static string Text(string raw)
+    {
+        if (raw.Length == 0)
+        {
+            return string.Empty;
+        }
+
+        if (ClientJson.TryDeserialize<string>(raw, out var text))
+        {
+            return Capped(text ?? string.Empty);
+        }
+
+        Log.Error($"[Input] A callback body was not the JSON string the page posts: {raw}");
+
+        return string.Empty;
+    }
+
+    // The page's maxLength is a DOM attribute, so anything with the developer tools open can post past
+    // it. Cut here rather than in each caller, so no prompt can answer with more than it asked for.
+    private static string Capped(string text)
+    {
+        if (text.Length <= _maxLength)
+        {
+            return text;
+        }
+
+        var end = _maxLength;
+
+        // Never between a surrogate pair: half of one is not valid UTF-8 once it leaves here.
+        if (char.IsHighSurrogate(text[end - 1]))
+        {
+            end--;
+        }
+
+        Log.Warning($"[Input] An answer of {text.Length} characters was cut to the {_maxLength} the prompt asked for.");
+
+        return text[..end];
+    }
+
+    private static string BuildOpenMessage(InputPrompt prompt)
+    {
+        var localizer = Localizer.Current;
+        var suggestions = prompt.Suggestions;
+        var rows = new SuggestionRow[suggestions?.Count ?? 0];
+
+        for (var index = 0; index < rows.Length; index++)
+        {
+            var suggestion = suggestions![index];
+
+            rows[index] = new SuggestionRow
+            {
+                Value = suggestion.Value,
+                Label = suggestion.Label,
+                Icon = suggestion.Icon ?? string.Empty,
+                Detail = suggestion.Detail ?? string.Empty,
+            };
+        }
+
+        return ClientJson.Serialize(new OpenMessage
+        {
+            Title = prompt.Title.Resolve(localizer),
+            Description = prompt.Description.Resolve(localizer),
+            Value = prompt.InitialValue,
+            MaxLength = prompt.MaxLength,
+            Placeholder = localizer.Get(Loc.Framework.InputPlaceholder),
+            Hint = localizer.Get(Loc.Framework.InputHint),
+            NoMatches = localizer.Get(Loc.Framework.InputNoMatches),
+            SuggestWhenEmpty = prompt.SuggestWhenEmpty,
+            Suggestions = rows,
+        });
+    }
+
+    private sealed class OpenMessage
+    {
+        public string Type { get; } = "open";
+
+        public required string Title { get; init; }
+
+        public required string Description { get; init; }
+
+        public required string Value { get; init; }
+
+        public required int MaxLength { get; init; }
+
+        public required string Placeholder { get; init; }
+
+        public required string Hint { get; init; }
+
+        public required string NoMatches { get; init; }
+
+        public required bool SuggestWhenEmpty { get; init; }
+
+        public required IReadOnlyList<SuggestionRow> Suggestions { get; init; }
+    }
+
+    // Single letter keys: a spawner sends thousands of these in one message.
+    private sealed class SuggestionRow
+    {
+        [JsonProperty("v")]
+        public required string Value { get; init; }
+
+        [JsonProperty("l")]
+        public required string Label { get; init; }
+
+        [JsonProperty("i")]
+        public required string Icon { get; init; }
+
+        [JsonProperty("d")]
+        public required string Detail { get; init; }
+    }
+}

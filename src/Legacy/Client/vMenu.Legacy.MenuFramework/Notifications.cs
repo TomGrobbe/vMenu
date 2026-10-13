@@ -1,0 +1,217 @@
+using CitizenFX.Core;
+using CitizenFX.Core.Native;
+
+using vMenu.Enhanced.Data.Ticks;
+using vMenu.Enhanced.Localization;
+using vMenu.Enhanced.Serialization;
+using vMenu.Enhanced.Ticks;
+
+using vMenu.Legacy.Hosting;
+
+namespace vMenu.Enhanced.MenuFramework;
+
+/// <summary>Short messages stacked above the minimap, drawn by the NUI page rather than the game's feed.
+/// Nothing here takes focus or waits for an answer, so the page needs no handshake. Where the stack
+/// sits depends on the safe zone and the map state, neither of which the page can see, so the client
+/// works it out and sends it once per notification.</summary>
+public static class Notifications
+{
+    /// <summary>Long enough to read a sentence without hurrying, short enough not to sit in the way.</summary>
+    public const int DefaultDurationMs = 8500;
+
+    public const int SpawnDurationMs = 4000;
+
+    private const int VisibilityCheckMs = 500;
+
+    // Thirty seconds of waiting for a spawn, after which the message is shown regardless.
+    private const int MaxVisibilityChecks = 60;
+
+    // What the page hands a frozen message back when the pause menu closes, mirrored here.
+    private const int PauseGraceMs = 2000;
+
+    // Covers the fade the page plays after a message's time is up.
+    private const int ExitGraceMs = 500;
+
+    private const long PauseCheckIntervalMs = 100;
+
+    private const string PausedMessage = """{"type":"notify_pause","paused":true}""";
+
+    private const string ResumedMessage = """{"type":"notify_pause","paused":false}""";
+
+    private static TickHandle? _pauseTick;
+
+    private static bool _paused;
+
+    // Game time by which every message sent so far has had its say.
+    private static long _liveUntil;
+
+    private static long _polledAt;
+
+    public static void Info(MenuText text, int durationMs = DefaultDurationMs) =>
+        Show(NotificationStyle.Info, text, durationMs);
+
+    public static void Success(MenuText text, int durationMs = DefaultDurationMs) =>
+        Show(NotificationStyle.Success, text, durationMs);
+
+    public static void Warning(MenuText text, int durationMs = DefaultDurationMs) =>
+        Show(NotificationStyle.Warning, text, durationMs);
+
+    public static void Error(MenuText text, int durationMs = DefaultDurationMs) =>
+        Show(NotificationStyle.Error, text, durationMs);
+
+    /// <summary>For anything raised during startup. The page is not listening that early, and the stack draws
+    /// above the minimap, which is behind the loading screen anyway. Returns immediately when the player
+    /// is already in, so a caller that runs both at startup and at runtime can use it unconditionally.</summary>
+    public static async Task ShowWhenVisibleAsync(NotificationStyle style, MenuText text, int durationMs = DefaultDurationMs)
+    {
+        for (var attempt = 0; attempt < MaxVisibilityChecks; attempt++)
+        {
+            if (API.NetworkIsSessionStarted() && !API.IsScreenFadedOut())
+            {
+                break;
+            }
+
+            await BaseScript.Delay(VisibilityCheckMs);
+        }
+
+        // Shown even if the checks never passed. A player stuck on a black screen has bigger problems, and a
+        // message they might miss beats one that is silently never sent.
+        Show(style, text, durationMs);
+    }
+
+    public static void Show(
+        NotificationStyle style,
+        MenuText text,
+        int durationMs = DefaultDurationMs,
+        string? source = null)
+    {
+        var message = text.Resolve(Localizer.Current);
+
+        if (string.IsNullOrWhiteSpace(message))
+        {
+            return;
+        }
+
+        // Read once and sent with the message, so a notification raised during a pause is drawn the way the
+        // ones already on screen are instead of waiting for the next poll to catch up.
+        var paused = API.IsPauseMenuActive();
+
+        API.SendNuiMessage(BuildMessage(Name(style), message, durationMs, source, paused));
+
+        Watch(durationMs, paused);
+    }
+
+    // An estimate, never the truth: the page owns the timers, and this side only needs to know when
+    // watching is pointless. It rounds up on a repeat, and falls short only when messages arrive faster
+    // than the page shows them, where the ones still queued go without their blur and their extra time.
+    private static void Watch(int durationMs, bool paused)
+    {
+        var until = API.GetGameTimer() + durationMs + ExitGraceMs;
+
+        if (until > _liveUntil)
+        {
+            _liveUntil = until;
+        }
+
+        // Registered on the first message rather than from an Initialize, so a client that never notifies
+        // never lists a loop, and nothing has to be ordered in front of this.
+        _pauseTick ??= TickRegistry.Register(
+            "Notifications.Pause",
+            PollPause,
+            TickRate.Every(PauseCheckIntervalMs),
+            () => _liveUntil > API.GetGameTimer(),
+            () => _polledAt = API.GetGameTimer());
+
+        // The page is told the state on every message, so the poll has nothing left to announce.
+        _paused = paused;
+
+        _pauseTick.Reevaluate();
+    }
+
+    private static void PollPause()
+    {
+        var now = API.GetGameTimer();
+        var paused = API.IsPauseMenuActive();
+
+        // The page holds its messages for as long as the pause menu is up, so this window holds with them.
+        if (paused)
+        {
+            _liveUntil += now - _polledAt;
+        }
+
+        _polledAt = now;
+
+        if (paused != _paused)
+        {
+            _paused = paused;
+
+            // Mirrors the grace the page hands back, so watching does not end while a message still lives on it.
+            if (!paused)
+            {
+                _liveUntil += PauseGraceMs;
+            }
+
+            API.SendNuiMessage(paused ? PausedMessage : ResumedMessage);
+        }
+
+        // Conditions are only re-run on demand, so the loop has to be the one to notice it is done.
+        if (now >= _liveUntil)
+        {
+            _pauseTick?.Reevaluate();
+        }
+    }
+
+    private static string BuildMessage(string style, string text, int durationMs, string? source, bool paused)
+    {
+        var (left, bottom, width) = HudAnchor.AboveMinimap();
+
+        return ClientJson.Serialize(new NotifyMessage
+        {
+            Style = style,
+            Text = text,
+            Duration = durationMs,
+            Footer = string.IsNullOrWhiteSpace(source) ? null : source,
+            Paused = paused,
+            Anchor = new AnchorBox
+            {
+                Left = HudAnchor.Fraction(left),
+                Bottom = HudAnchor.Fraction(bottom),
+                Width = HudAnchor.Fraction(width),
+            },
+        });
+    }
+
+    private sealed class NotifyMessage
+    {
+        public string Type { get; } = "notify";
+
+        public required string Style { get; init; }
+
+        public required string Text { get; init; }
+
+        public required int Duration { get; init; }
+
+        public string? Footer { get; init; }
+
+        public required bool Paused { get; init; }
+
+        public required AnchorBox Anchor { get; init; }
+    }
+
+    private sealed class AnchorBox
+    {
+        public required float Left { get; init; }
+
+        public required float Bottom { get; init; }
+
+        public required float Width { get; init; }
+    }
+
+    private static string Name(NotificationStyle style) => style switch
+    {
+        NotificationStyle.Success => "success",
+        NotificationStyle.Warning => "warning",
+        NotificationStyle.Error => "error",
+        _ => "info",
+    };
+}

@@ -1,0 +1,91 @@
+using CitizenFX.Core;
+using CitizenFX.Core.Native;
+
+using vMenu.Enhanced.Data.Actions;
+using vMenu.Enhanced.Logging;
+
+using vMenu.Legacy.Hosting;
+
+namespace vMenu.Enhanced.Actions;
+
+// Asks the server to do something and waits for its answer. The runtime has no request/response
+// primitive, so a reply is matched to its request by an id this side chose. Handlers are registered
+// imperatively because attribute discovery only scans the client_script assembly, and this one is a
+// project reference.
+public static class ServerActions
+{
+    private const int TimeoutMs = 10000;
+
+    private static readonly Dictionary<int, TaskCompletionSource<ActionResult>> Pending = [];
+
+    private static int _lastRequestId;
+
+    private static bool _registered;
+
+    // Call before building menus.
+    public static void RegisterEventHandlers()
+    {
+        if (_registered)
+        {
+            return;
+        }
+
+        _registered = true;
+
+        Script.EventHandlers[ActionEvents.Result] += new Action<int, int, object>((requestId, status, data) => OnResult(requestId, status, Payload.Strings(data)));
+    }
+
+    // Never throws for a refusal: everything that can go wrong, including no reply at all, comes back as
+    // an ActionStatus.
+    public static async Task<ActionResult> InvokeAsync(string actionId, params string[] args)
+    {
+        if (!_registered)
+        {
+            // The reply would arrive with nothing listening, then be waited out to the timeout.
+            Log.Error($"[Actions] '{actionId}' was invoked before RegisterEventHandlers ran.");
+
+            return ActionResult.From(ActionStatus.Failed);
+        }
+
+        var requestId = ++_lastRequestId;
+
+        var pending = new TaskCompletionSource<ActionResult>();
+
+        Pending[requestId] = pending;
+
+        try
+        {
+            BaseScript.TriggerServerEvent(ActionEvents.Invoke, actionId, requestId, args);
+
+            var timeout = BaseScript.Delay(TimeoutMs);
+
+            var finishedFirst = await Task.WhenAny(pending.Task, timeout);
+
+            if (finishedFirst == timeout)
+            {
+                Log.Error($"[Actions] '{actionId}' got no answer within {TimeoutMs}ms.");
+
+                return ActionResult.From(ActionStatus.Timeout);
+            }
+
+            return await pending.Task;
+        }
+        finally
+        {
+            Pending.Remove(requestId);
+        }
+    }
+
+    private static void OnResult(int requestId, int status, string[] data)
+    {
+        if (!Pending.TryGetValue(requestId, out var pending))
+        {
+            // A reply that lost the race with the timeout. Its caller has already been told.
+            Log.Debug($"[Actions] Reply {requestId} arrived with nothing waiting for it.");
+
+            return;
+        }
+
+        pending.TrySetResult(new ActionResult((ActionStatus)status, data ?? []));
+    }
+}

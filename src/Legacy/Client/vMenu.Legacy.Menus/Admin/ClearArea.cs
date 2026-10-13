@@ -1,0 +1,54 @@
+using CitizenFX.Core;
+using CitizenFX.Core.Native;
+
+using vMenu.Enhanced.Actions;
+using vMenu.Enhanced.Data.Actions;
+using vMenu.Enhanced.Data.Admin;
+using vMenu.Enhanced.MenuFramework;
+using vMenu.Enhanced.Localization;
+
+using vMenu.Legacy.Hosting;
+
+namespace vMenu.Enhanced.Menus.Admin;
+
+public static class ClearArea
+{
+    private static bool _registered;
+
+    public static void Initialize()
+    {
+        if (_registered)
+        {
+            return;
+        }
+
+        _registered = true;
+
+        Script.EventHandlers[AdminEvents.ClearArea] += new Action<float, float, float, float>(OnClearArea);
+    }
+
+    public static async Task RequestAsync()
+    {
+        var result = await ServerActions.InvokeAsync(ActionIds.Admin.ClearArea);
+
+        if (result.Status == ActionStatus.Ok)
+        {
+            Notifications.Success(MenuText.Key(Loc.Admin.ClearAreaDone));
+
+            return;
+        }
+
+        if (result.Status == ActionStatus.RateLimited)
+        {
+            Notifications.Warning(MenuText.Key(Loc.Admin.ClearAreaTooFast));
+
+            return;
+        }
+
+        Notifications.Error(MenuText.Key(
+            result.Status == ActionStatus.Denied ? Loc.Admin.ClearAreaDenied : Loc.Admin.ClearAreaFailed));
+    }
+
+    private static void OnClearArea(float x, float y, float z, float radius) =>
+        API.ClearAreaOfEverything(x, y, z, radius, false, false, false, false);
+}

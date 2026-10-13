@@ -1,0 +1,293 @@
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+
+using CitizenFX.Core;
+using CitizenFX.Core.Native;
+
+using vMenu.Enhanced.Logging;
+using vMenu.Enhanced.Serialization;
+
+using vMenu.Legacy.Hosting;
+
+namespace vMenu.Enhanced.Storage;
+
+// Always a JSON envelope, never the typed natives: legacy used those and both its float and int
+// paths made an unset value indistinguishable from a zero one.
+public static class KvpStore
+{
+    public const int InitialVersion = 1;
+
+    public const string Prefix = "vmenu_";
+
+    private static readonly Dictionary<string, Cached> Cache = new(StringComparer.Ordinal);
+
+    private static readonly HashSet<string> Reported = new(StringComparer.Ordinal);
+
+    // storedVersion may exceed knownVersion when a newer vMenu wrote it, in which case TryWrite refuses.
+    // False when the key is absent, unreadable, or holds another type.
+    public static bool TryRead<T>(string key, string expectedType, int knownVersion, out T? value, out int storedVersion)
+    {
+        // A cached value of another type means two callers disagree about this key. Re-read rather than
+        // reporting a miss, so the store stays self healing.
+        if (Cache.TryGetValue(key, out var cached) && cached.Value is T hit)
+        {
+            storedVersion = cached.Version;
+            value = hit;
+
+            return true;
+        }
+
+        storedVersion = knownVersion;
+        value = default;
+
+        var raw = ReadRaw(key);
+
+        if (string.IsNullOrEmpty(raw))
+        {
+            return false;
+        }
+
+        if (!ClientJson.TryDeserialize<KvpEnvelope<T>>(raw, out var envelope) || envelope is null)
+        {
+            Complain(key, "is not readable as a vMenu envelope, so it is being ignored");
+            return false;
+        }
+
+        if (!string.Equals(envelope.Type, expectedType, StringComparison.Ordinal))
+        {
+            Complain(key, $"holds a '{envelope.Type}' but was read as a '{expectedType}', so it is being ignored");
+            return false;
+        }
+
+        if (!string.Equals(envelope.Key, key, StringComparison.Ordinal))
+        {
+            Complain(key, $"names itself '{envelope.Key}', which is not the key it is stored under");
+        }
+
+        if (envelope.MergedBy is { } mergedBy && mergedBy < knownVersion)
+        {
+            Complain(
+                key,
+                $"was last saved by an older vMenu (version {mergedBy}, this build understands "
+                + $"{knownVersion}). Anything added after version {mergedBy} was kept through that "
+                + "save but not written by it, so it may not agree with the rest");
+        }
+
+        storedVersion = envelope.Version;
+        value = envelope.Value;
+
+        Cache[key] = new Cached(value, envelope.Version);
+
+        return true;
+    }
+
+    // Refuses rather than destroying data this build cannot read: a stored version above the one passed
+    // in means a newer vMenu wrote fields that are not on T. Nothing is changed when it refuses.
+    public static bool TryWrite<T>(string key, string type, int version, T value)
+    {
+        if (VersionOf(key) is { } stored && stored > version)
+        {
+            // A newer build wrote this. Rather than refuse outright, carry forward the fields this build does
+            // not know about. The overwrite goes ahead only when every one of them survives the merge.
+            if (TryWritePreservingNewer(key, type, version, stored, value))
+            {
+                Cache[key] = new Cached(value, stored);
+                Reported.Remove(key);
+
+                return true;
+            }
+
+            Log.Warning(
+                $"[Storage] '{key}' was saved by a newer version of vMenu (version {stored}, this "
+                + $"build understands {version}), and it holds data this build could not carry through "
+                + "the save. Refusing to overwrite it, because doing so would discard that data.");
+
+            return false;
+        }
+
+        var envelope = new KvpEnvelope<T>
+        {
+            Key = key,
+            Value = value,
+            Type = type,
+            Version = version,
+        };
+
+        API.SetResourceKvp(key, ClientJson.Serialize(envelope));
+
+        Cache[key] = new Cached(value, version);
+        Reported.Remove(key);
+
+        return true;
+    }
+
+    // Merges in the fields the newer build wrote which this one does not know about, so they are not
+    // lost. False when they could not be fully preserved, in which case nothing was written.
+    private static bool TryWritePreservingNewer<T>(string key, string type, int version, int storedVersion, T value)
+    {
+        try
+        {
+            var storedRaw = ReadRaw(key);
+
+            if (string.IsNullOrEmpty(storedRaw))
+            {
+                return false;
+            }
+
+            if (JsonMerge.Parse(storedRaw) is not JObject stored || !stored.TryGetValue("value", StringComparison.Ordinal, out var storedValue))
+            {
+                return false;
+            }
+
+            var storedValueJson = storedValue.ToString(Formatting.None);
+            var newValueJson = ClientJson.Serialize(value);
+
+            var mergedValueJson = JsonMerge.Merge(newValueJson, storedValueJson);
+
+            // The merge keeps object fields the newer build added, but it cannot safely reconcile an array or a
+            // shape this build restructured, so anything missing from the merge falls back to refusing.
+            if (!JsonMerge.IsSupersetOf(mergedValueJson, storedValueJson))
+            {
+                return false;
+            }
+
+
+            // Written with the stored version, because the payload still holds that version's fields. MergedBy
+            // says who actually wrote it, so the newer build can tell its own fields were carried through
+            // untouched rather than saved by something that understood them.
+            var envelope = new KvpEnvelope<JToken>
+            {
+                Key = key,
+                Value = JsonMerge.Parse(mergedValueJson),
+                Type = type,
+                Version = storedVersion,
+                MergedBy = version,
+            };
+
+            API.SetResourceKvp(key, ClientJson.Serialize(envelope));
+
+            return true;
+        }
+        catch (Exception exception)
+        {
+            Log.Error($"[Storage] Could not preserve the newer data on '{key}', so the save was refused: {exception}");
+
+            return false;
+        }
+    }
+
+    public static void Delete(string key)
+    {
+        API.DeleteResourceKvp(key);
+
+        Cache.Remove(key);
+        Reported.Remove(key);
+    }
+
+    public static string? ReadRaw(string key) => API.GetResourceKvpString(key);
+
+    public static void WriteRaw(string key, string envelope)
+    {
+        API.SetResourceKvp(key, envelope);
+
+        Cache.Remove(key);
+        Reported.Remove(key);
+    }
+
+    // False when it is not a vMenu envelope at all.
+    public static bool TryReadHeader(string? envelope, out string key, out string type, out int version)
+    {
+        key = string.Empty;
+        type = string.Empty;
+        version = 0;
+
+        if (string.IsNullOrEmpty(envelope)
+            || !ClientJson.TryDeserialize<KvpHeader>(envelope, out var header)
+            || header is null
+            || header.Key.Length == 0)
+        {
+            return false;
+        }
+
+        key = header.Key;
+        type = header.Type;
+        version = header.Version;
+
+        return true;
+    }
+
+    // Materialised so a caller can delete while iterating.
+    public static List<string> Keys(string prefix)
+    {
+        var keys = new List<string>();
+        var handle = API.StartFindKvp(prefix);
+
+        if (handle == -1)
+        {
+            return keys;
+        }
+
+        try
+        {
+            while (API.FindKvp(handle) is { Length: > 0 } key)
+            {
+                if (!key.StartsWith(prefix, StringComparison.Ordinal))
+                {
+                    continue;
+                }
+
+                keys.Add(key);
+            }
+        }
+        finally
+        {
+            API.EndFindKvp(handle);
+        }
+
+        return keys;
+    }
+
+    public static IEnumerable<string> Describe(string prefix)
+    {
+        foreach (var key in Keys(prefix))
+        {
+            var raw = ReadRaw(key);
+
+            yield return string.IsNullOrEmpty(raw) ? $"{key} = <empty>" : $"{key} = {raw}";
+        }
+    }
+
+    public static void InvalidateCache()
+    {
+        Cache.Clear();
+        Reported.Clear();
+    }
+
+    // Header only, so a payload whose shape this build does not know is never guessed at.
+    public static int? VersionOf(string key)
+    {
+        if (Cache.TryGetValue(key, out var cached))
+        {
+            return cached.Version;
+        }
+
+        return TryReadHeader(ReadRaw(key), out _, out _, out var version) ? version : null;
+    }
+
+    private static void Complain(string key, string problem)
+    {
+        if (Reported.Add(key))
+        {
+            Log.Warning($"[Storage] '{key}' {problem}.");
+        }
+    }
+
+    // Not a record: the generated equality reaches for EqualityComparer<T>.Default, which the sandbox
+    // refuses.
+    private readonly struct Cached(object? value, int version)
+    {
+        internal object? Value { get; } = value;
+
+        internal int Version { get; } = version;
+    }
+}

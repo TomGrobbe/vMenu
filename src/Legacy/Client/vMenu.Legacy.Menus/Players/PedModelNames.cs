@@ -1,0 +1,41 @@
+using CitizenFX.Core;
+using CitizenFX.Core.Native;
+
+using vMenu.Legacy.Hosting;
+
+namespace vMenu.Enhanced.Menus.Players;
+
+// The game has no reverse lookup for a ped model, so the only names available are the ones the server
+// owner listed in config/ped-models.json. A hash from outside that list stays a hash, which is honest:
+// guessing at a name nothing could confirm would be worse than admitting the model has none here.
+public static class PedModelNames
+{
+    // The model's name, or an empty string when this client cannot name it.
+    public static string Resolve(uint hash)
+    {
+        foreach (var category in PedModelSync.Categories)
+        {
+            foreach (var ped in category.Peds)
+            {
+                if (Hashing.Joaat(ped.Model) == hash)
+                {
+                    return ped.Model;
+                }
+            }
+        }
+
+        return string.Empty;
+    }
+
+    // Falls back to a name recorded earlier and then to the hash itself, so a row always has something
+    // to show.
+    public static string Resolve(uint hash, string stored)
+    {
+        if (Resolve(hash) is { Length: > 0 } known)
+        {
+            return known;
+        }
+
+        return stored.Length > 0 ? stored : hash.ToString();
+    }
+}

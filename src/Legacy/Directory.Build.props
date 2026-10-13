@@ -1,0 +1,15 @@
+<Project>
+  <Import Project="$([MSBuild]::GetPathOfFileAbove('$(MSBuildThisFile)', '$(MSBuildThisFileDirectory)../'))" />
+
+  <PropertyGroup>
+    <TargetFramework>net462</TargetFramework>
+    <Nullable>annotations</Nullable>
+    <ResourceRoot>$(RepoRoot)build\legacy\vMenu.Enhanced\</ResourceRoot>
+    <IntermediateRoot>$(RepoRoot)build\intermediate\legacy\</IntermediateRoot>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="Newtonsoft.Json" HintPath="$(RepoRoot)dependencies\legacy\Newtonsoft.Json.dll" Private="true" />
+  </ItemGroup>
+
+</Project>

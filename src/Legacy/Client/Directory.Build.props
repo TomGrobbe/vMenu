@@ -1,0 +1,20 @@
+<Project>
+  <Import Project="$([MSBuild]::GetPathOfFileAbove('$(MSBuildThisFile)', '$(MSBuildThisFileDirectory)../'))" />
+
+  <PropertyGroup>
+    <OutputPath>$(IntermediateRoot)client\</OutputPath>
+  </PropertyGroup>
+
+  <Import Project="$(RepoRoot)src\LegacyClient.props" />
+
+  <ItemGroup>
+    <PackageReference Include="CitizenFX.Core.Client" ExcludeAssets="runtime" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="CitizenFX.Core.Control" Alias="Control" />
+    <Using Include="CitizenFX.Core.Vector2" Alias="Vector2" />
+    <Using Include="CitizenFX.Core.Vector3" Alias="Vector3" />
+  </ItemGroup>
+
+</Project>

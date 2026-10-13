@@ -1,0 +1,111 @@
+using CitizenFX.Core;
+using CitizenFX.Core.Native;
+
+using vMenu.Enhanced.Events;
+using vMenu.Enhanced.MenuFramework;
+using vMenu.Enhanced.Localization;
+using vMenu.Enhanced.Permissions;
+
+using VehicleOptionsPermissions = vMenu.Enhanced.Data.Permissions.Menus.VehicleOptions;
+
+using vMenu.Legacy.Hosting;
+
+using vMenu.Enhanced.BrokenNatives;
+
+namespace vMenu.Enhanced.Menus.Vehicles;
+
+public static class VehicleVisibility
+{
+    private static bool _initialized;
+
+    private static int _hidden;
+
+    private static bool IsAllowed => ClientPermissions.IsAllowed(VehicleOptionsPermissions.Invisible);
+
+    public static void Initialize()
+    {
+        if (_initialized)
+        {
+            return;
+        }
+
+        _initialized = true;
+
+        LocalVehicleTicks.VehicleChanged += OnChanged;
+    }
+
+    public static void Toggle()
+    {
+        if (!IsAllowed)
+        {
+            return;
+        }
+
+        var vehicle = OwnVehicle.RequireDriven(
+            Loc.VehicleOptions.VisibilityNoVehicle,
+            Loc.VehicleOptions.VisibilityNotDriver);
+
+        if (vehicle is null)
+        {
+            return;
+        }
+
+        var handle = vehicle.Handle;
+        var visible = API.IsEntityVisible(handle);
+
+        var occupants = new List<(int Ped, bool Visible)>();
+
+        if (visible)
+        {
+            foreach (var occupant in Occupants(handle))
+            {
+                occupants.Add((occupant, API.IsEntityVisible(occupant)));
+            }
+        }
+
+        API.SetEntityVisible(handle, !visible, false);
+
+        foreach (var (ped, wasVisible) in occupants)
+        {
+            API.SetEntityVisible(ped, wasVisible, false);
+        }
+
+        _hidden = visible ? handle : 0;
+
+        Notifications.Info(MenuText.Key(visible ? Loc.VehicleOptions.VisibilityHidden : Loc.VehicleOptions.VisibilityShown));
+    }
+
+    private static List<int> Occupants(int vehicle)
+    {
+        var seats = API.GetVehicleMaxNumberOfPassengers(vehicle);
+        var found = new List<int>();
+
+        // Seat -1 is the driver, and GET_PED_IN_VEHICLE_SEAT counts passenger seats from zero.
+        for (var seat = -1; seat < seats; seat++)
+        {
+            var ped = NativeFixer.GetPedInVehicleSeat(vehicle, seat, false);
+
+            if (ped != 0 && API.DoesEntityExist(ped))
+            {
+                found.Add(ped);
+            }
+        }
+
+        return found;
+    }
+
+    private static void OnChanged(VehicleChanged changed)
+    {
+        if (_hidden == 0 || changed.Vehicle == _hidden)
+        {
+            return;
+        }
+
+        if (API.DoesEntityExist(_hidden))
+        {
+            API.SetEntityVisible(_hidden, true, false);
+        }
+
+        _hidden = 0;
+    }
+}
