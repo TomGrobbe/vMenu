@@ -7,6 +7,7 @@ using vMenu.Enhanced.Configuration;
 using vMenu.Enhanced.Data.Bullying;
 using vMenu.Enhanced.Data.Ticks;
 using vMenu.Enhanced.Events;
+using vMenu.Enhanced.Logging;
 using vMenu.Enhanced.Menus.Players;
 using vMenu.Enhanced.Ticks;
 
@@ -76,6 +77,8 @@ internal static class ToggleEffects
 
     private static int _enteringVehicle;
 
+    private static bool _othersElectrified;
+
     private static bool Enabled => ClientConfig.Value(BullySettings.Enabled);
 
     private static bool LodActive => Enabled && Glitched().Count > 0;
@@ -107,16 +110,40 @@ internal static class ToggleEffects
             "Bully.ElectrocuteDoor",
             WatchDoor,
             TickRate.Varying(() => _entering ? TickRate.PerFrame : TickRate.Every(250)),
-            () => Enabled));
+            () => Enabled && (BullyState.IsOn(BullyToggles.ShockOnEntry) || _othersElectrified)));
 
         Ticks.Add(TickRegistry.Register("Bully.Lod", ScanLod, TickRate.Every(500), () => LodActive || LodApplied.Count > 0));
 
         BullyState.Changed += OnChanged;
+        StateBags.Watch(BullyEvents.ElectrifiedKey, BullyEvents.GlobalBag, (_, _) => RefreshElectrifiedNextFrame());
         ResourceShutdown.Stopping += OnShutdown;
 
         ClientConfig.Track([BullyEvents.LodConvar]);
         ClientConfig.AddEventListenerFor([BullyEvents.LodConvar], Reevaluate);
         ClientConfig.AddEventListenerFor([BullySettings.Enabled], Reevaluate);
+
+        RefreshElectrified();
+    }
+
+    private static void RefreshElectrified()
+    {
+        _othersElectrified = Electrified.AnyOwnedByOthers(API.GetPlayerServerId(API.PlayerId()));
+
+        Reevaluate();
+    }
+
+    private static async void RefreshElectrifiedNextFrame()
+    {
+        try
+        {
+            await BaseScript.Delay(0);
+
+            RefreshElectrified();
+        }
+        catch (Exception exception)
+        {
+            Log.Error($"[Bully] Could not read the electrified vehicles the server sent: {exception}");
+        }
     }
 
     private static void OnChanged()

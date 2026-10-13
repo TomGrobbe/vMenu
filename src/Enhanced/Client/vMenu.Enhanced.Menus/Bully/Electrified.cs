@@ -29,6 +29,21 @@ public static class Electrified
         return 0;
     }
 
+    public static bool AnyOwnedByOthers(int self)
+    {
+        var all = StateBags.Get<int[]>(BullyEvents.GlobalBag, BullyEvents.ElectrifiedKey) ?? [];
+
+        for (var index = 0; index + 2 < all.Length; index += 3)
+        {
+            if (all[index + 1] != self)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public static bool IsOwnedBy(int networkId, int owner)
     {
         var all = StateBags.Get<int[]>(BullyEvents.GlobalBag, BullyEvents.ElectrifiedKey) ?? [];
