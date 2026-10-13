@@ -8,6 +8,7 @@ using vMenu.Enhanced.Data.Actions;
 using vMenu.Enhanced.Data.Clothing;
 using vMenu.Enhanced.Logging;
 using vMenu.Enhanced.Permissions.Server;
+using vMenu.Enhanced.Players.Server;
 using vMenu.Enhanced.Serialization.Server;
 
 using CharacterCreatorPermissions = vMenu.Enhanced.Data.Permissions.Menus.CharacterCreator;
@@ -201,9 +202,9 @@ public static class ClothingPresetActions
 
     private static void Broadcast()
     {
-        foreach (var player in API.Players.All)
+        foreach (var connected in ConnectedPlayers.All())
         {
-            SendTo(player);
+            SendTo(new Player(connected.ServerId));
         }
     }
 

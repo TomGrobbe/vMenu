@@ -8,6 +8,7 @@ using CitizenFX.FiveM.Shared.Serialization;
 using vMenu.Enhanced.Data.Actions;
 using vMenu.Enhanced.Data.Misc;
 using vMenu.Enhanced.Logging;
+using vMenu.Enhanced.Players.Server;
 using vMenu.Enhanced.Serialization.Server;
 
 using DisplaySettingsPermissions = vMenu.Enhanced.Data.Permissions.Menus.DisplaySettings;
@@ -147,9 +148,9 @@ public static class LocationBlipActions
 
         _payload = ServerJson.Serialize(Blips);
 
-        foreach (var player in API.Players.All)
+        foreach (var connected in ConnectedPlayers.All())
         {
-            SendTo(player);
+            SendTo(new Player(connected.ServerId));
         }
 
         Log.Debug($"[Blips] {source} {what}.");

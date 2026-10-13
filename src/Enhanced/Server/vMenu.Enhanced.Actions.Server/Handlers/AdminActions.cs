@@ -5,6 +5,7 @@ using CitizenFX.FiveM.Server;
 using CitizenFX.FiveM.Server.Entities;
 using CitizenFX.FiveM.Shared.Serialization;
 
+using vMenu.Enhanced.BrokenNatives.Server;
 using vMenu.Enhanced.Configuration.Server;
 using vMenu.Enhanced.Data.Actions;
 using vMenu.Enhanced.Data.Admin;
@@ -253,7 +254,7 @@ public static class AdminActions
         var deleted = 0;
         var spared = 0;
 
-        foreach (var entity in Native.GetAllVehicles())
+        foreach (var entity in NativeFixer.GetAllVehicles())
         {
             if (!Native.DoesEntityExist(entity))
             {
@@ -296,7 +297,7 @@ public static class AdminActions
     {
         var occupied = new HashSet<int>();
 
-        foreach (var ped in Native.GetAllPeds())
+        foreach (var ped in NativeFixer.GetAllPeds())
         {
             if (!Native.DoesEntityExist(ped))
             {

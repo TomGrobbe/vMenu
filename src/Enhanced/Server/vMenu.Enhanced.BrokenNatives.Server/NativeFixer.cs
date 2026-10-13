@@ -11,6 +11,12 @@ public static class NativeFixer
 {
     internal static NativeApi nativeApi = BaseEntrypoint.NativeApi;
 
+    public static int[] GetAllVehicles() =>
+        MessagePackSerializer.Deserialize<int[]>(Native.GetAllVehicles(), MessagePackSerializerOptions.Standard);
+
+    public static int[] GetAllPeds() =>
+        MessagePackSerializer.Deserialize<int[]>(Native.GetAllPeds(), MessagePackSerializerOptions.Standard);
+
     // API.EmitLocal's answer cannot be read back once anything has re-entered this resource. The runtime
     // keeps one native call context per resource per thread, so a handler calling back in resets the
     // context our own emit is still holding its return value in. The event is delivered either way and
