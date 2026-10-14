@@ -66,7 +66,7 @@ The same two packages also have a .NET Framework 4.6.2 build for the regular Fiv
 
 | Topic | Detail |
 | --- | --- |
-| Entry points | Call `VMenuPlugin.Create` and `VMenuServer.RegisterAsync` from your `BaseScript`, for example on its first tick. |
+| Entry points | Call `VMenuPlugin.Create` and `VMenuServer.RegisterAsync` from your `BaseScript`'s constructor, or from an `onResourceStart` event handler for your own resource. Never call them from a tick. You do not have to wait for vMenu to start first: the plugin API registers as soon as vMenu is there, and again whenever it restarts. See [start order and reconnecting](/vmenu/enhanced/plugins/developing/#start-order-and-reconnecting). |
 | Script files | Your client and server scripts must be named `*.net.dll`. |
 | `files` | List `Newtonsoft.Json.dll`, `System.ValueTuple.dll`, `vMenu.Enhanced.Polyfills.dll`, `vMenu.Enhanced.PluginContracts.dll` and `vMenu.Enhanced.ClientAPI.dll`. The CitizenFX assemblies come with FiveM. |
 | Newtonsoft.Json | The package ships the build legacy vMenu always used, which works in the client sandbox. Do not add the Newtonsoft.Json NuGet package next to it. |
