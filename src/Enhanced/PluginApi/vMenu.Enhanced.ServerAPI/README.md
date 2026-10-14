@@ -19,7 +19,7 @@ The package version always matches the vMenu Enhanced release it belongs to, so 
 
 ## License
 
-This package is licensed under the **GNU General Public License v3.0 or later**, `GPL-3.0-or-later`, which is the same license vMenu Enhanced itself uses. The full text ships inside the package as `LICENSE.md`, and also lives in the [vMenu repository](https://github.com/TomGrobbe/vMenu/blob/enhanced/LICENSE.md).
+This package is licensed under the **GNU General Public License v3.0 or later**, `GPL-3.0-or-later`, which is the same license vMenu Enhanced itself uses. The full text ships inside the package as `LICENSE.md`, and also lives in the [vMenu repository](https://github.com/TomGrobbe/vMenu/blob/main/LICENSE.md).
 
 **That license comes along with your plugin.** A plugin built on this package is a work based on vMenu, so your plugin has to be licensed `GPL-3.0` or `AGPL-3.0`, or the "or later" version of either. You cannot build on this and then put your own closed license on the result. In practice:
 
