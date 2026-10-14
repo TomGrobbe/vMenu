@@ -92,7 +92,7 @@ export default defineConfig({
         {
           label: 'Links',
           items: [
-            { label: 'Download vMenu', link: 'https://github.com/TomGrobbe/vMenu/releases/latest/', attrs: { target: '_blank' } },
+            { label: 'Download vMenu', link: 'https://github.com/TomGrobbe/vMenu/releases/download/enhanced-v1.0.9/vMenu-3.9.2.zip', attrs: { target: '_blank' } },
             { label: 'FiveM Forum', link: 'https://forum.fivem.net/t/vMenu/88868?u=vespura', attrs: { target: '_blank' } },
             { label: 'Patreon', link: 'https://www.patreon.com/vespura', attrs: { target: '_blank' } },
             { label: 'vespura.com', link: 'https://vespura.com/', attrs: { target: '_blank' } },

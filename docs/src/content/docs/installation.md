@@ -19,7 +19,7 @@ If you're updating vMenu, instead of installing it from scratch, you need to mak
 :::
 
 ## Installation steps
-1. Go to the RELEASES page (on the GitHub repo), and download "vMenu-\<version\>.zip", or use the "Download vMenu" button on the left side of this page to automatically download the latest version.
+1. Download [vMenu-3.9.2.zip](https://github.com/TomGrobbe/vMenu/releases/download/enhanced-v1.0.9/vMenu-3.9.2.zip), the last version of the original vMenu, or use the "Download vMenu" button on the left side of this page. Newer releases on the releases page only contain vMenu Enhanced.
 2. Once you've got your zip file, extract the files and copy everything into `/resources/vMenu/` so that you end up with the `fxmanifest.lua` (previously `__resource.lua`) file right here: `/resources/vMenu/fxmanifest.lua`.
 
 :::note
@@ -46,17 +46,7 @@ Congratulations, you've just installed vMenu in its most basic, plug and play co
 
 ## Installing with txAdmin
 
-txAdmin is the control panel that comes with every FiveM server. When you create a new server in it, it can set everything up for you from a "recipe", which is a list of steps it follows to download and configure your server.
-
-vMenu has its own recipe. It gives you a fresh server with vMenu already installed in the right folder, and a `server.cfg` that already loads the `permissions.cfg`. Whoever you set up as the admin in txAdmin also gets vMenu's staff options.
-
-Pick the vMenu recipe in txAdmin's setup screen if it is listed there. If it is not, choose "Remote URL Template" and paste this link:
-
-```
-https://github.com/TomGrobbe/vMenu/releases/latest/download/txadmin-vmenu-legacy-recipe.yaml
-```
-
-That link always points to the newest release.
+The original vMenu no longer has a txAdmin recipe. The vMenu recipes in txAdmin now install [vMenu Enhanced](/vmenu/enhanced/), the new vMenu that runs on both FiveM Legacy and FiveM Enhanced. See [Installing on FiveM Legacy](/vmenu/enhanced/installing/fivem-legacy/) for how that works.
 
 ## 1-click installation with Zap Hosting
 [![](https://zap-hosting.com/interface/_images/banner/gameserver/fivem-affiliate-banner-1006x180.png)](https://zap-hosting.com/vespura)
