@@ -1,0 +1,23 @@
+title: "[Idea] "
+body:
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: Describe your idea in a few sentences.
+    validations:
+      required: true
+  - type: textarea
+    id: details
+    attributes:
+      label: Additional details
+      description: Anything else that helps explain the idea, such as why it is useful or how it should work.
+    validations:
+      required: false
+  - type: textarea
+    id: examples
+    attributes:
+      label: Examples
+      description: Screenshots, designs or links that show what you have in mind. You can drag images straight into this field.
+    validations:
+      required: false

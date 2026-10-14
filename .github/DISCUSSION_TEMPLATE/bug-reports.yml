@@ -1,0 +1,87 @@
+title: "[Bug] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a bug. Please fill in every field, it helps us find and fix the problem a lot faster.
+  - type: input
+    id: vmenu-version
+    attributes:
+      label: vMenu version
+      description: You can find this in the About menu in vMenu.
+      placeholder: e.g. 1.0.10
+    validations:
+      required: true
+  - type: dropdown
+    id: fivem-version
+    attributes:
+      label: FiveM version
+      options:
+        - Legacy (for GTA V Legacy)
+        - Enhanced (for GTA V Enhanced)
+    validations:
+      required: true
+  - type: input
+    id: server-version
+    attributes:
+      label: Server version
+      description: Open `http://<serverip:port>/info.json` in your browser and copy the `server` value.
+      placeholder: e.g. FXServer-master SERVER v1.0.0.12345 win32
+    validations:
+      required: true
+  - type: input
+    id: client-version
+    attributes:
+      label: Client version
+      description: Check the FiveM watermark in the corner of your screen while in-game.
+      placeholder: e.g. b3258 / 12345
+    validations:
+      required: true
+  - type: dropdown
+    id: client-channel
+    attributes:
+      label: Update channel
+      description: Only relevant on Legacy. Pick "Not applicable" if you are on Enhanced.
+      options:
+        - Release
+        - Beta
+        - Canary (unstable)
+        - Not applicable (Enhanced)
+    validations:
+      required: true
+  - type: dropdown
+    id: frequency
+    attributes:
+      label: How often does it occur?
+      options:
+        - Always
+        - Sometimes
+        - Rarely
+    validations:
+      required: true
+  - type: textarea
+    id: summary
+    attributes:
+      label: Bug summary
+      description: What went wrong, and what did you expect to happen instead?
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction steps
+      description: Tell us step by step how we can make the bug happen ourselves.
+      placeholder: |
+        1. Open vMenu
+        2. Go to ...
+        3. Select ...
+        4. See the bug
+    validations:
+      required: true
+  - type: textarea
+    id: additional-info
+    attributes:
+      label: Additional information
+      description: Anything else that helps, such as log text, screenshots, or log and dump files. You can drag files straight into this field.
+    validations:
+      required: false

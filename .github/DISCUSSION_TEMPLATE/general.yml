@@ -1,0 +1,23 @@
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Found a bug or have an idea for a new feature? Please use the **Bug reports** or **Ideas** category instead, that way nothing gets lost.
+  - type: textarea
+    id: message
+    attributes:
+      label: What's on your mind?
+      description: General questions or discussions about anything vMenu related.
+    validations:
+      required: true
+  - type: dropdown
+    id: fivem-version
+    attributes:
+      label: FiveM version
+      description: Only needed if your post is about a specific setup.
+      options:
+        - Legacy
+        - Enhanced
+        - Not relevant
+    validations:
+      required: false
