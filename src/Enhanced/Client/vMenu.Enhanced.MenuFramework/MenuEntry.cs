@@ -22,6 +22,10 @@ public abstract class MenuEntry
     /// <summary>What to say while this entry is locked. Empty falls back to the framework's own wording.</summary>
     public MenuText LockedDescription { get; init; }
 
+    /// <summary>Read on every refresh instead of <see cref="LockedDescription"/>, for a lock reason that can change while
+    /// the menu is live. Null or empty falls back to <see cref="LockedDescription"/>.</summary>
+    public Func<MenuText>? ReadLockedDescription { get; init; }
+
     /// <summary>Null inherits the menu's default, which inherits MenuFrameworkOptions.</summary>
     public GateBehaviour? Behaviour { get; init; }
 
@@ -85,10 +89,12 @@ public abstract class MenuEntry
         item.LeftIcon = locked ? MenuItem.Icon.LOCK : (ReadLeftIcon?.Invoke() ?? LeftIcon);
         item.RightIcon = ReadRightIcon?.Invoke() ?? RightIcon;
 
+        var lockedDescription = ReadLockedDescription?.Invoke() is { IsEmpty: false } read ? read : LockedDescription;
+
         item.Description = locked
-            ? (LockedDescription.IsEmpty
+            ? (lockedDescription.IsEmpty
                 ? localizer.Get(Loc.Framework.RestrictedDescription)
-                : LockedDescription.Resolve(localizer))
+                : lockedDescription.Resolve(localizer))
             : Description.Resolve(localizer);
 
         var label = Label.IsEmpty ? DefaultLabel : Label;
