@@ -2,6 +2,7 @@
 
 vMenu Enhanced is a server side menu for FiveM for GTA V Enhanced, providing full configuration and permissions support.
 It also runs on regular (legacy) FiveM servers, from the `vMenu-Enhanced-Legacy` zip on the releases page.
+Looking for the original vMenu, v3.9.2 and below? It lives on the [legacy branch](https://github.com/TomGrobbe/vMenu/tree/legacy) and is no longer updated.
 It is a from-scratch remake of the original vMenu for FiveM (legacy), containing a complete refactor and performance optimized approach to how the menu is built.
 It also now supports full localization (translations) and custom plugins that anyone can write to create new menu's inside vMenu (see the bottom of this readme).
 
@@ -18,12 +19,13 @@ Click [here](https://github.com/TomGrobbe/vMenu/releases) to go to the releases 
 ## Installation
 
 Please follow the instructions over at the [vMenu docs](https://docs.vespura.com/vmenu/enhanced/getting-started/)
+They also explain the txAdmin recipes, which set up a whole new server with vMenu Enhanced and the official plugins, on FiveM Enhanced and on FiveM Legacy.
 
 ## ZAP-Hosting
 
 You can use ZAP-Hosting's one-click installer for vMenu.
-Right now only legacy is supported, but vMenu Enhanced will be supported later.
-Get your own FiveM server at ZAP-Hosting with a 20% discount [HERE](https://zap-hosting.com/vespura?voucher=Vespura) and make sure to use `Vespura` at checkout.
+For now that installer still sets up the original vMenu (v3.9.2 and below), support for vMenu Enhanced will follow later.
+Get your own FiveM server at ZAP-Hosting with a 20% discount [HERE](https://zap-hosting.com/vespura?voucher=Vespura-a-3715) and make sure to use `Vespura` at checkout.
 
 ---
 
