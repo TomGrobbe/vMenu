@@ -12,6 +12,8 @@ public static partial class Loc
 
         public const string PedDescription = "pedmodels.ped.desc";
 
+        public const string PedInvalid = "pedmodels.ped.invalid";
+
         public const string CategoryDescription = "pedmodels.category.desc";
 
         public const string CategorySubtitle = "pedmodels.category.subtitle";

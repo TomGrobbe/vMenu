@@ -158,6 +158,8 @@ public static partial class Loc
 
         public const string WeaponDescription = "weaponoptions.weapon.desc";
 
+        public const string WeaponInvalid = "weaponoptions.weapon.invalid";
+
         public const string WeaponSubtitle = "weaponoptions.weapon.subtitle";
 
         public const string EquipWeapon = "weaponoptions.equip";
