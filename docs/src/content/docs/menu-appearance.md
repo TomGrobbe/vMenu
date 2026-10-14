@@ -34,10 +34,6 @@ Once your players are running a build that has this setting, you can change it f
 The very first time is the exception. A brand new setting only starts listening for changes after the client has loaded the build that introduced it, so the first player of the day needs to have joined once with this version.
 :::
 
-:::note[Why the cartoon skin has dark patches]
-Grand Theft Auto's own text colours, the ones that turn a word yellow or red in a description, are fixed values chosen for a dark menu. Yellow and white simply vanish on cream paper. So the description box and the highlighted row are dark on this skin, which keeps every one of those colours readable while the rows themselves stay bright.
-:::
-
 :::caution[The button hints stay as they are]
 The row of button prompts along the bottom of the screen is drawn by the game itself, not by vMenu, so no skin can reach it. It keeps the Grand Theft Auto look whichever skin you pick.
 :::
