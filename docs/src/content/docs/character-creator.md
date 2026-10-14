@@ -76,7 +76,7 @@ Every character also keeps whatever it is wearing right now, separately from tho
 
 ### Your saves travel with you
 
-Characters are saved on your own computer, like saved vehicles and peds, and they are included in the transfer code on the [Moving Your Data](/vmenu/enhanced/moving-your-data/) page. Make one before you rely on them.
+Characters are saved on your own computer, like saved vehicles and peds, and they are included in the backup code on the [Backing Up Your Data](/vmenu/enhanced/backing-up-your-data/) page. Make a backup before you rely on them.
 
 ## For server owners
 

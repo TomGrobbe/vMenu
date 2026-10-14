@@ -15,6 +15,9 @@ export default defineConfig({
   // publishes this site into the hub's /vmenu/enhanced/ folder, so the docs
   // land at /vmenu/enhanced/. Do NOT shorten this to '/enhanced'.
   base: '/vmenu/enhanced',
+  redirects: {
+    '/moving-your-data/': '/vmenu/enhanced/backing-up-your-data/',
+  },
   integrations: [
     starlight({
       title: 'vMenu Enhanced',
@@ -76,7 +79,7 @@ export default defineConfig({
         },
         { label: 'Key Bindings', link: '/key-bindings/' },
         { label: 'Menu Appearance', link: '/menu-appearance/' },
-        { label: 'Moving Your Data', link: '/moving-your-data/' },
+        { label: 'Backing Up Your Data', link: '/backing-up-your-data/' },
         { label: 'Edit Your Data', link: '/data-editor/' },
         { label: 'Compare Your Data', link: '/data-compare/' },
         { label: 'Custom Character Creator', link: '/character-creator/' },
