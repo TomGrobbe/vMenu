@@ -3,95 +3,31 @@ title: "Installing on FiveM Enhanced"
 description: "How to install vMenu Enhanced on a FiveM Enhanced server, with a txAdmin recipe or by hand."
 ---
 
-This page is for servers that run **FiveM Enhanced**, the version of FiveM built on GTA V Enhanced. Running the regular FiveM instead? Then you want [Installing on FiveM Legacy](/vmenu/enhanced/installing/fivem-legacy/).
-
-There are two ways to install it. The quick way with txAdmin sets up a whole new server for you. The manual way adds vMenu to a server you already have.
+This page is for **FiveM Enhanced**, the version of FiveM built on GTA V Enhanced. Running the regular FiveM instead? Then you want [Installing on FiveM Legacy](/vmenu/enhanced/installing/fivem-legacy/).
 
 ## The quick way, with txAdmin
 
-txAdmin is the control panel that comes with every FiveM server. When you create a new server in it, it can set everything up for you from a "recipe", which is a list of steps it follows to download and configure your server.
+txAdmin is the control panel that comes with every FiveM server. Its "recipes" set up a whole new server for you. The vMenu Enhanced recipe gives you vMenu Enhanced, ready made permissions and settings, and the [routing buckets](https://github.com/TomGrobbe/vMenu.RoutingBucketsPlugin), [theme picker](https://github.com/TomGrobbe/vMenu.ThemePicker) and [custom themes](https://github.com/TomGrobbe/vMenu.CustomThemesPlugin) plugins. The admin you set up in txAdmin can use the whole menu right away. FiveM Legacy has [its own recipe](/vmenu/enhanced/installing/fivem-legacy/#the-quick-way-with-txadmin), and the original vMenu no longer has one.
 
-vMenu Enhanced has its own recipe. It gives you a fresh server with vMenu Enhanced already installed, working permission and configuration files, and the [routing buckets](https://github.com/TomGrobbe/vMenu.RoutingBucketsPlugin), [theme picker](https://github.com/TomGrobbe/vMenu.ThemePicker) and [custom themes](https://github.com/TomGrobbe/vMenu.CustomThemesPlugin) plugins. Whoever you set up as the admin in txAdmin can use the whole menu right away.
-
-Pick the vMenu Enhanced recipe in txAdmin's setup screen if it is listed there. If it is not, choose "Remote URL Template" and paste this link:
+Pick the vMenu Enhanced recipe in txAdmin's setup screen. If it is not listed, choose "Remote URL Template" and paste this link, which always points to the newest release:
 
 ```
 https://github.com/TomGrobbe/vMenu/releases/latest/download/txadmin-vmenu-enhanced-recipe.yaml
 ```
 
-That link always points to the newest release. When txAdmin is done you can skip the rest of this page, because your `server.cfg` already has every line it describes. It also explains how to set up the permissions of the plugins, which only becomes possible after your server has started once.
+That's it, you can skip the rest of this page. The `server.cfg` txAdmin makes for you explains how to set up the plugins' permissions.
 
 ## The manual way
 
 ### 1. Download and unpack it
 
-Download `vMenu-Enhanced-v<version>.zip` from the [latest release](https://github.com/TomGrobbe/vMenu/releases/latest) and unpack it into your server's `resources` folder. The same release also has a zip with "Legacy" in its name. That one is for regular FiveM servers, so leave it alone.
+Download `vMenu-Enhanced-v<version>.zip` from the [latest release](https://github.com/TomGrobbe/vMenu/releases/latest) and unpack it into your `resources` folder. Leave the zip with "Legacy" in its name alone, that one is for regular FiveM servers.
 
 :::danger[The folder name matters]
-Name the folder exactly `vMenu.Enhanced`, capital letters and all. Every permission and setting name is built from it, so nothing works under a different name. vMenu checks this itself and refuses to start if the name is wrong.
+Name the folder exactly `vMenu.Enhanced`, capital letters and all. Every permission and setting name is built from it, and vMenu refuses to start under any other name.
 :::
 
 ### 2. Add the first lines to your server.cfg
-
-```ini
-add_filesystem_permission vMenu.Enhanced write vMenu.Enhanced
-ensure vMenu.Enhanced
-```
-
-FiveM Enhanced blocks resources from writing to disk unless you allow it, and vMenu writes its example config files into its own folder. Both names in that first line are resource names: the one being granted access, and the one whose folder it may write to.
-
-:::danger[Order matters]
-The permission has to come before `ensure`. The other way round and vMenu cannot save anything, and you get filesystem errors in your console.
-:::
-
-If you use an [integration](/vmenu/enhanced/integrations/) with role sync, vMenu also needs these two lines. Role sync means your integration decides which permission groups a player is in, and vMenu adds them to or removes them from those groups for you. FiveM only lets a resource do that when you allow it, which is what these lines do. They are already at the top of the example `permissions.cfg`, so if you copy that file you have them.
-
-```ini
-add_ace resource.vMenu.Enhanced command.add_principal allow
-add_ace resource.vMenu.Enhanced command.remove_principal allow
-```
-
-### 3. Find the example permissions file
-
-The zip comes with an example permissions file, so you do not have to start your server first. You will find it here:
-
-```
-resources/vMenu.Enhanced/config/permissions.cfg.example
-```
-
-An "ace" permission is FiveM's way of saying "this player or group is allowed to do this thing". This file is where you decide who gets access to which parts of the menu.
-
-vMenu also rewrites this file every time it starts. That way it always lists everything your server knows about, including anything you added yourself, like your own vehicle or weapon categories.
-
-### 4. Make your own copy and edit it
-
-Copy that file and name the copy `permissions.cfg`, so both sit next to each other. The `.example` file is left alone on purpose, so a future update can refresh it without wiping your settings.
-
-If you only play with friends and want to get going quickly, this single line is all you need in there:
-
-```ini
-add_ace builtin.everyone "vMenu.Enhanced.Everything" allow
-```
-
-:::danger[This gives everyone everything]
-That line hands every player full access to every feature. Only use it on a whitelisted server that random people cannot join.
-:::
-
-### 5. Load your permissions file
-
-Add an `exec` line above what you already added:
-
-```ini
-exec @vMenu.Enhanced/config/permissions.cfg
-add_filesystem_permission vMenu.Enhanced write vMenu.Enhanced
-ensure vMenu.Enhanced
-```
-
-Without it your permissions are never loaded and nobody can open the menu.
-
-### 6. Optional but recommended, the configuration file
-
-`configuration.cfg.example` sits in the same folder and holds settings rather than permissions, so things like how vMenu behaves and what is turned on. It works the same way: copy it, call the copy `configuration.cfg`, edit it, and add one more `exec` line:
 
 ```ini
 exec @vMenu.Enhanced/config/permissions.cfg
@@ -100,8 +36,34 @@ add_filesystem_permission vMenu.Enhanced write vMenu.Enhanced
 ensure vMenu.Enhanced
 ```
 
+The two `exec` lines load your permissions and settings, which you make in the next step. FiveM Enhanced blocks resources from writing to disk, and the `add_filesystem_permission` line lets vMenu write into its own folder. All three have to come before `ensure`, otherwise nobody can open the menu and vMenu cannot save anything.
+
+Using an [integration](/vmenu/enhanced/integrations/) with role sync, where your integration decides who is in which permission group? Then vMenu also needs these two lines, which the example `permissions.cfg` already has at the top:
+
+```ini
+add_ace resource.vMenu.Enhanced command.add_principal allow
+add_ace resource.vMenu.Enhanced command.remove_principal allow
+```
+
+### 3. Make your permissions and settings files
+
+Open `resources/vMenu.Enhanced/config/`. Copy `permissions.cfg.example` and `configuration.cfg.example`, and remove `.example` from the names of the copies. Then edit the copies:
+
+- `permissions.cfg` decides who may use which part of the menu. It uses "ace" permissions, which is FiveM's way of saying "this player or group is allowed to do this".
+- `configuration.cfg` decides how vMenu behaves and what is turned on.
+
+vMenu never changes your copies. The `.example` files are rewritten every time vMenu starts, so they always list every permission and setting there is. Keeping your copies up to date is up to you: after every vMenu update, check the changelog or compare your copies with the `.example` files, and add any new permissions or settings you want yourself.
+
+Just playing with friends? This one line in `permissions.cfg` gets you going:
+
+```ini
+add_ace builtin.everyone "vMenu.Enhanced.Everything" allow
+```
+
+:::danger[This gives everyone everything]
+Only use that line on a whitelisted server that random people cannot join.
+:::
+
 ### You're done
 
-Restart your server, join, and press `M` to open the menu. For everything else vMenu puts on a key, see [Key Bindings](/vmenu/enhanced/key-bindings/).
-
-Running your server on Linux? Have a look at [Running on Linux](/vmenu/enhanced/running-on-linux/) too.
+Restart your server, join, and press `M` to open the menu. See [Key Bindings](/vmenu/enhanced/key-bindings/) for everything else vMenu puts on a key. Running your server on Linux? Have a look at [Running on Linux](/vmenu/enhanced/running-on-linux/) too.
