@@ -99,7 +99,11 @@ public sealed class PedModelsMenu : MenuDefinition
                     Loc.PedModels.PedDescription,
                     ("model", MenuText.Literal(model)),
                     ("label", MenuText.Literal(label))),
-                Gate = MenuGate.When(() => ClientPedPermissions.CanSpawnPed(model, categoryName)),
+                Gate = MenuGate.When(() => CatalogValidity.IsValidPed(model) && ClientPedPermissions.CanSpawnPed(model, categoryName)),
+                ReadBehaviour = () => CatalogValidity.IsValidPed(model) ? null : GateBehaviour.Lock,
+                ReadLockedDescription = () => CatalogValidity.IsValidPed(model)
+                    ? MenuText.Empty
+                    : MenuText.Key(Loc.PedModels.PedInvalid, ("model", MenuText.Literal(model))),
                 Configure = item => item.ItemData = searchText,
                 OnSelectedAsync = _ => SpawnAsync(model, label, categoryName),
             });
@@ -159,7 +163,7 @@ public sealed class PedModelsMenu : MenuDefinition
     private IReadOnlyList<InputSuggestion> SpawnableSuggestions() =>
         [.. _categories
             .SelectMany(category => category.Peds.Select(ped => (ped.Model, ped.Label, category.Name)))
-            .Where(ped => ClientPedPermissions.CanSpawnPed(ped.Model, ped.Name))
+            .Where(ped => ClientPedPermissions.CanSpawnPed(ped.Model, ped.Name) && CatalogValidity.IsValidPed(ped.Model))
             .Select(ped => new InputSuggestion
             {
                 Value = ped.Model,

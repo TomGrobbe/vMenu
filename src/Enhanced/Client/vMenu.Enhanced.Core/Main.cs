@@ -226,6 +226,8 @@ public sealed class Main : IScript
 
         await MenuRegistry.BuildAsync(MainMenuComposition.Definitions);
 
+        CatalogValidity.Initialize();
+
         PluginHost.AnnounceReady();
 
         await CharacterRespawn.ApplyOnJoinAsync();

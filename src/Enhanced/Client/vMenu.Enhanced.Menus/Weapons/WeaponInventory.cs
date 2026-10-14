@@ -187,7 +187,8 @@ public static class WeaponInventory
 
         foreach (var listed in Listed())
         {
-            if (ClientWeaponPermissions.CanUseWeapon(listed.SpawnName, listed.Category))
+            if (ClientWeaponPermissions.CanUseWeapon(listed.SpawnName, listed.Category)
+                && CatalogValidity.IsValidWeapon(listed.SpawnName))
             {
                 yield return listed;
             }

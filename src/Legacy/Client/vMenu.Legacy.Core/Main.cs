@@ -250,6 +250,8 @@ public sealed class Main : BaseScript
 
         await MenuRegistry.BuildAsync(MainMenuComposition.Definitions);
 
+        CatalogValidity.Initialize();
+
         PluginHost.AnnounceReady();
 
         await CharacterRespawn.ApplyOnJoinAsync();

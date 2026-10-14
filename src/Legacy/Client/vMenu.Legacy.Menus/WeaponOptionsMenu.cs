@@ -207,7 +207,13 @@ public sealed class WeaponOptionsMenu : MenuDefinition
                     Loc.WeaponOptions.WeaponDescription,
                     ("weapon", WeaponNames.Display(current.Label, current.SpawnName))),
                 LeftIcon = MenuItem.Icon.GUN,
-                Gate = MenuGate.When(() => ClientWeaponPermissions.CanUseWeapon(current.SpawnName, categoryName)),
+                Gate = MenuGate.When(() =>
+                    CatalogValidity.IsValidWeapon(current.SpawnName)
+                    && ClientWeaponPermissions.CanUseWeapon(current.SpawnName, categoryName)),
+                ReadBehaviour = () => CatalogValidity.IsValidWeapon(current.SpawnName) ? null : GateBehaviour.Lock,
+                ReadLockedDescription = () => CatalogValidity.IsValidWeapon(current.SpawnName)
+                    ? MenuText.Empty
+                    : MenuText.Key(Loc.WeaponOptions.WeaponInvalid, ("weapon", MenuText.Literal(current.SpawnName))),
                 WeaponStats = () => WeaponStatistics.For(hash),
                 // The weapon's own menu is built in the frame it opens, which is too late to ask about its
                 // components, so highlighting the row that opens it is the cue instead.
@@ -471,7 +477,7 @@ public sealed class WeaponOptionsMenu : MenuDefinition
     private IReadOnlyList<InputSuggestion> Suggestions() =>
         [.. _categories
             .SelectMany(category => category.Weapons.Select(weapon => (weapon.SpawnName, weapon.Label, category.Name)))
-            .Where(weapon => ClientWeaponPermissions.CanUseWeapon(weapon.SpawnName, weapon.Name))
+            .Where(weapon => ClientWeaponPermissions.CanUseWeapon(weapon.SpawnName, weapon.Name) && CatalogValidity.IsValidWeapon(weapon.SpawnName))
             .Select(weapon => new InputSuggestion
             {
                 Value = weapon.SpawnName,
