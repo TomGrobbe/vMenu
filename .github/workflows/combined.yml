@@ -1,14 +1,12 @@
 name: CI/CD
 
-# This exact file sits on both legacy and enhanced. Keep the two copies identical.
-# A push to either branch builds both lines into one release attached to the Enhanced tag.
-# A line only gets a new version when it has new commits, otherwise it is rebuilt from its latest tag.
+# A push to main builds vMenu Enhanced for FiveM Enhanced and for FiveM Legacy, and releases both under
+# one version on one Enhanced tag. The original vMenu lives on the legacy branch and is no longer built.
 
 on:
   push:
     branches:
-      - legacy
-      - enhanced
+      - main
     paths-ignore:
       - "docs/**"
       - ".github/workflows/docs.yml"
@@ -18,8 +16,8 @@ on:
 permissions:
   contents: read
 
-# One run at a time across both branches, never cancelled halfway. GitHub does drop a queued run when
-# a newer one queues behind it, which is why the plan job also picks up commits that never got a run.
+# One run at a time, never cancelled halfway. GitHub does drop a queued run when a newer one queues
+# behind it, which is fine because the newer run releases everything since the previous tag.
 concurrency:
   group: combined-release
   cancel-in-progress: false
@@ -31,99 +29,33 @@ env:
 jobs:
   plan:
     name: Plan
-    if: github.ref == 'refs/heads/legacy' || github.ref == 'refs/heads/enhanced'
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
 
     outputs:
-      release:              ${{ steps.plan.outputs.release }}
-      legacy_moved:         ${{ steps.plan.outputs.legacy_moved }}
-      enhanced_moved:       ${{ steps.plan.outputs.enhanced_moved }}
-      legacy_ref:           ${{ steps.plan.outputs.legacy_ref }}
-      enhanced_ref:         ${{ steps.plan.outputs.enhanced_ref }}
-      legacy_version:       ${{ steps.plan.outputs.legacy_version }}
-      enhanced_version:     ${{ steps.plan.outputs.enhanced_version }}
-      legacy_assembly_ver:  ${{ steps.plan.outputs.legacy_assembly_ver }}
-      enhanced_assembly_ver: ${{ steps.plan.outputs.enhanced_assembly_ver }}
+      release:      ${{ steps.plan.outputs.release }}
+      ref:          ${{ steps.plan.outputs.ref }}
+      version:      ${{ steps.plan.outputs.version }}
+      assembly_ver: ${{ steps.plan.outputs.assembly_ver }}
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          path: repo
           fetch-depth: 0
-
-      # The pushed line is pinned to its sha, so a push landing mid run cannot move it.
-      # The other line also moves when it has commits since its tag that never got a run of their own,
-      # which happens when GitHub drops a queued run because a newer one queued behind it.
-      - name: Find the lines with unreleased changes
-        id: candidates
-        working-directory: repo
-        shell: bash
-        run: |
-          git fetch origin --tags --prune "+refs/heads/*:refs/remotes/origin/*"
-
-          releasable_commit() {
-            local sha="$1" files
-            if git log -1 --format=%B "$sha" | grep -qiE '\[(skip ci|ci skip|no ci|skip actions|actions skip)\]|^skip-checks: *true'; then
-              return 1
-            fi
-            if git rev-parse -q --verify "$sha^1" >/dev/null; then
-              files=$(git diff --name-only "$sha^1" "$sha")
-            else
-              files=$(git show --name-only --format= "$sha")
-            fi
-            printf '%s\n' "$files" | grep -vE '^(docs/|\.github/workflows/docs\.yml$)' | grep -q .
-          }
-
-          candidate() {
-            local line="$1" branch="$2" glob="$3"
-            local tag ref sha moved=false
-
-            tag=$(git describe --tags --abbrev=0 --match "$glob" "origin/$branch" 2>/dev/null || true)
-
-            if [ "$GITHUB_REF" = "refs/heads/$branch" ]; then
-              ref="$GITHUB_SHA"
-              moved=true
-            else
-              ref=$(git rev-parse "origin/$branch")
-              if [ -z "$tag" ]; then
-                moved=true
-              else
-                for sha in $(git rev-list --first-parent "$tag..$ref"); do
-                  if releasable_commit "$sha"; then
-                    echo "$line has unreleased commit $(git log -1 --format='%h %s' "$sha")"
-                    moved=true
-                    break
-                  fi
-                done
-              fi
-            fi
-
-            echo "$line: tag=${tag:-<none>} ref=$ref candidate=$moved"
-            {
-              echo "${line}_tag=$tag"
-              echo "${line}_ref=$ref"
-              echo "${line}_moved=$moved"
-            } >> "$GITHUB_OUTPUT"
-          }
-
-          candidate legacy   legacy   'v[0-9]*'
-          candidate enhanced enhanced 'enhanced-v[0-9]*'
 
       # Always the previous tag plus one, never a count of commits, so a release never skips a number.
       # A +semver: major or +semver: minor in any commit since the tag bumps that part instead. When every
-      # commit since the tag says +semver: none, the line counts as unchanged and is rebuilt from its tag.
-      - name: Settle versions
+      # commit since the tag says +semver: none, nothing is released.
+      - name: Settle the version
         id: plan
-        working-directory: repo
         shell: bash
         env:
-          LEGACY_MOVED:   ${{ steps.candidates.outputs.legacy_moved }}
-          LEGACY_REF:     ${{ steps.candidates.outputs.legacy_ref }}
-          ENHANCED_MOVED: ${{ steps.candidates.outputs.enhanced_moved }}
-          ENHANCED_REF:   ${{ steps.candidates.outputs.enhanced_ref }}
+          REF: ${{ github.sha }}
         run: |
-          RELEASE=false
+          git fetch origin --tags --force
+
+          PREFIX='enhanced-v'
 
           bump_for() {
             local range="$1" messages sha
@@ -163,154 +95,58 @@ jobs:
             esac
           }
 
-          settle() {
-            local line="$1" title="$2" prefix="$3" moved="$4" ref="$5"
-            local tag bump version state
+          TAG=$(git describe --tags --abbrev=0 --match "${PREFIX}[0-9]*" "$REF" 2>/dev/null || true)
 
-            tag=$(git describe --tags --abbrev=0 --match "${prefix}[0-9]*" "$ref" 2>/dev/null || true)
-
-            if [ "$moved" = "true" ]; then
-              if [ -n "$tag" ]; then
-                bump=$(bump_for "$tag..$ref")
-                version=$(next_version "${tag#"$prefix"}" "$bump")
-              else
-                bump=$(bump_for "$ref")
-                version=$(next_version "0.0.0" "$bump")
-              fi
-
-              if [ "$bump" = "none" ] && [ -n "$tag" ]; then
-                echo "$line: nothing since $tag needs a new version."
-                moved=false
-              elif git rev-parse -q --verify "refs/tags/$prefix$version" >/dev/null; then
-                echo "::error::$line: the next version $prefix$version is already tagged, but $tag is the newest tag on this line."
-                exit 1
-              fi
-            fi
-
-            if [ "$moved" = "true" ]; then
-              RELEASE=true
-              state="new, $bump bump from ${tag:-nothing}"
-            else
-              ref="$tag"
-              version="${tag#"$prefix"}"
-              state="unchanged, rebuilt from its tag"
-            fi
-
-            local assembly="${version%%-*}"
-
-            echo "$line: moved=$moved ref=$ref version=$version"
-            {
-              echo "${line}_moved=$moved"
-              echo "${line}_ref=$ref"
-              echo "${line}_version=$version"
-              echo "${line}_assembly_ver=$assembly"
-            } >> "$GITHUB_OUTPUT"
-            {
-              echo "## $title"
-              echo ""
-              echo "| | |"
-              echo "| --- | --- |"
-              echo "| Version | \`${version}\` (${state}) |"
-              echo "| Assembly version | \`${assembly}\` |"
-              echo "| Tag | \`${prefix}${version}\` |"
-              echo ""
-            } >> "$GITHUB_STEP_SUMMARY"
-          }
-
-          settle legacy   "vMenu (legacy)"   'v'          "$LEGACY_MOVED"   "$LEGACY_REF"
-          settle enhanced "vMenu Enhanced" 'enhanced-v' "$ENHANCED_MOVED" "$ENHANCED_REF"
-
-          if [ "$RELEASE" = "false" ]; then
-            echo "Nothing new to release on either line." | tee -a "$GITHUB_STEP_SUMMARY"
+          if [ -n "$TAG" ]; then
+            BUMP=$(bump_for "$TAG..$REF")
+            VERSION=$(next_version "${TAG#"$PREFIX"}" "$BUMP")
+          else
+            BUMP=$(bump_for "$REF")
+            VERSION=$(next_version "0.0.0" "$BUMP")
           fi
-          echo "release=$RELEASE" >> "$GITHUB_OUTPUT"
 
-  build-legacy:
-    name: Build vMenu (legacy)
-    needs: plan
-    if: needs.plan.outputs.release == 'true'
-    runs-on: windows-latest
-
-    outputs:
-      version:  ${{ steps.version.outputs.version }}
-      zip_name: ${{ steps.version.outputs.zip_name }}
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ needs.plan.outputs.legacy_ref }}
-          fetch-depth: 0
-
-      - name: Set version
-        id: version
-        shell: bash
-        run: |
-          VERSION="${{ needs.plan.outputs.legacy_version }}"
-          {
-            echo "version=$VERSION"
-            echo "assembly_ver=${{ needs.plan.outputs.legacy_assembly_ver }}"
-            echo "zip_name=vMenu-${VERSION}.zip"
-          } >> "$GITHUB_OUTPUT"
-
-      - name: Restore NuGet packages
-        run: dotnet restore vMenu.sln
-
-      - name: Build
-        shell: bash
-        run: |
-          dotnet build vMenu.sln -c Release --no-restore \
-            -p:Version="${{ steps.version.outputs.version }}" \
-            -p:AssemblyVersion="${{ steps.version.outputs.assembly_ver }}" \
-            -p:FileVersion="${{ steps.version.outputs.assembly_ver }}"
-
-      - name: Assemble and zip
-        shell: pwsh
-        run: |
-          Copy-Item 'assets/fxmanifest.lua' 'build/vMenu/fxmanifest.lua' -Force
-          (Get-Content 'build/vMenu/fxmanifest.lua') -replace 'versiongoeshere', '${{ steps.version.outputs.version }}' |
-            Set-Content -Encoding ASCII 'build/vMenu/fxmanifest.lua'
-          Copy-Item README.md  build/vMenu/README.md  -Force
-          Copy-Item LICENSE.md build/vMenu/LICENSE.md -Force
-          Compress-Archive -Path 'build/vMenu/*' -DestinationPath '${{ steps.version.outputs.zip_name }}' -Force
-
-      # Stamped with the release URL by the release job. A tag from before the recipe existed has none.
-      - name: Prepare txAdmin recipe
-        shell: bash
-        run: |
-          mkdir -p txadmin
-
-          if [ ! -d assets/txadmin ]; then
-            echo "No txAdmin recipe on this ref, skipping."
+          if [ "$BUMP" = "none" ] && [ -n "$TAG" ]; then
+            echo "Nothing since $TAG needs a new version." | tee -a "$GITHUB_STEP_SUMMARY"
+            echo "release=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
 
-          cp assets/txadmin/recipe.yaml txadmin/txadmin-vmenu-legacy-recipe.yaml
-          cp assets/txadmin/server.cfg  txadmin/txadmin-vmenu-legacy-server.cfg
+          if git rev-parse -q --verify "refs/tags/$PREFIX$VERSION" >/dev/null; then
+            echo "::error::The next version $PREFIX$VERSION is already tagged, but $TAG is the newest tag on main."
+            exit 1
+          fi
 
-      - name: Upload zip
-        uses: actions/upload-artifact@v4
-        with:
-          name: legacy-zip
-          path: |
-            ${{ steps.version.outputs.zip_name }}
-            txadmin/
+          ASSEMBLY="${VERSION%%-*}"
 
-  build-enhanced:
+          echo "ref=$REF version=$VERSION ($BUMP bump from ${TAG:-nothing})"
+          {
+            echo "release=true"
+            echo "ref=$REF"
+            echo "version=$VERSION"
+            echo "assembly_ver=$ASSEMBLY"
+          } >> "$GITHUB_OUTPUT"
+          {
+            echo "## vMenu Enhanced"
+            echo ""
+            echo "| | |"
+            echo "| --- | --- |"
+            echo "| Version | \`${VERSION}\` ($BUMP bump from ${TAG:-nothing}) |"
+            echo "| Assembly version | \`${ASSEMBLY}\` |"
+            echo "| Tag | \`${PREFIX}${VERSION}\` |"
+            echo ""
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  build:
     name: Build vMenu Enhanced
     needs: plan
     if: needs.plan.outputs.release == 'true'
     runs-on: windows-latest
 
-    outputs:
-      version:  ${{ steps.version.outputs.version }}
-      zip_name: ${{ steps.version.outputs.zip_name }}
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          ref: ${{ needs.plan.outputs.enhanced_ref }}
+          ref: ${{ needs.plan.outputs.ref }}
           fetch-depth: 0
 
       - name: Setup .NET
@@ -322,23 +158,12 @@ jobs:
         id: version
         shell: bash
         run: |
-          VERSION="${{ needs.plan.outputs.enhanced_version }}"
+          VERSION="${{ needs.plan.outputs.version }}"
           {
             echo "version=$VERSION"
-            echo "assembly_ver=${{ needs.plan.outputs.enhanced_assembly_ver }}"
+            echo "assembly_ver=${{ needs.plan.outputs.assembly_ver }}"
             echo "zip_name=vMenu-Enhanced-v${VERSION}.zip"
             echo "legacy_zip_name=vMenu-Enhanced-Legacy-v${VERSION}.zip"
-            if [ -d src/Enhanced ]; then
-              echo "resource=build/enhanced/vMenu.Enhanced"
-              echo "plugin_projects=src/Shared/vMenu.Enhanced.PluginContracts src/Enhanced/PluginApi/vMenu.Enhanced.ClientAPI src/Enhanced/PluginApi/vMenu.Enhanced.ServerAPI"
-              echo "script_api=src/Shared"
-              echo "coverage=build/intermediate/enhanced/translation-coverage.json"
-            else
-              echo "resource=build/vMenu.Enhanced"
-              echo "plugin_projects=src/PluginApi/vMenu.Enhanced.PluginContracts src/PluginApi/vMenu.Enhanced.ClientAPI src/PluginApi/vMenu.Enhanced.ServerAPI"
-              echo "script_api=src/PluginApi"
-              echo "coverage=build/intermediate/translation-coverage.json"
-            fi
           } >> "$GITHUB_OUTPUT"
 
       - name: Restore
@@ -352,22 +177,19 @@ jobs:
             -p:AssemblyVersion="${{ steps.version.outputs.assembly_ver }}" \
             -p:FileVersion="${{ steps.version.outputs.assembly_ver }}"
 
+      # Reported here but never blocking a release, pull requests are where this check fails a build.
       - name: Check the Legacy client against FiveM's sandbox
+        continue-on-error: true
         shell: bash
         run: |
-          if [ ! -d tools/LegacyChecks ]; then
-            echo "No Legacy build on this ref, skipping."
-            exit 0
-          fi
-
           dotnet run --project tools/LegacyChecks -c Release -- --verify-il build/legacy/vMenu.Enhanced/client
           dotnet run --project tools/LegacyChecks -c Release --no-build -- --check-refs build/legacy/vMenu.Enhanced/client
 
-      # Same version as the resource zip, so a plugin author can pin the package matching their server.
+      # Same version as the resource zips, so a plugin author can pin the package matching their server.
       - name: Pack plugin API packages
         shell: bash
         run: |
-          for project in ${{ steps.version.outputs.plugin_projects }}; do
+          for project in src/Shared/vMenu.Enhanced.PluginContracts src/Enhanced/PluginApi/vMenu.Enhanced.ClientAPI src/Enhanced/PluginApi/vMenu.Enhanced.ServerAPI; do
             dotnet pack "$project/$(basename "$project").csproj" -c Release --no-build \
               -p:Version="${{ steps.version.outputs.version }}" \
               -p:PackageVersion="${{ steps.version.outputs.version }}" \
@@ -385,24 +207,16 @@ jobs:
         with:
           node-version: 24
 
-      # Older tags have no Lua or JavaScript API. LF only, the example plugin's update check reads the version off the first line.
+      # LF only, the example plugin's update check reads the version off the first line.
       - name: Build the Lua and JavaScript plugin APIs
         shell: bash
         env:
           VERSION: ${{ steps.version.outputs.version }}
         run: |
-          API="${{ steps.version.outputs.script_api }}"
-          RESOURCE="${{ steps.version.outputs.resource }}"
-
-          if [ ! -d "$API/vMenu.Enhanced.JsAPI" ] || [ ! -f "$API/vMenu.Enhanced.LuaAPI/vmenu.lua" ]; then
-            echo "No Lua or JavaScript plugin API on this ref, skipping."
-            exit 0
-          fi
-
-          mkdir -p npm-package "$RESOURCE/plugin-api"
+          mkdir -p npm-package build/enhanced/vMenu.Enhanced/plugin-api build/legacy/vMenu.Enhanced/plugin-api
 
           (
-            cd "$API/vMenu.Enhanced.JsAPI"
+            cd src/Shared/vMenu.Enhanced.JsAPI
             npm ci --no-audit --no-fund
             npm version "$VERSION" --no-git-tag-version --allow-same-version
             npm run check
@@ -410,27 +224,22 @@ jobs:
             npm pack --pack-destination ../../../npm-package
           )
 
-          tr -d '\r' < "$API/vMenu.Enhanced.JsAPI/dist/vmenu.js" > "$RESOURCE/plugin-api/vmenu.js"
-          sed "s/versiongoeshere/$VERSION/g" "$API/vMenu.Enhanced.LuaAPI/vmenu.lua" | tr -d '\r' > "$RESOURCE/plugin-api/vmenu.lua"
-          head -n 1 "$RESOURCE/plugin-api/vmenu.lua" "$RESOURCE/plugin-api/vmenu.js"
-
-          if [ -d build/legacy/vMenu.Enhanced ]; then
-            mkdir -p build/legacy/vMenu.Enhanced/plugin-api
-            cp "$RESOURCE"/plugin-api/vmenu.* build/legacy/vMenu.Enhanced/plugin-api/
-          fi
+          tr -d '\r' < src/Shared/vMenu.Enhanced.JsAPI/dist/vmenu.js > build/enhanced/vMenu.Enhanced/plugin-api/vmenu.js
+          sed "s/versiongoeshere/$VERSION/g" src/Shared/vMenu.Enhanced.LuaAPI/vmenu.lua | tr -d '\r' > build/enhanced/vMenu.Enhanced/plugin-api/vmenu.lua
+          cp build/enhanced/vMenu.Enhanced/plugin-api/vmenu.* build/legacy/vMenu.Enhanced/plugin-api/
+          head -n 1 build/enhanced/vMenu.Enhanced/plugin-api/vmenu.lua build/enhanced/vMenu.Enhanced/plugin-api/vmenu.js
 
       - name: Upload npm package
         uses: actions/upload-artifact@v4
         with:
           name: enhanced-npm
           path: npm-package/*.tgz
-          if-no-files-found: ignore
 
       - name: Translation coverage
         if: always()
         shell: pwsh
         run: |
-          $path = '${{ steps.version.outputs.coverage }}'
+          $path = 'build/intermediate/enhanced/translation-coverage.json'
 
           if (-not (Test-Path $path)) {
             Write-Host 'No translation coverage was produced by this build.'
@@ -474,10 +283,9 @@ jobs:
       - name: Stamp version and zip
         shell: pwsh
         run: |
-          $resources = @(@('${{ steps.version.outputs.resource }}', '${{ steps.version.outputs.zip_name }}'))
-          if (Test-Path 'build/legacy/vMenu.Enhanced') {
-            $resources += ,@('build/legacy/vMenu.Enhanced', '${{ steps.version.outputs.legacy_zip_name }}')
-          }
+          $resources = @(
+            @('build/enhanced/vMenu.Enhanced', '${{ steps.version.outputs.zip_name }}'),
+            @('build/legacy/vMenu.Enhanced', '${{ steps.version.outputs.legacy_zip_name }}'))
 
           foreach ($resource in $resources) {
             (Get-Content "$($resource[0])/fxmanifest.lua") -replace 'versiongoeshere', '${{ steps.version.outputs.version }}' |
@@ -485,25 +293,23 @@ jobs:
             Compress-Archive -Path "$($resource[0])/*" -DestinationPath $resource[1] -Force
           }
 
-      # Stamped with the release URL by the release job. A tag from before the recipe existed has none.
-      - name: Prepare txAdmin recipe
+      # Stamped with the release URL by the release job. Both recipes share the ready to use permissions
+      # and configuration, because both builds read exactly the same files.
+      - name: Prepare txAdmin recipes
         shell: bash
         run: |
           mkdir -p txadmin
 
-          if [ ! -d assets/txadmin ]; then
-            echo "No txAdmin recipe on this ref, skipping."
-            exit 0
-          fi
-
-          cp assets/txadmin/recipe.yaml txadmin/txadmin-vmenu-enhanced-recipe.yaml
-          cp assets/txadmin/server.cfg  txadmin/txadmin-vmenu-enhanced-server.cfg
+          cp assets/txadmin/recipe.yaml        txadmin/txadmin-vmenu-enhanced-recipe.yaml
+          cp assets/txadmin/server.cfg         txadmin/txadmin-vmenu-enhanced-server.cfg
+          cp assets/txadmin/legacy-recipe.yaml txadmin/txadmin-vmenu-legacy-recipe.yaml
+          cp assets/txadmin/legacy-server.cfg  txadmin/txadmin-vmenu-legacy-server.cfg
 
           dotnet run --project tools/ConfigDefaults/ConfigDefaults.csproj -c Release --no-launch-profile -- txadmin-ready --ready
           mv txadmin-ready/permissions.cfg   txadmin/txadmin-vmenu-enhanced-permissions.cfg
           mv txadmin-ready/configuration.cfg txadmin/txadmin-vmenu-enhanced-configuration.cfg
 
-      - name: Upload zip
+      - name: Upload zips
         uses: actions/upload-artifact@v4
         with:
           name: enhanced-zip
@@ -511,11 +317,10 @@ jobs:
             ${{ steps.version.outputs.zip_name }}
             ${{ steps.version.outputs.legacy_zip_name }}
             txadmin/
-          if-no-files-found: warn
 
   release:
     name: Release
-    needs: [plan, build-legacy, build-enhanced]
+    needs: [plan, build]
     runs-on: ubuntu-latest
 
     permissions:
@@ -527,10 +332,8 @@ jobs:
     env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       GH_REPO: ${{ github.repository }}
-      LEGACY_VERSION: ${{ needs.plan.outputs.legacy_version }}
-      ENHANCED_VERSION: ${{ needs.plan.outputs.enhanced_version }}
-      LEGACY_REF: ${{ needs.plan.outputs.legacy_ref }}
-      ENHANCED_REF: ${{ needs.plan.outputs.enhanced_ref }}
+      VERSION: ${{ needs.plan.outputs.version }}
+      REF: ${{ needs.plan.outputs.ref }}
 
     steps:
       - name: Checkout
@@ -538,177 +341,112 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Fetch both branches and all tags
-        run: git fetch origin --tags --prune "+refs/heads/*:refs/remotes/origin/*"
+      - name: Fetch all tags
+        run: git fetch origin --tags --force
 
       - name: Download zips
         uses: actions/download-artifact@v4
         with:
-          pattern: "*-zip"
-          merge-multiple: true
+          name: enhanced-zip
           path: release-assets
 
-      # Before tagging, so the ranges are right. Every release belongs to an Enhanced tag, so Enhanced
-      # lists what is new since its previous tag. Legacy has no release of its own, so it lists what is new
-      # since the legacy version the previous release shipped. That is nothing when legacy did not move.
-      - name: Generate changelogs
+      # Before tagging, so the range is right.
+      - name: Generate changelog
         shell: bash
         run: |
-          range_for() {
-            local glob="$1" ref="$2" prev
-            prev=$(git tag --list "$glob" --sort=-version:refname --no-contains "$ref" | head -n 1)
-            echo "$glob range starts at: ${prev:-<none, full history>}" >&2
-            if [ -n "$prev" ]; then echo "$prev..$ref"; else echo "$ref"; fi
-          }
+          PREVIOUS=$(git tag --list 'enhanced-v[0-9]*' --sort=-version:refname --merged "$REF" | head -n 1)
+          echo "Changelog range starts at: ${PREVIOUS:-<none, full history>}" >&2
+          if [ -n "$PREVIOUS" ]; then RANGE="$PREVIOUS..$REF"; else RANGE="$REF"; fi
 
-          changelog() {
-            : > "$2"
-            if [ -n "$1" ]; then
-              git log "$1" --pretty=format:'- `%h` (%an) %s' > "$2"
+          git log "$RANGE" --pretty=format:'- `%h` (%an) %s' > changelog.txt
+          cat changelog.txt
+          echo ""
+
+          : > breaking.txt
+          for sha in $(git log "$RANGE" --format='%H'); do
+            subject=$(git log -1 "$sha" --format='%s')
+            note=$(git log -1 "$sha" --format='%b' \
+              | awk '/^BREAKING[ -]CHANGE:/ { flag = 1; sub(/^BREAKING[ -]CHANGE:[[:space:]]*/, "") } flag' \
+              | paste -sd ' ' - \
+              | sed 's/[[:space:]]*$//')
+            if [ -z "$note" ] && ! echo "$subject" | grep -qE '^[a-zA-Z]+(\([^)]*\))?!:'; then
+              continue
             fi
-            cat "$2"
-            echo ""
-          }
+            echo "- \`$(git log -1 "$sha" --format='%h')\` $subject" >> breaking.txt
+            if [ -n "$note" ]; then
+              echo "  $note" >> breaking.txt
+            fi
+          done
 
-          breaking() {
-            local range="$1" out="$2" sha subject note
-            : > "$out"
-            [ -n "$range" ] || return 0
-            for sha in $(git log "$range" --format='%H'); do
-              subject=$(git log -1 "$sha" --format='%s')
-              note=$(git log -1 "$sha" --format='%b' \
-                | awk '/^BREAKING[ -]CHANGE:/ { flag = 1; sub(/^BREAKING[ -]CHANGE:[[:space:]]*/, "") } flag' \
-                | paste -sd ' ' - \
-                | sed 's/[[:space:]]*$//')
-              if [ -z "$note" ] && ! echo "$subject" | grep -qE '^[a-zA-Z]+(\([^)]*\))?!:'; then
-                continue
-              fi
-              echo "- \`$(git log -1 "$sha" --format='%h')\` $subject" >> "$out"
-              if [ -n "$note" ]; then
-                echo "  $note" >> "$out"
-              fi
-            done
-          }
-
-          TAG="enhanced-v$ENHANCED_VERSION"
-          PREVIOUS_TITLE=$(gh release list --exclude-drafts --limit 50 --json tagName,name,createdAt \
-            --jq "sort_by(.createdAt) | reverse | map(select(.tagName != \"$TAG\")) | .[0].name // \"\"")
-          PREVIOUS_LEGACY=$(printf '%s' "$PREVIOUS_TITLE" | sed -nE 's/.* & vMenu v([0-9][^ ]*)$/\1/p')
-          echo "Previous release: ${PREVIOUS_TITLE:-<none>}, shipping legacy ${PREVIOUS_LEGACY:-<unknown>}" >&2
-
-          if [ "$PREVIOUS_LEGACY" = "$LEGACY_VERSION" ]; then
-            LEGACY_RANGE=""
-          elif [ -n "$PREVIOUS_LEGACY" ] && git rev-parse -q --verify "refs/tags/v$PREVIOUS_LEGACY" >/dev/null; then
-            LEGACY_RANGE="v$PREVIOUS_LEGACY..$LEGACY_REF"
-          else
-            LEGACY_RANGE=$(range_for 'v[0-9]*' "$LEGACY_REF")
-          fi
-          ENHANCED_RANGE=$(range_for 'enhanced-v[0-9]*' "$ENHANCED_REF")
-
-          changelog "$LEGACY_RANGE"   changelog-legacy.txt
-          changelog "$ENHANCED_RANGE" changelog-enhanced.txt
-
-          breaking "$LEGACY_RANGE"   breaking-legacy.txt
-          breaking "$ENHANCED_RANGE" breaking-enhanced.txt
-
-      - name: Create and push tags
+      - name: Create and push the tag
         shell: bash
         run: |
+          TAG="enhanced-v$VERSION"
+
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${GH_REPO}"
 
-          tag_line() {
-            local tag="$1" ref="$2"
-            if git ls-remote --exit-code --tags origin "refs/tags/$tag" >/dev/null 2>&1; then
-              echo "Tag $tag already exists, skipping."
-            else
-              git tag "$tag" "$ref"
-              git push origin "$tag"
-              echo "Pushed tag $tag."
-            fi
-          }
+          if git ls-remote --exit-code --tags origin "refs/tags/$TAG" >/dev/null 2>&1; then
+            echo "Tag $TAG already exists, skipping."
+          else
+            git tag "$TAG" "$REF"
+            git push origin "$TAG"
+            echo "Pushed tag $TAG."
+          fi
 
-          tag_line "v$LEGACY_VERSION"            "$LEGACY_REF"
-          tag_line "enhanced-v$ENHANCED_VERSION" "$ENHANCED_REF"
-
-      # A legacy only push keeps the Enhanced version, so its release already exists and is updated in place.
+      # A rerun finds its release already there and updates it in place.
       - name: Create or update the release
         id: release
         shell: bash
         run: |
-          TAG="enhanced-v$ENHANCED_VERSION"
-          TITLE="vMenu Enhanced v$ENHANCED_VERSION & vMenu v$LEGACY_VERSION"
-          ENHANCED_ZIP="vMenu-Enhanced-v$ENHANCED_VERSION.zip"
-          ENHANCED_LEGACY_ZIP="vMenu-Enhanced-Legacy-v$ENHANCED_VERSION.zip"
-          LEGACY_ZIP="vMenu-$LEGACY_VERSION.zip"
+          TAG="enhanced-v$VERSION"
+          TITLE="vMenu Enhanced v$VERSION"
+          ENHANCED_ZIP="vMenu-Enhanced-v$VERSION.zip"
+          LEGACY_ZIP="vMenu-Enhanced-Legacy-v$VERSION.zip"
 
           {
-            if [ -s breaking-enhanced.txt ] || [ -s breaking-legacy.txt ]; then
+            if [ -s breaking.txt ]; then
               echo "> [!WARNING]"
               echo "> **This release contains breaking changes.** Read these before updating."
-
-              if [ -s breaking-enhanced.txt ]; then
-                echo ">"
-                echo "> **vMenu Enhanced v$ENHANCED_VERSION**"
-                echo ">"
-                sed 's/^/> /' breaking-enhanced.txt
-              fi
-
-              if [ -s breaking-legacy.txt ]; then
-                echo ">"
-                echo "> **vMenu v$LEGACY_VERSION**"
-                echo ">"
-                sed 's/^/> /' breaking-legacy.txt
-              fi
-
+              echo ">"
+              sed 's/^/> /' breaking.txt
               echo ""
             fi
 
-            echo "One release, both versions of vMenu."
+            echo "One version of vMenu Enhanced, built for both kinds of FiveM server. Pick the zip that matches yours."
             echo ""
-            echo "| Version | For | Download |"
-            echo "| --- | --- | --- |"
-            echo "| **v$ENHANCED_VERSION** | FiveM Enhanced | \`$ENHANCED_ZIP\` |"
-            if [ -f "release-assets/$ENHANCED_LEGACY_ZIP" ]; then
-              echo "| **v$ENHANCED_VERSION** | Regular FiveM (legacy runtime) | \`$ENHANCED_LEGACY_ZIP\` |"
-            fi
-            echo "| **v$LEGACY_VERSION** | FiveM (legacy runtime) | \`$LEGACY_ZIP\` |"
+            echo "| Your server runs | Download |"
+            echo "| --- | --- |"
+            echo "| FiveM Enhanced (GTA V Enhanced) | \`$ENHANCED_ZIP\` |"
+            echo "| Regular FiveM (FiveM Legacy) | \`$LEGACY_ZIP\` |"
             echo ""
-            if unzip -l "release-assets/$ENHANCED_ZIP" | grep -q 'plugin-api/vmenu.lua'; then
-              echo "Writing a plugin? The \`plugin-api\` folder in \`$ENHANCED_ZIP\` holds \`vmenu.lua\` and \`vmenu.js\`, the plugin API for Lua and JavaScript. C# and TypeScript get the same version from NuGet and npm. See the [plugin docs](https://docs.vespura.com/vmenu/enhanced/plugins/developing/)."
-              echo ""
-            fi
-            echo "## Changes in vMenu Enhanced v$ENHANCED_VERSION"
-            cat changelog-enhanced.txt
+            echo "Setting up a new server? The txAdmin recipes \`txadmin-vmenu-enhanced-recipe.yaml\` and \`txadmin-vmenu-legacy-recipe.yaml\` install this version with the official plugins. See [Getting Started](https://docs.vespura.com/vmenu/enhanced/getting-started/)."
             echo ""
+            echo "Writing a plugin? The \`plugin-api\` folder in either zip holds \`vmenu.lua\` and \`vmenu.js\`, the plugin API for Lua and JavaScript. C# and TypeScript get the same version from NuGet and npm. See the [plugin docs](https://docs.vespura.com/vmenu/enhanced/plugins/developing/)."
             echo ""
-            echo "## Changes in vMenu v$LEGACY_VERSION"
-            if [ -s changelog-legacy.txt ]; then
-              cat changelog-legacy.txt
-            else
-              echo "No changes since the previous release, this is still vMenu v$LEGACY_VERSION."
-            fi
+            echo "Looking for the original vMenu, v3.9.2 and older? It is no longer updated, see the [legacy branch](https://github.com/$GH_REPO/tree/legacy) and its [docs](https://docs.vespura.com/vmenu/legacy)."
+            echo ""
+            echo "## Changes in vMenu Enhanced v$VERSION"
+            cat changelog.txt
             echo ""
             echo ""
-            echo "Docs: [vMenu Enhanced](https://docs.vespura.com/vmenu/enhanced), [vMenu (legacy)](https://docs.vespura.com/vmenu/legacy)."
+            echo "Docs: [vMenu Enhanced](https://docs.vespura.com/vmenu/enhanced)."
           } > release_notes.md
 
           ASSETS=("release-assets/$ENHANCED_ZIP" "release-assets/$LEGACY_ZIP")
-          if [ -f "release-assets/$ENHANCED_LEGACY_ZIP" ]; then
-            ASSETS+=("release-assets/$ENHANCED_LEGACY_ZIP")
-          fi
 
-          # The recipes keep one name forever, so txAdmin can always find them under /releases/latest/download/.
-          # What they download is pinned to this release, so a recipe and its files always match.
+          # The recipe names and their place in the release can never change, because txAdmin links to them
+          # under /releases/latest/download/. What they download is pinned to this release, so a recipe and
+          # its files always match.
           RELEASE_URL_BASE="https://github.com/$GH_REPO/releases/download/$TAG"
 
           for FILE in release-assets/txadmin/txadmin-vmenu-*; do
             [ -f "$FILE" ] || continue
 
             case "$(basename "$FILE")" in
-              txadmin-vmenu-enhanced-*) VERSION="$ENHANCED_VERSION"; ZIP="$ENHANCED_ZIP" ;;
-              *)                        VERSION="$LEGACY_VERSION";   ZIP="$LEGACY_ZIP" ;;
+              txadmin-vmenu-legacy-*) ZIP="$LEGACY_ZIP" ;;
+              *)                      ZIP="$ENHANCED_ZIP" ;;
             esac
 
             sed -i \
@@ -719,33 +457,23 @@ jobs:
           done
 
           # Only the recipes are assets of their own, everything they install comes out of one zip.
-          for FILE in release-assets/txadmin/txadmin-vmenu-*-recipe.yaml; do
-            [ -f "$FILE" ] && ASSETS+=("$FILE")
+          for FILE in release-assets/txadmin/txadmin-vmenu-enhanced-recipe.yaml release-assets/txadmin/txadmin-vmenu-legacy-recipe.yaml; do
+            if [ ! -f "$FILE" ]; then
+              echo "::error::$(basename "$FILE") is missing, txAdmin would lose its recipe."
+              exit 1
+            fi
+            ASSETS+=("$FILE")
           done
 
           TXADMIN_FILES=$(find release-assets/txadmin -maxdepth 1 -type f ! -name '*-recipe.yaml' -printf '%f\n')
-          if [ -n "$TXADMIN_FILES" ]; then
-            (cd release-assets/txadmin && zip -q -X ../txadmin-files.zip $TXADMIN_FILES)
-            unzip -l release-assets/txadmin-files.zip
-            ASSETS+=("release-assets/txadmin-files.zip")
-          fi
+          (cd release-assets/txadmin && zip -q -X ../txadmin-files.zip $TXADMIN_FILES)
+          unzip -l release-assets/txadmin-files.zip
+          ASSETS+=("release-assets/txadmin-files.zip")
 
           if gh release view "$TAG" >/dev/null 2>&1; then
             echo "Release $TAG already exists, updating it."
             gh release edit "$TAG" --title "$TITLE" --notes-file release_notes.md
             gh release upload "$TAG" "${ASSETS[@]}" --clobber
-
-            # Zip names carry the version, so the previous zip of the line that moved is left behind otherwise.
-            gh release view "$TAG" --json assets --jq '.assets[].name' | while read -r NAME; do
-              KEEP=false
-              for ASSET in "${ASSETS[@]}"; do
-                if [ "$NAME" = "$(basename "$ASSET")" ]; then KEEP=true; fi
-              done
-              if [ "$KEEP" = "false" ]; then
-                echo "Removing stale asset $NAME."
-                gh release delete-asset "$TAG" "$NAME" --yes
-              fi
-            done
           else
             gh release create "$TAG" --verify-tag --title "$TITLE" --notes-file release_notes.md "${ASSETS[@]}"
           fi
@@ -762,7 +490,6 @@ jobs:
   publish-nuget:
     name: Publish NuGet packages
     needs: [plan, release]
-    if: needs.plan.outputs.enhanced_moved == 'true'
     runs-on: ubuntu-latest
 
     permissions:
@@ -792,7 +519,6 @@ jobs:
   publish-npm:
     name: Publish npm package
     needs: [plan, release]
-    if: needs.plan.outputs.enhanced_moved == 'true'
     runs-on: ubuntu-latest
 
     permissions:
@@ -802,8 +528,7 @@ jobs:
       - name: Download package
         uses: actions/download-artifact@v4
         with:
-          pattern: enhanced-npm
-          merge-multiple: true
+          name: enhanced-npm
           path: npm-package
 
       - name: Setup Node
@@ -816,14 +541,14 @@ jobs:
       - name: Publish
         shell: bash
         env:
-          VERSION: ${{ needs.plan.outputs.enhanced_version }}
+          VERSION: ${{ needs.plan.outputs.version }}
         run: |
           shopt -s nullglob
           PACKAGES=(npm-package/*.tgz)
 
           if [ ${#PACKAGES[@]} -eq 0 ]; then
-            echo "No npm package on this ref, skipping."
-            exit 0
+            echo "::error::The build produced no npm package."
+            exit 1
           fi
 
           if npm view "@vespura/vmenu-plugin@$VERSION" version >/dev/null 2>&1; then
@@ -835,7 +560,7 @@ jobs:
 
   notify:
     name: Discord Notification
-    needs: [plan, build-legacy, build-enhanced, release, publish-nuget, publish-npm]
+    needs: [plan, build, release, publish-nuget, publish-npm]
     if: always() && needs.plan.result != 'skipped'
     runs-on: ubuntu-latest
 
@@ -845,17 +570,13 @@ jobs:
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
           COMMIT_MSG: ${{ github.event.head_commit.message }}
-          LEGACY_RESULT: ${{ needs.build-legacy.result }}
-          ENHANCED_RESULT: ${{ needs.build-enhanced.result }}
+          BUILD_RESULT: ${{ needs.build.result }}
           RELEASE_RESULT: ${{ needs.release.result }}
           NUGET_RESULT: ${{ needs.publish-nuget.result }}
           NPM_RESULT: ${{ needs.publish-npm.result }}
-          LEGACY_VERSION: ${{ needs.plan.outputs.legacy_version }}
-          ENHANCED_VERSION: ${{ needs.plan.outputs.enhanced_version }}
+          VERSION: ${{ needs.plan.outputs.version }}
           RELEASE: ${{ needs.plan.outputs.release }}
           PLAN_RESULT: ${{ needs.plan.result }}
-          LEGACY_MOVED: ${{ needs.plan.outputs.legacy_moved }}
-          ENHANCED_MOVED: ${{ needs.plan.outputs.enhanced_moved }}
           RELEASE_URL: ${{ needs.release.outputs.release_url }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
@@ -873,23 +594,9 @@ jobs:
             esac
           }
 
-          line() {
-            local result="$1" version="$2" moved="$3" state
-            if [ "$moved" = "true" ]; then state="new"; else state="unchanged"; fi
-            echo "$(icon "$result") v${version:-?} ($state)"
-          }
-
-          if [ "$ENHANCED_MOVED" = "true" ]; then
-            NUGET_TEXT="$(icon "$NUGET_RESULT") $NUGET_RESULT"
-            NPM_TEXT="$(icon "$NPM_RESULT") $NPM_RESULT"
-          else
-            NUGET_TEXT="⏭️ not needed, Enhanced did not change"
-            NPM_TEXT="$NUGET_TEXT"
-          fi
-
           FAILED=false
           CANCELLED=false
-          for RESULT in "$PLAN_RESULT" "$LEGACY_RESULT" "$ENHANCED_RESULT" "$RELEASE_RESULT" "$NUGET_RESULT" "$NPM_RESULT"; do
+          for RESULT in "$PLAN_RESULT" "$BUILD_RESULT" "$RELEASE_RESULT" "$NUGET_RESULT" "$NPM_RESULT"; do
             case "$RESULT" in
               cancelled) CANCELLED=true ;;
               success|skipped) ;;
@@ -928,15 +635,14 @@ jobs:
           fi
 
           PAYLOAD=$(jq -n \
-            --arg  title      "vMenu Enhanced v${ENHANCED_VERSION:-?} & vMenu v${LEGACY_VERSION:-?}" \
+            --arg  title      "vMenu Enhanced v${VERSION:-?}" \
             --arg  desc       "$STATUS_TEXT" \
             --argjson color   "$COLOR" \
             --arg  actor      "${{ github.actor }}" \
             --arg  actor_url  "https://github.com/${{ github.actor }}" \
-            --arg  enhanced   "$(line "$ENHANCED_RESULT" "$ENHANCED_VERSION" "$ENHANCED_MOVED")" \
-            --arg  legacy     "$(line "$LEGACY_RESULT" "$LEGACY_VERSION" "$LEGACY_MOVED")" \
-            --arg  nuget      "$NUGET_TEXT" \
-            --arg  npm        "$NPM_TEXT" \
+            --arg  build      "$(icon "$BUILD_RESULT") $BUILD_RESULT" \
+            --arg  nuget      "$(icon "$NUGET_RESULT") $NUGET_RESULT" \
+            --arg  npm        "$(icon "$NPM_RESULT") $NPM_RESULT" \
             --arg  branch     "${{ github.ref_name }}" \
             --arg  link_name  "$LINK_NAME" \
             --arg  link_url   "$LINK_URL" \
@@ -950,13 +656,12 @@ jobs:
                 color:       $color,
                 author: { name: ("Committed by " + $actor), url: $actor_url },
                 fields: [
-                  { name: "vMenu Enhanced", value: $enhanced, inline: true },
-                  { name: "vMenu (legacy)", value: $legacy,   inline: true },
-                  { name: "NuGet",          value: $nuget,    inline: true },
-                  { name: "npm",            value: $npm,      inline: true },
-                  { name: "Branch",         value: $branch,   inline: true },
-                  { name: $link_name,       value: ("[Link](" + $link_url + ")"), inline: true },
-                  { name: "Commit",         value: ("[`" + $short_sha + "`](" + $commit_url + ") " + $commit_msg), inline: false }
+                  { name: "Build",    value: $build,  inline: true },
+                  { name: "NuGet",    value: $nuget,  inline: true },
+                  { name: "npm",      value: $npm,    inline: true },
+                  { name: "Branch",   value: $branch, inline: true },
+                  { name: $link_name, value: ("[Link](" + $link_url + ")"), inline: true },
+                  { name: "Commit",   value: ("[`" + $short_sha + "`](" + $commit_url + ") " + $commit_msg), inline: false }
                 ]
               }]
             }')

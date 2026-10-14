@@ -1,12 +1,13 @@
 name: Dev Build (Enhanced)
 
-# Branches taken from enhanced. Builds a dev version and pre-release NuGet packages, never tags or releases.
+# Every branch except main and legacy, and pull requests. Builds a dev version of vMenu Enhanced for both
+# FiveM Enhanced and FiveM Legacy, plus pre-release NuGet packages, but never tags or releases.
 
 on:
   push:
     branches-ignore:
+      - main
       - legacy
-      - enhanced
     paths-ignore:
       - "docs/**"
       - ".github/workflows/docs.yml"
@@ -86,7 +87,10 @@ jobs:
             -p:AssemblyVersion="${{ steps.version.outputs.assembly_ver }}" \
             -p:FileVersion="${{ steps.version.outputs.assembly_ver }}"
 
+      # Only a pull request fails on this, a push to a branch just reports it.
       - name: Check the Legacy client against FiveM's sandbox
+        continue-on-error: ${{ github.event_name != 'pull_request' }}
+        shell: bash
         run: |
           dotnet run --project tools/LegacyChecks -c Release -- --verify-il build/legacy/vMenu.Enhanced/client
           dotnet run --project tools/LegacyChecks -c Release --no-build -- --check-refs build/legacy/vMenu.Enhanced/client
@@ -259,10 +263,10 @@ jobs:
       - name: Stamp version and zip
         shell: pwsh
         run: |
-          foreach ($flavor in @(@('enhanced', '${{ steps.version.outputs.zip_name }}'), @('legacy', '${{ steps.version.outputs.legacy_zip_name }}'))) {
-            $manifest = "build/$($flavor[0])/vMenu.Enhanced/fxmanifest.lua"
+          foreach ($build in @(@('enhanced', '${{ steps.version.outputs.zip_name }}'), @('legacy', '${{ steps.version.outputs.legacy_zip_name }}'))) {
+            $manifest = "build/$($build[0])/vMenu.Enhanced/fxmanifest.lua"
             (Get-Content $manifest) -replace 'versiongoeshere', '${{ steps.version.outputs.version }}' | Set-Content -Encoding ASCII $manifest
-            Compress-Archive -Path "build/$($flavor[0])/vMenu.Enhanced/*" -DestinationPath $flavor[1] -Force
+            Compress-Archive -Path "build/$($build[0])/vMenu.Enhanced/*" -DestinationPath $build[1] -Force
           }
 
       - name: Upload zip
