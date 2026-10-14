@@ -52,7 +52,7 @@ expect(lua, 'vmenu.lua', `PROTOCOL_VERSION = ${version}`, 'the client protocol v
 expect(lua, 'vmenu.lua', `SERVER_PROTOCOL_VERSION = ${serverVersion}`, 'the server protocol version');
 expect(lua, 'vmenu.lua', `VMENU_RESOURCE = '${resource}'`, 'the vMenu resource name');
 
-const refresh = /RefreshPermissionsEvent = "([^"]+)";/.exec(readFileSync(join(root, '../vMenu.Enhanced.ServerAPI/VMenuServer.cs'), 'utf8'))[1];
+const refresh = /RefreshPermissionsEvent = "([^"]+)";/.exec(readFileSync(join(root, '../../Enhanced/PluginApi/vMenu.Enhanced.ServerAPI/VMenuServer.cs'), 'utf8'))[1];
 
 expect(typescript, 'protocol.ts', `'${refresh}'`, 'the permission refresh event');
 expect(lua, 'vmenu.lua', `'${refresh}'`, 'the permission refresh event');
