@@ -1,8 +1,8 @@
-name: Deploy Enhanced Docs
+name: Deploy Docs
 
 on:
   push:
-    branches: [enhanced]
+    branches: [main]
     paths:
       - "docs/**"
       - ".github/workflows/docs.yml"
@@ -14,21 +14,22 @@ permissions:
   contents: read
 
 concurrency:
-  group: docs-deploy-enhanced
+  group: docs-deploy
   cancel-in-progress: true
 
 env:
   # Hub repo that owns the docs domain and serves it as lowercase subfolders.
   HUB_REPO: TomGrobbe/TomGrobbe.github.io
   HUB_BRANCH: main
-  # This branch owns ONLY the /vmenu/enhanced/ subfolder. The /vmenu/ landing
-  # chooser and /vmenu/legacy/ docs are owned by the legacy branch's docs.yml,
-  # so the two deploys never overwrite each other.
+  # This branch owns the /vmenu/enhanced/ docs and the /vmenu/ landing page.
+  # /vmenu/legacy/ holds the original vMenu's docs, which the frozen legacy
+  # branch published once and nothing touches anymore.
+  HUB_ROOT: vmenu
   HUB_SUBDIR: vmenu/enhanced
 
 jobs:
   deploy:
-    name: Build & publish enhanced docs
+    name: Build & publish docs
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -64,11 +65,12 @@ jobs:
           fi
           git clone --depth 1 --branch "${HUB_BRANCH}" \
             "https://x-access-token:${HUB_TOKEN}@github.com/${HUB_REPO}.git" hub
-          # Replace ONLY the /vmenu/enhanced/ subfolder; leave hub/vmenu/index.html
-          # (landing), hub/vmenu/legacy/, and any other product folder untouched.
+          # Replace the /vmenu/enhanced/ subfolder and the /vmenu/ landing page,
+          # and leave hub/vmenu/legacy/ and any other product folder untouched.
           rm -rf "hub/${HUB_SUBDIR}"
           mkdir -p "hub/${HUB_SUBDIR}"
           cp -r dist/. "hub/${HUB_SUBDIR}/"
+          cp landing/index.html "hub/${HUB_ROOT}/index.html"
           # Disable Jekyll so Astro's _astro/ asset folder is served (not skipped).
           touch hub/.nojekyll
           cd hub
@@ -78,6 +80,6 @@ jobs:
           if git diff --cached --quiet; then
             echo "No documentation changes to publish."
           else
-            git commit -m "Deploy vMenu Enhanced docs"
+            git commit -m "Deploy vMenu docs"
             git push origin "${HUB_BRANCH}"
           fi
