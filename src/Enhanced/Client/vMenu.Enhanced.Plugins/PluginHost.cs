@@ -31,6 +31,9 @@ public static class PluginHost
 
     private const int MaxThemesPerResource = 25;
 
+    // MenuAPI re-parents freely, so a chain that loops back on itself has to end somewhere.
+    private const int MaxParentDepth = 32;
+
     private static readonly Dictionary<string, PluginState> Plugins = new(StringComparer.OrdinalIgnoreCase);
 
     // Registrations that arrived before the menu tree was built.
@@ -76,6 +79,10 @@ public static class PluginHost
         API.OnEvent(StopEvent, new Action<string>(OnResourceStop), false);
 
         MenuSkin.Changed += BroadcastThemes;
+
+        MenuArbiter.OwnerOf = OwnerOf;
+        MenuArbiter.Replacing += OnReplacing;
+        MenuArbiter.ForceClosed += OnForceClosed;
     }
 
     public static void AnnounceReady()
@@ -99,6 +106,58 @@ public static class PluginHost
         PluginAudit.Report(state, callback);
 
         NativeFixer.EmitLocal(state.EventName, ClientJson.Serialize(callback));
+    }
+
+    internal static void ReplyOpen(PluginState state, int requestId, string reason) =>
+        NativeFixer.EmitLocal(PluginEvents.OpenResultFor(state.Resource), ClientJson.Serialize(new OpenMenuResult
+        {
+            RequestId = requestId,
+            Opened = reason == OpenMenuReasons.Opened,
+            Reason = reason,
+        }));
+
+    private static string? OwnerOf(Menu menu) => Find(menu, out var state) is not null ? state!.Resource : null;
+
+    private static string? Find(Menu menu, out PluginState? owner)
+    {
+        foreach (var state in Plugins.Values)
+        {
+            if (state.MenuIdOf(menu) is { } menuId)
+            {
+                owner = state;
+
+                return menuId;
+            }
+        }
+
+        owner = null;
+
+        return null;
+    }
+
+    // The player may be deep in a submenu, while the plugin listens on the menu it opened further up.
+    private static void OnReplacing(Menu menu)
+    {
+        var current = menu;
+
+        for (var depth = 0; current is not null && depth < MaxParentDepth; depth++)
+        {
+            EmitMenuCallback(current, CallbackTypes.MenuReplaced, NodeEvents.Replaced);
+
+            current = current.ParentMenu;
+        }
+    }
+
+    private static void OnForceClosed(Menu menu) => EmitMenuCallback(menu, CallbackTypes.MenuForceClosed, NodeEvents.ForceClosed);
+
+    private static void EmitMenuCallback(Menu menu, string type, string subscription)
+    {
+        if (Find(menu, out var state) is { } menuId
+            && state!.MenusById.TryGetValue(menuId, out var node)
+            && PluginEntryFactory.Wants(node.Events, subscription))
+        {
+            Emit(state, new PluginCallback { Type = type, MenuId = menuId });
+        }
     }
 
     private static void OnProbe()
@@ -159,6 +218,7 @@ public static class PluginHost
         }
 
         CloseIfInside(state);
+        RemoveStandalone(state);
 
         Log.Info($"[Plugins] '{resource}' unregistered, removing its menus.");
 
@@ -251,6 +311,13 @@ public static class PluginHost
             return;
         }
 
+        if (!IndexStandalone(state, request.StandaloneMenus, result))
+        {
+            result.Accepted = false;
+            Reply(resource, result);
+            return;
+        }
+
         // After validation, never before it: tracking a convar adds a listener that lives as long as the
         // client does, and a refused registration would leave those behind for a plugin that never made it in.
         TrackSettings(state, request.Settings, result);
@@ -273,6 +340,7 @@ public static class PluginHost
         if (replaced is not null)
         {
             CloseIfInside(replaced);
+            RemoveStandalone(replaced);
         }
 
         var firstRegistration = replaced is null;
@@ -281,6 +349,7 @@ public static class PluginHost
         LastPayload[resource] = json;
 
         PlaceRow(state, replaced);
+        BuildStandalone(state);
 
         if (Plugins.Count == 1 && firstRegistration)
         {
@@ -301,6 +370,88 @@ public static class PluginHost
         Reply(resource, result);
 
         SendThemes(resource);
+    }
+
+    private static bool IndexStandalone(PluginState state, List<MenuNode>? menus, RegisterResult result)
+    {
+        if (menus is not { Count: > 0 })
+        {
+            return true;
+        }
+
+        if (menus.Count > PluginProtocol.MaxStandaloneMenus)
+        {
+            result.Errors.Add($"A plugin may declare at most {PluginProtocol.MaxStandaloneMenus} standalone menus, this one declared {menus.Count}.");
+            return false;
+        }
+
+        foreach (var menu in menus)
+        {
+            if (!PluginValidation.IndexMenuTree(state, menu, result))
+            {
+                return false;
+            }
+
+            state.Standalone.Add(new StandaloneMenu(menu));
+        }
+
+        return true;
+    }
+
+    private static void BuildStandalone(PluginState state)
+    {
+        foreach (var standalone in state.Standalone)
+        {
+            Build(state, standalone);
+        }
+    }
+
+    private static void Build(PluginState state, StandaloneMenu standalone)
+    {
+        var node = standalone.Node;
+
+        standalone.Menu = MenuRegistry.CreateStandalone(
+            MenuText.From(() => node.Title is { } title ? state.Resolve(title) : DisplayNameOf(state)),
+            PluginEntryFactory.LiveText(state, () => node.Subtitle),
+            builder => PluginEntryFactory.BuildMenu(state, node, builder),
+            nameof(PluginsMenu));
+    }
+
+    // Live, so a plugin adding a menu after connecting does not have to register again, which would close
+    // whatever of its menus the player is in.
+    internal static void AddStandalone(PluginState state, MenuNode menu, RegisterResult report)
+    {
+        if (state.Standalone.Count >= PluginProtocol.MaxStandaloneMenus)
+        {
+            report.Warnings.Add($"Standalone menu '{menu.Id}' was skipped: a plugin may declare at most {PluginProtocol.MaxStandaloneMenus}.");
+            return;
+        }
+
+        if (string.IsNullOrEmpty(menu.Id) || state.MenusById.ContainsKey(menu.Id))
+        {
+            report.Warnings.Add($"Standalone menu '{menu.Id}' was skipped: its id is empty or already used.");
+            return;
+        }
+
+        if (!PluginValidation.IndexLateMenuTree(state, menu, report))
+        {
+            return;
+        }
+
+        var standalone = new StandaloneMenu(menu);
+
+        state.Standalone.Add(standalone);
+
+        Build(state, standalone);
+    }
+
+    private static void RemoveStandalone(PluginState state)
+    {
+        foreach (var standalone in state.Standalone)
+        {
+            standalone.Menu?.Remove();
+            standalone.Menu = null;
+        }
     }
 
     private static bool CopyTranslations(PluginState state, RegisterRequest request, RegisterResult result)
@@ -394,9 +545,6 @@ public static class PluginHost
                 builder.Remove(old);
                 previous.Row = null;
             }
-
-            state.Builders.Clear();
-            state.NodesByItem.Clear();
 
             // An empty menu gets no row at all, so a plugin that only contributes player actions does not
             // advertise a menu with nothing in it. The first rows it adds bring the row into being.
@@ -496,15 +644,13 @@ public static class PluginHost
             return;
         }
 
-        foreach (var builder in state.Builders.Values)
+        if (state.MenuIdOf(open) is null)
         {
-            if (ReferenceEquals(builder.Menu, open))
-            {
-                MenuController.CloseAllMenus();
-
-                return;
-            }
+            return;
         }
+
+        MenuArbiter.ReleaseFor(state.Resource);
+        MenuController.CloseAllMenus();
     }
 
     private static void OnUpdate(string json)

@@ -20,7 +20,7 @@ internal static class PluginEntryFactory
 
     internal static void BuildMenu(PluginState state, MenuNode menuNode, MenuBuilder builder)
     {
-        state.Builders[menuNode.Id] = builder;
+        state.AddBuilder(menuNode.Id, builder);
 
         builder.SetUserFilter(state.VisibilityFilter);
 
@@ -448,7 +448,7 @@ internal static class PluginEntryFactory
         }
     };
 
-    private static bool Wants(List<string>? events, string name)
+    internal static bool Wants(List<string>? events, string name)
     {
         if (events is null)
         {

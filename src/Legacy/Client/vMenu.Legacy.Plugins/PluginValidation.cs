@@ -27,6 +27,54 @@ internal static class PluginValidation
     internal static bool IndexMenuTree(PluginState state, MenuNode menu, RegisterResult result) =>
         IndexMenu(state, menu, 1, result);
 
+    // For a tree added to a live plugin. A refused tree leaves nothing behind, so a corrected retry with the
+    // same ids is accepted.
+    internal static bool IndexLateMenuTree(PluginState state, MenuNode menu, RegisterResult result)
+    {
+        var items = new HashSet<string>(state.ItemsById.Keys, StringComparer.Ordinal);
+        var menus = new HashSet<string>(state.MenusById.Keys, StringComparer.Ordinal);
+        var keys = new HashSet<string>(state.KeysById.Keys, StringComparer.Ordinal);
+
+        if (IndexMenuTree(state, menu, result))
+        {
+            return true;
+        }
+
+        foreach (var id in Added(state.ItemsById.Keys, items))
+        {
+            state.ItemsById.Remove(id);
+            state.ItemOwners.Remove(id);
+        }
+
+        foreach (var id in Added(state.MenusById.Keys, menus))
+        {
+            state.MenusById.Remove(id);
+            state.MenuDepths.Remove(id);
+        }
+
+        foreach (var id in Added(state.KeysById.Keys, keys))
+        {
+            state.KeysById.Remove(id);
+        }
+
+        return false;
+    }
+
+    private static List<string> Added(IEnumerable<string> now, HashSet<string> before)
+    {
+        var added = new List<string>();
+
+        foreach (var id in now)
+        {
+            if (!before.Contains(id))
+            {
+                added.Add(id);
+            }
+        }
+
+        return added;
+    }
+
     // Read off the live index rather than counted per call, so items added after registration count
     // towards the same ceiling as the ones declared with it.
     private static bool AtCapacity(PluginState state) => state.ItemsById.Count >= MaxItems;
@@ -325,7 +373,7 @@ internal static class PluginValidation
             state.KeysById.Remove(key.Id);
         }
 
-        if (state.Builders.Remove(menu.Id, out var builder))
+        if (state.RemoveBuilder(menu.Id) is { } builder)
         {
             state.ForgetItemsOf(builder);
         }

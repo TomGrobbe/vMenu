@@ -21,7 +21,15 @@ internal static class PluginUpdateOps
         }
         finally
         {
-            changes.Settle();
+            try
+            {
+                changes.Settle();
+            }
+            finally
+            {
+                // Only once everything above has landed, so a plugin reacting to the answer acts on a finished menu.
+                changes.SendReplies();
+            }
         }
     }
 
@@ -240,8 +248,24 @@ internal static class PluginUpdateOps
             case UpdateOps.OpenMenu:
                 if (TryMenu(state, op, out _, out var builder))
                 {
-                    changes.OpenAfter = builder;
+                    changes.Supersede();
+                    changes.OpenAfter = (builder, op);
                     changes.CloseAfter = false;
+                }
+                else
+                {
+                    changes.Answer(op.RequestId, OpenMenuReasons.UnknownMenu);
+                }
+
+                break;
+
+            case UpdateOps.AddStandaloneMenu:
+                if (op.Menu is { } standalone)
+                {
+                    var added = new RegisterResult();
+
+                    PluginHost.AddStandalone(state, standalone, added);
+                    LogReport(state, added);
                 }
 
                 break;
@@ -258,6 +282,7 @@ internal static class PluginUpdateOps
                 break;
 
             case UpdateOps.CloseMenu:
+                changes.Supersede();
                 changes.OpenAfter = null;
                 changes.CloseAfter = true;
                 break;
@@ -644,7 +669,9 @@ internal static class PluginUpdateOps
 
         internal bool PlayerActionsChanged { get; set; }
 
-        internal MenuBuilder? OpenAfter { get; set; }
+        private readonly List<(int RequestId, string Reason)> _replies = [];
+
+        internal (MenuBuilder Builder, UpdateOp Op)? OpenAfter { get; set; }
 
         internal bool CloseAfter { get; set; }
 
@@ -699,7 +726,46 @@ internal static class PluginUpdateOps
             _updates.Add((builder, builder.BeginUpdate()));
         }
 
+        internal void Answer(int? requestId, string reason)
+        {
+            if (requestId is { } id)
+            {
+                _replies.Add((id, reason));
+            }
+        }
+
+        // A later open or close in the same batch wins, and the open it replaces still owes its caller an answer.
+        internal void Supersede()
+        {
+            if (OpenAfter is { } pending)
+            {
+                Answer(pending.Op.RequestId, OpenMenuReasons.Superseded);
+            }
+        }
+
+        internal void SendReplies()
+        {
+            foreach (var (requestId, reason) in _replies)
+            {
+                PluginHost.ReplyOpen(state, requestId, reason);
+            }
+
+            _replies.Clear();
+        }
+
         internal void Settle()
+        {
+            try
+            {
+                Refresh();
+            }
+            finally
+            {
+                Navigate();
+            }
+        }
+
+        private void Refresh()
         {
             if (_everything)
             {
@@ -740,16 +806,19 @@ internal static class PluginUpdateOps
             {
                 MenuRegistry.BackOutIfUnreachable();
             }
+        }
 
-            if (CloseAfter && MenuController.GetCurrentMenu() is { } open && IsOwn(open))
+        private void Navigate()
+        {
+            if (CloseAfter && MenuController.GetCurrentMenu() is { } open && state.MenuIdOf(open) is not null)
             {
+                MenuArbiter.ReleaseFor(state.Resource);
                 open.CloseMenu();
             }
 
             if (OpenAfter is { } target)
             {
-                MenuController.CloseAllMenus();
-                target.Menu.OpenMenu();
+                Open(target.Builder, target.Op);
             }
 
             if (SelectAfter is { } select)
@@ -763,17 +832,34 @@ internal static class PluginUpdateOps
             }
         }
 
-        private bool IsOwn(Menu menu)
+        private void Open(MenuBuilder builder, UpdateOp op)
         {
-            foreach (var builder in state.Builders.Values)
+            var priority = PriorityFrom(op.Priority);
+            var doNotClose = op.DoNotClose == true;
+
+            if (doNotClose && priority != MenuPriority.High)
             {
-                if (ReferenceEquals(builder.Menu, menu))
-                {
-                    return true;
-                }
+                Log.Warning($"[Plugins] '{state.Resource}' asked to keep menu '{op.MenuId}' open below high priority, which only high allows.");
+
+                doNotClose = false;
             }
 
-            return false;
+            Answer(op.RequestId, MenuArbiter.TryOpen(builder.Menu, state.Resource, priority, doNotClose) switch
+            {
+                MenuOpenOutcome.BlockedByLock => OpenMenuReasons.BlockedByLock,
+                MenuOpenOutcome.BlockedByPriority => OpenMenuReasons.BlockedByPriority,
+                MenuOpenOutcome.NotAllowed => OpenMenuReasons.NotAllowed,
+                _ => OpenMenuReasons.Opened,
+            });
         }
+
+        // Absent means a plugin from before priorities, which always replaced whatever was open.
+        private static MenuPriority PriorityFrom(string? priority) => priority switch
+        {
+            MenuPriorities.None => MenuPriority.None,
+            MenuPriorities.Medium => MenuPriority.Medium,
+            MenuPriorities.High => MenuPriority.High,
+            _ => MenuPriority.Low,
+        };
     }
 }

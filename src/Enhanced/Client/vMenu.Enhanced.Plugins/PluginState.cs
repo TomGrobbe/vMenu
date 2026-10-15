@@ -11,6 +11,13 @@ using PluginPermissions = vMenu.Enhanced.Data.Permissions.Plugins;
 
 namespace vMenu.Enhanced.Plugins;
 
+internal sealed class StandaloneMenu(MenuNode node)
+{
+    internal MenuNode Node { get; } = node;
+
+    internal TopLevelMenu? Menu { get; set; }
+}
+
 // Entries close over the nodes in here, which is what makes an update op a mutation plus a refresh.
 internal sealed class PluginState
 {
@@ -45,6 +52,8 @@ internal sealed class PluginState
 
     internal MenuNode? RootMenu { get; set; }
 
+    internal List<StandaloneMenu> Standalone { get; } = [];
+
     internal List<ItemNode> PlayerActions { get; } = [];
 
     internal Dictionary<string, ItemNode> ItemsById { get; } = new(StringComparer.Ordinal);
@@ -63,8 +72,12 @@ internal sealed class PluginState
     // How deep each menu sits, the root being 1. Read when an item is added to it later.
     internal Dictionary<string, int> MenuDepths { get; } = new(StringComparer.Ordinal);
 
-    // Live builders by menu id, filled in as each menu's build action runs.
+    // Live builders by menu id, filled in as each menu's build action runs. Changed through AddBuilder and
+    // RemoveBuilder only, which keep the reverse lookup in step.
     internal Dictionary<string, MenuBuilder> Builders { get; } = new(StringComparer.Ordinal);
+
+    // Asked on every open and every menu change, so it is a lookup rather than a walk over Builders.
+    private readonly Dictionary<Menu, string> _menuIds = new(ReferenceComparer<Menu>.Instance);
 
     // The materialised item back to its node, which is what the visibility filter reads.
     internal Dictionary<MenuItem, ItemNode> NodesByItem { get; } = new(ReferenceComparer<MenuItem>.Instance);
@@ -74,6 +87,28 @@ internal sealed class PluginState
     internal Dictionary<string, HashSet<string>> MenuFilters { get; } = new(StringComparer.Ordinal);
 
     internal MenuEntry? Row { get; set; }
+
+    internal string? MenuIdOf(Menu menu) => _menuIds.TryGetValue(menu, out var menuId) ? menuId : null;
+
+    internal void AddBuilder(string menuId, MenuBuilder builder)
+    {
+        RemoveBuilder(menuId);
+
+        Builders[menuId] = builder;
+        _menuIds[builder.Menu] = menuId;
+    }
+
+    internal MenuBuilder? RemoveBuilder(string menuId)
+    {
+        if (!Builders.Remove(menuId, out var builder))
+        {
+            return null;
+        }
+
+        _menuIds.Remove(builder.Menu);
+
+        return builder;
+    }
 
     // The live option lists by item id, mutated in place by a setOptions op.
     internal Dictionary<string, List<MenuText>> OptionsByItemId { get; } = new(StringComparer.Ordinal);
@@ -112,6 +147,7 @@ internal sealed class PluginState
         KeysById.Clear();
         MenuDepths.Clear();
         Builders.Clear();
+        _menuIds.Clear();
         NodesByItem.Clear();
         OptionsByItemId.Clear();
         EntriesById.Clear();
