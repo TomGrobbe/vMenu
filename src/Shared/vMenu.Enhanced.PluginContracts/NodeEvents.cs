@@ -9,6 +9,8 @@ public static class NodeEvents
     public const string Opened = "opened";
     public const string Closed = "closed";
     public const string IndexChanged = "indexChanged";
+    public const string Replaced = "replaced";
+    public const string ForceClosed = "forceClosed";
 
     // Item level.
     public const string Highlighted = "highlighted";

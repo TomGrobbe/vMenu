@@ -21,6 +21,9 @@ public class RegisterRequest
 
     public MenuNode? Menu { get; set; }
 
+    /// <summary>Top level menus with no row anywhere in vMenu, opened only by the plugin itself.</summary>
+    public List<MenuNode>? StandaloneMenus { get; set; }
+
     /// <summary>Items injected into every player's Plugin Actions submenu in Online Players.</summary>
     public List<ItemNode>? PlayerActions { get; set; }
 }

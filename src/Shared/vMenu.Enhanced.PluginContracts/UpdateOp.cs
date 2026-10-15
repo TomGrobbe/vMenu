@@ -35,6 +35,9 @@ public class UpdateOp
 
     public List<ItemNode>? Items { get; set; }
 
+    /// <summary>The menu for addStandaloneMenu.</summary>
+    public MenuNode? Menu { get; set; }
+
     public List<string>? ItemIds { get; set; }
 
     public string? BeforeItemId { get; set; }
@@ -47,4 +50,14 @@ public class UpdateOp
     public string? Language { get; set; }
 
     public Dictionary<string, string>? Entries { get; set; }
+
+    /// <summary>One of the <see cref="MenuPriorities"/> values for openMenu. Absent means low, which is how a plugin
+    /// from before priorities existed is treated.</summary>
+    public string? Priority { get; set; }
+
+    /// <summary>For openMenu at high priority: nothing may close or replace the menu until the plugin leaves it.</summary>
+    public bool? DoNotClose { get; set; }
+
+    /// <summary>For openMenu: when set, vMenu answers with an <see cref="OpenMenuResult"/> carrying it.</summary>
+    public int? RequestId { get; set; }
 }

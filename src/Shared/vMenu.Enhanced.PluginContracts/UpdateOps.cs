@@ -42,6 +42,7 @@ public static class UpdateOps
     public const string SetMenuEvents = "setMenuEvents";
     public const string SetFilter = "setFilter";
     public const string ClearFilter = "clearFilter";
+    public const string AddStandaloneMenu = "addStandaloneMenu";
 
     // Keys.
     public const string AddKeys = "addKeys";

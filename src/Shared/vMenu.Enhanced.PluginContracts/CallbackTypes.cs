@@ -16,6 +16,8 @@ public static class CallbackTypes
     public const string MenuOpened = "menuOpened";
     public const string MenuClosed = "menuClosed";
     public const string MenuIndexChanged = "menuIndexChanged";
+    public const string MenuReplaced = "menuReplaced";
+    public const string MenuForceClosed = "menuForceClosed";
     public const string PlayerActionSelected = "playerActionSelected";
     public const string PlayerActionConfirmed = "playerActionConfirmed";
     public const string PlayerActionListSelected = "playerActionListSelected";

@@ -34,6 +34,7 @@ public static class PluginEvents
     public static string RegisterResultFor(string resource) => $"{Prefix}:{resource}:RegisterResult";
     public static string EventFor(string resource) => $"{Prefix}:{resource}:Event";
     public static string PromptResultFor(string resource) => $"{Prefix}:{resource}:PromptResult";
+    public static string OpenResultFor(string resource) => $"{Prefix}:{resource}:OpenResult";
     public static string ThemesFor(string resource) => $"{Prefix}:{resource}:Themes";
     public static string ThemesRegisteredFor(string resource) => $"{Prefix}:{resource}:ThemesRegistered";
 
