@@ -1,11 +1,14 @@
 import { currentResource, emitLocal, log, onLocal, parseJson, sanitizeId } from '../fivem.js';
 import {
+  BASE_PROTOCOL_VERSION,
   CallbackTypes,
+  MAX_STANDALONE_MENUS,
   normalizeResult,
   PluginEvents,
   PROTOCOL_VERSION,
   UpdateOps,
   VMENU_RESOURCE,
+  type OpenMenuResultPayload,
   type PluginCallback,
   type PromptRequest,
   type PromptResult,
@@ -19,7 +22,7 @@ import { int } from '../format.js';
 import type { PluginItem } from './item.js';
 import { PluginSubmenu } from './items.js';
 import type { PluginKey } from './key.js';
-import { PluginMenu } from './menu.js';
+import { MenuPriority, OpenMenuResult, PluginMenu } from './menu.js';
 import { PluginPlayerActions } from './playerActions.js';
 import { PluginSettings } from './settings.js';
 import { PluginThemes } from './themes.js';
@@ -97,6 +100,10 @@ export class VMenuPlugin {
 
   private readonly pendingPrompts = new Map<number, (result: PromptResult) => void>();
 
+  private readonly pendingOpens = new Map<number, (result: OpenMenuResult) => void>();
+
+  private readonly standalone: PluginMenu[] = [];
+
   private readonly pendingItems = new Set<string>();
 
   private readonly pendingMenus = new Set<string>();
@@ -120,6 +127,10 @@ export class VMenuPlugin {
   private nextMenu = 0;
 
   private nextPrompt = 0;
+
+  private nextOpen = 0;
+
+  private vMenuProtocol = 0;
 
   private handlersRegistered = false;
 
@@ -145,6 +156,11 @@ export class VMenuPlugin {
 
   /** The menu behind your row in vMenu's Plugins menu. */
   readonly rootMenu: PluginMenu;
+
+  /** Menus added with `addStandaloneMenu`. */
+  get standaloneMenus(): readonly PluginMenu[] {
+    return this.standalone;
+  }
 
   /** Actions added to every player's entry of vMenu's Online Players menu. */
   readonly playerActions: PluginPlayerActions;
@@ -206,6 +222,48 @@ export class VMenuPlugin {
     emitLocal(PluginEvents.Probe);
 
     return this.firstResult;
+  }
+
+  /**
+   * Adds a top level menu of your own, outside vMenu's Plugins menu. It has no row anywhere and no toggle key: only your
+   * code opens it, through `menu.requestOpen()`. Needs a vMenu that knows standalone menus, an older one refuses the
+   * registration. Adding one after connecting appears live.
+   *
+   * @param id Letters, digits and underscores, unique within your plugin. "root" and "m" followed by digits are taken
+   * by the menus the API names itself.
+   * @throws When the id is malformed, reserved or already used, when the plugin already has 50 standalone menus, or when
+   * it is connected to a vMenu that predates standalone menus.
+   */
+  addStandaloneMenu(id: string, title: TextLike, subtitle?: TextLike): PluginMenu {
+    if (!/^[A-Za-z0-9_]+$/.test(id)) {
+      throw new Error('A standalone menu id may only contain letters, digits and underscores.');
+    }
+
+    if (id === 'root' || /^m\d+$/.test(id)) {
+      throw new Error(`'${id}' is reserved for the menus the API names itself.`);
+    }
+
+    if (this.menusById.has(id)) {
+      throw new Error(`A menu with id '${id}' already exists.`);
+    }
+
+    if (this.standalone.length >= MAX_STANDALONE_MENUS) {
+      throw new Error(`A plugin may have at most ${MAX_STANDALONE_MENUS} standalone menus.`);
+    }
+
+    // Registering again to add it would get the whole plugin refused by a vMenu that does not know these menus.
+    if (this.connected && this.vMenuProtocol < PROTOCOL_VERSION) {
+      throw new Error('The vMenu this plugin is connected to predates standalone menus. Update vMenu.');
+    }
+
+    const menu = new PluginMenu(this, { id, title: Text.toRef(title), subtitle: Text.toRef(subtitle), items: [] }, title, subtitle);
+
+    this.registerMenu(menu);
+    this.standalone.push(menu);
+
+    this.emitOp({ op: UpdateOps.AddStandaloneMenu, menu: menu.node });
+
+    return menu;
   }
 
   /** Shows a message through vMenu's notification area, credited to your resource. */
@@ -339,6 +397,10 @@ export class VMenuPlugin {
       return;
     }
 
+    if (op.op === UpdateOps.AddStandaloneMenu && op.menu) {
+      this.pendingMenus.add(op.menu.id);
+    }
+
     if (op.op === UpdateOps.AddItems) {
       for (const node of op.items ?? []) {
         this.pendingItems.add(node.id);
@@ -350,6 +412,25 @@ export class VMenuPlugin {
     }
 
     batch.push(op);
+  }
+
+  /** @internal */
+  requestOpen(menu: PluginMenu, priority: MenuPriority, doNotClose: boolean): Promise<OpenMenuResult> {
+    if (!this.connected) {
+      return Promise.resolve(OpenMenuResult.NotConnected);
+    }
+
+    // An older vMenu never answers, and its plain open would close whatever the player is in.
+    if (this.vMenuProtocol < PROTOCOL_VERSION) {
+      return Promise.resolve(OpenMenuResult.NotSupported);
+    }
+
+    const requestId = ++this.nextOpen;
+    const pending = new Promise<OpenMenuResult>((resolve) => this.pendingOpens.set(requestId, resolve));
+
+    this.emitOp({ op: UpdateOps.OpenMenu, menuId: menu.id, priority, doNotClose: doNotClose || undefined, requestId });
+
+    return pending;
   }
 
   /** @internal */
@@ -446,9 +527,18 @@ export class VMenuPlugin {
   }
 
   private send(ops: UpdateOp[]): void {
-    const payload = ops.map((op) =>
-      op.op === UpdateOps.AddItems && op.items ? { ...op, items: op.items.map(PluginMenu.asAdded) } : op,
-    );
+    const payload = ops.map((op) => {
+      if (op.op === UpdateOps.AddItems && op.items) {
+        return { ...op, items: op.items.map(PluginMenu.asAdded) };
+      }
+
+      // Rows added after this op went into the batch travel as their own addItems ops.
+      if (op.op === UpdateOps.AddStandaloneMenu && op.menu) {
+        return { ...op, menu: PluginMenu.withoutItems(op.menu) };
+      }
+
+      return op;
+    });
 
     emitLocal(PluginEvents.Update, JSON.stringify({ ops: payload }));
   }
@@ -460,13 +550,20 @@ export class VMenuPlugin {
 
     this.handlersRegistered = true;
 
-    onLocal(PluginEvents.Ready, () => this.sendRegistration());
-    onLocal(PluginEvents.readyFor(this.resource), () => this.sendRegistration());
+    onLocal(PluginEvents.Ready, (protocolVersion: unknown) => this.onReady(protocolVersion));
+    onLocal(PluginEvents.readyFor(this.resource), (protocolVersion: unknown) => this.onReady(protocolVersion));
     onLocal(PluginEvents.registerResultFor(this.resource), (json: unknown) => this.onRegisterResult(json));
     onLocal(PluginEvents.eventFor(this.resource), (json: unknown) => this.onCallback(json));
     onLocal(PluginEvents.promptResultFor(this.resource), (json: unknown) => this.onPromptResult(json));
+    onLocal(PluginEvents.openResultFor(this.resource), (json: unknown) => this.onOpenResult(json));
     onLocal(PluginEvents.themesFor(this.resource), (json: unknown) => this.themes.handle(json));
     onLocal('onResourceStop', (stopped: unknown) => this.onResourceStop(stopped));
+  }
+
+  private onReady(protocolVersion: unknown): void {
+    this.vMenuProtocol = typeof protocolVersion === 'number' ? protocolVersion : 0;
+
+    this.sendRegistration();
   }
 
   private sendRegistration(): void {
@@ -475,10 +572,12 @@ export class VMenuPlugin {
 
   private buildRequest(): RegisterRequest {
     const request: RegisterRequest = {
-      protocolVersion: PROTOCOL_VERSION,
+      // Only a plugin that needs a newer vMenu says so, so everything else still registers with an older one.
+      protocolVersion: this.standalone.length > 0 ? PROTOCOL_VERSION : BASE_PROTOCOL_VERSION,
       displayName: Text.toRef(this.displayName),
       descriptionKey: this.descriptionKey,
       menu: this.rootMenu.node,
+      standaloneMenus: this.standalone.length > 0 ? this.standalone.map((menu) => menu.node) : undefined,
       playerActions: this.playerActions.nodes.length > 0 ? this.playerActions.nodes : undefined,
     };
 
@@ -514,6 +613,7 @@ export class VMenuPlugin {
 
     if (!this.connected) {
       this.cancelPendingPrompts();
+      this.cancelPendingOpens();
     } else {
       this.batch(() => {
         for (const menu of this.menusById.values()) {
@@ -541,7 +641,9 @@ export class VMenuPlugin {
       switch (callback.type) {
         case CallbackTypes.MenuOpened:
         case CallbackTypes.MenuClosed:
-        case CallbackTypes.MenuIndexChanged: {
+        case CallbackTypes.MenuIndexChanged:
+        case CallbackTypes.MenuReplaced:
+        case CallbackTypes.MenuForceClosed: {
           const menu = callback.menuId === undefined ? undefined : this.menusById.get(callback.menuId);
 
           menu?.handleMenu(callback);
@@ -586,6 +688,34 @@ export class VMenuPlugin {
     }
   }
 
+  private onOpenResult(json: unknown): void {
+    const result = parseJson<OpenMenuResultPayload>(json);
+
+    if (!result) {
+      return;
+    }
+
+    const pending = this.pendingOpens.get(result.requestId);
+
+    if (!pending) {
+      return;
+    }
+
+    this.pendingOpens.delete(result.requestId);
+
+    const known = Object.values(OpenMenuResult) as string[];
+
+    pending(known.includes(result.reason) ? (result.reason as OpenMenuResult) : OpenMenuResult.BlockedByPriority);
+  }
+
+  private cancelPendingOpens(): void {
+    for (const pending of this.pendingOpens.values()) {
+      pending(OpenMenuResult.NotConnected);
+    }
+
+    this.pendingOpens.clear();
+  }
+
   private cancelPendingPrompts(): void {
     for (const pending of this.pendingPrompts.values()) {
       pending({ requestId: 0, cancelled: true, busy: false });
@@ -601,6 +731,7 @@ export class VMenuPlugin {
 
     this.connected = false;
     this.cancelPendingPrompts();
+    this.cancelPendingOpens();
     this.disconnected.fire();
   }
 }

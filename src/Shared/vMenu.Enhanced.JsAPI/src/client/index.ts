@@ -25,6 +25,8 @@ export {
 } from './items.js';
 export { PluginKey, type PluginKeyPress } from './key.js';
 export {
+  MenuPriority,
+  OpenMenuResult,
   PluginMenu,
   type CheckboxOptions,
   type ConfirmOptions,

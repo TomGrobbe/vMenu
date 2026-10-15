@@ -67,8 +67,49 @@ export interface KeyOptions {
   shadowedControl?: number;
 }
 
+/** How hard `requestOpenWithPriority` may push. vMenu's own menus always count as `None`. The plain strings work too. */
+export const MenuPriority = {
+  /** Only opens when no vMenu or plugin menu is open. */
+  None: 'none',
+  /** Replaces vMenu's menus and other menus at low priority. */
+  Low: 'low',
+  /** Replaces anything at low or medium priority. */
+  Medium: 'medium',
+  /**
+   * Replaces anything that is not locked. Only use this in extreme situations, prevents vMenu or other plugins with a
+   * lower priority from opening any menus while yours is open. Use responsibly!
+   */
+  High: 'high',
+} as const;
+
+/** How hard `requestOpenWithPriority` may push. */
+export type MenuPriority = (typeof MenuPriority)[keyof typeof MenuPriority];
+
+/** What happened to a request to open a menu. The plain strings work too. */
+export const OpenMenuResult = {
+  /** The menu is on screen. */
+  Opened: 'opened',
+  /** A menu with a higher priority is open, or any menu is open for a request at `None`. */
+  BlockedByPriority: 'blockedByPriority',
+  /** Another menu asked not to be closed. */
+  BlockedByLock: 'blockedByLock',
+  /** vMenu does not know this menu, for example an empty root menu, which has no row yet. */
+  UnknownMenu: 'unknownMenu',
+  /** The player is not allowed into this menu, for example because a gate on the row leading to it fails. */
+  NotAllowed: 'notAllowed',
+  /** A later open or close in the same batch took its place. */
+  Superseded: 'superseded',
+  /** The plugin is not connected to vMenu, or vMenu stopped before it answered. */
+  NotConnected: 'notConnected',
+  /** The vMenu this plugin talks to predates open priorities. Nothing was opened, use `open()` there instead. */
+  NotSupported: 'notSupported',
+} as const;
+
+/** What happened to a request to open a menu. */
+export type OpenMenuResult = (typeof OpenMenuResult)[keyof typeof OpenMenuResult];
+
 /**
- * One of your plugin's menus: the root under your row in vMenu's Plugins menu, or a submenu. Rows
+ * One of your plugin's menus: the root under your row in vMenu's Plugins menu, a standalone menu, or a submenu. Rows
  * added before connecting ride along with the registration, rows added later appear live.
  */
 export class PluginMenu {
@@ -85,6 +126,10 @@ export class PluginMenu {
   private readonly closed: Signal<[]>;
 
   private readonly indexChanged: Signal<[number, number]>;
+
+  private readonly replaced: Signal<[]>;
+
+  private readonly forceClosed: Signal<[]>;
 
   private insertIndex?: number;
 
@@ -106,6 +151,8 @@ export class PluginMenu {
     this.opened = new Signal(() => plugin.resource, 'opened');
     this.closed = new Signal(() => plugin.resource, 'closed');
     this.indexChanged = new Signal(() => plugin.resource, 'indexChanged');
+    this.replaced = new Signal(() => plugin.resource, 'replaced');
+    this.forceClosed = new Signal(() => plugin.resource, 'forceClosed');
   }
 
   /** The menu's id, how vMenu refers to it. */
@@ -411,9 +458,62 @@ export class PluginMenu {
     this.plugin.emitOp({ op: UpdateOps.ClearMenu, menuId: this.id });
   }
 
-  /** Opens this menu on screen, closing whatever vMenu menu was open. */
+  /** Opens this menu on screen at low priority, closing whatever vMenu menu was open. Use `requestOpen` to learn whether it worked. */
   open(): void {
     this.plugin.emitOp({ op: UpdateOps.OpenMenu, menuId: this.id });
+  }
+
+  /**
+   * Opens this menu only when no vMenu or plugin menu is open, so it never interrupts the player. Switching between your
+   * own menus always works.
+   */
+  requestOpen(): Promise<OpenMenuResult> {
+    return this.requestOpenWithPriority(MenuPriority.None);
+  }
+
+  /**
+   * Opens this menu, closing an open menu of equal or lower priority. A menu with a higher priority, or one that asked
+   * not to be closed, keeps the screen and the request is refused.
+   *
+   * @param priority `High`: only use this in extreme situations, prevents vMenu or other plugins with a lower priority
+   * from opening any menus while yours is open. Use responsibly!
+   * @param doNotClose Only with `High`. Only use this in extreme situations. It blocks the player from using anything
+   * else, so always close the menu as soon as possible. The lock ends when you close the menu or open its parent, and
+   * the player can still force it shut by holding back.
+   * @throws When `doNotClose` is set below `High`.
+   */
+  requestOpenWithPriority(priority: MenuPriority, doNotClose = false): Promise<OpenMenuResult> {
+    if (!Object.values(MenuPriority).includes(priority)) {
+      throw new Error(`'${String(priority)}' is not a menu priority.`);
+    }
+
+    if (doNotClose && priority !== MenuPriority.High) {
+      throw new Error('doNotClose only works with MenuPriority.High.');
+    }
+
+    return this.plugin.requestOpen(this, priority, doNotClose);
+  }
+
+  /** Called when another plugin's menu took the screen while the player was in this one. `onClosed` fires as well. */
+  onReplaced(handler: () => void): Unsubscribe {
+    const unsubscribe = this.replaced.add(handler);
+
+    this.subscribeMenuEvent(NodeEvents.Replaced);
+
+    return unsubscribe;
+  }
+
+  /**
+   * Called when this menu was opened with `doNotClose` and closed by anything other than your own code: the player
+   * holding back to force it shut, or vMenu having to close it. Whatever the player was in the middle of was left
+   * unfinished.
+   */
+  onForceClosed(handler: () => void): Unsubscribe {
+    const unsubscribe = this.forceClosed.add(handler);
+
+    this.subscribeMenuEvent(NodeEvents.ForceClosed);
+
+    return unsubscribe;
   }
 
   /** Closes this plugin's menu if one is open. */
@@ -469,6 +569,14 @@ export class PluginMenu {
         }
 
         break;
+
+      case CallbackTypes.MenuReplaced:
+        this.replaced.fire();
+        break;
+
+      case CallbackTypes.MenuForceClosed:
+        this.forceClosed.fire();
+        break;
     }
   }
 
@@ -478,9 +586,14 @@ export class PluginMenu {
       return node;
     }
 
-    const { items: _items, ...menu } = node.menu;
+    return { ...node, menu: PluginMenu.withoutItems(node.menu) };
+  }
 
-    return { ...node, menu: { ...menu, items: [] } };
+  /** @internal */
+  static withoutItems(node: MenuNode): MenuNode {
+    const { items: _items, ...menu } = node;
+
+    return { ...menu, items: [] };
   }
 
   private newNode(type: string, text: TextLike, options: ItemOptions | undefined): ItemNode {

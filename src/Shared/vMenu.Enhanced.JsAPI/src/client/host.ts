@@ -1,7 +1,7 @@
 import type { UpdateOp } from '../protocol.js';
 import type { PluginItem } from './item.js';
 import type { PluginKey } from './key.js';
-import type { PluginMenu } from './menu.js';
+import type { MenuPriority, OpenMenuResult, PluginMenu } from './menu.js';
 
 export interface PluginHost {
   readonly resource: string;
@@ -13,6 +13,7 @@ export interface PluginHost {
   registerKey(key: PluginKey): void;
   unregisterItem(item: PluginItem): void;
   emitOp(op: UpdateOp): void;
+  requestOpen(menu: PluginMenu, priority: MenuPriority, doNotClose: boolean): Promise<OpenMenuResult>;
   emitAdd(menu: PluginMenu, item: PluginItem, add: UpdateOp): void;
   filterChanged(menu: PluginMenu): void;
   mergeTranslations(code: string, entries: Record<string, string>): void;

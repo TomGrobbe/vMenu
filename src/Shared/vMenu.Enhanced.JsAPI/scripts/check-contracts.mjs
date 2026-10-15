@@ -20,7 +20,7 @@ function expect(source, label, text, what) {
   }
 }
 
-for (const file of ['UpdateOps.cs', 'CallbackTypes.cs', 'EntryTypes.cs', 'NodeEvents.cs', 'SettingNode.cs']) {
+for (const file of ['UpdateOps.cs', 'CallbackTypes.cs', 'EntryTypes.cs', 'NodeEvents.cs', 'SettingNode.cs', 'MenuPriorities.cs', 'OpenMenuReasons.cs']) {
   for (const { name, value } of constants(file)) {
     expect(typescript, 'protocol.ts', `'${value}'`, `${file} ${name}`);
     expect(lua, 'vmenu.lua', `'${value}'`, `${file} ${name}`);
@@ -43,6 +43,7 @@ for (const [, name, suffix] of events.matchAll(/public static string (\w+)\(stri
 const protocol = read('PluginProtocol.cs');
 const version = /public const int Version = (\d+);/.exec(protocol)[1];
 const serverVersion = /public const int ServerVersion = (\d+);/.exec(protocol)[1];
+const maxStandalone = /public const int MaxStandaloneMenus = (\d+);/.exec(protocol)[1];
 const resource = /public const string VMenuResource = "([^"]+)";/.exec(protocol)[1];
 
 expect(typescript, 'protocol.ts', `PROTOCOL_VERSION = ${version};`, 'the client protocol version');
@@ -51,6 +52,8 @@ expect(typescript, 'protocol.ts', `VMENU_RESOURCE = '${resource}';`, 'the vMenu 
 expect(lua, 'vmenu.lua', `PROTOCOL_VERSION = ${version}`, 'the client protocol version');
 expect(lua, 'vmenu.lua', `SERVER_PROTOCOL_VERSION = ${serverVersion}`, 'the server protocol version');
 expect(lua, 'vmenu.lua', `VMENU_RESOURCE = '${resource}'`, 'the vMenu resource name');
+expect(typescript, 'protocol.ts', `MAX_STANDALONE_MENUS = ${maxStandalone};`, 'the standalone menu limit');
+expect(lua, 'vmenu.lua', `MAX_STANDALONE_MENUS = ${maxStandalone}`, 'the standalone menu limit');
 
 const refresh = /RefreshPermissionsEvent = "([^"]+)";/.exec(readFileSync(join(root, '../../Enhanced/PluginApi/vMenu.Enhanced.ServerAPI/VMenuServer.cs'), 'utf8'))[1];
 

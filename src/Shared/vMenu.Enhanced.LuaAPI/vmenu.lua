@@ -1,7 +1,9 @@
 -- vMenu Enhanced plugin API for Lua, built for vMenu Enhanced vversiongoeshere.
 -- Copy this file into your resource and load it as a shared_script before your own scripts, see https://docs.vespura.com/vmenu/enhanced/plugins/lua/
 
-local PROTOCOL_VERSION = 2
+local PROTOCOL_VERSION = 3
+local BASE_PROTOCOL_VERSION = 2
+local MAX_STANDALONE_MENUS = 50
 local SERVER_PROTOCOL_VERSION = 1
 local VMENU_RESOURCE = 'vMenu.Enhanced'
 
@@ -23,6 +25,7 @@ local Events = {
     RegisterResultFor = function(resource) return 'vMenu.Enhanced:Plugins:' .. resource .. ':RegisterResult' end,
     EventFor = function(resource) return 'vMenu.Enhanced:Plugins:' .. resource .. ':Event' end,
     PromptResultFor = function(resource) return 'vMenu.Enhanced:Plugins:' .. resource .. ':PromptResult' end,
+    OpenResultFor = function(resource) return 'vMenu.Enhanced:Plugins:' .. resource .. ':OpenResult' end,
     ThemesFor = function(resource) return 'vMenu.Enhanced:Plugins:' .. resource .. ':Themes' end,
     ThemesRegisteredFor = function(resource) return 'vMenu.Enhanced:Plugins:' .. resource .. ':ThemesRegistered' end,
     ServerReadyFor = function(resource) return 'vMenu.Enhanced:Plugins:' .. resource .. ':Server:Ready' end,
@@ -47,6 +50,8 @@ local NodeEvents = {
     Opened = 'opened',
     Closed = 'closed',
     IndexChanged = 'indexChanged',
+    Replaced = 'replaced',
+    ForceClosed = 'forceClosed',
     Highlighted = 'highlighted',
 }
 
@@ -71,10 +76,30 @@ local CallbackTypes = {
     MenuOpened = 'menuOpened',
     MenuClosed = 'menuClosed',
     MenuIndexChanged = 'menuIndexChanged',
+    MenuReplaced = 'menuReplaced',
+    MenuForceClosed = 'menuForceClosed',
     PlayerActionSelected = 'playerActionSelected',
     PlayerActionConfirmed = 'playerActionConfirmed',
     PlayerActionListSelected = 'playerActionListSelected',
     KeyPressed = 'keyPressed',
+}
+
+local MenuPriorities = {
+    None = 'none',
+    Low = 'low',
+    Medium = 'medium',
+    High = 'high',
+}
+
+local OpenMenuReasons = {
+    Opened = 'opened',
+    BlockedByPriority = 'blockedByPriority',
+    BlockedByLock = 'blockedByLock',
+    UnknownMenu = 'unknownMenu',
+    NotAllowed = 'notAllowed',
+    Superseded = 'superseded',
+    NotConnected = 'notConnected',
+    NotSupported = 'notSupported',
 }
 
 local UpdateOps = {
@@ -108,6 +133,7 @@ local UpdateOps = {
     SetMenuEvents = 'setMenuEvents',
     SetFilter = 'setFilter',
     ClearFilter = 'clearFilter',
+    AddStandaloneMenu = 'addStandaloneMenu',
     AddKeys = 'addKeys',
     SetKeyText = 'setKeyText',
     SetKeyEnabled = 'setKeyEnabled',
@@ -531,6 +557,12 @@ vMenu = {
     Version = 'versiongoeshere',
     Text = Text,
     Gate = Gate,
+    ---How hard `menu:RequestOpenWithPriority` may push. vMenu's own menus always count as `None`.
+    ---`High`: only use this in extreme situations, prevents vMenu or other plugins with a lower priority from
+    ---opening any menus while yours is open. Use responsibly!
+    MenuPriority = MenuPriorities,
+    ---What `menu:RequestOpen` and `menu:RequestOpenWithPriority` answer with.
+    OpenMenuResult = OpenMenuReasons,
 }
 
 if not IsDuplicityVersion() then
@@ -1186,6 +1218,8 @@ if not IsDuplicityVersion() then
             _opened = newSignal('opened'),
             _closed = newSignal('closed'),
             _indexChanged = newSignal('indexChanged'),
+            _replaced = newSignal('replaced'),
+            _forceClosed = newSignal('forceClosed'),
         }, Menu)
     end
 
@@ -1258,6 +1292,30 @@ if not IsDuplicityVersion() then
         local unsubscribe = self._closed.add(handler)
 
         self:_subscribeMenuEvent(NodeEvents.Closed)
+
+        return unsubscribe
+    end
+
+    ---Called when another plugin's menu took the screen while the player was in this one. `OnClosed` fires as well.
+    ---@param handler fun()
+    ---@return fun() unsubscribe
+    function Menu:OnReplaced(handler)
+        local unsubscribe = self._replaced.add(handler)
+
+        self:_subscribeMenuEvent(NodeEvents.Replaced)
+
+        return unsubscribe
+    end
+
+    ---Called when this menu was opened with `doNotClose` and closed by anything other than your own code: the player
+    ---holding back to force it shut, or vMenu having to close it. Whatever the player was in the middle of was left
+    ---unfinished.
+    ---@param handler fun()
+    ---@return fun() unsubscribe
+    function Menu:OnForceClosed(handler)
+        local unsubscribe = self._forceClosed.add(handler)
+
+        self:_subscribeMenuEvent(NodeEvents.ForceClosed)
 
         return unsubscribe
     end
@@ -1543,8 +1601,42 @@ if not IsDuplicityVersion() then
         self._plugin:_emitOp({ op = UpdateOps.ClearMenu, menuId = self.Id })
     end
 
-    ---Opens this menu on screen, closing whatever vMenu menu was open.
+    ---Opens this menu on screen at low priority, closing whatever vMenu menu was open. Use `RequestOpen` to learn
+    ---whether it worked.
     function Menu:Open() self._plugin:_emitOp({ op = UpdateOps.OpenMenu, menuId = self.Id }) end
+
+    ---Opens this menu only when no vMenu or plugin menu is open, so it never interrupts the player. Switching between
+    ---your own menus always works. Answers with one of `vMenu.OpenMenuResult`. Call it inside `CreateThread`, or pass
+    ---a callback.
+    ---@param callback? fun(result: string)
+    function Menu:RequestOpen(callback)
+        return self:RequestOpenWithPriority(MenuPriorities.None, false, callback)
+    end
+
+    ---Opens this menu, closing an open menu of equal or lower priority. A menu with a higher priority, or one that asked
+    ---not to be closed, keeps the screen and the request is refused. Answers with one of `vMenu.OpenMenuResult`.
+    ---Call it inside `CreateThread`, or pass a callback.
+    ---@param priority string One of `vMenu.MenuPriority`. `High`: only use this in extreme situations, prevents vMenu or
+    ---other plugins with a lower priority from opening any menus while yours is open. Use responsibly!
+    ---@param doNotClose? boolean Only with `High`. Only use this in extreme situations. It blocks the player from using
+    ---anything else, so always close the menu as soon as possible. The lock ends when you close the menu or open its
+    ---parent, and the player can still force it shut by holding back.
+    ---@param callback? fun(result: string)
+    function Menu:RequestOpenWithPriority(priority, doNotClose, callback)
+        if type(doNotClose) == 'function' and callback == nil then
+            callback, doNotClose = doNotClose, false
+        end
+
+        if priority ~= MenuPriorities.None and priority ~= MenuPriorities.Low and priority ~= MenuPriorities.Medium and priority ~= MenuPriorities.High then
+            error('RequestOpenWithPriority takes one of vMenu.MenuPriority', 2)
+        end
+
+        if doNotClose == true and priority ~= MenuPriorities.High then
+            error('doNotClose only works with vMenu.MenuPriority.High', 2)
+        end
+
+        return await(self._plugin:_requestOpen(self, priority, doNotClose == true), callback, 'RequestOpen')
+    end
 
     ---Closes this plugin's menu if one is open.
     function Menu:Close() self._plugin:_emitOp({ op = UpdateOps.CloseMenu, menuId = self.Id }) end
@@ -1563,17 +1655,27 @@ if not IsDuplicityVersion() then
             self._closed.fire()
         elseif callback.type == CallbackTypes.MenuIndexChanged and num(callback.newIndex) then
             self._indexChanged.fire((num(callback.oldIndex) or 0) + 1, num(callback.newIndex) + 1)
+        elseif callback.type == CallbackTypes.MenuReplaced then
+            self._replaced.fire()
+        elseif callback.type == CallbackTypes.MenuForceClosed then
+            self._forceClosed.fire()
         end
+    end
+
+    local function withoutItems(node)
+        local menu = shallowCopy(node)
+
+        menu.items = array()
+
+        return menu
     end
 
     local function asAdded(node)
         if node.menu == nil then return node end
 
         local copy = shallowCopy(node)
-        local menu = shallowCopy(node.menu)
 
-        menu.items = array()
-        copy.menu = menu
+        copy.menu = withoutItems(node.menu)
 
         return copy
     end
@@ -1740,6 +1842,8 @@ if not IsDuplicityVersion() then
             _menusById = {},
             _keysById = {},
             _pendingPrompts = {},
+            _pendingOpens = {},
+            _standaloneMenus = {},
             _pendingItems = {},
             _pendingMenus = {},
             _dirtyFilters = {},
@@ -1747,6 +1851,8 @@ if not IsDuplicityVersion() then
             _nextItem = 0,
             _nextMenu = 0,
             _nextPrompt = 0,
+            _nextOpen = 0,
+            _vMenuProtocol = 0,
             _connected = false,
             _registrationAnswered = newSignal('registration answered'),
             _disconnected = newSignal('disconnected'),
@@ -1767,6 +1873,48 @@ if not IsDuplicityVersion() then
 
     ---Whether vMenu currently has this plugin registered.
     function Plugin:IsConnected() return self._connected end
+
+    ---Adds a top level menu of your own, outside vMenu's Plugins menu. It has no row anywhere and no toggle key: only
+    ---your code opens it, through `menu:RequestOpen()`. Needs a vMenu that knows standalone menus, an older one
+    ---refuses the registration. Adding one after connecting appears live.
+    ---@param id string Letters, digits and underscores, unique within your plugin. "root" and "m" followed by digits
+    ---are taken by the menus the API names itself. A plugin may have at most 50 standalone menus.
+    ---@param title string|vMenuText
+    ---@param subtitle? string|vMenuText
+    function Plugin:AddStandaloneMenu(id, title, subtitle)
+        if type(id) ~= 'string' or not id:match('^[%w_]+$') then
+            error('A standalone menu id may only contain letters, digits and underscores', 2)
+        end
+
+        if id == 'root' or id:match('^m%d+$') then
+            error(("'%s' is reserved for the menus the API names itself"):format(id), 2)
+        end
+
+        if self._menusById[id] then
+            error(("A menu with id '%s' already exists"):format(id), 2)
+        end
+
+        if #self._standaloneMenus >= MAX_STANDALONE_MENUS then
+            error(('A plugin may have at most %d standalone menus'):format(MAX_STANDALONE_MENUS), 2)
+        end
+
+        -- Registering again to add it would get the whole plugin refused by a vMenu that does not know these menus.
+        if self._connected and self._vMenuProtocol < PROTOCOL_VERSION then
+            error('The vMenu this plugin is connected to predates standalone menus. Update vMenu', 2)
+        end
+
+        local menu = newMenu(self, { id = id, title = textRef(title), subtitle = textRef(subtitle), items = array() }, title, subtitle)
+
+        self:_registerMenu(menu)
+        self._standaloneMenus[#self._standaloneMenus + 1] = menu
+
+        self:_emitOp({ op = UpdateOps.AddStandaloneMenu, menu = menu._node })
+
+        return menu
+    end
+
+    ---Every menu added with `AddStandaloneMenu`. A copy.
+    function Plugin:GetStandaloneMenus() return { table.unpack(self._standaloneMenus) } end
 
     ---Extra line under the resource name in your row's description, as a translation key.
     ---@param key string|nil
@@ -1936,6 +2084,33 @@ if not IsDuplicityVersion() then
 
     function Plugin:_registerMenu(menu) self._menusById[menu.Id] = menu end
 
+    function Plugin:_requestOpen(menu, priority, doNotClose)
+        local result = promise.new()
+
+        if not self._connected then
+            result:resolve(OpenMenuReasons.NotConnected)
+
+            return result
+        end
+
+        -- An older vMenu never answers, and its plain open would close whatever the player is in.
+        if self._vMenuProtocol < PROTOCOL_VERSION then
+            result:resolve(OpenMenuReasons.NotSupported)
+
+            return result
+        end
+
+        self._nextOpen = self._nextOpen + 1
+
+        local requestId = self._nextOpen
+
+        self._pendingOpens[requestId] = function(reason) result:resolve(reason) end
+
+        self:_emitOp({ op = UpdateOps.OpenMenu, menuId = menu.Id, priority = priority, doNotClose = doNotClose or nil, requestId = requestId })
+
+        return result
+    end
+
     function Plugin:_registerItem(item) self._itemsById[item.Id] = item end
 
     function Plugin:_registerKey(key)
@@ -1983,6 +2158,10 @@ if not IsDuplicityVersion() then
         end
 
         if self:_carriedByPendingAdd(op) then return end
+
+        if op.op == UpdateOps.AddStandaloneMenu and op.menu then
+            self._pendingMenus[op.menu.id] = true
+        end
 
         if op.op == UpdateOps.AddItems then
             for _, node in ipairs(op.items or {}) do
@@ -2051,6 +2230,12 @@ if not IsDuplicityVersion() then
                 for itemIndex, node in ipairs(op.items) do copy.items[itemIndex] = asAdded(node) end
 
                 payload[index] = copy
+            elseif op.op == UpdateOps.AddStandaloneMenu and op.menu then
+                -- Rows added after this op went into the batch travel as their own addItems ops.
+                local copy = shallowCopy(op)
+
+                copy.menu = withoutItems(op.menu)
+                payload[index] = copy
             else
                 payload[index] = op
             end
@@ -2061,11 +2246,18 @@ if not IsDuplicityVersion() then
 
     function Plugin:_buildRequest()
         local request = {
-            protocolVersion = PROTOCOL_VERSION,
+            -- Only a plugin that needs a newer vMenu says so, so everything else still registers with an older one.
+            protocolVersion = #self._standaloneMenus > 0 and PROTOCOL_VERSION or BASE_PROTOCOL_VERSION,
             displayName = textRef(self._displayName),
             descriptionKey = self._descriptionKey,
             menu = self.RootMenu._node,
         }
+
+        if #self._standaloneMenus > 0 then
+            request.standaloneMenus = array()
+
+            for index, menu in ipairs(self._standaloneMenus) do request.standaloneMenus[index] = menu._node end
+        end
 
         if #self.PlayerActions._nodes > 0 then request.playerActions = self.PlayerActions._nodes end
         if next(self.Translations._tables) ~= nil then request.translations = self.Translations._tables end
@@ -2088,6 +2280,35 @@ if not IsDuplicityVersion() then
         end
     end
 
+    function Plugin:_cancelPendingOpens()
+        local pending = self._pendingOpens
+
+        self._pendingOpens = {}
+
+        for _, resolve in pairs(pending) do
+            resolve(OpenMenuReasons.NotConnected)
+        end
+    end
+
+    function Plugin:_onOpenResult(json)
+        local result = decode(json)
+
+        if not result then return end
+
+        local requestId = num(result.requestId)
+        local pending = requestId and self._pendingOpens[requestId]
+
+        if pending then
+            self._pendingOpens[requestId] = nil
+            pending(type(result.reason) == 'string' and result.reason or OpenMenuReasons.BlockedByPriority)
+        end
+    end
+
+    function Plugin:_onReady(protocolVersion)
+        self._vMenuProtocol = num(protocolVersion) or 0
+        self:_sendRegistration()
+    end
+
     function Plugin:_onRegisterResult(json)
         local result = normalizeResult(decode(json))
 
@@ -2103,6 +2324,7 @@ if not IsDuplicityVersion() then
 
         if not self._connected then
             self:_cancelPendingPrompts()
+            self:_cancelPendingOpens()
         else
             self:Batch(function()
                 for _, menu in pairs(self._menusById) do
@@ -2133,7 +2355,8 @@ if not IsDuplicityVersion() then
         local ok, err = xpcall(function()
             local kind = callback.type
 
-            if kind == CallbackTypes.MenuOpened or kind == CallbackTypes.MenuClosed or kind == CallbackTypes.MenuIndexChanged then
+            if kind == CallbackTypes.MenuOpened or kind == CallbackTypes.MenuClosed or kind == CallbackTypes.MenuIndexChanged
+                or kind == CallbackTypes.MenuReplaced or kind == CallbackTypes.MenuForceClosed then
                 local menu = type(callback.menuId) == 'string' and self._menusById[callback.menuId] or nil
 
                 if menu then menu:_handleMenu(callback) end
@@ -2170,6 +2393,7 @@ if not IsDuplicityVersion() then
 
         self._connected = false
         self:_cancelPendingPrompts()
+        self:_cancelPendingOpens()
         self._disconnected.fire()
     end
 
@@ -2178,11 +2402,12 @@ if not IsDuplicityVersion() then
 
         self._handlersRegistered = true
 
-        AddEventHandler(Events.Ready, function() self:_sendRegistration() end)
-        AddEventHandler(Events.ReadyFor(self.Resource), function() self:_sendRegistration() end)
+        AddEventHandler(Events.Ready, function(protocolVersion) self:_onReady(protocolVersion) end)
+        AddEventHandler(Events.ReadyFor(self.Resource), function(protocolVersion) self:_onReady(protocolVersion) end)
         AddEventHandler(Events.RegisterResultFor(self.Resource), function(json) self:_onRegisterResult(json) end)
         AddEventHandler(Events.EventFor(self.Resource), function(json) self:_onCallback(json) end)
         AddEventHandler(Events.PromptResultFor(self.Resource), function(json) self:_onPromptResult(json) end)
+        AddEventHandler(Events.OpenResultFor(self.Resource), function(json) self:_onOpenResult(json) end)
         AddEventHandler(Events.ThemesFor(self.Resource), function(json) self.Themes:_handle(json) end)
         AddEventHandler('onResourceStop', function(stopped) self:_onResourceStop(stopped) end)
     end

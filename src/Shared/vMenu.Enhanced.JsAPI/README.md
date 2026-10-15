@@ -4,7 +4,7 @@ The TypeScript and JavaScript plugin API for vMenu Enhanced, the version of vMen
 
 A plugin is a normal FiveM resource of your own. With this package, your resource can add menus to vMenu, under a Plugins entry on its main menu. You describe the menu in code and the package talks to vMenu over events for you. vMenu never needs to know about your resource ahead of time.
 
-Everything the C# plugin API can do is here too. That covers buttons, checkboxes, lists, sliders, dynamic lists, submenus, confirm rows, separators, keys, player actions, translations, permission and setting gates, notifications, text prompts and themes.
+Everything the C# plugin API can do is here too. That covers buttons, checkboxes, lists, sliders, dynamic lists, submenus, confirm rows, separators, keys, player actions, translations, permission and setting gates, notifications, text prompts, themes and standalone menus.
 
 ```ts
 import { Gate, NotifyStyle, Text, VMenuPlugin } from '@vespura/vmenu-plugin/client';

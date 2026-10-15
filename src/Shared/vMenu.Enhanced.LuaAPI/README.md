@@ -1,6 +1,6 @@
 # vMenu Enhanced plugin API for Lua
 
-One file, `vmenu.lua`, that lets a Lua resource add menus to vMenu Enhanced, under a Plugins entry on its main menu. It has everything the C# plugin API has. That covers buttons, checkboxes, lists, sliders, dynamic lists, submenus, confirm rows, separators, keys, player actions, translations, permission and setting gates, notifications, text prompts and themes.
+One file, `vmenu.lua`, that lets a Lua resource add menus to vMenu Enhanced, under a Plugins entry on its main menu. It has everything the C# plugin API has. That covers buttons, checkboxes, lists, sliders, dynamic lists, submenus, confirm rows, separators, keys, player actions, translations, permission and setting gates, notifications, text prompts, themes and standalone menus.
 
 Take `vmenu.lua` out of the `plugin-api` folder in the vMenu Enhanced zip your server runs, which you get from the [releases page](https://github.com/TomGrobbe/vMenu/releases/latest). Copy it into your resource and load it before your own scripts. The first line of the file says which vMenu version it was built for.
 

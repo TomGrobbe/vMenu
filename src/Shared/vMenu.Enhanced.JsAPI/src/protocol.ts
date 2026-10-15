@@ -1,4 +1,9 @@
-export const PROTOCOL_VERSION = 2;
+export const PROTOCOL_VERSION = 3;
+
+/** What a plugin without standalone menus announces, so it still registers with a vMenu that predates them. */
+export const BASE_PROTOCOL_VERSION = 2;
+
+export const MAX_STANDALONE_MENUS = 50;
 
 export const SERVER_PROTOCOL_VERSION = 1;
 
@@ -22,6 +27,7 @@ export const PluginEvents = {
   registerResultFor: (resource: string) => `vMenu.Enhanced:Plugins:${resource}:RegisterResult`,
   eventFor: (resource: string) => `vMenu.Enhanced:Plugins:${resource}:Event`,
   promptResultFor: (resource: string) => `vMenu.Enhanced:Plugins:${resource}:PromptResult`,
+  openResultFor: (resource: string) => `vMenu.Enhanced:Plugins:${resource}:OpenResult`,
   themesFor: (resource: string) => `vMenu.Enhanced:Plugins:${resource}:Themes`,
   themesRegisteredFor: (resource: string) => `vMenu.Enhanced:Plugins:${resource}:ThemesRegistered`,
   serverReadyFor: (resource: string) => `vMenu.Enhanced:Plugins:${resource}:Server:Ready`,
@@ -46,6 +52,8 @@ export const NodeEvents = {
   Opened: 'opened',
   Closed: 'closed',
   IndexChanged: 'indexChanged',
+  Replaced: 'replaced',
+  ForceClosed: 'forceClosed',
   Highlighted: 'highlighted',
 } as const;
 
@@ -70,10 +78,28 @@ export const CallbackTypes = {
   MenuOpened: 'menuOpened',
   MenuClosed: 'menuClosed',
   MenuIndexChanged: 'menuIndexChanged',
+  MenuReplaced: 'menuReplaced',
+  MenuForceClosed: 'menuForceClosed',
   PlayerActionSelected: 'playerActionSelected',
   PlayerActionConfirmed: 'playerActionConfirmed',
   PlayerActionListSelected: 'playerActionListSelected',
   KeyPressed: 'keyPressed',
+} as const;
+
+export const MenuPriorities = {
+  None: 'none',
+  Low: 'low',
+  Medium: 'medium',
+  High: 'high',
+} as const;
+
+export const OpenMenuReasons = {
+  Opened: 'opened',
+  BlockedByPriority: 'blockedByPriority',
+  BlockedByLock: 'blockedByLock',
+  UnknownMenu: 'unknownMenu',
+  NotAllowed: 'notAllowed',
+  Superseded: 'superseded',
 } as const;
 
 export const UpdateOps = {
@@ -107,6 +133,7 @@ export const UpdateOps = {
   SetMenuEvents: 'setMenuEvents',
   SetFilter: 'setFilter',
   ClearFilter: 'clearFilter',
+  AddStandaloneMenu: 'addStandaloneMenu',
   AddKeys: 'addKeys',
   SetKeyText: 'setKeyText',
   SetKeyEnabled: 'setKeyEnabled',
@@ -196,12 +223,16 @@ export interface UpdateOp {
   options?: TextRef[];
   gate?: GateNode;
   items?: ItemNode[];
+  menu?: MenuNode;
   itemIds?: string[];
   beforeItemId?: string;
   events?: string[];
   keys?: KeyNode[];
   language?: string;
   entries?: Record<string, string>;
+  priority?: string;
+  doNotClose?: boolean;
+  requestId?: number;
 }
 
 export interface PluginCallback {
@@ -231,6 +262,7 @@ export interface RegisterRequest {
   translations?: Record<string, Record<string, string>>;
   settings?: SettingNode[];
   menu?: MenuNode;
+  standaloneMenus?: MenuNode[];
   playerActions?: ItemNode[];
 }
 
@@ -254,6 +286,12 @@ export interface PromptRequest {
     initial: string;
     suggestions?: { value: string; description?: string }[];
   }[];
+}
+
+export interface OpenMenuResultPayload {
+  requestId: number;
+  opened: boolean;
+  reason: string;
 }
 
 export interface PromptResult {
