@@ -78,7 +78,7 @@ You send vMenu:
 
 A `command` can be server wide (`announce`, `get-world`, `set-weather`, `set-time`, `set-blackout`, `set-snow`, `set-weather-cycle`, `set-freeze`, `get-config`, `set-convar`, `waypoint-everyone`, `teleport-everyone`) or aimed at one player (`kick`, `kill`, `noclip`, `notify`, `waypoint`, `teleport`, `heal`, `armor`, `spawnvehicle`, `deletevehicle`, `explodevehicle`, `status`). The read only ones (`get-world`, `get-config`, `status`) always work. Anything that changes the game needs `AllowActions true`.
 
-`set-blackout` takes `params.mode`, which is `dynamic`, `off`, `city` or `all`. `dynamic` hands the lights back to the blackouts planned in a custom weather schedule, see [weather-cycle.json](/configuration/weather-cycle-json/).
+`set-blackout` takes `params.mode`, which is `dynamic`, `off`, `city` or `all`. `dynamic` hands the lights back to the blackouts planned in a custom weather schedule, see [weather-cycle.json](/vmenu/enhanced/configuration/weather-cycle-json/).
 
 `set-weather-cycle` takes `params.cycle`, which is `default`, `snowy` or `custom`. It lasts until the server restarts.
 
