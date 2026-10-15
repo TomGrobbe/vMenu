@@ -1,0 +1,297 @@
+---
+title: "Menus"
+description: "Building a plugin menu: every kind of row, live changes, keys and actions in Online Players."
+---
+
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
+## Rows
+
+Everything vMenu's own menus can do is available:
+
+<Tabs syncKey="lang">
+<TabItem label="C#">
+
+```csharp
+var menu = plugin.RootMenu;
+
+menu.AddButton("A button");
+menu.AddConfirmButton("Something destructive");        // asks for a second press
+menu.AddCheckbox("A checkbox", initiallyChecked: true);
+menu.AddList("A list", new Text[] { "One", "Two" });
+menu.AddConfirmList("A list that asks first", options);
+menu.AddSlider("A slider", min: 0, max: 10, position: 5);
+menu.AddDynamicList("A list built as you scroll", "start");
+menu.AddSeparator("A heading");
+
+var sub = menu.AddSubmenu("A submenu", subtitle: "My Plugin");
+sub.Menu.AddButton("A row inside it");
+```
+
+</TabItem>
+<TabItem label="Lua">
+
+```lua
+local menu = plugin.RootMenu
+
+menu:AddButton('A button')
+menu:AddConfirmButton('Something destructive')         -- asks for a second press
+menu:AddCheckbox('A checkbox', { Checked = true })
+menu:AddList('A list', { 'One', 'Two' })
+menu:AddConfirmList('A list that asks first', options)
+menu:AddSlider('A slider', 0, 10, 5)
+menu:AddDynamicList('A list built as you scroll', 'start')
+menu:AddSeparator('A heading')
+
+local sub = menu:AddSubmenu('A submenu', { Subtitle = 'My Plugin' })
+sub.Menu:AddButton('A row inside it')
+```
+
+</TabItem>
+<TabItem label="JavaScript">
+
+```js
+const menu = plugin.rootMenu;
+
+menu.addButton('A button');
+menu.addConfirmButton('Something destructive');        // asks for a second press
+menu.addCheckbox('A checkbox', { checked: true });
+menu.addList('A list', ['One', 'Two']);
+menu.addConfirmList('A list that asks first', options);
+menu.addSlider('A slider', 0, 10, 5);
+menu.addDynamicList('A list built as you scroll', 'start');
+menu.addSeparator('A heading');
+
+const sub = menu.addSubmenu('A submenu', { subtitle: 'My Plugin' });
+sub.menu.addButton('A row inside it');
+```
+
+</TabItem>
+<TabItem label="TypeScript">
+
+```ts
+const menu = plugin.rootMenu;
+
+menu.addButton('A button');
+menu.addConfirmButton('Something destructive');        // asks for a second press
+menu.addCheckbox('A checkbox', { checked: true });
+menu.addList('A list', ['One', 'Two']);
+menu.addConfirmList('A list that asks first', options);
+menu.addSlider('A slider', 0, 10, 5);
+menu.addDynamicList('A list built as you scroll', 'start');
+menu.addSeparator('A heading');
+
+const sub = menu.addSubmenu('A submenu', { subtitle: 'My Plugin' });
+sub.menu.addButton('A row inside it');
+```
+
+</TabItem>
+</Tabs>
+
+Each returns an object you can change at any time, before or after connecting: `Text`, `Description`, `Label`, `LockedDescription`, `Visible`, `Enabled`, `Gate`, `SetIcons`, plus whatever that row type has of its own. Changes after connecting update the live menu.
+
+:::tip[Write a description for every row]
+`Description` is the line at the bottom of the screen while a row is highlighted. A menu where half the rows explain themselves and half say nothing looks unfinished.
+:::
+
+A checkbox can remember itself between sessions with `persist`, which stores the choice in your own resource's key value store. Pass a stable `id` with it, because automatic ids follow creation order and reordering your code would hand a saved value to the wrong box.
+
+A menu's `subtitle` is the bar under the banner. Leave it out and vMenu uses the menu's title instead, so it is never empty.
+
+A dynamic list asks your code for its next value every time the player scrolls it. Give it a function through `ChangeRequested`, which gets the current value and whether the player went left, and returns the new value. In Lua that is `row:SetChangeRequested(fn)`, in JavaScript `row.changeRequested = fn`.
+
+### Changing a menu while it is live
+
+You can connect first and build afterwards. Your row under Plugins appears as soon as your menu has something in it, so a plugin that only contributes player actions never advertises an empty menu.
+
+Everything about a menu can change while players use it. Each change only touches the rows involved, the rest of the menu stays as it is and the highlighted row stays highlighted.
+
+| What                    | How (C#)                                                                                  |
+| ----------------------- | ----------------------------------------------------------------------------------------- |
+| Add a row at the bottom | `menu.AddButton(...)` and the other `Add` methods                                         |
+| Add rows at a position  | `using (menu.InsertAt(2)) { menu.AddButton(...); }`                                       |
+| Move a row              | `menu.Move(row, 0)`                                                                       |
+| Highlight a row         | `menu.Select(row)`. Raises `Highlighted` and `IndexChanged` like the player moving there. |
+| Remove a row            | `menu.Remove(row)`. A submenu row takes its menu with it.                                 |
+| Remove every row        | `menu.Clear()`                                                                            |
+| Show only some rows     | `menu.Filter(row => ...)`, `menu.ClearFilter()`                                           |
+| Rename a menu           | `menu.Title`, `menu.Subtitle`                                                             |
+| Change a row            | any property, such as `Text`, `Visible` or `HideWhenLocked`                               |
+
+`InsertAt` takes a function in the other languages, and rows added inside it go in at that position: `menu:InsertAt(3, function() ... end)` in Lua, `menu.insertAt(2, () => ...)` in JavaScript.
+
+`Filter` hides the rows it answers false for. Rows you add later are checked too. Inside a batch that happens when the batch ends, so properties you set right after adding a row count. When the filter looks at something that changed, call `Filter` again.
+
+Setting a property to the value it already has sends nothing, so you can set everything on every update without worrying about the cost.
+
+Wrap many changes in a batch and vMenu repaints once instead of once per change:
+
+<Tabs syncKey="lang">
+<TabItem label="C#">
+
+```csharp
+using (plugin.BeginBatch())
+{
+    foreach (var thing in things)
+    {
+        menu.AddButton(thing.Name);
+    }
+}
+```
+
+</TabItem>
+<TabItem label="Lua">
+
+```lua
+plugin:Batch(function()
+    for _, thing in ipairs(things) do
+        menu:AddButton(thing.Name)
+    end
+end)
+```
+
+</TabItem>
+<TabItem label="JavaScript">
+
+```js
+plugin.batch(() => {
+  for (const thing of things) {
+    menu.addButton(thing.name);
+  }
+});
+```
+
+</TabItem>
+<TabItem label="TypeScript">
+
+```ts
+plugin.batch(() => {
+  for (const thing of things) {
+    menu.addButton(thing.name);
+  }
+});
+```
+
+</TabItem>
+</Tabs>
+
+Batches nest safely. Only the outermost one sends, so a helper that batches internally cannot cut your batch short. In JavaScript and TypeScript the batch ends when the function returns, so changes after an `await` inside it go out on their own.
+
+### Keys
+
+A menu can have keys of its own. A key only does something while that menu is open, and it shows up as an instructional button, which is the little row of key hints at the bottom right of the screen. This is handy for shortcuts that act on the row the player is standing on:
+
+<Tabs syncKey="lang">
+<TabItem label="C#">
+
+```csharp
+var edit = menu.AddKey("edit_value", "Type a value", defaultKey: "X", defaultButton: "RUP_INDEX");
+
+edit.Pressed += press =>
+{
+    if (press.Item is PluginList list)
+    {
+        // the player pressed X while the cursor was on this list
+    }
+};
+```
+
+</TabItem>
+<TabItem label="Lua">
+
+```lua
+local edit = menu:AddKey('edit_value', 'Type a value', 'X', { DefaultButton = 'RUP_INDEX' })
+
+edit:OnPressed(function(press)
+    if press.Item == myList then
+        -- the player pressed X while the cursor was on this list
+    end
+end)
+```
+
+</TabItem>
+<TabItem label="JavaScript">
+
+```js
+const edit = menu.addKey('edit_value', 'Type a value', 'X', { defaultButton: 'RUP_INDEX' });
+
+edit.onPressed((press) => {
+  if (press.item instanceof vMenu.PluginList) {
+    // the player pressed X while the cursor was on this list
+  }
+});
+```
+
+</TabItem>
+<TabItem label="TypeScript">
+
+```ts
+import { PluginList } from '@vespura/vmenu-plugin/client';
+
+const edit = menu.addKey('edit_value', 'Type a value', 'X', { defaultButton: 'RUP_INDEX' });
+
+edit.onPressed((press) => {
+  if (press.item instanceof PluginList) {
+    // the player pressed X while the cursor was on this list
+  }
+});
+```
+
+</TabItem>
+</Tabs>
+
+`Pressed` tells you which row the cursor was on. When the player may use that row, you get it as `Item`. When the row is locked by its gate or switched off with `Enabled`, `Item` stays empty and you get the row as `DisabledItem` instead. That way a key never quietly lets a player use a row they are not allowed to, but you can still decide to react to it yourself, for example to explain why nothing happened. Both are empty when the menu has no rows or the row is not one of yours.
+
+The player can change the key in the game's own key settings, under vMenu, where it is listed with your plugin's name in front of it. The game remembers that choice by the key's id, so pick an id once and never change it, or players lose the key they picked. Ids may only use letters, digits and underscores.
+
+`defaultKey` is a keyboard key name the way the game writes it, such as `X`, `F5` or `LCONTROL`. `defaultButton` is optional and names a controller button, such as `RUP_INDEX`. Without one, the key still works on a keyboard but shows no hint while the player uses a controller. When your key is one the game already uses for something, pass that game control as `shadowedControl` and vMenu switches it off while your menu is open, so pressing the key does not also make the character crouch.
+
+`Text`, `Enabled` and `Gate` can change at any time, just like on a row. A disabled key or one whose gate fails does nothing and shows no hint. Keys can be added after connecting too. A key cannot be removed again until the player reconnects.
+
+## Player actions
+
+The one place a plugin reaches outside its own submenu is the **Plugin Actions** submenu inside every player's page in **Online Players**:
+
+<Tabs syncKey="lang">
+<TabItem label="C#">
+
+```csharp
+var poke = plugin.PlayerActions.AddButton("Poke");
+poke.Description = "Pokes this player.";
+poke.Gate = PluginGate.Permission("Poke");
+poke.Selected += target => plugin.Notify(NotifyStyle.Info, $"You poked {target.Name}.");
+```
+
+</TabItem>
+<TabItem label="Lua">
+
+```lua
+local poke = plugin.PlayerActions:AddButton('Poke', { Description = 'Pokes this player.', Gate = 'Poke' })
+
+poke:OnSelected(function(target)
+    plugin:Notify('info', ('You poked %s.'):format(target.Name))
+end)
+```
+
+</TabItem>
+<TabItem label="JavaScript">
+
+```js
+const poke = plugin.playerActions.addButton('Poke', { description: 'Pokes this player.', gate: 'Poke' });
+
+poke.onSelected((target) => plugin.notify('info', `You poked ${target.name}.`));
+```
+
+</TabItem>
+<TabItem label="TypeScript">
+
+```ts
+const poke = plugin.playerActions.addButton('Poke', { description: 'Pokes this player.', gate: 'Poke' });
+
+poke.onSelected((target) => plugin.notify(NotifyStyle.Info, `You poked ${target.name}.`));
+```
+
+</TabItem>
+</Tabs>
+
+The same rows serve every player, and the selected one is handed to your callback with their name and server id. vMenu adds a line naming your resource to these descriptions, so players can see which resource added it.

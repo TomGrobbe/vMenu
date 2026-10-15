@@ -18,7 +18,6 @@ Load it as a shared script, before your own scripts. It gives both halves a glob
 ```lua
 fx_version 'cerulean'
 games { 'gta5' }
-lua54 'yes'
 
 shared_script 'vmenu.lua'
 client_script 'client.lua'
@@ -44,7 +43,7 @@ server_script 'server.lua'
 
 ## Waiting for vMenu
 
-`plugin:Connect()`, `plugin:GetText()`, `plugin:GetTexts()` and `vMenu.Server.Register()` wait for vMenu to answer, so they have to run inside a thread:
+`plugin:Connect()`, `plugin:GetText()`, `plugin:GetTexts()`, `menu:RequestOpen()`, `menu:RequestOpenWithPriority()` and `vMenu.Server.Register()` wait for vMenu to answer, so they have to run inside a thread:
 
 ```lua
 CreateThread(function()
@@ -65,4 +64,4 @@ Calling one of these outside a thread without a callback is an error that tells 
 
 ## Requirements
 
-Lua 5.4, which is what `lua54 'yes'` asks for. The `&` and `|` on gates are Lua 5.4 operators.
+Lua 5.4, which FiveM runs by default. The `&` and `|` on gates are Lua 5.4 operators.

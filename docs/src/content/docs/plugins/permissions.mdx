@@ -1,0 +1,310 @@
+---
+title: "Permissions and settings"
+description: "Gating plugin rows on permissions and convar settings, refreshing permissions and logging what a row does."
+---
+
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
+Declare both on the server, use them on the client.
+
+<Tabs syncKey="lang">
+<TabItem label="C#">
+
+```csharp
+// Server
+new ServerPluginDeclaration("My Plugin")
+    .AddPermission("Greet", "Lets someone use the greet button.")
+    .AddPermission("Poke", "Lets someone poke other players.", staffOnly: true)
+    .AddBoolSetting("Enabled", true, "Turns my plugin on or off.");
+
+// Client
+var enabled = plugin.Settings.Bool("Enabled", true, "Turns my plugin on or off.");
+
+greet.Gate = PluginGate.Permission("Greet") & PluginGate.Setting(enabled);
+```
+
+</TabItem>
+<TabItem label="Lua">
+
+```lua
+-- Server
+vMenu.ServerPluginDeclaration('My Plugin')
+    :AddPermission('Greet', 'Lets someone use the greet button.')
+    :AddPermission('Poke', 'Lets someone poke other players.', true)
+    :AddBoolSetting('Enabled', true, 'Turns my plugin on or off.')
+
+-- Client
+local enabled = plugin.Settings:Bool('Enabled', true, 'Turns my plugin on or off.')
+
+greet:SetGate(vMenu.Gate.Permission('Greet') & vMenu.Gate.Setting(enabled))
+```
+
+</TabItem>
+<TabItem label="JavaScript">
+
+```js
+// Server
+new vMenu.ServerPluginDeclaration('My Plugin')
+  .addPermission('Greet', 'Lets someone use the greet button.')
+  .addPermission('Poke', 'Lets someone poke other players.', true)
+  .addBoolSetting('Enabled', true, 'Turns my plugin on or off.');
+
+// Client
+const enabled = plugin.settings.bool('Enabled', true, 'Turns my plugin on or off.');
+
+greet.gate = vMenu.Gate.permission('Greet').and(vMenu.Gate.setting(enabled));
+```
+
+</TabItem>
+<TabItem label="TypeScript">
+
+```ts
+// Server
+new ServerPluginDeclaration('My Plugin')
+  .addPermission('Greet', 'Lets someone use the greet button.')
+  .addPermission('Poke', 'Lets someone poke other players.', true)
+  .addBoolSetting('Enabled', true, 'Turns my plugin on or off.');
+
+// Client
+const enabled = plugin.settings.bool('Enabled', true, 'Turns my plugin on or off.');
+
+greet.gate = Gate.permission('Greet').and(Gate.setting(enabled));
+```
+
+</TabItem>
+</Tabs>
+
+Gates combine with `&` and `|` in C# and Lua, and with `and`, `or`, `Gate.all` and `Gate.any` in JavaScript. They are evaluated live, and refresh by themselves when the owner changes a permission or setting. Anywhere a gate is expected, a plain permission name works too. `HideWhenLocked` decides whether a row the player may not use is greyed out with a lock or gone entirely.
+
+Names are short and vMenu scopes them to your resource, so `Greet` becomes `vMenu.Enhanced.Plugins.MyPlugin.Greet`. Only letters, digits and underscores are allowed.
+
+Settings come in `Bool`, `Int`, `Float` and `String`. Declare them on both sides. The server half puts them in the owner's template, the client half is what you gate on and read from.
+
+For anything that matters, check on the server before you act:
+
+<Tabs syncKey="lang">
+<TabItem label="C#">
+
+```csharp
+if (VMenuServer.IsPlayerAllowed(source, "Poke")) { ... }
+```
+
+</TabItem>
+<TabItem label="Lua">
+
+```lua
+if vMenu.Server.IsPlayerAllowed(source, 'Poke') then ... end
+```
+
+</TabItem>
+<TabItem label="JavaScript">
+
+```js
+if (vMenu.VMenuServer.isPlayerAllowed(source, 'Poke')) { ... }
+```
+
+</TabItem>
+<TabItem label="TypeScript">
+
+```ts
+if (VMenuServer.isPlayerAllowed(source, 'Poke')) { ... }
+```
+
+</TabItem>
+</Tabs>
+
+Use this rather than FiveM's `IsPlayerAceAllowed`, because it checks parent permissions too. An owner who granted the whole plugin instead of each individual permission then works out of the box.
+
+There is a second version of that check for the case where a refusal means somebody is up to no good:
+
+<Tabs syncKey="lang">
+<TabItem label="C#">
+
+```csharp
+if (!VMenuServer.RequirePermission(source, "Poke")) { return; }
+```
+
+</TabItem>
+<TabItem label="Lua">
+
+```lua
+if not vMenu.Server.RequirePermission(source, 'Poke') then return end
+```
+
+</TabItem>
+<TabItem label="JavaScript">
+
+```js
+if (!vMenu.VMenuServer.requirePermission(source, 'Poke')) { return; }
+```
+
+</TabItem>
+<TabItem label="TypeScript">
+
+```ts
+if (!VMenuServer.requirePermission(source, 'Poke')) { return; }
+```
+
+</TabItem>
+</Tabs>
+
+It answers exactly the same, and it also tells vMenu, which puts a line in the server owner's security log naming the player and the permission they were missing. Only reach for it when a normal, unmodified client could not possibly have sent you the thing you are handling, which is the usual case for an event behind a menu row you gated. Keep `IsPlayerAllowed` for everything else, such as deciding which of two things to do, or the owner ends up with a log full of ordinary play and stops reading it.
+
+## Refreshing permissions
+
+vMenu sends a player their permissions once and does not send them again on its own, so an ace you add or remove at runtime does not reach a player who already has the menu open. Ask vMenu to send them again from your server code:
+
+<Tabs syncKey="lang">
+<TabItem label="C#">
+
+```csharp
+VMenuServer.RefreshPermissions();          // every connected player
+VMenuServer.RefreshPermissions(playerId);  // one player, by their server id
+VMenuServer.RefreshPermissions(1, 4, 9);   // several players at once
+```
+
+</TabItem>
+<TabItem label="Lua">
+
+```lua
+vMenu.Server.RefreshPermissions()          -- every connected player
+vMenu.Server.RefreshPermissions(playerId)  -- one player, by their server id
+vMenu.Server.RefreshPermissions(1, 4, 9)   -- several players at once
+```
+
+</TabItem>
+<TabItem label="JavaScript">
+
+```js
+vMenu.VMenuServer.refreshPermissions();          // every connected player
+vMenu.VMenuServer.refreshPermissions(playerId);  // one player, by their server id
+vMenu.VMenuServer.refreshPermissions(1, 4, 9);   // several players at once
+```
+
+</TabItem>
+<TabItem label="TypeScript">
+
+```ts
+VMenuServer.refreshPermissions();          // every connected player
+VMenuServer.refreshPermissions(playerId);  // one player, by their server id
+VMenuServer.refreshPermissions(1, 4, 9);   // several players at once
+```
+
+</TabItem>
+</Tabs>
+
+Any resource can do the same without the plugin API by triggering the event on the server, with no ids for everyone or a list of server ids for specific players:
+
+```lua
+TriggerEvent("vMenu.Enhanced:Permissions:Refresh")
+TriggerEvent("vMenu.Enhanced:Permissions:Refresh", { 4, 9 })
+```
+
+## Logging what a row does
+
+A server owner can have vMenu write a line to their Discord log whenever somebody uses one of your rows. It takes both halves of your plugin, and that is on purpose:
+
+<Tabs syncKey="lang">
+<TabItem label="C#">
+
+```csharp
+// Server
+new ServerPluginDeclaration("My Plugin")
+    .AddLoggedItem("shield", "their shield")
+    .AddLoggedItem("payout", "paid everybody out");
+
+// Client
+var shield = plugin.RootMenu.AddCheckbox("Shield", id: "shield");
+shield.Log = true;
+
+var payout = plugin.RootMenu.AddButton("Pay everyone", id: "payout");
+payout.Log = true;
+```
+
+</TabItem>
+<TabItem label="Lua">
+
+```lua
+-- Server
+vMenu.ServerPluginDeclaration('My Plugin')
+    :AddLoggedItem('shield', 'their shield')
+    :AddLoggedItem('payout', 'paid everybody out')
+
+-- Client
+plugin.RootMenu:AddCheckbox('Shield', { Id = 'shield', Log = true })
+plugin.RootMenu:AddButton('Pay everyone', { Id = 'payout', Log = true })
+```
+
+</TabItem>
+<TabItem label="JavaScript">
+
+```js
+// Server
+new vMenu.ServerPluginDeclaration('My Plugin')
+  .addLoggedItem('shield', 'their shield')
+  .addLoggedItem('payout', 'paid everybody out');
+
+// Client
+plugin.rootMenu.addCheckbox('Shield', { id: 'shield', log: true });
+plugin.rootMenu.addButton('Pay everyone', { id: 'payout', log: true });
+```
+
+</TabItem>
+<TabItem label="TypeScript">
+
+```ts
+// Server
+new ServerPluginDeclaration('My Plugin')
+  .addLoggedItem('shield', 'their shield')
+  .addLoggedItem('payout', 'paid everybody out');
+
+// Client
+plugin.rootMenu.addCheckbox('Shield', { id: 'shield', log: true });
+plugin.rootMenu.addButton('Pay everyone', { id: 'payout', log: true });
+```
+
+</TabItem>
+</Tabs>
+
+Setting `Log` on its own does nothing. The list your server half declares is the one vMenu actually trusts, because the client half runs on the player's own machine, and somebody with a modified copy of it could otherwise choose what text appears in the owner's Discord channel. Declaring it on the server means the worst a modified client can do is replay a row you already said was fine to log. The ids on both sides have to match, so give logged rows an id of your own.
+
+The description is not the row's name, and for most rows it is not a whole sentence either. vMenu builds the sentence around it, so the shape it needs depends on the kind of row.
+
+A checkbox, list or slider gets wrapped, as in "turned X on", "set X to 5" or "changed X". Write those as a thing, with its own "the" or "their" if it wants one, and no verb.
+
+A button is not wrapped at all. Its description becomes the whole sentence, so write those as something the player did, in the past tense.
+
+Get it the wrong way round and the line reads badly, because vMenu adds no words of its own beyond the ones shown above.
+
+```
+• 02/09/2026 21:04:11 Vespura (1) turned their shield on.
+   plugin: MyPlugin
+• 02/09/2026 21:04:19 Vespura (1) paid everybody out.
+   plugin: MyPlugin
+```
+
+Lines land in the owner's **Actions** channel, and they share the same per player allowance as vMenu's own rows, so a chatty plugin cannot crowd everything else out.
+
+Only interactions that commit to something are logged: pressing a button, confirming a confirm button, ticking a checkbox, and choosing a value on a list, slider or dynamic list. Scrolling through a list and dragging a slider are not, since those fire on every press of an arrow key and would tell the owner nothing except that somebody was browsing.
+
+You can turn `Log` on and off at any time like any other row property, and none of this needs a newer vMenu than the one you already target. An older vMenu simply ignores the flag and logs nothing.
+
+## What the server owner ends up with
+
+You never ship a config file. vMenu writes one for the owner out of what you declared, and rewrites it every time your plugin registers. Both files land in `vMenu.Enhanced/config/plugins/`, named after your resource:
+
+```
+vMenu.Enhanced/config/plugins/MyPlugin.permissions.cfg.example
+vMenu.Enhanced/config/plugins/MyPlugin.configuration.cfg.example
+```
+
+The owner copies each file, drops the `.example`, edits the copy, and execs it from `server.cfg`. [Installing plugins](/vmenu/enhanced/plugins/installing/) walks them through it.
+
+For your own README:
+
+- Link to [installing plugins](/vmenu/enhanced/plugins/installing/), or write your own instructions if yours differ.
+- Tell owners to exec your two files as their own lines rather than pasting your lines into vMenu's configs. Separate files are what makes your plugin removable in one step later.
+- Tell them your resource name matters, since every permission and both file names are built from it.
+- Give people a way to contact you. We cannot support your plugin, that is your job.
+
+Write a real `description` for every permission and setting. It becomes the comment above that line in the owner's generated file, and it may be the only explanation they ever get.

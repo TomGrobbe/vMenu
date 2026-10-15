@@ -117,7 +117,17 @@ export default defineConfig({
           items: [
             { label: 'What plugins are', link: '/plugins/' },
             { label: 'Installing plugins', link: '/plugins/installing/' },
-            { label: 'Making a plugin', link: '/plugins/developing/' },
+            {
+              label: 'Making a plugin',
+              items: [
+                { label: 'Getting started', link: '/plugins/developing/' },
+                { label: 'Menus', link: '/plugins/menus/' },
+                { label: 'Standalone menus', link: '/plugins/standalone-menus/' },
+                { label: 'Text and messages', link: '/plugins/text/' },
+                { label: 'Permissions and settings', link: '/plugins/permissions/' },
+                { label: 'Themes', link: '/plugins/themes/' },
+              ],
+            },
             { label: 'C# setup', link: '/plugins/csharp/' },
             { label: 'Lua setup', link: '/plugins/lua/' },
             { label: 'JavaScript setup', link: '/plugins/javascript/' },

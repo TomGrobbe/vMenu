@@ -60,6 +60,19 @@ An `Initialize` that calls no FiveM code fails to load. This looks like a FiveM 
 | Batches | `using (plugin.BeginBatch()) { ... }` |
 | Inserting rows | `using (menu.InsertAt(2)) { ... }` |
 | Positions | Counted from 0. |
+| Opening menus | `await menu.RequestOpenAsync()`, or `RequestOpenAsync(MenuPriority.Medium)`. See [standalone menus](/vmenu/enhanced/plugins/standalone-menus/). |
+
+## Compiler warnings
+
+The `vMenu.Enhanced.ClientAPI` package brings an analyzer that warns about the two ways a plugin can take the screen away from the player.
+
+| Id | When |
+| --- | --- |
+| `VMENU001` | `RequestOpenAsync` with `MenuPriority.High`, or a priority only known at runtime. |
+| `VMENU002` | `RequestOpenAsync` with `doNotClose` set, or a value only known at runtime. |
+
+Silence one per call with `#pragma warning disable VMENU001` once you have made sure the call is warranted.
+
 ## On a regular (legacy) FiveM server
 
 The same two packages also have a .NET Framework 4.6.2 build for the regular FiveM runtime. NuGet picks it when your project targets .NET Framework 4.6.2 or newer.

@@ -1,0 +1,252 @@
+---
+title: "Text and messages"
+description: "Translations in a plugin, notifications and asking the player for text."
+---
+
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
+## Text and translations
+
+Every piece of text is either a literal or a key into your own translation tables:
+
+<Tabs syncKey="lang">
+<TabItem label="C#">
+
+```csharp
+plugin.Translations.Add("en", new Dictionary<string, string>
+{
+    ["greet"] = "Greet {name}",
+});
+
+menu.AddButton(Text.Key("greet", ("name", Text.Literal("world"))));
+```
+
+</TabItem>
+<TabItem label="Lua">
+
+```lua
+plugin.Translations:Add('en', {
+    greet = 'Greet {name}',
+})
+
+menu:AddButton(vMenu.Text.Key('greet', { name = 'world' }))
+```
+
+</TabItem>
+<TabItem label="JavaScript">
+
+```js
+plugin.translations.add('en', {
+  greet: 'Greet {name}',
+});
+
+menu.addButton(vMenu.Text.key('greet', { name: 'world' }));
+```
+
+</TabItem>
+<TabItem label="TypeScript">
+
+```ts
+import { Text } from '@vespura/vmenu-plugin/client';
+
+plugin.translations.add('en', {
+  greet: 'Greet {name}',
+});
+
+menu.addButton(Text.key('greet', { name: 'world' }));
+```
+
+</TabItem>
+</Tabs>
+
+A plain string is a literal, so translating is always deliberate. Keys are looked up in the player's current vMenu language and then in your English table, which is why an `en` table is required as soon as you provide any. Your keys are yours alone, so they never collide with vMenu's or another plugin's. When the player changes language, your menu follows.
+
+## Talking to the player
+
+<Tabs syncKey="lang">
+<TabItem label="C#">
+
+```csharp
+plugin.Notify(NotifyStyle.Success, "That worked.");
+```
+
+</TabItem>
+<TabItem label="Lua">
+
+```lua
+plugin:Notify('success', 'That worked.')
+```
+
+</TabItem>
+<TabItem label="JavaScript">
+
+```js
+plugin.notify('success', 'That worked.');
+```
+
+</TabItem>
+<TabItem label="TypeScript">
+
+```ts
+plugin.notify(NotifyStyle.Success, 'That worked.');
+```
+
+</TabItem>
+</Tabs>
+
+Notifications appear in vMenu's notification area, credited to your plugin. The style is `info`, `success`, `warning` or `error`, or `NotifyStyle.Success` and so on in TypeScript, and an optional third argument sets how long it stays, in milliseconds.
+
+### Asking the player for text
+
+`GetText` opens vMenu's input box and gives back what the player typed, or nothing when they cancel. Call it from a row's handler:
+
+<Tabs syncKey="lang">
+<TabItem label="C#">
+
+```csharp
+var rename = menu.AddButton("Rename vehicle");
+
+rename.Selected += async () =>
+{
+    var name = await plugin.GetTextAsync(
+        "New name",
+        maxLength: 32,
+        initialValue: "My car",
+        suggestions: [new PromptSuggestion("Daily driver"), new PromptSuggestion("Race car", "For the track")]);
+
+    if (name is null)
+    {
+        return; // cancelled
+    }
+
+    plugin.Notify(NotifyStyle.Success, $"Renamed to {name}.");
+};
+```
+
+</TabItem>
+<TabItem label="Lua">
+
+```lua
+local rename = menu:AddButton('Rename vehicle')
+
+rename:OnSelected(function()
+    local name = plugin:GetText('New name', {
+        MaxLength = 32,
+        InitialValue = 'My car',
+        Suggestions = { { Value = 'Daily driver' }, { Value = 'Race car', Description = 'For the track' } },
+    })
+
+    if not name then
+        return -- cancelled
+    end
+
+    plugin:Notify('success', ('Renamed to %s.'):format(name))
+end)
+```
+
+</TabItem>
+<TabItem label="JavaScript">
+
+```js
+const rename = menu.addButton('Rename vehicle');
+
+rename.onSelected(async () => {
+  const name = await plugin.getText('New name', {
+    maxLength: 32,
+    initialValue: 'My car',
+    suggestions: [{ value: 'Daily driver' }, { value: 'Race car', description: 'For the track' }],
+  });
+
+  if (name === null) {
+    return; // cancelled
+  }
+
+  plugin.notify('success', `Renamed to ${name}.`);
+});
+```
+
+</TabItem>
+<TabItem label="TypeScript">
+
+```ts
+const rename = menu.addButton('Rename vehicle');
+
+rename.onSelected(async () => {
+  const name = await plugin.getText('New name', {
+    maxLength: 32,
+    initialValue: 'My car',
+    suggestions: [{ value: 'Daily driver' }, { value: 'Race car', description: 'For the track' }],
+  });
+
+  if (name === null) {
+    return; // cancelled
+  }
+
+  plugin.notify(NotifyStyle.Success, `Renamed to ${name}.`);
+});
+```
+
+</TabItem>
+</Tabs>
+
+All options are optional. `maxLength` defaults to 60 and vMenu caps it at 500. Suggestions show as a list while the player types, and picking one fills in its value.
+
+To ask several questions in a row, pass them all at once. You get every answer back in order, or nothing if the player cancelled any of them:
+
+<Tabs syncKey="lang">
+<TabItem label="C#">
+
+```csharp
+var answers = await plugin.GetTextAsync(
+    new PluginPrompt("First name", maxLength: 20),
+    new PluginPrompt("Last name", maxLength: 20));
+
+if (answers is [var first, var last]) { ... }
+```
+
+</TabItem>
+<TabItem label="Lua">
+
+```lua
+local answers = plugin:GetTexts({
+    { Title = 'First name', MaxLength = 20 },
+    { Title = 'Last name', MaxLength = 20 },
+})
+
+if answers then
+    local first, last = answers[1], answers[2]
+end
+```
+
+</TabItem>
+<TabItem label="JavaScript">
+
+```js
+const answers = await plugin.getTexts([
+  { title: 'First name', maxLength: 20 },
+  { title: 'Last name', maxLength: 20 },
+]);
+
+if (answers !== null) {
+  const [first, last] = answers;
+}
+```
+
+</TabItem>
+<TabItem label="TypeScript">
+
+```ts
+const answers = await plugin.getTexts([
+  { title: 'First name', maxLength: 20 },
+  { title: 'Last name', maxLength: 20 },
+]);
+
+if (answers !== null) {
+  const [first, last] = answers;
+}
+```
+
+</TabItem>
+</Tabs>
+
+The box refuses, and you get nothing back, when something else is already using it. In Lua these calls wait for the answer, so call them from a menu event handler or a `CreateThread`, or pass a callback as the last argument.

@@ -1,0 +1,110 @@
+---
+title: "Standalone menus"
+description: "Top level plugin menus that only your code opens, open priorities and menus that must stay open."
+---
+
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
+A standalone menu is a menu of your own at the top level, next to vMenu's main menu instead of under Plugins. It has no row anywhere and no toggle key. Only your code opens it.
+
+<Tabs syncKey="lang">
+<TabItem label="C#">
+
+```csharp
+var shop = plugin.AddStandaloneMenu("shop", "Shop", "Pick something");
+shop.AddButton("Buy a coffee");
+
+var result = await shop.RequestOpenAsync();                      // never interrupts the player
+var urgent = await shop.RequestOpenAsync(MenuPriority.Medium);   // replaces vMenu and low priority menus
+```
+
+</TabItem>
+<TabItem label="Lua">
+
+```lua
+local shop = plugin:AddStandaloneMenu('shop', 'Shop', 'Pick something')
+shop:AddButton('Buy a coffee')
+
+CreateThread(function()
+    local result = shop:RequestOpen()                                         -- never interrupts the player
+    local urgent = shop:RequestOpenWithPriority(vMenu.MenuPriority.Medium)    -- replaces vMenu and low priority menus
+end)
+```
+
+</TabItem>
+<TabItem label="JavaScript">
+
+```js
+const { MenuPriority } = vMenu;
+
+const shop = plugin.addStandaloneMenu('shop', 'Shop', 'Pick something');
+shop.addButton('Buy a coffee');
+
+async function openShop() {
+  const result = await shop.requestOpen();                                  // never interrupts the player
+  const urgent = await shop.requestOpenWithPriority(MenuPriority.Medium);   // replaces vMenu and low priority menus
+}
+```
+
+</TabItem>
+<TabItem label="TypeScript">
+
+```ts
+import { MenuPriority, OpenMenuResult } from '@vespura/vmenu-plugin/client';
+
+const shop = plugin.addStandaloneMenu('shop', 'Shop', 'Pick something');
+shop.addButton('Buy a coffee');
+
+async function openShop(): Promise<void> {
+  const result: OpenMenuResult = await shop.requestOpen();                  // never interrupts the player
+  const urgent = await shop.requestOpenWithPriority(MenuPriority.Medium);   // replaces vMenu and low priority menus
+}
+```
+
+</TabItem>
+</Tabs>
+
+Everything else works like any other plugin menu: rows, submenus, keys, events and live changes. A plugin may have 50 standalone menus. Ids are letters, digits and underscores, and `root` and `m` followed by digits are taken. A menu added after connecting appears live. Standalone menus need a vMenu that knows them. An older vMenu refuses the registration and says so, and adding one while connected to it throws.
+
+## Who gets the screen
+
+Every open request has a priority. vMenu's own menus always count as `None`.
+
+| Request | What happens |
+| --- | --- |
+| `RequestOpen()` (`None`) | Opens only when no vMenu or plugin menu is open. |
+| `Low` or `Medium` | Closes an open menu of equal or lower priority and opens yours. Refused when a higher priority menu is open. |
+| `High` | Like `Low` and `Medium`, and vMenu's toggle key does nothing while your menu is open. Back and closing still work. |
+| `High` with `doNotClose` | Like `High`, and the menu is locked: see below. |
+| Any request while a menu is locked | Refused, including vMenu's own toggle key. |
+| Switching between your own menus | Always allowed, unless another resource holds a lock. Your priority carries over to the menu you switch to. |
+| `Open()` | Opens at `Low` and never tells you whether it worked. This is how plugins made before priorities existed behave. |
+
+| Answer | Meaning |
+| --- | --- |
+| `Opened` | Your menu is on screen. |
+| `BlockedByPriority` | A higher priority menu is open, or any menu is open for a request at `None`. |
+| `BlockedByLock` | Another menu asked not to be closed. |
+| `UnknownMenu` | vMenu does not know the menu, for example an empty root menu, which has no row yet. |
+| `NotAllowed` | The player may not enter the menu, for example because a gate on the row leading to it fails. |
+| `Superseded` | A later open or close in the same batch took its place. |
+| `NotConnected` | Your plugin is not connected, or vMenu stopped before answering. |
+| `NotSupported` | The vMenu you talk to predates priorities. Nothing was opened, use `Open()` there. |
+
+When your menu is replaced by another resource's menu, `Replaced` fires next to `Closed`. A replaced menu stays closed, ask again if you want it back.
+
+This only covers vMenu and its plugins. Menus another resource draws with its own copy of MenuAPI are invisible to vMenu.
+
+## Menus that must stay open
+
+`doNotClose` locks the menu until you are done with it:
+
+- The player cannot back out of it or close it with the toggle key. Back still works inside its submenus, and the pause menu still opens on top of it.
+- No other menu can replace it, and vMenu's toggle key does nothing.
+- The lock ends when you close the menu, when you open its parent or any menu outside it, or when your resource or vMenu stops.
+- Holding back on the locked menu for 5 seconds asks the player whether to close it anyway. When they confirm, the menu closes, vMenu logs a warning naming your resource, and `ForceClosed` fires.
+- `ForceClosed` also fires when vMenu itself had to close the menu, for example when another player starts a scene on this one. Any close that is not your own code counts.
+
+:::caution[Only in extreme situations]
+`High` keeps vMenu and every lower priority plugin from opening anything while your menu is open. `doNotClose` blocks the player from using anything else at all. Use either only when there is no other way, and always close the menu as soon as possible. In C# both raise a compiler warning, `VMENU001` and `VMENU002`, which you can silence per call with `#pragma warning disable` once you have made sure it is warranted.
+:::

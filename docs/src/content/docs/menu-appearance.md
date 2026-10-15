@@ -48,7 +48,7 @@ Copying a theme into vMenu's own `ui/themes` folder does not work, so don't do t
 
 If you want your players to choose their own look rather than forcing the server style, the [Theme Picker plugin](https://github.com/TomGrobbe/vMenu.ThemePicker) adds a menu for it.
 
-Writing one of these yourself is a single event, described on the [plugin development page](/vmenu/enhanced/plugins/developing/#adding-themes-of-your-own).
+Writing one of these yourself is a single event, described on the [plugin development page](/vmenu/enhanced/plugins/themes/#adding-themes-of-your-own).
 
 ## The banner title
 
