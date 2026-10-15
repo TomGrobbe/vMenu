@@ -1,0 +1,159 @@
+---
+import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
+import { Aside } from '@astrojs/starlight/components';
+
+import '../styles/data-tool.css';
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<StarlightPage
+  frontmatter={{
+    title: 'Import Saved Data From Old vMenu',
+    description: 'Turn everything the original vMenu saved on your computer into a vMenu Enhanced transfer code.',
+    tableOfContents: false,
+  }}
+>
+  <p>
+    The original vMenu, v3.9.2 and older, saved your vehicles, peds, characters, weapon loadouts and
+    settings in FiveM's storage folder on your computer. This page reads that folder, turns everything it
+    finds into the vMenu Enhanced format, and gives you a transfer code to paste into the game. Everything
+    happens in your browser. Nothing is uploaded anywhere.
+  </p>
+
+  <p>
+    On FiveM Legacy, that storage folder is shared by every server you ever played on. So one import
+    brings over everything you saved with the old vMenu, on any server.
+  </p>
+
+  <Aside type="danger" title="Close FiveM first">
+    Close FiveM and its launcher completely before you open, copy or zip the folder, and keep them closed
+    until this page shows you your code. FiveM keeps writing to this folder while it runs, and touching it at
+    the same time can corrupt it, which wipes the saves of every server and script you use.
+  </Aside>
+
+  <Aside type="caution" title="At your own risk">
+    The old vMenu and vMenu Enhanced store things very differently, so not everything converts perfectly.
+    Clothes can come out as a different piece, some settings have no new version, and anything the page
+    cannot read is skipped. The folder itself is never changed, so you can always try again.
+  </Aside>
+
+  <div class="vmt not-content">
+    <div class="vmt-panel">
+      <div class="vmt-label">Step 1. Copy the folder location</div>
+      <p class="vmt-note">
+        The old vMenu saved its data in this folder. Copy its location with the button, you will need it in
+        the next step.
+      </p>
+      <div class="vmt-actions">
+        <code id="vmi-path" class="vmt-path-box">%AppData%\CitizenFX\kvs</code>
+        <button id="vmi-copy-path" class="vmt-button" type="button">Copy</button>
+        <span id="vmi-path-status" class="vmt-status"></span>
+      </div>
+    </div>
+
+    <div class="vmt-panel">
+      <div class="vmt-label">Step 2. Pick the folder</div>
+      <ol class="vmt-note vmt-steps">
+        <li>Click <strong>Choose the kvs folder</strong>.</li>
+        <li>Click the address bar at the top of the window that opens, paste the location with <kbd>Ctrl</kbd>+<kbd>V</kbd>, and press <kbd>Enter</kbd>.</li>
+        <li>Click <strong>Upload</strong> or <strong>Select Folder</strong>. Your browser may ask if you want to upload the files. Say yes, they still never leave your computer.</li>
+      </ol>
+      <div class="vmt-actions">
+        <button id="vmi-pick-folder" class="vmt-button vmt-primary" type="button">Choose the kvs folder</button>
+        <button id="vmi-pick-zip" class="vmt-button" type="button">Choose a zip file instead</button>
+        <input id="vmi-folder" class="vmt-file" type="file" webkitdirectory multiple />
+        <input id="vmi-zip" class="vmt-file" type="file" accept=".zip,application/zip" />
+      </div>
+      <div id="vmi-drop" class="vmt-drop" tabindex="0">
+        Or drag the <strong>kvs</strong> folder, the whole <strong>CitizenFX</strong> folder, or a zip of either one onto this box.
+      </div>
+      <div class="vmt-actions">
+        <span id="vmi-status" class="vmt-status" role="status"></span>
+      </div>
+    </div>
+
+    <div id="vmi-result" class="vmt-result" hidden>
+      <div class="vmt-panel">
+        <div id="vmi-summary"></div>
+        <div id="vmi-resource-row" class="vmt-actions" hidden>
+          <label class="vmt-row-label" for="vmi-resource">Found old vMenu data under more than one name. Use:</label>
+          <select id="vmi-resource" class="vmt-input vmt-select"></select>
+        </div>
+      </div>
+
+      <div id="vmi-groups" class="vmt-groups"></div>
+
+      <div class="vmt-panel vmt-sticky">
+        <div id="vmi-warn" class="vmt-warn" hidden></div>
+        <textarea id="vmi-code" class="vmt-code" spellcheck="false" readonly hidden></textarea>
+        <div class="vmt-actions">
+          <button id="vmi-copy" class="vmt-button vmt-primary" type="button">Copy my code</button>
+          <button id="vmi-download" class="vmt-button" type="button">Download zip</button>
+          <span id="vmi-out" class="vmt-status"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h2>Step 3. Paste it into the game</h2>
+
+  <ol>
+    <li>Start FiveM again and join a server running vMenu Enhanced.</li>
+    <li>Open <strong>Misc Settings, Import &amp; Export</strong> and pick <strong>Paste A Code</strong>.</li>
+    <li>Paste with <kbd>Ctrl</kbd>+<kbd>V</kbd> and press <kbd>Enter</kbd>.</li>
+  </ol>
+
+  <p>
+    Paste A Code adds everything to what you already have. Anything saved under the same name in vMenu
+    Enhanced is replaced by the imported one. More about codes is on{' '}
+    <a href={`${base}/backing-up-your-data/`}>Backing Up Your Data</a>, and you can look through or change
+    the code first with <a href={`${base}/data-editor/`}>Edit Your Data</a>.
+  </p>
+
+  <h3>Already have saves in vMenu Enhanced?</h3>
+
+  <p>
+    Then you can pick what to keep before anything is replaced. In game, open <strong>Misc Settings,
+    Import &amp; Export</strong> and pick <strong>Show My Transfer Code</strong> to get a code with your
+    current saves. Paste that code and the one from this page into{' '}
+    <a href={`${base}/data-compare/`}>Compare Or Merge Data</a>. It shows what is different, lets you choose
+    which version of each item to keep, and gives you one merged code to paste into the game.
+  </p>
+
+  <h2>What comes over</h2>
+
+  <table>
+    <thead>
+      <tr><th>Old vMenu</th><th>In vMenu Enhanced</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Saved vehicles</td><td>Saved vehicles. They keep their old category, or go into <strong>Imported from old vMenu</strong> if they had none.</td></tr>
+      <tr><td>Saved peds</td><td>Saved peds, in the <strong>Imported from old vMenu</strong> category.</td></tr>
+      <tr><td>Saved multiplayer peds</td><td>Custom characters, with their face, hair, makeup, tattoos and outfit. They keep their old category, or go into <strong>Imported from old vMenu</strong> if they had none.</td></tr>
+      <tr><td>Weapon loadouts</td><td>Weapon loadouts, including which one loads when you respawn. Loadouts have no categories.</td></tr>
+      <tr><td>Your default character</td><td>Your default character.</td></tr>
+      <tr><td>Settings</td><td>Every setting that still exists. Settings that were removed or work differently now are left out.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>When something goes wrong</h2>
+
+  <table>
+    <thead>
+      <tr><th>What you see</th><th>What to do</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>No old vMenu data was found</td><td>Make sure you picked <strong>kvs</strong>, not <strong>kvs_cl2</strong> or another folder. If you only ever played vMenu with GTA V Enhanced, there is nothing here to import.</td></tr>
+      <tr><td>Some files could not be read</td><td>FiveM was probably still running. Close FiveM and its launcher completely and pick the folder again.</td></tr>
+      <tr><td>An item is listed as skipped</td><td>Its old save was damaged or used something vMenu Enhanced has no place for. Open it to see why.</td></tr>
+      <tr><td>A character wears the wrong clothes</td><td>Fix the outfit in game and save it again. Clothes are stored differently now, so DLC pieces can shift.</td></tr>
+    </tbody>
+  </table>
+</StarlightPage>
+
+<script>
+  import { setup } from '../scripts/legacy-import.js';
+
+  setup();
+</script>

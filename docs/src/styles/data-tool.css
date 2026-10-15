@@ -404,3 +404,39 @@
   flex-direction: column;
   align-items: flex-start;
 }
+
+.vmt .vmt-steps {
+  margin: 0.5rem 0 0;
+  padding-left: 1.25rem;
+}
+
+.vmt .vmt-path-box {
+  padding: 0.3rem 0.7rem;
+  border: 2px solid var(--ink);
+  border-radius: 12px;
+  background: var(--cream);
+  font-family: var(--sl-font-mono);
+  font-size: 0.9rem;
+  user-select: all;
+}
+
+.vmt .vmt-drop {
+  margin-top: 0.9rem;
+  padding: 1.5rem 1rem;
+  border: 3px dashed var(--line);
+  border-radius: var(--toon-radius);
+  background: var(--cream);
+  text-align: center;
+  font-size: 0.95rem;
+}
+
+.vmt .vmt-drop-active {
+  border-color: var(--violet-deep);
+  background: var(--violet-tint);
+}
+
+.vmt .vmt-reason {
+  margin: 0;
+  padding: 0.5rem 1rem 0.75rem;
+  font-size: 0.85rem;
+}
