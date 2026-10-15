@@ -282,7 +282,8 @@ public static class PropPlacement
 
         _cameFrom = null;
 
-        if (menu is null)
+        // A plugin may have opened its own menu while placing, and OpenMenu would stack this on top of it.
+        if (menu is null || MenuController.IsAnyMenuOpen())
         {
             return;
         }

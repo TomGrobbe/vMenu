@@ -40,11 +40,5 @@ public sealed class DetachedMenu
 
     /// <summary>A detached menu is the one kind nothing can clean up by itself: no row points at it, so dropping
     /// rows can never make it unreachable. Whoever asked for it has to say when it is done.</summary>
-    public void Remove()
-    {
-        // Through the host, so the framework untracks the hosts behind any submenu rows it had.
-        _host.ClearEntries();
-
-        MenuRegistry.Untrack(_host);
-    }
+    public void Remove() => MenuRegistry.Remove(_host);
 }

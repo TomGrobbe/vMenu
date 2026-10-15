@@ -284,8 +284,6 @@ public static class CharacterCamera
         }
 
         Destroy();
-
-        MenuController.DisableBackButton = false;
     });
 
     private static async Task Frame()

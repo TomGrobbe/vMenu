@@ -206,12 +206,10 @@ internal sealed class CharacterBuilder
         {
             CharacterCamera.Page = CameraFocus.FullBody;
 
-            MenuController.DisableBackButton = true;
+            MenuArbiter.Lock(menu.Menu);
 
             MenuRegistry.Refresh(menu.Menu);
         };
-
-        menu.OnClosed = _ => MenuController.DisableBackButton = false;
     }
 
     private static SubmenuEntry Child(string name, string description, string subtitle, Action<MenuBuilder> build) =>
@@ -539,6 +537,11 @@ internal sealed class CharacterBuilder
         var draft = MpCharacterState.Draft;
         var style = MpCharacterState.Style;
         var outfit = MpCharacterState.Outfit;
+
+        if (_page is { } page)
+        {
+            MenuArbiter.Unlock(page.Menu);
+        }
 
         MpCharacterState.StopEditing();
         CharacterCamera.Reevaluate();

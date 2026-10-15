@@ -21,6 +21,26 @@ public static partial class Loc
         public const string EmptyMenu = "framework.emptymenu";
 
         public const string EmptyMenuDescription = "framework.emptymenu.desc";
+
+        public const string ForceCloseButton = "framework.forceclose.button";
+
+        public const string ForceCloseBinding = "framework.forceclose.binding";
+
+        public const string ForceCloseHolding = "framework.forceclose.holding";
+
+        public const string ForceCloseConfirm = "framework.forceclose.confirm";
+
+        public const string ForceCloseTitle = "framework.forceclose.title";
+
+        public const string ForceCloseConfirmTitle = "framework.forceclose.confirm.title";
+
+        public const string ForceCloseAccept = "framework.forceclose.accept";
+
+        public const string ForceCloseCancel = "framework.forceclose.cancel";
+
+        public const string ForceCloseSelectKey = "framework.forceclose.key.select";
+
+        public const string ForceCloseBackKey = "framework.forceclose.key.back";
     }
 
     public static class MainMenu

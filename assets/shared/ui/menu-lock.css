@@ -1,0 +1,153 @@
+/*
+   Shown under a menu that asked not to be closed while the player holds back to close it anyway. It
+   hangs off the menu itself, the same width, so it reads as part of that menu rather than as a toast.
+*/
+#menu-lock {
+    --tone: #edb44b;
+    --tone-soft: rgba(224, 163, 56, 0.16);
+    --tone-edge: rgba(224, 163, 56, 0.35);
+    --radius: 0.2rem;
+    position: fixed;
+    display: none;
+    background: var(--panel);
+    border: 1px solid var(--edge);
+    border-radius: var(--radius);
+    box-shadow: 0 0.6rem 1.6rem rgba(0, 0, 0, 0.55);
+    overflow: hidden;
+    pointer-events: none;
+}
+
+#menu-lock.shown {
+    display: block;
+    animation: menu-lock-in 160ms ease-out;
+}
+
+#menu-lock.confirm {
+    --tone: #ef6a60;
+    --tone-soft: rgba(226, 85, 76, 0.16);
+    --tone-edge: rgba(226, 85, 76, 0.35);
+}
+
+/* The uppercase strip over a tinted bar is the menu's own subtitle row, shrunk to fit. */
+#menu-lock .bar {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.3rem 0.6rem;
+    background: var(--tone-soft);
+    border-bottom: 1px solid var(--tone-edge);
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--tone);
+    transition: color 0.2s ease, background 0.2s ease;
+}
+
+#menu-lock .icon {
+    flex: none;
+    width: 0.8rem;
+    height: 0.8rem;
+}
+
+#menu-lock .body {
+    padding: 0.5rem 0.6rem 0.55rem;
+    font-size: 0.82rem;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+}
+
+#menu-lock .actions {
+    display: none;
+    flex-direction: column;
+    gap: 0.3rem;
+    padding: 0.35rem 0.6rem 0.45rem;
+    border-top: 1px solid var(--edge);
+    font-size: 0.72rem;
+    color: var(--muted);
+}
+
+#menu-lock.confirm .actions {
+    display: flex;
+}
+
+#menu-lock .action {
+    display: flex;
+    align-items: center;
+    white-space: pre;
+}
+
+/* Named after the menu's own instructional buttons, which show the real key for the device in use. */
+#menu-lock .key {
+    padding: 0.05rem 0.35rem;
+    border: 1px solid var(--edge);
+    border-radius: 0.2rem;
+    background: var(--row);
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text);
+}
+
+#menu-lock .action.danger .key {
+    border-color: var(--tone-edge);
+    background: var(--tone-soft);
+    color: var(--tone);
+}
+
+#menu-lock .track {
+    height: 0.2rem;
+    background: rgba(255, 255, 255, 0.06);
+}
+
+#menu-lock .fill {
+    height: 100%;
+    width: 0;
+    background: var(--tone);
+    animation-duration: var(--duration, 5000ms);
+    animation-timing-function: linear;
+    animation-fill-mode: forwards;
+}
+
+#menu-lock.holding .fill {
+    animation-name: menu-lock-fill;
+}
+
+/* Counting down the time the question stays up, the way a notification shows its own lifetime. */
+#menu-lock.confirm .fill {
+    opacity: 0.55;
+    animation-name: menu-lock-drain;
+}
+
+@keyframes menu-lock-in {
+    from {
+        opacity: 0;
+        transform: translateY(-0.4rem);
+    }
+
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+@keyframes menu-lock-fill {
+    from {
+        width: 0;
+    }
+
+    to {
+        width: 100%;
+    }
+}
+
+@keyframes menu-lock-drain {
+    from {
+        width: 100%;
+    }
+
+    to {
+        width: 0;
+    }
+}

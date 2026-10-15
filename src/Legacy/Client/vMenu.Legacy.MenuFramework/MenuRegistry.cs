@@ -215,6 +215,23 @@ public static class MenuRegistry
         return new DetachedMenu(child);
     }
 
+    public static TopLevelMenu CreateStandalone(MenuText title, MenuText subtitle, Action<MenuBuilder> build, string auditName)
+    {
+        var localizer = Localizer.Current;
+
+        var menu = new Menu(title.Resolve(localizer), MenuHost.ResolveSubtitle(title, subtitle, localizer));
+
+        MenuController.AddMenu(menu);
+
+        var host = Track(new MenuHost(menu, null, MenuGate.Always, title, subtitle, null, auditName));
+
+        build(host.Builder);
+
+        MaterialiseSync(host, localizer);
+
+        return new TopLevelMenu(host);
+    }
+
     // For entries added once the menu is live. There is nowhere to await from there, so a definition
     // needing asynchronous preparation is refused rather than built from empty state.
     private static void MaterialiseSync(MenuHost host, ILocalizer localizer)
@@ -328,6 +345,17 @@ public static class MenuRegistry
         return child;
     }
 
+    // Through the host, so the framework untracks the hosts behind any submenu rows it had.
+    internal static void Remove(MenuHost host)
+    {
+        host.ClearEntries();
+
+        Untrack(host);
+    }
+
+    // A menu that is not the framework's has no gate to fail.
+    internal static bool CanOpen(Menu menu) => !HostsByMenu.TryGetValue(menu, out var host) || host.IsReachable();
+
     // MenuAPI removes the menu behind a row when that row is dropped, so without this the framework would
     // keep walking a host whose menu no longer exists on every gate refresh.
     internal static void Untrack(MenuHost host)
@@ -359,14 +387,15 @@ public static class MenuRegistry
         HostsByMenu.Remove(host.Menu);
     }
 
-    // By reference rather than List.Remove, which would reach for EqualityComparer<MenuHost>.Default.
-    internal static void RemoveByReference(List<MenuHost> hosts, MenuHost host)
+    // By reference rather than List.Remove, which would reach for EqualityComparer<T>.Default.
+    internal static void RemoveByReference<T>(List<T> list, T value)
+        where T : class
     {
-        for (var index = hosts.Count - 1; index >= 0; index--)
+        for (var index = list.Count - 1; index >= 0; index--)
         {
-            if (ReferenceEquals(hosts[index], host))
+            if (ReferenceEquals(list[index], value))
             {
-                hosts.RemoveAt(index);
+                list.RemoveAt(index);
 
                 return;
             }
