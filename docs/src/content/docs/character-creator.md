@@ -80,71 +80,13 @@ Characters are saved on your own computer, like saved vehicles and peds, and the
 
 ## For server owners
 
-Both files live in `resources/vMenu.Enhanced/config/`.
-
 ### Tattoos
 
-`config/tattoos.json` is the list of every tattoo and badge the creator offers. It ships filled in with every base game tattoo up to 2026, so you only need to open it if you stream in tattoos of your own.
-
-Unlike every other config file, this one is read by the **player's** game rather than the server. So a player who is already connected will not see your changes until they reconnect, and everybody who joins downloads it.
-
-```json
-{
-  "version": 1,
-  "tattoos": [
-    { "collection": "mytattoos_overlays", "name": "mytattoos_01_M", "zone": "torso", "gender": "male" },
-    { "collection": "mytattoos_overlays", "name": "mytattoos_02_A", "zone": "addon", "gender": "both", "label": "Anchor" }
-  ]
-}
-```
-
-| Field | Required | What it means |
-| --- | --- | --- |
-| `collection` | Yes | The overlay collection the tattoo lives in |
-| `name` | Yes | The name of the overlay itself |
-| `zone` | Yes | Which list it shows up in, see below |
-| `gender` | No | `male`, `female`, or anything else for both. Defaults to both |
-| `label` | No | What to call it on screen. Without one it is numbered, like every base game tattoo |
-
-`zone` is one of `hair`, `head`, `torso`, `leftArm`, `rightArm`, `leftLeg`, `rightLeg`, `badge` or `addon`. The first seven are parts of the body, `badge` is the badge overlay list, and `addon` is a list of its own that only appears once you put something in it. `addon` is the tidy place for your own tattoos, but a body zone works just as well if you prefer.
-
-:::note
-Two commands help when a tattoo is not showing up. `vmenu_character_tattoos` lists every decoration on the ped you are wearing and whether the file knows what each one is, and `vmenu_character` prints the whole character. Both need the debugging convar on.
-:::
+The tattoo list is [tattoos.json](/vmenu/enhanced/configuration/tattoos-json/).
 
 ### Ready made outfits
 
-`config/clothing-presets.json` holds outfits you publish for everybody, such as a set of police uniforms. It ships empty as `[]`.
-
-You do not have to write it by hand. Give somebody the `vMenu.Enhanced.Menus.CharacterCreator.PresetsManage` permission and they can build an outfit in game, then use **Outfit Presets, Server Presets, Save Clothes To Server Presets**. vMenu writes the file and sends the new list to everybody already connected, so there is nothing to restart.
-
-To edit it directly:
-
-```json
-[
-  {
-    "name": "Police",
-    "description": "Department outfits",
-    "presets": [
-      {
-        "name": "Patrol Officer",
-        "description": "Standard patrol",
-        "gender": "male",
-        "components": [
-          { "slot": 11, "collection": "", "localDrawable": 55, "drawable": 55, "texture": 0, "palette": 0 }
-        ],
-        "props": []
-      }
-    ]
-  }
-]
-```
-
-`gender` matters, because a drawable number means a different piece of clothing on each model. An outfit saved on one is hidden on the other rather than applied wrongly. Leave it out and the outfit shows for both.
-
-:::caution
-Writing this file needs `add_filesystem_permission vMenu.Enhanced write vMenu.Enhanced` in your server.cfg, the same line the permissions example file needs. The install guide covers it, for [FiveM Enhanced](/vmenu/enhanced/installing/fivem-enhanced/#2-add-the-first-lines-to-your-servercfg) or [FiveM Legacy](/vmenu/enhanced/installing/fivem-legacy/#2-add-the-first-lines-to-your-servercfg).
-:::
+Outfits you publish for everybody are in [clothing-presets.json](/vmenu/enhanced/configuration/clothing-presets-json/).
 
 ### Outfits that came with the game
 

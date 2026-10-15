@@ -105,9 +105,17 @@ export default defineConfig({
         {
           label: 'Configuration',
           items: [
+            { label: 'Overview', link: '/configuration/' },
+            { label: 'Peds, vehicles and weapons', link: '/configuration/peds-vehicles-weapons/' },
+            { label: 'announcements.json', link: '/configuration/announcements-json/' },
             { label: 'blips.json', link: '/configuration/blips-json/' },
+            { label: 'clothing-presets.json', link: '/configuration/clothing-presets-json/' },
             { label: 'extras.json', link: '/configuration/extras-json/' },
+            { label: 'model-whitelists.json', link: '/configuration/model-whitelists-json/' },
+            { label: 'tattoos.json', link: '/configuration/tattoos-json/' },
+            { label: 'teleport-categories.json', link: '/configuration/teleport-categories-json/' },
             { label: 'vehicle-categories.json', link: '/configuration/vehicle-categories-json/' },
+            { label: 'walking-styles.json', link: '/configuration/walking-styles-json/' },
             { label: 'weather-cycle.json', link: '/configuration/weather-cycle-json/' },
             { label: 'World API', link: '/configuration/world-api/' },
           ],

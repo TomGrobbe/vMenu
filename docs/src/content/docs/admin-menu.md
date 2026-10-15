@@ -54,7 +54,7 @@ This option used to live in Miscellaneous Settings.
 
 **Send Announcement** puts a message on the screen of everybody on the server, wherever they happen to be. It uses the same banner as a staff alert, in blue rather than amber and headed ANNOUNCEMENT, so nobody mistakes the server talking for a player asking for help.
 
-**Scheduled Announcements** is where announcements that send themselves live. See [announcements.json](#announcementsjson) below.
+**Scheduled Announcements** is where announcements that send themselves live. See [announcements.json](/vmenu/enhanced/configuration/announcements-json/).
 
 **Refresh All Permissions** sends everybody on the server a fresh copy of what they are allowed to do. See [Refreshing permissions](#refreshing-permissions).
 
@@ -105,88 +105,7 @@ None of this is needed for the server to enforce a permission. The server checks
 
 ## announcements.json
 
-Announcements can send themselves, either every so many minutes or at a set time of day. They live in a file next to your other vMenu config:
-
-```
-resources/vMenu.Enhanced/config/announcements.json
-```
-
-The file ships with **everything commented out**, so a fresh server announces nothing at all until you decide otherwise. Take the `//` off the lines of one of the examples to switch it on, or write your own.
-
-### What an announcement takes
-
-| Field | What it does |
-| --- | --- |
-| `name` | A short label so you can find it again in the menu. Players never see this. |
-| `text` | What everybody actually sees. Written exactly as you type it, never translated. |
-| `everyMinutes` | Send it this often, counting from when the server started. Between 1 and 1440. |
-| `at` | Send it at this time of day instead, written as `HH:MM` on a 24 hour clock. |
-| `clock` | Only used with `at`. See below. Leave it out and you get `real`. |
-
-Use **either** `everyMinutes` **or** `at` on one announcement, never both. An announcement with neither is skipped, and the server console says which one and why.
-
-### Real time or game time
-
-`clock` picks which clock the announcement measures itself against, and it applies to `everyMinutes` and `at` alike.
-
-`"real"` is the real world. `everyMinutes: 30` is half an hour, and `at: "20:00"` is eight in the evening where the machine your server runs on thinks it is. This is the one you want for restart warnings and anything tied to your community's evening.
-
-`"game"` is the clock inside GTA, which runs much faster than the real one. `everyMinutes: 30` with a game clock comes round in about a real minute, and `at: "20:00"` lands whenever it turns evening in the world. This is the one you want for something tied to what the world looks like, such as a message at sunrise.
-
-One thing to know about `"game"`: it only lines up with what players actually see if vMenu is the one driving the clock, which means `vMenu.Enhanced.TimeOptions.Enabled` has to be on. With time sync off the game keeps its own time and your announcement lands at an hour nobody expects. The server console says so on start if you have a `game` entry while time sync is off.
-
-### An example
-
-```jsonc
-{
-  "announcements": [
-    {
-      "name": "Rules reminder",
-      "text": "Remember to read the rules. You can find them in our Discord.",
-      "everyMinutes": 45
-    },
-    {
-      "name": "Restart warning",
-      "text": "~y~The server restarts in 10 minutes.~s~ Park up somewhere safe.",
-      "at": "05:50",
-      "clock": "real"
-    },
-    {
-      "name": "Sunrise",
-      "text": "The sun is coming up over Los Santos.",
-      "at": "06:00",
-      "clock": "game"
-    }
-  ]
-}
-```
-
-An `at` announcement that the server started past waits for the next time round rather than firing the moment it loads, so restarting at 20:05 will not replay your 20:00 message.
-
-### Editing from inside the menu
-
-Staff with the `ManageAnnouncements` permission can add and remove scheduled announcements from **Admin, Scheduled Announcements** without touching the file. Adding one asks you for three things in a row: a name, the text, and when it should go.
-
-It asks for the timing **first**, on its own, and checks it before it asks for anything else. That is on purpose: the timing is the one answer that can be typed wrong, and finding that out after you had written the whole announcement would throw the writing away.
-
-What it accepts:
-
-| You type | What you get |
-| --- | --- |
-| `@45` | Every 45 minutes, real time |
-| `@5 game` or `@5game` | Every 5 minutes on the in game clock, so about ten real seconds |
-| `10:30` | At half past ten in the morning, real time |
-| `10:30 game` or `10:30game` | At half past ten in the morning in game |
-
-The `@` is what marks a repeat, so `@30` repeats every half hour and `10:30` is a time of day. Adding `game` on the end of either switches the clock, with or without a space in front of it.
-
-In the list, an announcement on the in game clock is marked with a green **G** next to its timing, and the description underneath spells it out. Anything without the G runs on real time.
-
-Saving from the menu rewrites `announcements.json`, which means **any comments you left in that file are lost**. This is the same trade `blips.json` makes, and it is called out in the file's own header.
-
-### Turning the whole thing off
-
-Setting `vMenu.Enhanced.Admin.ScheduledAnnouncements` to `false` in your `configuration.cfg` stops anything sending itself, without you having to delete the file. Staff can still send announcements by hand while it is off, and the menu says plainly that the schedule is switched off so nobody thinks it is broken.
+Scheduled announcements, their format and how to edit them from the menu are on the [announcements.json](/vmenu/enhanced/configuration/announcements-json/) page.
 
 ## Settings
 
