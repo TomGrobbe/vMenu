@@ -1,6 +1,7 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
+import { searchForWorkspaceRoot } from 'vite';
 
 // Google Analytics 4 Measurement ID (loaded on every docs page)
 const GA4_ID = 'G-5GXWQVLZ8Z';
@@ -15,6 +16,7 @@ export default defineConfig({
   // publishes this site into the hub's /vmenu/enhanced/ folder, so the docs
   // land at /vmenu/enhanced/. Do NOT shorten this to '/enhanced'.
   base: '/vmenu/enhanced',
+  vite: { server: { fs: { allow: [searchForWorkspaceRoot(process.cwd()), '../assets/shared/config'] } } },
   redirects: {
     '/moving-your-data/': '/vmenu/enhanced/backing-up-your-data/',
   },
@@ -79,9 +81,15 @@ export default defineConfig({
         },
         { label: 'Key Bindings', link: '/key-bindings/' },
         { label: 'Menu Appearance', link: '/menu-appearance/' },
-        { label: 'Backing Up Your Data', link: '/backing-up-your-data/' },
-        { label: 'Edit Your Data', link: '/data-editor/' },
-        { label: 'Compare Your Data', link: '/data-compare/' },
+        {
+          label: 'Saved Data',
+          items: [
+            { label: 'Backing Up Your Data', link: '/backing-up-your-data/' },
+            { label: 'Edit Your Data', link: '/data-editor/' },
+            { label: 'Compare Or Merge Data', link: '/data-compare/' },
+            { label: 'Import Saved Data From Old vMenu', link: '/old-vmenu-import/' },
+          ],
+        },
         { label: 'Custom Character Creator', link: '/character-creator/' },
         { label: 'Admin Menu', link: '/admin-menu/' },
         { label: 'Bully Menu', link: '/bully-menu/' },

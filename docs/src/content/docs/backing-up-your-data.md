@@ -8,7 +8,7 @@ vMenu saves your vehicles, peds, characters, loadouts and settings on your own c
 A backup code fixes all of that. It is one piece of text holding everything vMenu saved, which you can keep somewhere safe and paste back in whenever you need it, on the same server or a different one.
 
 :::note[Only for vMenu Enhanced]
-The original vMenu, v3.9.2 and older, has no backup feature. Its saves also cannot be read by vMenu Enhanced, so there is no way to bring them over.
+The original vMenu, v3.9.2 and older, has no backup feature. To bring its saves over to vMenu Enhanced, use [Import Saved Data From Old vMenu](/vmenu/enhanced/old-vmenu-import/). It turns them into a code you can paste in.
 :::
 
 ## Making a backup
@@ -39,7 +39,7 @@ Saved vehicles, peds, custom characters with their outfits and hair styles, weap
 ## Editing or combining backups
 
 - [Edit Your Data](/vmenu/enhanced/data-editor/) opens a code in your browser, so you can look through it, rename or remove things, and download a new code.
-- [Compare Your Data](/vmenu/enhanced/data-compare/) takes two codes, for example one from each server you play on, shows what is different, and merges them into one.
+- [Compare Or Merge Data](/vmenu/enhanced/data-compare/) takes two codes, for example one from each server you play on, shows what is different, and merges them into one.
 
 ## When something goes wrong
 
