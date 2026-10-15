@@ -20,6 +20,10 @@ public sealed class VMenuPlugin
 
     private readonly Dictionary<int, TaskCompletionSource<PromptResult>> _pendingPrompts = [];
 
+    private readonly Dictionary<int, TaskCompletionSource<OpenMenuOutcome>> _pendingOpens = [];
+
+    private readonly List<PluginMenu> _standaloneMenus = [];
+
     private readonly Text _displayName;
 
     private TaskCompletionSource<RegisterResult>? _firstResult;
@@ -40,6 +44,10 @@ public sealed class VMenuPlugin
     private int _nextMenuId;
 
     private int _nextPromptId;
+
+    private int _nextOpenId;
+
+    private int _vMenuProtocol;
 
     private bool _handlersRegistered;
 
@@ -75,6 +83,9 @@ public sealed class VMenuPlugin
 
     /// <summary>The menu behind your row in vMenu's Plugins menu.</summary>
     public PluginMenu RootMenu { get; }
+
+    /// <summary>Menus added with <see cref="AddStandaloneMenu"/>.</summary>
+    public IReadOnlyList<PluginMenu> StandaloneMenus => _standaloneMenus;
 
     /// <summary>Actions injected into every player's entry of vMenu's Online Players menu.</summary>
     public PluginPlayerActions PlayerActions { get; }
@@ -114,6 +125,54 @@ public sealed class VMenuPlugin
         PluginEmit.Local(PluginEvents.Probe);
 
         return _firstResult.Task;
+    }
+
+    /// <summary>Adds a top level menu of your own, outside vMenu's Plugins menu. It has no row anywhere and no toggle
+    /// key: only your code opens it, through <see cref="PluginMenu.RequestOpenAsync()"/>. Needs a vMenu that knows
+    /// standalone menus, an older one refuses the registration. Adding one after connecting appears live.</summary>
+    /// <param name="id">Letters, digits and underscores, unique within your plugin. "root" and "m" followed by
+    /// digits are taken by the menus the API names itself.</param>
+    /// <param name="title">The banner title.</param>
+    /// <param name="subtitle">The line under the banner.</param>
+    /// <exception cref="ArgumentException">The id is malformed, reserved or already used.</exception>
+    /// <exception cref="InvalidOperationException">The plugin already has 50 standalone menus, or it is connected to a
+    /// vMenu that predates standalone menus.</exception>
+    public PluginMenu AddStandaloneMenu(string id, Text title, Text subtitle = default)
+    {
+        if (string.IsNullOrEmpty(id) || !id.All(static c => c is (>= 'a' and <= 'z') or (>= 'A' and <= 'Z') or (>= '0' and <= '9') or '_'))
+        {
+            throw new ArgumentException("A standalone menu id may only contain letters, digits and underscores.", nameof(id));
+        }
+
+        if (id == "root" || (id.Length > 1 && id[0] == 'm' && id.Skip(1).All(char.IsDigit)))
+        {
+            throw new ArgumentException($"'{id}' is reserved for the menus the API names itself.", nameof(id));
+        }
+
+        if (_menusById.ContainsKey(id))
+        {
+            throw new ArgumentException($"A menu with id '{id}' already exists.", nameof(id));
+        }
+
+        if (_standaloneMenus.Count >= PluginProtocol.MaxStandaloneMenus)
+        {
+            throw new InvalidOperationException($"A plugin may have at most {PluginProtocol.MaxStandaloneMenus} standalone menus.");
+        }
+
+        // Registering again to add it would get the whole plugin refused by a vMenu that does not know these menus.
+        if (IsConnected && _vMenuProtocol < PluginProtocol.Version)
+        {
+            throw new InvalidOperationException("The vMenu this plugin is connected to predates standalone menus. Update vMenu.");
+        }
+
+        var menu = new PluginMenu(this, new MenuNode { Id = id, Title = title.ToRef(), Subtitle = subtitle.ToRef() });
+
+        RegisterMenu(menu);
+        _standaloneMenus.Add(menu);
+
+        EmitOp(new UpdateOp { Op = UpdateOps.AddStandaloneMenu, Menu = menu.Node });
+
+        return menu;
     }
 
     /// <summary>Shows a message through vMenu's notification area, credited to your resource.</summary>
@@ -211,6 +270,42 @@ public sealed class VMenuPlugin
         return new BatchScope(this);
     }
 
+    internal Task<OpenMenuOutcome> RequestOpenAsync(PluginMenu menu, MenuPriority priority, bool doNotClose)
+    {
+        if (!IsConnected)
+        {
+            return Task.FromResult(OpenMenuOutcome.NotConnected);
+        }
+
+        // An older vMenu never answers, and its plain open would close whatever the player is in.
+        if (_vMenuProtocol < PluginProtocol.Version)
+        {
+            return Task.FromResult(OpenMenuOutcome.NotSupported);
+        }
+
+        var requestId = ++_nextOpenId;
+        var pending = new TaskCompletionSource<OpenMenuOutcome>();
+
+        _pendingOpens[requestId] = pending;
+
+        EmitOp(new UpdateOp
+        {
+            Op = UpdateOps.OpenMenu,
+            MenuId = menu.Id,
+            Priority = priority switch
+            {
+                MenuPriority.Low => MenuPriorities.Low,
+                MenuPriority.Medium => MenuPriorities.Medium,
+                MenuPriority.High => MenuPriorities.High,
+                _ => MenuPriorities.None,
+            },
+            DoNotClose = doNotClose ? true : null,
+            RequestId = requestId,
+        });
+
+        return pending.Task;
+    }
+
     internal string NextItemId() => "i" + (++_nextItemId);
 
     internal string NextMenuId() => "m" + (++_nextMenuId);
@@ -265,6 +360,11 @@ public sealed class VMenuPlugin
         if (CarriedByPendingAdd(op))
         {
             return;
+        }
+
+        if (op.Op == UpdateOps.AddStandaloneMenu && op.Menu is { } standalone)
+        {
+            _pendingMenus.Add(standalone.Id);
         }
 
         if (op.Op == UpdateOps.AddItems)
@@ -370,6 +470,12 @@ public sealed class VMenuPlugin
             {
                 op.Items = items.ConvertAll(PluginMenu.AsAdded);
             }
+
+            // Rows added after this op went into the batch travel as their own addItems ops.
+            if (op.Op == UpdateOps.AddStandaloneMenu && op.Menu is { } menu)
+            {
+                op.Menu = PluginMenu.WithoutItems(menu);
+            }
         }
 
         PluginEmit.Local(PluginEvents.Update, PluginJson.Serialize(new UpdateBatch { Ops = ops }));
@@ -397,11 +503,17 @@ public sealed class VMenuPlugin
         API.OnEvent(PluginEvents.RegisterResultFor(Resource), new Action<string>(OnRegisterResult), false);
         API.OnEvent(PluginEvents.EventFor(Resource), new Action<string>(OnCallback), false);
         API.OnEvent(PluginEvents.PromptResultFor(Resource), new Action<string>(OnPromptResult), false);
+        API.OnEvent(PluginEvents.OpenResultFor(Resource), new Action<string>(OnOpenResult), false);
         API.OnEvent(PluginEvents.ThemesFor(Resource), new Action<string>(Themes.Handle), false);
         API.OnEvent("onResourceStop", new Action<string>(OnResourceStop), false);
     }
 
-    private void OnReady(int protocolVersion) => SendRegistration();
+    private void OnReady(int protocolVersion)
+    {
+        _vMenuProtocol = protocolVersion;
+
+        SendRegistration();
+    }
 
     private void SendRegistration() =>
         PluginEmit.Local(PluginEvents.Register, PluginJson.Serialize(BuildRequest()));
@@ -410,7 +522,8 @@ public sealed class VMenuPlugin
     {
         var request = new RegisterRequest
         {
-            ProtocolVersion = PluginProtocol.Version,
+            // Only a plugin that needs a newer vMenu says so, so everything else still registers with an older one.
+            ProtocolVersion = _standaloneMenus.Count > 0 ? PluginProtocol.Version : PluginProtocol.BaseVersion,
             DisplayName = _displayName.ToRef(),
             DescriptionKey = DescriptionKey,
             // Always sent, even while empty. vMenu leaves the plugin's row out until the menu has something in
@@ -418,6 +531,11 @@ public sealed class VMenuPlugin
             Menu = RootMenu.Node,
             PlayerActions = PlayerActions.Nodes.Count > 0 ? PlayerActions.Nodes : null,
         };
+
+        if (_standaloneMenus.Count > 0)
+        {
+            request.StandaloneMenus = _standaloneMenus.ConvertAll(static menu => menu.Node);
+        }
 
         if (Translations.Tables.Count > 0)
         {
@@ -457,6 +575,7 @@ public sealed class VMenuPlugin
         if (!IsConnected)
         {
             CancelPendingPrompts();
+            CancelPendingOpens();
         }
         else
         {
@@ -498,6 +617,8 @@ public sealed class VMenuPlugin
                 case CallbackTypes.MenuOpened:
                 case CallbackTypes.MenuClosed:
                 case CallbackTypes.MenuIndexChanged:
+                case CallbackTypes.MenuReplaced:
+                case CallbackTypes.MenuForceClosed:
                     if (callback.MenuId is { } menuId && _menusById.TryGetValue(menuId, out var menu))
                     {
                         menu.HandleMenu(callback);
@@ -543,6 +664,39 @@ public sealed class VMenuPlugin
         }
     }
 
+    private void OnOpenResult(string json)
+    {
+        if (!PluginJson.TryDeserialize<OpenMenuResult>(json, out var result) || result is null)
+        {
+            return;
+        }
+
+        if (!_pendingOpens.Remove(result.RequestId, out var pending))
+        {
+            return;
+        }
+
+        pending.TrySetResult(result.Reason switch
+        {
+            OpenMenuReasons.Opened => OpenMenuOutcome.Opened,
+            OpenMenuReasons.BlockedByLock => OpenMenuOutcome.BlockedByLock,
+            OpenMenuReasons.UnknownMenu => OpenMenuOutcome.UnknownMenu,
+            OpenMenuReasons.NotAllowed => OpenMenuOutcome.NotAllowed,
+            OpenMenuReasons.Superseded => OpenMenuOutcome.Superseded,
+            _ => OpenMenuOutcome.BlockedByPriority,
+        });
+    }
+
+    private void CancelPendingOpens()
+    {
+        foreach (var pending in _pendingOpens.Values)
+        {
+            pending.TrySetResult(OpenMenuOutcome.NotConnected);
+        }
+
+        _pendingOpens.Clear();
+    }
+
     private void CancelPendingPrompts()
     {
         foreach (var pending in _pendingPrompts.Values)
@@ -563,6 +717,7 @@ public sealed class VMenuPlugin
         IsConnected = false;
 
         CancelPendingPrompts();
+        CancelPendingOpens();
 
         try
         {

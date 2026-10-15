@@ -2,7 +2,7 @@ using vMenu.Enhanced.PluginContracts;
 
 namespace vMenu.Enhanced.ClientAPI;
 
-/// <summary>One of your plugin's menus: the root under your row in vMenu's Plugins menu, or a
+/// <summary>One of your plugin's menus: the root under your row in vMenu's Plugins menu, a standalone menu, or a
 /// submenu. Rows added before connecting ride along with the registration, rows added later appear
 /// live.</summary>
 public sealed class PluginMenu
@@ -22,6 +22,10 @@ public sealed class PluginMenu
     private Action? _closed;
 
     private Action<int, int>? _indexChanged;
+
+    private Action? _replaced;
+
+    private Action? _forceClosed;
 
     private int? _insertAt;
 
@@ -102,6 +106,31 @@ public sealed class PluginMenu
             SubscribeMenuEvent(NodeEvents.Closed);
         }
         remove => _closed -= value;
+    }
+
+    /// <summary>Raised when another plugin's menu took the screen while the player was in this one. <see cref="Closed"/>
+    /// is raised as well.</summary>
+    public event Action? Replaced
+    {
+        add
+        {
+            _replaced += value;
+            SubscribeMenuEvent(NodeEvents.Replaced);
+        }
+        remove => _replaced -= value;
+    }
+
+    /// <summary>Raised when this menu was opened with <c>doNotClose</c> and closed by anything other than your own code:
+    /// the player holding back to force it shut, or vMenu having to close it. Whatever the player was in the middle of
+    /// was left unfinished.</summary>
+    public event Action? ForceClosed
+    {
+        add
+        {
+            _forceClosed += value;
+            SubscribeMenuEvent(NodeEvents.ForceClosed);
+        }
+        remove => _forceClosed -= value;
     }
 
     /// <summary>Raised when the cursor moves, with the old and new row index. Chatty.</summary>
@@ -356,8 +385,31 @@ public sealed class PluginMenu
         _plugin.EmitOp(new UpdateOp { Op = UpdateOps.ClearMenu, MenuId = Id });
     }
 
-    /// <summary>Opens this menu on screen, closing whatever vMenu menu was open.</summary>
+    /// <summary>Opens this menu on screen at <see cref="MenuPriority.Low"/>, closing whatever vMenu menu was open.
+    /// Use <see cref="RequestOpenAsync()"/> to learn whether it worked.</summary>
     public void Open() => _plugin.EmitOp(new UpdateOp { Op = UpdateOps.OpenMenu, MenuId = Id });
+
+    /// <summary>Opens this menu only when no vMenu or plugin menu is open, so it never interrupts the player.
+    /// Switching between your own menus always works.</summary>
+    public Task<OpenMenuOutcome> RequestOpenAsync() => RequestOpenAsync(MenuPriority.None);
+
+    /// <summary>Opens this menu, closing an open menu of equal or lower priority. A menu with a higher priority, or
+    /// one that asked not to be closed, keeps the screen and the request is refused.</summary>
+    /// <param name="priority"><see cref="MenuPriority.High"/>: only use this in extreme situations, prevents vMenu or
+    /// other plugins with a lower priority from opening any menus while yours is open. Use responsibly!</param>
+    /// <param name="doNotClose">Only with <see cref="MenuPriority.High"/>. Only use this in extreme situations. It blocks
+    /// the player from using anything else, so always close the menu as soon as possible. The lock ends when you close
+    /// the menu or open its parent, and the player can still force it shut by holding back.</param>
+    /// <exception cref="ArgumentException"><paramref name="doNotClose"/> is set below <see cref="MenuPriority.High"/>.</exception>
+    public Task<OpenMenuOutcome> RequestOpenAsync(MenuPriority priority, bool doNotClose = false)
+    {
+        if (doNotClose && priority != MenuPriority.High)
+        {
+            throw new ArgumentException("doNotClose only works with MenuPriority.High.", nameof(doNotClose));
+        }
+
+        return _plugin.RequestOpenAsync(this, priority, doNotClose);
+    }
 
     /// <summary>Closes this plugin's menu if one is open.</summary>
     public void Close() => _plugin.EmitOp(new UpdateOp { Op = UpdateOps.CloseMenu, MenuId = Id });
@@ -386,6 +438,14 @@ public sealed class PluginMenu
 
             case CallbackTypes.MenuIndexChanged when callback.NewIndex is { } newIndex:
                 _indexChanged?.Invoke(callback.OldIndex ?? 0, newIndex);
+                break;
+
+            case CallbackTypes.MenuReplaced:
+                _replaced?.Invoke();
+                break;
+
+            case CallbackTypes.MenuForceClosed:
+                _forceClosed?.Invoke();
                 break;
         }
     }
@@ -462,17 +522,19 @@ public sealed class PluginMenu
 
         var copy = node.CopyRow();
 
-        copy.Menu = new MenuNode
-        {
-            Id = menu.Id,
-            Title = menu.Title,
-            Subtitle = menu.Subtitle,
-            Events = menu.Events,
-            Keys = menu.Keys,
-        };
+        copy.Menu = WithoutItems(menu);
 
         return copy;
     }
+
+    internal static MenuNode WithoutItems(MenuNode menu) => new()
+    {
+        Id = menu.Id,
+        Title = menu.Title,
+        Subtitle = menu.Subtitle,
+        Events = menu.Events,
+        Keys = menu.Keys,
+    };
 
     private bool RemoveLocal(PluginItem item)
     {
