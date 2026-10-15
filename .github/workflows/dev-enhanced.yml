@@ -281,11 +281,11 @@ jobs:
           name: enhanced-legacy-zip
           path: ${{ steps.version.outputs.legacy_zip_name }}
 
-  # Pushes only. Pull requests and dependabot runs have no business publishing, and cannot get an id-token anyway.
+  # Develop pushes only. Other branches, pull requests and dependabot runs have no business publishing.
   publish-nuget-prerelease:
     name: Publish pre-release NuGet packages
     needs: build
-    if: github.event_name == 'push' && github.actor != 'dependabot[bot]'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/develop' && github.actor != 'dependabot[bot]'
     runs-on: ubuntu-latest
 
     permissions:
