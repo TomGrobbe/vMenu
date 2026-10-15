@@ -15,6 +15,9 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\Shared\vMenu.Enhanced.PluginContracts\vMenu.Enhanced.PluginContracts.csproj" />
+
+    <!-- Built here so the nuspec finds it, never referenced: it runs in the plugin author's compiler. -->
+    <ProjectReference Include="..\..\..\Shared\vMenu.Enhanced.PluginAnalyzers\vMenu.Enhanced.PluginAnalyzers.csproj" ReferenceOutputAssembly="false" />
   </ItemGroup>
 
 </Project>

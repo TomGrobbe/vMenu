@@ -119,6 +119,7 @@
     <Project Path="src/Shared/vMenu.Enhanced.Data/vMenu.Enhanced.Data.csproj" />
     <Project Path="src/Shared/vMenu.Enhanced.Localization/vMenu.Enhanced.Localization.csproj" />
     <Project Path="src/Shared/vMenu.Enhanced.Logging/vMenu.Enhanced.Logging.csproj" />
+    <Project Path="src/Shared/vMenu.Enhanced.PluginAnalyzers/vMenu.Enhanced.PluginAnalyzers.csproj" />
     <Project Path="src/Shared/vMenu.Enhanced.PluginContracts/vMenu.Enhanced.PluginContracts.csproj" />
     <Project Path="src/Shared/vMenu.Enhanced.Polyfills/vMenu.Enhanced.Polyfills.csproj" />
   </Folder>

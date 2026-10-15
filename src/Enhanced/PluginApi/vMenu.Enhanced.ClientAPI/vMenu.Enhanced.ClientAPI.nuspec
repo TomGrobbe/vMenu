@@ -31,5 +31,6 @@
     <file src="$legacyOutput$vMenu.Enhanced.ClientAPI.dll" target="lib\net462" />
     <file src="$legacyOutput$vMenu.Enhanced.ClientAPI.xml" target="lib\net462" />
     <file src="$repoRoot$dependencies\legacy\Newtonsoft.Json.dll" target="lib\net462" />
+    <file src="$repoRoot$build\intermediate\shared\vMenu.Enhanced.PluginAnalyzers\vMenu.Enhanced.PluginAnalyzers.dll" target="analyzers\dotnet\cs" />
   </files>
 </package>
