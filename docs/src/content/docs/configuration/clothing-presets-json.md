@@ -3,7 +3,7 @@ title: "clothing-presets.json"
 description: "Outfits you publish for everybody, such as a set of police uniforms."
 ---
 
-The list behind **Outfit Presets, Server Presets** in the [character creator](/vmenu/enhanced/character-creator/). It ships empty as `[]`.
+The list behind **Outfit Presets, Server Presets** in the [character creator](/vmenu/enhanced/menus/character-creator/). It ships empty as `[]`.
 
 ## Making presets in game
 

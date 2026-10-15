@@ -19,6 +19,11 @@ export default defineConfig({
   vite: { server: { fs: { allow: [searchForWorkspaceRoot(process.cwd()), '../assets/shared/config'] } } },
   redirects: {
     '/moving-your-data/': '/vmenu/enhanced/backing-up-your-data/',
+    '/configuration/world-api/': '/vmenu/enhanced/integrations/world-api/',
+    '/exports/': '/vmenu/enhanced/integrations/exports/',
+    '/admin-menu/': '/vmenu/enhanced/menus/admin-menu/',
+    '/bully-menu/': '/vmenu/enhanced/menus/bully-menu/',
+    '/character-creator/': '/vmenu/enhanced/menus/character-creator/',
   },
   integrations: [
     starlight({
@@ -77,29 +82,7 @@ export default defineConfig({
             { label: 'Installing on FiveM Enhanced', link: '/installing/fivem-enhanced/' },
             { label: 'Installing on FiveM Legacy', link: '/installing/fivem-legacy/' },
             { label: 'Running on Linux', link: '/running-on-linux/' },
-          ],
-        },
-        { label: 'Key Bindings', link: '/key-bindings/' },
-        { label: 'Menu Appearance', link: '/menu-appearance/' },
-        {
-          label: 'Saved Data',
-          items: [
-            { label: 'Backing Up Your Data', link: '/backing-up-your-data/' },
-            { label: 'Edit Your Data', link: '/data-editor/' },
-            { label: 'Compare Or Merge Data', link: '/data-compare/' },
-            { label: 'Import Saved Data From Old vMenu', link: '/old-vmenu-import/' },
-          ],
-        },
-        { label: 'Custom Character Creator', link: '/character-creator/' },
-        { label: 'Admin Menu', link: '/admin-menu/' },
-        { label: 'Bully Menu', link: '/bully-menu/' },
-        { label: 'Webhook Logging', link: '/webhook-logging/' },
-        { label: 'Exports', link: '/exports/' },
-        {
-          label: 'Integrations',
-          items: [
-            { label: 'SnowstormBot (Discord)', link: '/integrations/' },
-            { label: 'Custom integrations', link: '/integrations/custom/' },
+            { label: 'Key Bindings', link: '/key-bindings/' },
           ],
         },
         {
@@ -117,7 +100,32 @@ export default defineConfig({
             { label: 'vehicle-categories.json', link: '/configuration/vehicle-categories-json/' },
             { label: 'walking-styles.json', link: '/configuration/walking-styles-json/' },
             { label: 'weather-cycle.json', link: '/configuration/weather-cycle-json/' },
-            { label: 'World API', link: '/configuration/world-api/' },
+          ],
+        },
+        {
+          label: 'Integrations',
+          items: [
+            { label: 'SnowstormBot (Discord)', link: '/integrations/' },
+            { label: 'Custom integrations', link: '/integrations/custom/' },
+            { label: 'World API', link: '/integrations/world-api/' },
+            { label: 'Exports', link: '/integrations/exports/' },
+          ],
+        },
+        {
+          label: 'Saved Data',
+          items: [
+            { label: 'Backing Up Your Data', link: '/backing-up-your-data/' },
+            { label: 'Edit Your Data', link: '/data-editor/' },
+            { label: 'Compare Or Merge Data', link: '/data-compare/' },
+            { label: 'Import Saved Data From Old vMenu', link: '/old-vmenu-import/' },
+          ],
+        },
+        {
+          label: 'Menus',
+          items: [
+            { label: 'Admin Menu', link: '/menus/admin-menu/' },
+            { label: 'Bully Menu', link: '/menus/bully-menu/' },
+            { label: 'Custom Character Creator', link: '/menus/character-creator/' },
           ],
         },
         {
@@ -142,6 +150,8 @@ export default defineConfig({
             { label: 'TypeScript setup', link: '/plugins/typescript/' },
           ],
         },
+        { label: 'Menu Appearance', link: '/menu-appearance/' },
+        { label: 'Webhook Logging', link: '/webhook-logging/' },
         {
           label: 'Links',
           items: [

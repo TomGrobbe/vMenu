@@ -229,7 +229,7 @@ Always send the full list of groups the player should have, and an empty list re
 
 ## Just want weather and time
 
-If all you need is the current weather, time, date and moon, there is a simpler option that does not need any of the above. vMenu can serve that over a plain `GET /world` request guarded by its own token. See the [World API](/vmenu/enhanced/configuration/world-api/) page.
+If all you need is the current weather, time, date and moon, there is a simpler option that does not need any of the above. vMenu can serve that over a plain `GET /world` request guarded by its own token. See the [World API](/vmenu/enhanced/integrations/world-api/) page.
 
 ## Support
 
