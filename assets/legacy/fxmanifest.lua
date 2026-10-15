@@ -25,7 +25,6 @@ files {
 -- Client assembly
 client_script 'client/vMenu.Legacy.Core.net.dll'
 client_script 'client/struct_natives.lua'
-lua54 'yes'
 
 node_version '22'
 
