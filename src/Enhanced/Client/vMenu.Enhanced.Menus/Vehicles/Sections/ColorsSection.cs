@@ -8,21 +8,40 @@ using vMenu.Enhanced.Menus.Vehicles.Appearance;
 
 namespace vMenu.Enhanced.Menus.Vehicles.Sections;
 
-// The game keeps the colour and the finish apart: the same id looks completely different as metallic,
-// matte or chrome. That is why the finish is its own row rather than a set of duplicate colour
-// groups, which is how legacy ended up listing "classic" and "metallic" over the same table.
 internal static class ColorsSection
 {
     // How many steps the paint fade slider has. The native wants zero to one.
     private const int FadeSteps = 20;
 
-    // What the game wants for wheels painted the colour they came in.
-    private const int DefaultAlloy = 156;
+    private sealed class Swatch(MenuText text, Action<int> apply, Func<PaintSnapshot, bool> isCurrent)
+    {
+        public MenuText Text { get; } = text;
 
-    // The paint finish that makes a colour shift with the viewing angle.
-    private const int ChameleonFinish = 6;
+        public Action<int> Apply { get; } = apply;
 
-    private const int NormalFinish = 0;
+        public Func<PaintSnapshot, bool> IsCurrent { get; } = isCurrent;
+    }
+
+    private sealed class PaintKind(ModPaintType type, string gameLabel, string fallbackKey)
+    {
+        public ModPaintType Type { get; } = type;
+
+        public string GameLabel { get; } = gameLabel;
+
+        public string FallbackKey { get; } = fallbackKey;
+    }
+
+    // The mod shop's order.
+    private static readonly PaintKind[] Kinds =
+    [
+        new(ModPaintType.Chrome, "CMOD_COL1_0", Loc.VehicleOptions.FinishChrome),
+        new(ModPaintType.Classic, "CMOD_COL1_1", Loc.VehicleOptions.ColorGroupClassic),
+        new(ModPaintType.Matte, "CMOD_COL1_5", Loc.VehicleOptions.ColorGroupMatte),
+        new(ModPaintType.Metallic, "CMOD_COL1_3", Loc.VehicleOptions.FinishMetallic),
+        new(ModPaintType.Metals, "CMOD_COL1_4", Loc.VehicleOptions.ColorGroupMetal),
+        new(ModPaintType.Pearlescent, "CMOD_COL1_6", Loc.VehicleOptions.FinishPearlescent),
+        new(ModPaintType.Chameleon, "CMOD_COL1_7", Loc.VehicleOptions.FinishChameleon),
+    ];
 
     public static void Build(MenuBuilder menu)
     {
@@ -45,46 +64,44 @@ internal static class ColorsSection
                 Text = MenuText.Key(Loc.VehicleOptions.PrimaryColor),
                 Description = MenuText.Key(Loc.VehicleOptions.PrimaryColorDescription),
                 MenuSubtitle = MenuText.Key(Loc.VehicleOptions.PrimaryColor),
-                Build = BuildPrimary,
+                Build = menu => BuildSlot(menu, primary: true),
             },
             new SubmenuEntry
             {
                 Text = MenuText.Key(Loc.VehicleOptions.SecondaryColor),
                 Description = MenuText.Key(Loc.VehicleOptions.SecondaryColorDescription),
                 MenuSubtitle = MenuText.Key(Loc.VehicleOptions.SecondaryColor),
-                Build = BuildSecondary,
+                Build = menu => BuildSlot(menu, primary: false),
             },
 
-            ColorRow(
-                Loc.VehicleOptions.PearlescentColor,
-                Loc.VehicleOptions.PearlescentColorDescription,
-                VehicleColorTables.Classic,
-                ReadPearlescent,
-                SetPearlescent),
+            SwatchLink(
+                MenuText.Key(Loc.VehicleOptions.InteriorColor),
+                MenuText.Key(Loc.VehicleOptions.InteriorColorDescription),
+                FixedSwatches(
+                    VehicleColorTables.Interior,
+                    (vehicle, color) => Native.SetVehicleInteriorColour(vehicle, color),
+                    snapshot => snapshot.Interior)),
 
-            WheelColorRow(),
+            SwatchLink(
+                MenuText.Key(Loc.VehicleOptions.DashboardColor),
+                MenuText.Key(Loc.VehicleOptions.DashboardColorDescription),
+                FixedSwatches(
+                    VehicleColorTables.Dashboard,
+                    (vehicle, color) => Native.SetVehicleDashboardColour(vehicle, color),
+                    snapshot => snapshot.Dashboard)),
 
-            ColorRow(
-                Loc.VehicleOptions.DashboardColor,
-                Loc.VehicleOptions.DashboardColorDescription,
-                VehicleColorTables.Classic,
-                ReadDashboard,
-                color => Apply(current => Native.SetVehicleDashboardColour(current, color))),
-
-            ColorRow(
-                Loc.VehicleOptions.InteriorColor,
-                Loc.VehicleOptions.InteriorColorDescription,
-                VehicleColorTables.Classic,
-                ReadInterior,
-                color => Apply(current => Native.SetVehicleInteriorColour(current, color))),
+            SwatchLink(
+                MenuText.Key(Loc.VehicleOptions.WheelColor),
+                MenuText.Key(Loc.VehicleOptions.WheelColorDescription),
+                FixedSwatches(
+                    VehicleColorTables.Wheel,
+                    (vehicle, color) =>
+                    {
+                        Native.GetVehicleExtraColours(vehicle, out var pearl, out _);
+                        Native.SetVehicleExtraColours(vehicle, pearl, color);
+                    },
+                    snapshot => snapshot.Wheel)),
         };
-
-        // Its own row rather than a sixth colour group, so it is findable and so picking one sets the finish
-        // along with the colour.
-        if (VehicleColorTables.HasChameleonPaints)
-        {
-            rows.Add(ChameleonRow());
-        }
 
         if (Native.GetNumberOfVehicleColours(handle) is > 0 and var combinations)
         {
@@ -110,117 +127,196 @@ internal static class ColorsSection
 
     #region Primary and secondary
 
-    private static void BuildPrimary(MenuBuilder menu)
+    private static void BuildSlot(MenuBuilder menu, bool primary)
     {
-        menu.Entries.Add(FinishRow(
-            () => ReadPaintType(primary: true),
-            finish => Apply(handle =>
-            {
-                Native.GetVehicleColours(handle, out var color, out _);
-                Native.GetVehicleExtraColours(handle, out var pearlescent, out _);
+        menu.AddRange(SlotRows(primary));
 
-                Native.SetVehicleModColor_1(handle, finish, color, pearlescent);
-            })));
+        SectionRows.AutoFill(menu, () => SlotRows(primary));
+    }
 
-        foreach (var group in VehicleColorTables.BodyGroups)
+    private static IReadOnlyList<MenuEntry> SlotRows(bool primary)
+    {
+        if (SectionRows.DrivenWithModKit() is not { } handle)
         {
-            menu.Entries.Add(ColorRow(
-                group.NameKey,
-                Loc.VehicleOptions.PrimaryColorDescription,
-                group.Colors,
-                ReadPrimary,
-                SetPrimary));
+            return SectionRows.BlockedOnly();
         }
 
-        menu.Entries.Add(new SubmenuEntry
+        var description = MenuText.Key(primary
+            ? Loc.VehicleOptions.PrimaryColorDescription
+            : Loc.VehicleOptions.SecondaryColorDescription);
+
+        var rows = new List<MenuEntry>();
+
+        foreach (var kind in Kinds)
+        {
+            if (kind.Type == ModPaintType.Pearlescent && !primary)
+            {
+                continue;
+            }
+
+            var paints = ModPaintCatalog.Load(
+                handle,
+                kind.Type == ModPaintType.Pearlescent ? ModPaintType.Metallic : kind.Type);
+
+            if (paints.Count == 0)
+            {
+                continue;
+            }
+
+            var title = GameLabels.Game(kind.GameLabel, kind.FallbackKey);
+
+            if (kind.Type == ModPaintType.Pearlescent)
+            {
+                rows.Add(SwatchLink(
+                    title,
+                    MenuText.Key(Loc.VehicleOptions.PearlescentColorDescription),
+                    PearlSwatches(paints)));
+                continue;
+            }
+
+            rows.Add(SwatchLink(title, description, ModSwatches(paints, kind.Type, primary)));
+        }
+
+        rows.Add(SwatchLink(
+            MenuText.Key(Loc.VehicleOptions.ColorGroupUtility),
+            description,
+            BodySwatches(VehicleColorTables.Utility, primary)));
+
+        rows.Add(SwatchLink(
+            MenuText.Key(Loc.VehicleOptions.ColorGroupWorn),
+            description,
+            BodySwatches(VehicleColorTables.Worn, primary)));
+
+        rows.Add(new SubmenuEntry
         {
             Text = MenuText.Key(Loc.VehicleOptions.CustomColor),
             Description = MenuText.Key(Loc.VehicleOptions.CustomColorDescription),
-            MenuSubtitle = MenuText.Key(Loc.VehicleOptions.PrimaryColor),
-            Build = rgb => RgbPicker.Build(rgb, PrimaryRgb()),
+            MenuSubtitle = MenuText.Key(primary ? Loc.VehicleOptions.PrimaryColor : Loc.VehicleOptions.SecondaryColor),
+            Build = rgb => RgbPicker.Build(rgb, primary ? PrimaryRgb() : SecondaryRgb()),
         });
+
+        return rows;
     }
 
-    private static void BuildSecondary(MenuBuilder menu)
+    private static List<Swatch> ModSwatches(IReadOnlyList<ModPaint> paints, ModPaintType type, bool primary)
     {
-        menu.Entries.Add(FinishRow(
-            () => ReadPaintType(primary: false),
-            finish => Apply(handle =>
-            {
-                Native.GetVehicleColours(handle, out _, out var color);
+        var swatches = new List<Swatch>(paints.Count);
 
-                Native.SetVehicleModColor_2(handle, finish, color);
-            })));
-
-        foreach (var group in VehicleColorTables.BodyGroups)
+        foreach (var paint in paints)
         {
-            menu.Entries.Add(ColorRow(
-                group.NameKey,
-                Loc.VehicleOptions.SecondaryColorDescription,
-                group.Colors,
-                ReadSecondary,
-                SetSecondary));
+            var text = GameLabels.GameOrLiteral(paint.Label, VehicleColorTables.FallbackName(paint.Label));
+
+            swatches.Add(primary
+                ? new Swatch(
+                    text,
+                    vehicle =>
+                    {
+                        Native.ClearVehicleCustomPrimaryColour(vehicle);
+                        Native.SetVehicleModColor_1(vehicle, (int)type, paint.Index, 0);
+                        Redraw(vehicle);
+                        PaintPreview.Committed?.RestoreCustomSecondary();
+                    },
+                    snapshot => snapshot.CustomPrimary is null
+                        && snapshot.Primary == paint.Paint
+                        && SameType(snapshot.PrimaryType, type))
+                : new Swatch(
+                    text,
+                    vehicle =>
+                    {
+                        Native.ClearVehicleCustomSecondaryColour(vehicle);
+                        Native.SetVehicleModColor_2(vehicle, (int)type, paint.Index);
+                        Redraw(vehicle);
+                        PaintPreview.Committed?.RestoreCustomPrimary();
+                    },
+                    snapshot => snapshot.CustomSecondary is null
+                        && snapshot.Secondary == paint.Paint
+                        && SameType(snapshot.SecondaryType, type)));
         }
 
-        menu.Entries.Add(new SubmenuEntry
-        {
-            Text = MenuText.Key(Loc.VehicleOptions.CustomColor),
-            Description = MenuText.Key(Loc.VehicleOptions.CustomColorDescription),
-            MenuSubtitle = MenuText.Key(Loc.VehicleOptions.SecondaryColor),
-            Build = rgb => RgbPicker.Build(rgb, SecondaryRgb()),
-        });
+        return swatches;
     }
 
-    private static ListEntry FinishRow(Func<int> read, Action<int> write)
+    // Uses the metallic list, the pearl being the colour that metallic paint would have given the body.
+    private static List<Swatch> PearlSwatches(IReadOnlyList<ModPaint> metallic)
     {
-        var options = new List<MenuText>(VehicleOptionTables.PaintFinishKeys.Count);
+        var swatches = new List<Swatch>(metallic.Count);
 
-        foreach (var key in VehicleOptionTables.PaintFinishKeys)
+        foreach (var paint in metallic)
         {
-            options.Add(MenuText.Key(key));
+            swatches.Add(new Swatch(
+                GameLabels.GameOrLiteral(paint.Label, VehicleColorTables.FallbackName(paint.Label)),
+                vehicle =>
+                {
+                    Native.GetVehicleExtraColours(vehicle, out _, out var wheel);
+                    Native.SetVehicleExtraColours(vehicle, paint.Paint, wheel);
+                },
+                snapshot => snapshot.Pearl == paint.Paint));
         }
 
-        return new ListEntry
-        {
-            Text = MenuText.Key(Loc.VehicleOptions.PaintFinish),
-            Description = MenuText.Key(Loc.VehicleOptions.PaintFinishDescription),
-            Options = options,
-
-            // Not clamped. A finish the game reports that this list does not have is a value vMenu does not
-            // understand, and clamping it landed on the last entry, which is how every vehicle read as chameleon.
-            ReadSelectedIndex = () => read() is var finish && finish >= 0 && finish < options.Count ? finish : 0,
-
-            OnIndexChanged = changed => write(changed.NewIndex),
-        };
+        return swatches;
     }
 
-    // Both body colours and the finish move together, because that is what the game means by a chameleon
-    // paint. Picking an ordinary colour afterwards puts the finish back.
-    private static ListEntry ChameleonRow()
+    private static List<Swatch> BodySwatches(IReadOnlyList<VehicleColorOption> colors, bool primary)
     {
-        var colors = VehicleColorTables.Chameleon;
-
-        var options = new List<MenuText>(colors.Count);
+        var swatches = new List<Swatch>(colors.Count);
 
         foreach (var color in colors)
         {
-            options.Add(color.Text);
+            swatches.Add(primary
+                ? new Swatch(
+                    color.Text,
+                    vehicle =>
+                    {
+                        Native.ClearVehicleCustomPrimaryColour(vehicle);
+                        Native.GetVehicleColours(vehicle, out _, out var secondary);
+                        Native.SetVehicleColours(vehicle, color.Id, secondary);
+                        PaintPreview.Committed?.RestoreCustomSecondary();
+                    },
+                    snapshot => snapshot.CustomPrimary is null && snapshot.Primary == color.Id)
+                : new Swatch(
+                    color.Text,
+                    vehicle =>
+                    {
+                        Native.ClearVehicleCustomSecondaryColour(vehicle);
+                        Native.GetVehicleColours(vehicle, out var primaryColor, out _);
+                        Native.SetVehicleColours(vehicle, primaryColor, color.Id);
+                        PaintPreview.Committed?.RestoreCustomPrimary();
+                    },
+                    snapshot => snapshot.CustomSecondary is null && snapshot.Secondary == color.Id));
         }
 
-        return new ListEntry
+        return swatches;
+    }
+
+    private static List<Swatch> FixedSwatches(
+        IReadOnlyList<VehicleColorOption> colors,
+        Action<int, int> write,
+        Func<PaintSnapshot, int> read)
+    {
+        var swatches = new List<Swatch>(colors.Count);
+
+        foreach (var color in colors)
         {
-            Text = MenuText.Key(Loc.VehicleOptions.ColorGroupChameleon),
-            Description = MenuText.Key(Loc.VehicleOptions.ChameleonPaintDescription),
-            Options = options,
-            ReadSelectedIndex = () => Math.Max(0, VehicleColorTables.IndexOf(colors, ReadPrimary())),
-            OnIndexChanged = changed =>
-            {
-                if (changed.NewIndex >= 0 && changed.NewIndex < colors.Count)
-                {
-                    SetChameleon(colors[changed.NewIndex].Id);
-                }
-            },
-        };
+            swatches.Add(new Swatch(
+                color.Text,
+                vehicle => write(vehicle, color.Id),
+                snapshot => read(snapshot) == color.Id));
+        }
+
+        return swatches;
+    }
+
+    // A paint that predates the mod shop has no type, and the game matches it on colour alone.
+    private static bool SameType(int current, ModPaintType type) =>
+        current == (int)type || current is < 0 or > (int)ModPaintType.Chameleon;
+
+    // The mod colour natives only record the shop paint, the car is not redrawn until its colours are set.
+    private static void Redraw(int vehicle)
+    {
+        Native.GetVehicleColours(vehicle, out var primary, out var secondary);
+        Native.GetVehicleExtraColours(vehicle, out var pearl, out var wheel);
+        Native.SetVehicleColours(vehicle, primary, secondary);
+        Native.SetVehicleExtraColours(vehicle, pearl, wheel);
     }
 
     private static RgbTarget PrimaryRgb() => new()
@@ -259,77 +355,71 @@ internal static class ColorsSection
 
     #endregion
 
-    #region Rows built from a colour table
+    #region Swatch menus
 
-    private static ListEntry ColorRow(
-        string textKey,
-        string descriptionKey,
-        IReadOnlyList<VehicleColorOption> colors,
-        Func<int> readCurrent,
-        Action<int> write)
+    private static SubmenuEntry SwatchLink(
+        MenuText text,
+        MenuText description,
+        IReadOnlyList<Swatch> swatches,
+        Func<bool>? enabled = null) => new()
     {
-        var options = new List<MenuText>(colors.Count);
+        Text = text,
+        Description = description,
+        MenuSubtitle = text,
+        ReadEnabled = enabled,
+        Build = menu => BuildSwatches(menu, swatches),
+    };
 
-        foreach (var color in colors)
+    // Scrolling shows a paint, enter keeps it, and leaving puts back whatever was kept, like the mod shop.
+    private static void BuildSwatches(MenuBuilder menu, IReadOnlyList<Swatch> swatches)
+    {
+        var entries = new List<ButtonEntry>(swatches.Count);
+
+        foreach (var swatch in swatches)
         {
-            options.Add(color.Text);
-        }
-
-        return new ListEntry
-        {
-            Text = MenuText.Key(textKey),
-            Description = MenuText.Key(descriptionKey),
-            Options = options,
-
-            // A colour from another group, or one mixed by hand, is in none of these lists, so the row rests on
-            // its first entry rather than jumping somewhere that means nothing.
-            ReadSelectedIndex = () => Math.Max(0, VehicleColorTables.IndexOf(colors, readCurrent())),
-            OnIndexChanged = changed =>
+            entries.Add(new ButtonEntry
             {
-                if (changed.NewIndex >= 0 && changed.NewIndex < colors.Count)
+                Text = swatch.Text,
+                ReadRightIcon = () => PaintPreview.CurrentIcon(swatch.IsCurrent),
+                OnHighlighted = _ => PaintPreview.Show(swatch.Apply),
+                OnSelected = _ =>
                 {
-                    write(colors[changed.NewIndex].Id);
-                }
-            },
-        };
-    }
-
-    private static ListEntry WheelColorRow()
-    {
-        // The default is not in any table, so it is prepended and everything else shifts by one.
-        var options = new List<MenuText>(VehicleColorTables.Classic.Count + 1)
-        {
-            MenuText.Key(Loc.VehicleOptions.ColorDefaultAlloy),
-        };
-
-        foreach (var color in VehicleColorTables.Classic)
-        {
-            options.Add(color.Text);
+                    PaintPreview.Commit(swatch.Apply);
+                    menu.Refresh();
+                },
+            });
         }
 
-        return new ListEntry
+        menu.AddRange(entries);
+
+        // MenuAPI raises the first highlight before the open callback, so the session may already be running.
+        menu.OnOpened = _ =>
         {
-            Text = MenuText.Key(Loc.VehicleOptions.WheelColor),
-            Description = MenuText.Key(Loc.VehicleOptions.WheelColorDescription),
-            Options = options,
-            ReadSelectedIndex = () =>
-            {
-                var current = ReadWheelColor();
+            ShopText.Load();
+            PaintPreview.Begin();
+            menu.Refresh();
 
-                return current == DefaultAlloy
-                    ? 0
-                    : Math.Max(0, VehicleColorTables.IndexOf(VehicleColorTables.Classic, current) + 1);
-            },
-            OnIndexChanged = changed =>
+            for (var index = 0; index < swatches.Count; index++)
             {
-                var color = changed.NewIndex == 0
-                    ? DefaultAlloy
-                    : VehicleColorTables.Classic[changed.NewIndex - 1].Id;
+                if (PaintPreview.Committed is { } session && swatches[index].IsCurrent(session))
+                {
+                    menu.Select(entries[index]);
 
-                SetWheelColor(color);
-            },
+                    return;
+                }
+            }
+        };
+
+        menu.OnClosed = _ =>
+        {
+            PaintPreview.End();
+            ShopText.Unload();
         };
     }
+
+    #endregion
+
+    #region Rows built from a colour table
 
     private static ListEntry CombinationRow(int combinations)
     {
@@ -358,158 +448,6 @@ internal static class ColorsSection
 
     #endregion
 
-    #region Reading and writing
-
-    private static int ReadPaintType(bool primary)
-    {
-        if (SectionRows.Driven() is not { } handle)
-        {
-            return 0;
-        }
-
-        try
-        {
-            if (primary)
-            {
-                Native.GetVehicleModColor_1(handle, out var type, out _, out _);
-
-                return type;
-            }
-
-            Native.GetVehicleModColor_2(handle, out var secondaryType, out _);
-
-            return secondaryType;
-        }
-        catch (Exception)
-        {
-            // The generated wrapper reads every output slot whether or not the game filled it, and the runtime
-            // throws rather than handing back a zero when it did not.
-            return 0;
-        }
-    }
-
-    private static int ReadPrimary()
-    {
-        if (SectionRows.Driven() is not { } handle)
-        {
-            return 0;
-        }
-
-        Native.GetVehicleColours(handle, out var primary, out _);
-
-        return primary;
-    }
-
-    private static int ReadSecondary()
-    {
-        if (SectionRows.Driven() is not { } handle)
-        {
-            return 0;
-        }
-
-        Native.GetVehicleColours(handle, out _, out var secondary);
-
-        return secondary;
-    }
-
-    private static int ReadPearlescent()
-    {
-        if (SectionRows.Driven() is not { } handle)
-        {
-            return 0;
-        }
-
-        Native.GetVehicleExtraColours(handle, out var pearlescent, out _);
-
-        return pearlescent;
-    }
-
-    private static int ReadWheelColor()
-    {
-        if (SectionRows.Driven() is not { } handle)
-        {
-            return DefaultAlloy;
-        }
-
-        Native.GetVehicleExtraColours(handle, out _, out var wheel);
-
-        return wheel;
-    }
-
-    private static int ReadDashboard()
-    {
-        if (SectionRows.Driven() is not { } handle)
-        {
-            return 0;
-        }
-
-        Native.GetVehicleDashboardColour(handle, out var dashboard);
-
-        return dashboard;
-    }
-
-    private static int ReadInterior()
-    {
-        if (SectionRows.Driven() is not { } handle)
-        {
-            return 0;
-        }
-
-        Native.GetVehicleInteriorColour(handle, out var interior);
-
-        return interior;
-    }
-
-    // A custom colour sits on top of the id, so picking from a list without dropping it would look like
-    // the row did nothing at all. A chameleon finish goes the same way: leaving it on while painting the
-    // car an ordinary colour is what made coming out of chameleon behave differently from going in.
-    private static void SetPrimary(int color) => Apply(handle =>
-    {
-        Native.ClearVehicleCustomPrimaryColour(handle);
-        Native.GetVehicleExtraColours(handle, out var pearlescent, out _);
-        Native.SetVehicleModColor_1(handle, Ordinary(ReadPaintType(primary: true)), color, pearlescent);
-
-        Native.GetVehicleColours(handle, out _, out var secondary);
-        Native.SetVehicleColours(handle, color, secondary);
-    });
-
-    private static void SetSecondary(int color) => Apply(handle =>
-    {
-        Native.ClearVehicleCustomSecondaryColour(handle);
-        Native.SetVehicleModColor_2(handle, Ordinary(ReadPaintType(primary: false)), color);
-
-        Native.GetVehicleColours(handle, out var primary, out _);
-        Native.SetVehicleColours(handle, primary, color);
-    });
-
-    // A chameleon paint covers the whole car, so both colours and both finishes move.
-    private static void SetChameleon(int color) => Apply(handle =>
-    {
-        Native.ClearVehicleCustomPrimaryColour(handle);
-        Native.ClearVehicleCustomSecondaryColour(handle);
-
-        Native.GetVehicleExtraColours(handle, out var pearlescent, out _);
-
-        Native.SetVehicleModColor_1(handle, ChameleonFinish, color, pearlescent);
-        Native.SetVehicleModColor_2(handle, ChameleonFinish, color);
-        Native.SetVehicleColours(handle, color, color);
-    });
-
-    // The finish to keep when painting an ordinary colour, which chameleon never is.
-    private static int Ordinary(int finish) => finish == ChameleonFinish ? NormalFinish : finish;
-
-    private static void SetPearlescent(int color) => Apply(handle =>
-    {
-        Native.GetVehicleExtraColours(handle, out _, out var wheel);
-        Native.SetVehicleExtraColours(handle, color, wheel);
-    });
-
-    private static void SetWheelColor(int color) => Apply(handle =>
-    {
-        Native.GetVehicleExtraColours(handle, out var pearlescent, out _);
-        Native.SetVehicleExtraColours(handle, pearlescent, color);
-    });
-
     private static void Apply(Action<int> change)
     {
         if (SectionRows.DrivenWithModKit() is { } handle)
@@ -517,6 +455,4 @@ internal static class ColorsSection
             change(handle);
         }
     }
-
-    #endregion
 }

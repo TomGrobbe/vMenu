@@ -273,8 +273,6 @@ public static partial class Loc
 
         public const string SecondaryColorDescription = "vehicleoptions.colors.secondary.desc";
 
-        public const string PearlescentColor = "vehicleoptions.colors.pearlescent";
-
         public const string PearlescentColorDescription = "vehicleoptions.colors.pearlescent.desc";
 
         public const string WheelColor = "vehicleoptions.colors.wheel";
@@ -289,19 +287,9 @@ public static partial class Loc
 
         public const string InteriorColorDescription = "vehicleoptions.colors.interior.desc";
 
-        public const string PaintFinish = "vehicleoptions.colors.finish";
-
-        public const string PaintFinishDescription = "vehicleoptions.colors.finish.desc";
-
-        public const string FinishNormal = "vehicleoptions.colors.finish.normal";
-
         public const string FinishMetallic = "vehicleoptions.colors.finish.metallic";
 
         public const string FinishPearlescent = "vehicleoptions.colors.finish.pearl";
-
-        public const string FinishMatte = "vehicleoptions.colors.finish.matte";
-
-        public const string FinishMetal = "vehicleoptions.colors.finish.metal";
 
         public const string FinishChrome = "vehicleoptions.colors.finish.chrome";
 
@@ -316,10 +304,6 @@ public static partial class Loc
         public const string ColorGroupUtility = "vehicleoptions.colors.group.utility";
 
         public const string ColorGroupWorn = "vehicleoptions.colors.group.worn";
-
-        public const string ColorGroupChameleon = "vehicleoptions.colors.group.chameleon";
-
-        public const string ChameleonPaintDescription = "vehicleoptions.colors.chameleon.desc";
 
         public const string ColorDefaultAlloy = "vehicleoptions.colors.defaultalloy";
 

@@ -62,18 +62,6 @@ public static class VehicleOptionTables
         GameLabels.GameOrLiteral("CMOD_PLA_12", "Sprunk"),
     ];
 
-    // The position in the list is the value SetVehicleModColor_1 wants for its colour type.
-    public static IReadOnlyList<string> PaintFinishKeys { get; } =
-    [
-        Loc.VehicleOptions.FinishNormal,
-        Loc.VehicleOptions.FinishMetallic,
-        Loc.VehicleOptions.FinishPearlescent,
-        Loc.VehicleOptions.FinishMatte,
-        Loc.VehicleOptions.FinishMetal,
-        Loc.VehicleOptions.FinishChrome,
-        Loc.VehicleOptions.FinishChameleon,
-    ];
-
     // The position in a choice list holding this native value, or 0 when it is not there.
     public static int IndexOfValue(IReadOnlyList<VehicleChoice> choices, int value)
     {
