@@ -19,6 +19,7 @@ public static class MainMenuComposition
         new RecordingMenu(),
         new DisplaySettingsMenu(),
         new MiscSettingsMenu(),
+        new CutscenesMenu(),
         new BullyMenu(),
         new DeveloperFeaturesMenu(),
         new PluginsMenu(),

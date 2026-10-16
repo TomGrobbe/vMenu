@@ -17,6 +17,7 @@ using vMenu.Enhanced.Localization;
 using vMenu.Enhanced.Menus;
 using vMenu.Enhanced.Menus.Admin;
 using vMenu.Enhanced.Menus.Bully;
+using vMenu.Enhanced.Menus.Cutscenes;
 using vMenu.Enhanced.Menus.Developer;
 using vMenu.Enhanced.Menus.Misc;
 using vMenu.Enhanced.Menus.Players;
@@ -220,6 +221,7 @@ public sealed class Main : BaseScript
         AdminPushEvents.Initialize();
         StaffAlertsFeature.Initialize();
         BullyReceiver.Initialize();
+        CutscenePlayer.Initialize();
 
         DeathNotifications.Initialize();
         JoinLeaveNotifications.Initialize();

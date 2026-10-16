@@ -255,7 +255,7 @@ public static class BullyActions
 
     private static void Settle(int target, BullyEffect effect, string outcome)
     {
-        if (effect.Id == BullyEffects.Haircut && outcome is not (BullyEvents.Started or BullyEvents.Unconfirmed))
+        if (effect.PlaysCutscene && outcome is not (BullyEvents.Started or BullyEvents.Unconfirmed))
         {
             BullyPrivateWorlds.Refused(target);
         }
@@ -282,12 +282,14 @@ public static class BullyActions
             case BullyEffects.Abduct:
                 Abductions[target] = expires;
                 break;
-            case BullyEffects.Haircut:
-                BullyPrivateWorlds.Allow(target, expires);
-                break;
             case BullyEffects.Mug:
                 Mugs[target] = new MugRound(expires, victims.Where(victim => victim != target).ToHashSet());
                 break;
+        }
+
+        if (effect.PlaysCutscene)
+        {
+            BullyPrivateWorlds.Allow(target, expires);
         }
 
         if (effect.SpawnsEntities && effect.Id != BullyEffects.Transform)

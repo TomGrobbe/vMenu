@@ -4,8 +4,10 @@ using CitizenFX.FiveM.Client;
 
 using vMenu.Enhanced.Configuration;
 using vMenu.Enhanced.Data.Bullying;
+using vMenu.Enhanced.Data.Cutscenes;
 using vMenu.Enhanced.Events;
 using vMenu.Enhanced.Logging;
+using vMenu.Enhanced.Menus.Cutscenes;
 
 using BullySettings = vMenu.Enhanced.Data.Configuration.Settings.Bully;
 
@@ -35,7 +37,6 @@ public static class BullyReceiver
         [BullyEffects.Clone] = EvilClone.Start,
         [BullyEffects.Teleport] = Relocation.TeleportAndReturn,
         [BullyEffects.Abduct] = AlienAbduction.Start,
-        [BullyEffects.Haircut] = HaircutRoast.Start,
         [BullyEffects.Float] = VehiclePranks.Float,
         [BullyEffects.Transform] = VehiclePranks.Transform,
     };
@@ -51,6 +52,11 @@ public static class BullyReceiver
 
         _registered = true;
 
+        foreach (var entry in CutsceneCatalog.All)
+        {
+            Effects[entry.Id] = run => CutscenePlayer.FromBullyAsync(run, entry.Id);
+        }
+
         API.OnNetEvent(BullyEvents.Apply, new Action<string, string, string, string>(OnApply), false);
         API.OnNetEvent(BullyEvents.Toggle, new Action<string, string, string>(OnToggle), false);
         API.OnNetEvent(BullyEvents.StopAll, new Action(BullyState.StopAll), false);
@@ -59,7 +65,6 @@ public static class BullyReceiver
         VehiclePranks.Initialize();
         AlienAbduction.Initialize();
         Relocation.Initialize();
-        HaircutRoast.Initialize();
         Mugger.Initialize();
         BullySpawnCleanup.Initialize();
         ScreenPranks.Initialize();
@@ -91,7 +96,7 @@ public static class BullyReceiver
             return;
         }
 
-        if (HaircutRoast.IsActive)
+        if (CutscenePlayer.IsPlaying)
         {
             run.Busy();
 

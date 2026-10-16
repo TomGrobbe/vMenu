@@ -1,4 +1,5 @@
 using vMenu.Enhanced.Data.Configuration;
+using vMenu.Enhanced.Data.Cutscenes;
 
 using BullySettings =vMenu.Enhanced.Data.Configuration.Settings.Bully;
 
@@ -46,8 +47,6 @@ public static class BullyEffects
 
     public const string Abduct = "Abduct";
 
-    public const string Haircut = "Haircut";
-
     public const string Float = "Float";
 
     public const string Transform = "Transform";
@@ -74,9 +73,9 @@ public static class BullyEffects
         new(Clone, "sent an evil clone after", BullyRequirement.OnFoot),
         new(Teleport, "randomly teleported", BullyRequirement.OnFoot),
         new(Abduct, "had aliens abduct", BullyRequirement.OnFoot) { SpawnsEntities = true },
-        new(Haircut, "had Lamar roast the haircut of", BullyRequirement.OnFoot),
         new(Float, "levitated the vehicle of", BullyRequirement.Driving),
         new(Transform, "transformed the vehicle of", BullyRequirement.Driving) { SpawnsEntities = true },
+        .. CutsceneCatalog.All.Select(entry => new BullyEffect(entry.Id, entry.BullyVerb, BullyRequirement.OnFoot) { PlaysCutscene = true }),
     ];
 
     public static BullyEffect? Find(string id) => All.FirstOrDefault(effect => effect.Id == id);
@@ -100,6 +99,8 @@ public sealed class BullyEffect(string id, string verb, BullyRequirement require
     public bool SpawnsEntities { get; init; }
 
     public bool Grouped { get; init; }
+
+    public bool PlaysCutscene { get; init; }
 
     public BoolSetting? TurnedOffBy { get; init; }
 }

@@ -137,6 +137,11 @@ public static class ActionIds
         private static string State(bool on) => on ? ".On" : ".Off";
     }
 
+    public static class Cutscenes
+    {
+        public const string Play = "Cutscenes.Play";
+    }
+
     public static class DisplaySettings
     {
         public const string AddBlip = "DisplaySettings.AddBlip";

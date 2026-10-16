@@ -103,6 +103,7 @@ public class CoreServer : IScript
         WorldActions.Register();
         OnlinePlayerActions.Register();
         BullyActions.Register();
+        CutsceneActions.Register();
         StaffAlertActions.Register();
         AdminActions.Register();
         AnnouncementSchedule.Register();

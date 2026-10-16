@@ -214,6 +214,12 @@ public static partial class Loc
 
         public const string HaircutDescription = "bully.effect.haircut.desc";
 
+        public const string PulledOver = "bully.effect.pulledover";
+
+        public const string PulledOverDescription = "bully.effect.pulledover.desc";
+
+        public const string CutscenesGroup = "bully.group.cutscenes";
+
         public const string Float = "bully.effect.float";
 
         public const string FloatDescription = "bully.effect.float.desc";

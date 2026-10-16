@@ -7,6 +7,7 @@ using vMenu.Enhanced.Actions;
 using vMenu.Enhanced.Configuration;
 using vMenu.Enhanced.Data.Actions;
 using vMenu.Enhanced.Data.Bullying;
+using vMenu.Enhanced.Data.Cutscenes;
 using vMenu.Enhanced.MenuFramework;
 using vMenu.Enhanced.Localization;
 
@@ -27,8 +28,9 @@ internal sealed class BullyPanel
         (Loc.Bully.ScaresGroup,
         [
             BullyEffects.Sound, BullyEffects.Fireworks, BullyEffects.Beast, BullyEffects.Clone, BullyEffects.Teleport,
-            BullyEffects.Abduct, BullyEffects.Haircut,
+            BullyEffects.Abduct,
         ]),
+        (Loc.Bully.CutscenesGroup, CutsceneCatalog.All.Select(entry => entry.Id).ToArray()),
         (Loc.Bully.AttackersGroup, [BullyEffects.Carjack, BullyEffects.Mug, BullyEffects.Clowns, BullyEffects.Cougar]),
         (Loc.Bully.VehicleGroup, [BullyEffects.Float, BullyEffects.Transform]),
     ];

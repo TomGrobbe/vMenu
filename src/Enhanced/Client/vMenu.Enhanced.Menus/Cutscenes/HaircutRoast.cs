@@ -6,10 +6,11 @@ using vMenu.Enhanced.BrokenNatives;
 using vMenu.Enhanced.Data.Bullying;
 using vMenu.Enhanced.Events;
 using vMenu.Enhanced.MenuFramework;
+using vMenu.Enhanced.Menus.Bully;
 
 using NoClipState = vMenu.Enhanced.NoClip.NoClip;
 
-namespace vMenu.Enhanced.Menus.Bully;
+namespace vMenu.Enhanced.Menus.Cutscenes;
 
 internal static class HaircutRoast
 {
@@ -108,8 +109,6 @@ internal static class HaircutRoast
 
     private static bool _noClipReleased;
 
-    public static bool IsActive => _active;
-
     public static void Initialize()
     {
         API.OnNetEvent(BullyEvents.PrivateWorldMoved, new Action<string>(OnWorldMoved), false);
@@ -141,31 +140,15 @@ internal static class HaircutRoast
         Native.DoScreenFadeIn(0);
     }
 
-    public static async Task Start(BullyRun run)
+    public static async Task PlayAsync(int ped, Func<bool> stopped, Action started, Action failed)
     {
-        var ped = Native.PlayerPedId();
-
-        if (_active || Relocation.IsAway || AlienAbduction.IsActive)
-        {
-            run.Busy();
-
-            return;
-        }
-
-        if (!Native.IsPedOnFoot(ped))
-        {
-            run.Skip(BullyEvents.RefusedOnFoot);
-
-            return;
-        }
-
         _active = true;
 
         SceneLock.Take();
         BullyState.SetPaused(true);
 
-        var stopAllCount = BullyState.StopAllCount;
         var askedForPrivateWorld = false;
+        var playing = false;
 
         try
         {
@@ -177,10 +160,8 @@ internal static class HaircutRoast
 
             askedForPrivateWorld = true;
 
-            if (!await MoveWorldAsync(toPrivate: true) || stopAllCount != BullyState.StopAllCount)
+            if (!await MoveWorldAsync(toPrivate: true) || stopped())
             {
-                run.Failed();
-
                 return;
             }
 
@@ -190,8 +171,6 @@ internal static class HaircutRoast
 
             if (!await LoadAsync())
             {
-                run.Failed();
-
                 return;
             }
 
@@ -199,19 +178,24 @@ internal static class HaircutRoast
 
             if (!await WaitAsync(Native.IsCutscenePlaying, CutsceneStartTimeoutMs))
             {
-                run.Failed();
-
                 return;
             }
 
-            run.Started();
+            playing = true;
+
+            started();
 
             Native.DoScreenFadeIn(FadeMs);
 
-            await PlayAsync(stopAllCount);
+            await WatchAsync(stopped);
         }
         finally
         {
+            if (!playing)
+            {
+                failed();
+            }
+
             await FinishAsync(ped, askedForPrivateWorld);
         }
     }
@@ -285,11 +269,11 @@ internal static class HaircutRoast
         Native.StartCutscene(NoWidescreenBorders);
     }
 
-    private static async Task PlayAsync(int stopAllCount)
+    private static async Task WatchAsync(Func<bool> stopped)
     {
         var barberHelpShown = false;
 
-        while (Native.IsCutsceneActive() && stopAllCount == BullyState.StopAllCount)
+        while (Native.IsCutsceneActive() && !stopped())
         {
             if (!barberHelpShown
                 && Native.GetCutsceneTime() > BarberHelpAtMs
