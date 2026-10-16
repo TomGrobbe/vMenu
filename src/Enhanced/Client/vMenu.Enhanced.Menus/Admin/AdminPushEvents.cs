@@ -24,6 +24,7 @@ public static class AdminPushEvents
 
         AdminFreeze.Initialize();
         AdminHold.Initialize();
+        PrivateMessageWatch.Initialize();
 
         API.OnNetEvent(AdminEvents.Freeze, new Action<string>(OnFreeze), false);
         API.OnNetEvent(AdminEvents.Hold, new Action<string>(OnHold), false);

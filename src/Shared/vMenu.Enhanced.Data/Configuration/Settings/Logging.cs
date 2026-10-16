@@ -41,6 +41,15 @@ public static class Logging
         ServerOnly = true,
     };
 
+    public static readonly StringSetting MessagesWebhook = new("vMenu.Enhanced.Logging.Webhook.Messages")
+    {
+        Description =
+            "A Discord webhook URL for private messages players send each other, including what they " +
+            "wrote. Give it a channel only trusted staff can see. If you leave this empty, private " +
+            "messages are not sent to Discord. Use 'set' instead of 'setr' to keep your webhook URL secure.",
+        ServerOnly = true,
+    };
+
     public static readonly StringSetting GenericWebhook = new("vMenu.Enhanced.Logging.Webhook.Generic")
     {
         Description =

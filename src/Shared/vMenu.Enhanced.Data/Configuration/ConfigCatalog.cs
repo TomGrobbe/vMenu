@@ -68,6 +68,7 @@ public static class ConfigCatalog
             LoggingSettings.ActionsWebhook,
             LoggingSettings.StaffWebhook,
             LoggingSettings.SecurityWebhook,
+            LoggingSettings.MessagesWebhook,
             LoggingSettings.GenericWebhook,
             LoggingSettings.FlushSeconds,
             LoggingSettings.QueueLimit,

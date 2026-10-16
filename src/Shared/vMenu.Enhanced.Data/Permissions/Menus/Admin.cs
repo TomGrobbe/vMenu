@@ -27,4 +27,6 @@ public static class Admin
     public const string RefreshPermissions = "vMenu.Enhanced.Menus.Admin.RefreshPermissions";
 
     public const string ResetRoutingBucket = "vMenu.Enhanced.Menus.Admin.ResetRoutingBucket";
+
+    public const string SeePrivateMessages = "vMenu.Enhanced.Menus.Admin.SeePrivateMessages";
 }

@@ -29,6 +29,9 @@ public static class UserDefaults
     public static BoolDefault MiscHideStaffAlerts { get; } =
         new("miscHideStaffAlerts") { Default = false };
 
+    public static BoolDefault AdminSeePrivateMessages { get; } =
+        new("adminSeePrivateMessages") { Default = false };
+
     #endregion
 
     #region Display Settings
@@ -388,6 +391,7 @@ public static class UserDefaults
         DisplayShowOverheadNames,
         DisplaySeeNoClipPlayers,
         MiscHideStaffAlerts,
+        AdminSeePrivateMessages,
         DisplaySpeedometer,
         DisplaySpeedometerPosition,
         DisplayShowLocation,

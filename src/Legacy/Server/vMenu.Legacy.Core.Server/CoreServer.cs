@@ -128,6 +128,7 @@ public class CoreServer : BaseScript
         BullyActions.Register();
         CutsceneActions.Register();
         StaffAlertActions.Register();
+        PrivateMessageCopies.Register();
         AdminActions.Register();
         AnnouncementSchedule.Register();
         RemoteVehicleControl.RegisterEventHandlers();

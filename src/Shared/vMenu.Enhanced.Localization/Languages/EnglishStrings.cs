@@ -426,7 +426,7 @@ internal static class EnglishStrings
             [Loc.OnlinePlayers.SearchCleared] = "Showing everybody again.",
             [Loc.OnlinePlayers.ActionsSubtitle] = "Server id {id}",
             [Loc.OnlinePlayers.SendMessage] = "Send Message",
-            [Loc.OnlinePlayers.SendMessageDescription] = "Send this player a private message that only they can see.",
+            [Loc.OnlinePlayers.SendMessageDescription] = "Send this player a private message. ~r~Staff may be able to read private messages.",
             [Loc.OnlinePlayers.SendMessagePrompt] = "Message to {player}",
             [Loc.OnlinePlayers.SendMessageDelivered] = "~g~{player}~s~ received your message.",
             [Loc.OnlinePlayers.MessageReceived] = "Message from ~y~{player}~s~: {message}",
@@ -1465,6 +1465,9 @@ internal static class EnglishStrings
             [Loc.Admin.ResetRoutingBucketDescription] = "Put yourself back in the world everybody else is in. Teleporting to a player in a separate world takes you along with them, and this is the way back out again.",
             [Loc.Admin.ResetRoutingBucketDone] = "Moved you out of world ~y~{bucket}~s~ and back into the default world.",
             [Loc.Admin.ResetRoutingBucketAlready] = "You are already in the default world.",
+            [Loc.Admin.SeePrivateMessages] = "See Private Messages",
+            [Loc.Admin.SeePrivateMessagesDescription] = "Show a copy of every private message players send each other. Messages you send or receive yourself are not copied.",
+            [Loc.Admin.PrivateMessageCopy] = "~o~PM~s~ ~y~{sender}~s~ to ~y~{target}~s~: {message}",
 
             [Loc.Bully.Title] = "Bully",
             [Loc.Bully.Subtitle] = "Mean Tricks",

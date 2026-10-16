@@ -18,9 +18,12 @@ set vMenu.Enhanced.Logging.Webhook.Events "https://discord.com/api/webhooks/..."
 set vMenu.Enhanced.Logging.Webhook.Actions "https://discord.com/api/webhooks/..."
 set vMenu.Enhanced.Logging.Webhook.Staff "https://discord.com/api/webhooks/..."
 set vMenu.Enhanced.Logging.Webhook.Security "https://discord.com/api/webhooks/..."
+set vMenu.Enhanced.Logging.Webhook.Messages "https://discord.com/api/webhooks/..."
 ```
 
 Each one is a separate channel. Point them all at one webhook, use some, or leave the ones you do not want empty. Leaving Security empty sends its lines to the Staff webhook instead.
+
+Messages gets every private message players send each other, with the full text and whether it was delivered. Give it a channel only trusted staff can see. Leaving it empty keeps private messages out of Discord.
 
 :::caution[`set`, not `setr`]
 The webhook URL is a password. Anybody who has it can post to your channel. Use plain `set` so it stays on the server. `setr` would hand it to every player who joins.
@@ -58,7 +61,7 @@ It receives plain JSON, in batches, shaped like this:
 }
 ```
 
-`category` is `event`, `action`, `staff` or `security`.
+`category` is `event`, `action`, `staff`, `security` or `message`.
 
 The `actor` is who the line is about, so on a join, a leave, or a kick it is the player who joined, left, or was kicked. `targets` holds anyone that player then acted on, which is why a leave or a kick has none, while a staff member freezing somebody lists the frozen player there. The `identifiers` object holds every identifier the actor has, apart from their IP address, which is never sent, and only lists the ones that exist, so a player with just a license shows just a license.
 

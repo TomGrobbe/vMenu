@@ -2,6 +2,7 @@ using vMenu.Enhanced.MenuFramework;
 using vMenu.Enhanced.Localization;
 using vMenu.Enhanced.Menus.Admin;
 using vMenu.Enhanced.Menus.Vehicles;
+using vMenu.Enhanced.Storage;
 
 using AdminPermissions = vMenu.Enhanced.Data.Permissions.Menus.Admin;
 
@@ -21,7 +22,8 @@ public sealed class AdminMenu : MenuDefinition
     private static MenuGate PlayersGate =>
         MenuGate.Permission(AdminPermissions.FreezePlayer)
         | AdminPermissions.GrabPlayer
-        | AdminPermissions.ResetRoutingBucket;
+        | AdminPermissions.ResetRoutingBucket
+        | AdminPermissions.SeePrivateMessages;
 
     private static MenuGate VehiclesGate =>
         MenuGate.Permission(AdminPermissions.DeleteVehicle)
@@ -67,6 +69,15 @@ public sealed class AdminMenu : MenuDefinition
             Description = MenuText.Key(Loc.Admin.ResetRoutingBucketDescription),
             Gate = AdminPermissions.ResetRoutingBucket,
             OnSelectedAsync = _ => AdminPlayerActions.ResetRoutingBucketAsync(),
+        });
+
+        menu.Entries.Add(new CheckboxEntry
+        {
+            Text = MenuText.Key(Loc.Admin.SeePrivateMessages),
+            Description = MenuText.Key(Loc.Admin.SeePrivateMessagesDescription),
+            Gate = AdminPermissions.SeePrivateMessages,
+            ReadState = () => UserDefaults.AdminSeePrivateMessages.Value,
+            OnChanged = changed => PrivateMessageWatch.SetWatching(changed.Checked),
         });
 
         menu.Entries.Add(new SeparatorEntry

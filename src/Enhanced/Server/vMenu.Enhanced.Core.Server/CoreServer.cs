@@ -105,6 +105,7 @@ public class CoreServer : IScript
         BullyActions.Register();
         CutsceneActions.Register();
         StaffAlertActions.Register();
+        PrivateMessageCopies.Register();
         AdminActions.Register();
         AnnouncementSchedule.Register();
         RemoteVehicleControl.RegisterEventHandlers();

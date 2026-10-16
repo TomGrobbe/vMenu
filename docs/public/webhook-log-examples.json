@@ -292,6 +292,16 @@
       "data": { "reason": "Someone is combat logging near the bank." }
     },
     {
+      "category": "message",
+      "message": "sent a private message to",
+      "timestamp": "2026-09-13T20:31:50.0000000+00:00",
+      "actor": { "name": "Bob", "serverId": 9, "identifiers": { "license": "abc123" } },
+      "targets": [
+        { "name": "Alice", "serverId": 4, "identifiers": { "license": "def456" } }
+      ],
+      "data": { "message": "Meet me at the pier in five.", "delivered": "yes" }
+    },
+    {
       "category": "staff",
       "message": "had the 'kick' action used on them by AdminBot from the live map.",
       "timestamp": "2026-09-13T20:32:00.0000000+00:00",

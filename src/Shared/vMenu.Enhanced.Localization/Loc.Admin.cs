@@ -183,5 +183,11 @@ public static partial class Loc
         public const string ResetRoutingBucketDone = "admin.resetroutingbucket.done";
 
         public const string ResetRoutingBucketAlready = "admin.resetroutingbucket.already";
+
+        public const string SeePrivateMessages = "admin.seeprivatemessages";
+
+        public const string SeePrivateMessagesDescription = "admin.seeprivatemessages.desc";
+
+        public const string PrivateMessageCopy = "admin.seeprivatemessages.copy";
     }
 }
