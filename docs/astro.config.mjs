@@ -125,6 +125,7 @@ export default defineConfig({
           items: [
             { label: 'Admin Menu', link: '/menus/admin-menu/' },
             { label: 'Bully Menu', link: '/menus/bully-menu/' },
+            { label: 'Cutscenes Menu', link: '/menus/cutscenes-menu/' },
             { label: 'Custom Character Creator', link: '/menus/character-creator/' },
           ],
         },
