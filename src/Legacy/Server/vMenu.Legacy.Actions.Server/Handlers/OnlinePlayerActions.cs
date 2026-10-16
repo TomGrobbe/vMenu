@@ -41,6 +41,8 @@ public static class OnlinePlayerActions
     // acknowledged still comes back as a real answer rather than as a timeout.
     private const int AckTimeoutMs = 5000;
 
+    private const int MaxMessageLength = 200;
+
     private const int MaxWantedLevel = 5;
 
     private const int VehicleEntityType = 2;
@@ -747,6 +749,16 @@ public static class OnlinePlayerActions
 
         var messageId = ++_lastMessageId;
         var delivered = new TaskCompletionSource<bool>();
+        var message = args[1].Trim();
+
+        // Only the client prompt enforces the limit, and this text is copied to staff and the webhooks.
+        if (message.Length > MaxMessageLength)
+        {
+            message = message[..MaxMessageLength];
+        }
+
+        var targetName = API.GetPlayerName(target.ToString(CultureInfo.InvariantCulture));
+        var acknowledged = true;
 
         Unacknowledged[messageId] = new PendingMessage(target, delivered);
 
@@ -755,7 +767,9 @@ public static class OnlinePlayerActions
             PlayerEvents.Message,
             messageId.ToString(CultureInfo.InvariantCulture),
             source.Name,
-            args[1].Trim());
+            message);
+
+        PrivateMessageCopies.Send(source, target, targetName, message);
 
         try
         {
@@ -763,9 +777,9 @@ public static class OnlinePlayerActions
 
             if (await Task.WhenAny(delivered.Task, timeout) == timeout)
             {
-                Log.Warning($"[OnlinePlayers] {source.Name}'s message to {API.GetPlayerName(target.ToString())} was never acknowledged.");
+                Log.Warning($"[OnlinePlayers] {source.Name}'s message to {targetName} was never acknowledged.");
 
-                return ActionResponse.NotReady();
+                acknowledged = false;
             }
         }
         finally
@@ -776,7 +790,9 @@ public static class OnlinePlayerActions
             await BaseScript.Delay(0);
         }
 
-        return ActionResponse.Ok();
+        PrivateMessageCopies.Record(source, target, targetName, message, acknowledged);
+
+        return acknowledged ? ActionResponse.Ok() : ActionResponse.NotReady();
     }
 
     // A named method rather than a lambda, so the binder finds FromSourceAttribute on it. Without that

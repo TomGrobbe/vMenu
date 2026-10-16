@@ -27,6 +27,7 @@ public static class AdminPushEvents
 
         AdminFreeze.Initialize();
         AdminHold.Initialize();
+        PrivateMessageWatch.Initialize();
 
         Script.EventHandlers[AdminEvents.Freeze] += new Action<string>(OnFreeze);
         Script.EventHandlers[AdminEvents.Hold] += new Action<string>(OnHold);

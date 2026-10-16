@@ -8,6 +8,10 @@ public static class PlayerEvents
 
     public const string MessageAck = "vMenu.Enhanced:OnlinePlayers:MessageAck";
 
+    public const string MessageCopy = "vMenu.Enhanced:OnlinePlayers:MessageCopy";
+
+    public const string ReportWatchingMessages = "vMenu.Enhanced:OnlinePlayers:ReportWatchingMessages";
+
     public const string Teleport = "vMenu.Enhanced:OnlinePlayers:Teleport";
 
     public const string TeleportIntoVehicle = "vMenu.Enhanced:OnlinePlayers:TeleportIntoVehicle";
