@@ -29,6 +29,8 @@ Only the staff member who picked somebody up can put them down. If two of you re
 
 **Return To The Default World** puts you back in the main routing bucket, for when you teleported to someone who was in a different bucket.
 
+**See Private Messages** shows you a copy of every private message players send each other through the Online Players menu. It is off until you turn it on, and vMenu remembers your choice. Messages you send or receive yourself are not copied. Players are warned in the Send Message description that staff may read their messages.
+
 **Show Players In NoClip** is the same option that used to live in Miscellaneous Settings. It keeps showing the blip and the name of anybody flying around in noclip, who everybody else has them hidden from.
 
 ### Vehicles
@@ -133,6 +135,7 @@ These go in your `configuration.cfg`. They are all listed in the `configuration.
 | `...Admin.ManageAnnouncements` | Adding and removing scheduled announcements, which writes the config file |
 | `...Admin.RefreshPermissions` | Refreshing everybody's permissions at once |
 | `...Admin.ResetRoutingBucket` | Putting yourself back in the default world |
+| `...Admin.SeePrivateMessages` | Turning on copies of private messages between players |
 
 All of them start with `vMenu.Enhanced.Menus.`, and `...Admin.All` grants the lot. They are listed in the `config/permissions.cfg.example` file your server writes on every start.
 
