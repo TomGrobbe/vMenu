@@ -19,7 +19,7 @@ It is listed in the `config/permissions.cfg.example` file your server writes on 
 
 ## Cutscenes
 
-Every scene below is also in the Cutscenes group of the [Bully menu](/vmenu/enhanced/menus/bully-menu/), so it can also be played on another player.
+Every scene below is also in the Cutscenes submenu of the [Bully menu](/vmenu/enhanced/menus/bully-menu/), so it can also be played on another player.
 
 | Cutscene | Who you play | What happens |
 | --- | --- | --- |

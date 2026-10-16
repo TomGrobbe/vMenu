@@ -48,8 +48,7 @@ Both are listed in the `config/permissions.cfg.example` file your server writes 
 Everything here happens to the selected player. After you pick something, the menu tells you whether it actually happened. If it did not, it tells you why, for example because the player already has that one going, or has no vehicle for it.
 
 - **Mean Tricks:** Explode, Up-n-Atomizer, Tase, Set On Fire, Ragdoll, Jump, Dance, Drunk, Drugged, Screen Colours
-- **Scares:** Jumpscare Sound, Fireworks, Beast Scare, Evil Clone, Random Teleport, Alien Abduction
-- **Cutscenes:** every scene from the [Cutscenes menu](/vmenu/enhanced/menus/cutscenes-menu/)
+- **Scares:** Jumpscare Sound, Fireworks, Beast Scare, Evil Clone, Random Teleport, Alien Abduction, and a Cutscenes submenu with every scene from the [Cutscenes menu](/vmenu/enhanced/menus/cutscenes-menu/)
 - **Attackers:** Carjackers, Mugger, Killer Clowns, Mountain Lion
 - **Vehicle:** Floating Vehicle, Transform Vehicle
 - **Stays On Until You Switch It Off:** Electric Door Handles, Gang Attack, Invert Vehicle Controls, Possessed Pedals, Slippery Tyres, Glitched Body
