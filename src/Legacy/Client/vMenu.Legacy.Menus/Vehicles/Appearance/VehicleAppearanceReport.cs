@@ -123,8 +123,8 @@ public static class VehicleAppearanceReport
 
     private static string FinishName(int paintType) => paintType switch
     {
-        0 => "normal",
-        1 => "metallic",
+        0 => "metallic",
+        1 => "classic",
         2 => "pearlescent",
         3 => "matte",
         4 => "metal",
