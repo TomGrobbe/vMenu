@@ -34,6 +34,7 @@ public static class WebhookLog
         LoggingSettings.ActionsWebhook,
         LoggingSettings.StaffWebhook,
         LoggingSettings.SecurityWebhook,
+        LoggingSettings.MessagesWebhook,
         LoggingSettings.GenericWebhook,
     ];
 
@@ -47,6 +48,8 @@ public static class WebhookLog
     // rather than silently losing them.
     private static readonly DiscordChannel SecurityChannel =
         new(LogCategory.Security, LoggingSettings.SecurityWebhook, LoggingSettings.StaffWebhook);
+
+    private static readonly DiscordChannel MessagesChannel = new(LogCategory.Message, LoggingSettings.MessagesWebhook);
 
     private static readonly GenericChannel Generic = new();
 
@@ -110,6 +113,9 @@ public static class WebhookLog
     public static void Staff(Player source, WebhookActor? target, string message, params (string Key, string Value)[] data) =>
         Queue(LogCategory.Staff, WebhookActor.For(source), target, message, false, data);
 
+    public static void Message(Player source, WebhookActor? target, string message, params (string Key, string Value)[] data) =>
+        Queue(LogCategory.Message, WebhookActor.For(source), target, message, false, data);
+
     public static void Security(WebhookActor actor, string message, params (string Key, string Value)[] data)
     {
         if (!WantsSecurity || !SecurityThrottle.TryTake(actor.ServerId))
@@ -167,6 +173,7 @@ public static class WebhookLog
         LogCategory.Action => ActionsChannel,
         LogCategory.Staff => StaffChannel,
         LogCategory.Security => SecurityChannel,
+        LogCategory.Message => MessagesChannel,
         _ => EventsChannel,
     };
 
@@ -181,6 +188,7 @@ public static class WebhookLog
         await ActionsChannel.FlushAsync();
         await StaffChannel.FlushAsync();
         await SecurityChannel.FlushAsync();
+        await MessagesChannel.FlushAsync();
         await Generic.FlushAsync();
     }
 
@@ -193,6 +201,7 @@ public static class WebhookLog
         ActionsChannel.Reset();
         StaffChannel.Reset();
         SecurityChannel.Reset();
+        MessagesChannel.Reset();
         Generic.Reset();
 
         Publish();
@@ -248,6 +257,7 @@ public static class WebhookLog
         Action(WebhookActor.Server, "This is a test player action.");
         Staff(WebhookActor.Server, null, "This is a test staff action.");
         Security(WebhookActor.Server, "This is a test security line.");
+        Queue(LogCategory.Message, WebhookActor.Server, null, "This is a test private message line.", false, NoData);
 
         Log.Info(
             "[Webhooks] Queued one test line per category. Anything you configured should see it within "
