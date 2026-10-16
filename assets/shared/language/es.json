@@ -219,6 +219,7 @@
     "bully.group.vehicle": "Vehículo",
     "bully.group.continuous": "Sigue activo hasta que lo desactives",
     "bully.group.cutscenes": "Cinemáticas",
+    "bully.group.cutscenes.desc": "Los mete en una cinemática de GTA V en la que hacen un papel como ellos mismos.",
     "bully.sent": "Hecho. A ~b~{player}~s~ le ha tocado.",
     "bully.sent.everyone": "Hecho. A ~b~{count}~s~ jugador(es) les ha tocado.",
     "bully.toggle.on": "Activado para ~b~{player}~s~.",

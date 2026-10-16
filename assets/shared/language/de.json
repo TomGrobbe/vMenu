@@ -219,6 +219,7 @@
     "bully.group.vehicle": "Fahrzeug",
     "bully.group.continuous": "Bleibt an, bis du es ausschaltest",
     "bully.group.cutscenes": "Zwischensequenzen",
+    "bully.group.cutscenes.desc": "Steckt sie in eine Zwischensequenz aus GTA V, in der sie selbst eine Rolle spielen.",
     "bully.sent": "Erledigt. ~b~{player}~s~ hat es abbekommen.",
     "bully.sent.everyone": "Erledigt. ~b~{count}~s~ Spieler haben es abbekommen.",
     "bully.toggle.on": "Für ~b~{player}~s~ eingeschaltet.",

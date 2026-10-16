@@ -219,6 +219,7 @@
     "bully.group.vehicle": "Voertuig",
     "bully.group.continuous": "Blijft aan tot je het uitzet",
     "bully.group.cutscenes": "Tussenfilmpjes",
+    "bully.group.cutscenes.desc": "Zet ze in een cutscene uit GTA V waarin ze zelf een rol spelen.",
     "bully.sent": "Klaar. ~b~{player}~s~ heeft het gekregen.",
     "bully.sent.everyone": "Klaar. ~b~{count}~s~ speler(s) hebben het gekregen.",
     "bully.toggle.on": "Aangezet voor ~b~{player}~s~.",

@@ -220,6 +220,8 @@ public static partial class Loc
 
         public const string CutscenesGroup = "bully.group.cutscenes";
 
+        public const string CutscenesDescription = "bully.group.cutscenes.desc";
+
         public const string Float = "bully.effect.float";
 
         public const string FloatDescription = "bully.effect.float.desc";

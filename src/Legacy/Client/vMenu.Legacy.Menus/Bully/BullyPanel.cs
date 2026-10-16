@@ -17,6 +17,8 @@ namespace vMenu.Enhanced.Menus.Bully;
 
 internal sealed class BullyPanel
 {
+    private const string CutscenesLink = "vMenu:Cutscenes";
+
     private static readonly (string Group, string[] Effects)[] Groups =
     [
         (Loc.Bully.PranksGroup,
@@ -28,9 +30,8 @@ internal sealed class BullyPanel
         (Loc.Bully.ScaresGroup,
         [
             BullyEffects.Sound, BullyEffects.Fireworks, BullyEffects.Beast, BullyEffects.Clone, BullyEffects.Teleport,
-            BullyEffects.Abduct,
+            BullyEffects.Abduct, CutscenesLink,
         ]),
-        (Loc.Bully.CutscenesGroup, CutsceneCatalog.All.Select(entry => entry.Id).ToArray()),
         (Loc.Bully.AttackersGroup, [BullyEffects.Carjack, BullyEffects.Mug, BullyEffects.Clowns, BullyEffects.Cougar]),
         (Loc.Bully.VehicleGroup, [BullyEffects.Float, BullyEffects.Transform]),
     ];
@@ -92,6 +93,7 @@ internal sealed class BullyPanel
     {
         BullyEffects.Timecycle => OptionRow(effect, ScreenPranks.Timecycles.Count, Loc.Bully.TimecycleOption),
         BullyEffects.Sound => OptionRow(effect, ScreenPranks.SoundCount, Loc.Bully.SoundOption),
+        CutscenesLink => CutscenesRow(),
         _ => new ButtonEntry
         {
             Text = MenuText.Key(Loc.Bully.EffectName(effect)),
@@ -101,6 +103,15 @@ internal sealed class BullyPanel
             LockedDescription = MenuText.Key(Loc.Bully.TurnedOff),
             OnSelectedAsync = _ => ApplyAsync(effect, string.Empty),
         },
+    };
+
+    private SubmenuEntry CutscenesRow() => new()
+    {
+        Text = MenuText.Key(Loc.Bully.CutscenesGroup),
+        Description = MenuText.Key(Loc.Bully.CutscenesDescription),
+        MenuTitle = Everyone ? default : MenuText.From(() => _target?.Invoke()?.Name ?? string.Empty),
+        MenuSubtitle = MenuText.Key(Loc.Bully.CutscenesGroup),
+        Build = cutscenes => cutscenes.Entries.AddRange(CutsceneCatalog.All.Select(entry => EffectRow(entry.Id))),
     };
 
     private ListEntry OptionRow(string effect, int count, Func<int, string> key) => new()

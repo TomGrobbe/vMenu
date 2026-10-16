@@ -1498,6 +1498,7 @@ internal static class EnglishStrings
             [Loc.Bully.VehicleGroup] = "Vehicle",
             [Loc.Bully.ContinuousGroup] = "Stays On Until You Switch It Off",
             [Loc.Bully.CutscenesGroup] = "Cutscenes",
+            [Loc.Bully.CutscenesDescription] = "Put them into a cutscene from GTA V, playing a part in it as themselves.",
             [Loc.Bully.Sent] = "Done. ~b~{player}~s~ got it.",
             [Loc.Bully.SentEveryone] = "Done. ~b~{count}~s~ player(s) got it.",
             [Loc.Bully.ToggleOn] = "Switched that on for ~b~{player}~s~.",
