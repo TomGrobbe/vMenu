@@ -30,6 +30,7 @@ public static class BullyReceiver
         [BullyEffects.Sound] = ScreenPranks.Sound,
         [BullyEffects.Fireworks] = ScreenPranks.Firework,
         [BullyEffects.Beast] = ScreenPranks.Beast,
+        [BullyEffects.Chaff] = ScreenPranks.Chaff,
         [BullyEffects.Carjack] = Carjackers.Start,
         [BullyEffects.Mug] = Mugger.Start,
         [BullyEffects.Clowns] = ClownAttack.Start,

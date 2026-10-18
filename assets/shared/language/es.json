@@ -272,6 +272,8 @@
     "bully.effect.sound.desc": "Reproduce un sonido fuerte y aterrador con un destello en su pantalla. El puma no tiene destello, gruñe desde algún lugar cercano. Elige un sonido con las flechas.",
     "bully.effect.fireworks": "Fuegos artificiales",
     "bully.effect.fireworks.desc": "Lanza un montón de fuegos artificiales justo alrededor de su cabeza.",
+    "bully.effect.chaff": "Chaff",
+    "bully.effect.chaff.desc": "Lanza nubes de chaff de avión a su alrededor, como si un caza pasara rozando. Solo lo ve esa persona.",
     "bully.effect.beast": "Susto de la bestia",
     "bully.effect.beast.desc": "Una bestia aparece delante de él entre una nube de humo, ruge y le escupe fuego. Solo lo ve él.",
     "bully.effect.carjack": "Ladrones de coches",

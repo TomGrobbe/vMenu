@@ -19,7 +19,7 @@ public static class Bully
     public static readonly BoolSetting DisableParticleEffects = new("vMenu.Enhanced.Bully.DisableParticleEffects")
     {
         Description =
-            "Turns off the Fireworks and Beast Scare bully actions and the smoke of Transform Vehicle, for servers whose anti cheat flags particle effects.",
+            "Turns off the Fireworks, Chaff and Beast Scare bully actions and the smoke of Transform Vehicle, for servers whose anti cheat flags particle effects.",
         Default = false,
     };
 }

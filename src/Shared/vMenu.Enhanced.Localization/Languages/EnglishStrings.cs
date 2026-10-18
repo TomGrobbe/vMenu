@@ -1544,6 +1544,8 @@ internal static class EnglishStrings
             [Loc.Bully.SoundDescription] = "Plays a loud scary sound with a flash on their screen. The mountain lion has no flash, it growls from somewhere close by. Pick a sound with the arrows.",
             [Loc.Bully.Fireworks] = "Fireworks",
             [Loc.Bully.FireworksDescription] = "Lets off a bunch of fireworks right around their head.",
+            [Loc.Bully.Chaff] = "Chaff",
+            [Loc.Bully.ChaffDescription] = "Fires clouds of aircraft chaff all around them, like a jet flying right past. Only they see it.",
             [Loc.Bully.Beast] = "Beast Scare",
             [Loc.Bully.BeastDescription] = "A beast appears in front of them out of a cloud of smoke, roars and breathes fire at them. Only they see it.",
             [Loc.Bully.Carjack] = "Carjackers",

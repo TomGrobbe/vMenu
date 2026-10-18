@@ -31,6 +31,8 @@ public static class BullyEffects
 
     public const string Fireworks = "Fireworks";
 
+    public const string Chaff = "Chaff";
+
     public const string Beast = "Beast";
 
     public const string Carjack = "Carjack";
@@ -65,6 +67,7 @@ public static class BullyEffects
         new(Timecycle, "changed the screen colours of", BullyRequirement.None),
         new(Sound, "played a jumpscare sound for", BullyRequirement.None) { SpawnsEntities = true },
         new(Fireworks, "set off fireworks around", BullyRequirement.None) { TurnedOffBy = BullySettings.DisableParticleEffects },
+        new(Chaff, "fired chaff around", BullyRequirement.None) { TurnedOffBy = BullySettings.DisableParticleEffects },
         new(Beast, "sent the beast after", BullyRequirement.None) { TurnedOffBy = BullySettings.DisableParticleEffects },
         new(Carjack, "sent carjackers after", BullyRequirement.None) { SpawnsEntities = true },
         new(Mug, "sent a mugger after", BullyRequirement.None) { SpawnsEntities = true, Grouped = true },

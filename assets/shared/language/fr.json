@@ -272,6 +272,8 @@
     "bully.effect.sound.desc": "Joue un son fort et effrayant avec un flash sur son écran. Le puma n'a pas de flash, il grogne quelque part tout près. Choisis un son avec les flèches.",
     "bully.effect.fireworks": "Feux d'artifice",
     "bully.effect.fireworks.desc": "Tire plein de feux d'artifice juste autour de sa tête.",
+    "bully.effect.chaff": "Paillettes",
+    "bully.effect.chaff.desc": "Tire des nuages de paillettes d'avion tout autour, comme si un jet passait en rase-mottes. Seule cette personne le voit.",
     "bully.effect.beast": "Frayeur de la bête",
     "bully.effect.beast.desc": "Une bête apparaît devant lui dans un nuage de fumée, rugit et lui crache du feu dessus. Lui seul la voit.",
     "bully.effect.carjack": "Voleurs de voiture",

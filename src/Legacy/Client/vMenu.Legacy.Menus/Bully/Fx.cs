@@ -10,10 +10,10 @@ namespace vMenu.Enhanced.Menus.Bully;
 
 internal static class Fx
 {
-    public static void Burst(string asset, string effect, Vector3 at, float scale = 1f)
+    public static void Burst(string asset, string effect, Vector3 at, float scale = 1f, float yaw = 0f)
     {
         API.UseParticleFxAssetNextCall(asset);
-        NativeFixer.StartParticleFxNonLoopedAtCoord(effect, at.X, at.Y, at.Z, 0f, 0f, 0f, scale, false, false, false);
+        NativeFixer.StartParticleFxNonLoopedAtCoord(effect, at.X, at.Y, at.Z, 0f, 0f, yaw, scale, false, false, false);
     }
 
     public static int Loop(string asset, string effect, Vector3 at, float yaw, float scale = 1f)

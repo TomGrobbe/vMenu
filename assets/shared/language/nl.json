@@ -272,6 +272,8 @@
     "bully.effect.sound.desc": "Speelt een hard, eng geluid af met een flits op hun scherm. De poema heeft geen flits, hij gromt ergens vlakbij. Kies een geluid met de pijltjes.",
     "bully.effect.fireworks": "Vuurwerk",
     "bully.effect.fireworks.desc": "Steekt een hoop vuurwerk af vlak rond hun hoofd.",
+    "bully.effect.chaff": "Chaff",
+    "bully.effect.chaff.desc": "Vuurt wolken vliegtuigchaff rondom hen af, alsof er een straaljager rakelings langs vliegt. Alleen zij zien het.",
     "bully.effect.beast": "Beestachtige schrik",
     "bully.effect.beast.desc": "Een beest verschijnt voor hen uit een rookwolk, brult en spuwt vuur naar hen. Alleen zij zien het.",
     "bully.effect.carjack": "Autodieven",
