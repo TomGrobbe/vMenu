@@ -1709,6 +1709,7 @@
     "vehicleoptions.aircraft": "Vliegtuigen en boten",
     "vehicleoptions.aircraft.desc": "Hoe onrustig de lucht is in helikopters en vliegtuigen, en of boten blijven liggen als je stopt.",
     "vehicleoptions.aircraft.subtitle": "Opties voor vliegtuigen en boten",
+    "vehicleoptions.aircraftweapons.inuse": "De andere piloot gebruikt de bommen en tegenmaatregelen op dit moment. Je kunt wel door de bommencamera kijken.",
     "vehicleoptions.alarm": "Alarm aan- of uitzetten",
     "vehicleoptions.alarm.desc": "Laat het alarm afgaan, of legt het stil als het al loeit. Het stopt vanzelf na een tijdje.",
     "vehicleoptions.alarm.notdriver": "Je moet de bestuurder zijn om aan het alarm te komen.",

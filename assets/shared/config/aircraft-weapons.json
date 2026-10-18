@@ -1,0 +1,35 @@
+{
+  // Tunes where bombs, flares, chaff and smoke come out of an aircraft.
+  //
+  // Every aircraft from GTA Online that has them already works without anything in here. This file is
+  // for addon aircraft, and for the odd vanilla one you want to change. Each key is the spawn name in
+  // lowercase, and every setting inside it is optional, so you only write the ones you want to change.
+  //
+  // Players still fit these in the mod shop, like in GTA Online. Bombs come from the "bombs" mod, flares
+  // and chaff from the "countermeasures" mod, and smoke from the smoke option.
+  //
+  // Deleting this file is fine. Every aircraft then uses the built in positions.
+  //
+  // An example, with every setting it knows about:
+  //
+  // "myaddonplane": {
+  //   "bombs": true,                         // false turns bombs off on this aircraft
+  //   "flares": true,
+  //   "chaff": true,
+  //   "smoke": true,
+  //   "bombPosition": 0.5,                   // where along the belly bombs leave, 0 is the nose and 1 the tail
+  //   "cameraY": 1.0,                        // the bomb camera, forward or back from the centre
+  //   "cameraZ": -1.5,                       // the bomb camera, up or down from the centre
+  //   "flareStartX": [-3.0, -1.5, 1.5, 3.0], // the four flares, from left to right
+  //   "flareStartY": 0.0,
+  //   "flareStartZ": 0.0,
+  //   "flareTargetY": -4.0,                  // how far behind the aircraft the flares head
+  //   "chaffSide": [0.2, 0.8, 0.0, 1.0],     // the four chaff bursts, 0 is the left side and 1 the right
+  //   "chaffLength": [0.4, 0.4, 0.45, 0.45], // 0 is the nose and 1 the tail
+  //   "chaffHeight": [1.0, 1.0, 1.4, 1.4],   // metres above the bottom of the aircraft
+  //   "chaffSpread": true,                   // tilts the bursts outwards
+  //   "chaffScale": 10.0,
+  //   "smokeOffset": [0.0, -3.0, 0.0],       // where the smoke trail starts, right, forward and up
+  //   "smokeScale": 1.0
+  // }
+}

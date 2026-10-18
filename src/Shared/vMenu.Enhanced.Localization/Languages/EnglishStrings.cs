@@ -864,6 +864,7 @@ internal static class EnglishStrings
             [Loc.VehicleOptions.PlaneTurbulenceDescription] = "How much planes get pushed around by the air, as a percentage. ~b~100~s~ is the amount the game normally uses, ~b~0~s~ makes them fly perfectly steady.",
             [Loc.VehicleOptions.AnchorBoat] = "Anchor Boat",
             [Loc.VehicleOptions.AnchorBoatDescription] = "Drops the anchor so the boat stops drifting. Only works on a boat, and only where the water is deep enough for the game to allow it.",
+            [Loc.VehicleOptions.AircraftWeaponsInUse] = "The other pilot is using the bombs and countermeasures right now. You can still look through the bomb camera.",
 
             [Loc.VehicleOptions.Radio] = "Radio",
             [Loc.VehicleOptions.RadioDescription] = "Pick the station every vehicle you get into starts on, and take stations you never want to hear off the radio wheel.",

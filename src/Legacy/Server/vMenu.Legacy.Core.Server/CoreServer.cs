@@ -118,6 +118,7 @@ public class CoreServer : BaseScript
         VehicleActions.Register();
         VehicleSpawnActions.Register();
         VehicleExtraActions.Register();
+        AircraftWeaponActions.Register();
         PropSpawnActions.Register();
         PersonalVehicleActions.Register();
         TeleportActions.Register();

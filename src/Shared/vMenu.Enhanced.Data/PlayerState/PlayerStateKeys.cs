@@ -13,6 +13,9 @@ public static class PlayerStateKeys
     // A ClothingGlow value, written by the client that chose it.
     public const string ClothingGlow = "vMenu:clothingGlow";
 
+    // Written by the client, so the pilot and co-pilot take turns without asking the server.
+    public const string AircraftWeapons = "vMenu:aircraftWeapons";
+
     public const string MoveSpeed = "vMenu:moveSpeed";
 
     public const string SwimSpeed = "vMenu:swimSpeed";

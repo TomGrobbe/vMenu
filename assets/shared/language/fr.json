@@ -1709,6 +1709,7 @@
     "vehicleoptions.aircraft": "Aéronefs et bateaux",
     "vehicleoptions.aircraft.desc": "À quel point l'air est agité en hélicoptère et en avion, et si les bateaux restent en place quand vous vous arrêtez.",
     "vehicleoptions.aircraft.subtitle": "Options aéronefs et bateaux",
+    "vehicleoptions.aircraftweapons.inuse": "L'autre pilote utilise les bombes et les contre-mesures en ce moment. Tu peux quand même regarder par la caméra de largage.",
     "vehicleoptions.alarm": "Activer ou couper l'alarme",
     "vehicleoptions.alarm.desc": "Déclenche l'alarme, ou la fait taire si elle sonne déjà. Elle s'arrête d'elle-même au bout d'un moment.",
     "vehicleoptions.alarm.notdriver": "Vous devez être le conducteur pour toucher à l'alarme.",

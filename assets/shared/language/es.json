@@ -1709,6 +1709,7 @@
     "vehicleoptions.aircraft": "Aeronaves y barcos",
     "vehicleoptions.aircraft.desc": "Lo movido que está el aire en helicópteros y aviones, y si los barcos se quedan quietos cuando paras.",
     "vehicleoptions.aircraft.subtitle": "Opciones de aeronaves y barcos",
+    "vehicleoptions.aircraftweapons.inuse": "El otro piloto está usando las bombas y las contramedidas ahora mismo. Aun así puedes mirar por la cámara de bombas.",
     "vehicleoptions.alarm": "Activar o apagar la alarma",
     "vehicleoptions.alarm.desc": "Dispara la alarma, o la calla si ya está sonando. Se para sola al cabo de un rato.",
     "vehicleoptions.alarm.notdriver": "Tienes que ser el conductor para tocar la alarma.",

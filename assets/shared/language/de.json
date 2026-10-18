@@ -1709,6 +1709,7 @@
     "vehicleoptions.aircraft": "Flugzeuge & Boote",
     "vehicleoptions.aircraft.desc": "Wie unruhig die Luft in Hubschraubern und Flugzeugen ist, und ob Boote liegen bleiben, wenn du anhältst.",
     "vehicleoptions.aircraft.subtitle": "Optionen für Flugzeuge und Boote",
+    "vehicleoptions.aircraftweapons.inuse": "Der andere Pilot benutzt gerade die Bomben und Gegenmaßnahmen. Du kannst trotzdem durch die Bombenkamera schauen.",
     "vehicleoptions.alarm": "Fahrzeugalarm ein- oder ausschalten",
     "vehicleoptions.alarm.desc": "Löst den Alarm aus oder bringt ihn zum Schweigen, wenn er schon läuft. Er hört nach einer Weile von selbst auf.",
     "vehicleoptions.alarm.notdriver": "Du musst der Fahrer sein, um an den Alarm zu kommen.",

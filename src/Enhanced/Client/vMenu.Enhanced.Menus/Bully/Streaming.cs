@@ -48,7 +48,11 @@ internal static class Streaming
 
         if (!await WaitAsync(() => Native.HasNamedPtfxAssetLoaded(asset)))
         {
-            Native.RemoveNamedPtfxAsset(asset);
+            // Somebody else may still be waiting on the same asset.
+            if (!PtfxAssets.ContainsKey(asset))
+            {
+                Native.RemoveNamedPtfxAsset(asset);
+            }
 
             return false;
         }
@@ -56,6 +60,13 @@ internal static class Streaming
         Hold(PtfxAssets, asset);
 
         return true;
+    }
+
+    public static void RequestPtfx(string asset)
+    {
+        Native.RequestNamedPtfxAsset(asset);
+
+        Hold(PtfxAssets, asset);
     }
 
     public static void ReleasePtfx(string asset)
