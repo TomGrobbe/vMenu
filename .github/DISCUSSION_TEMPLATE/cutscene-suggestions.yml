@@ -1,0 +1,28 @@
+title: "[Cutscene] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting a cutscene. The more you can tell us about it, the easier it is for us to find it in the game files.
+  - type: input
+    id: name
+    attributes:
+      label: Cutscene name
+      description: Only fill this in if you know the internal name of the cutscene.
+      placeholder: e.g. mp_intro_concat
+    validations:
+      required: false
+  - type: textarea
+    id: description
+    attributes:
+      label: Describe the cutscene
+      description: Who is in it, what are they doing, and what do you see? Mention the mission or moment in the game where it plays, if you know it.
+    validations:
+      required: true
+  - type: textarea
+    id: media
+    attributes:
+      label: Videos, screenshots or audio
+      description: Link any videos, screenshots, audio snippets or subtitle transcripts from the cutscene, if you have them. You can drag files straight into this field.
+    validations:
+      required: false
