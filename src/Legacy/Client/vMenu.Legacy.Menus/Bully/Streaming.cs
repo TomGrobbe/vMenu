@@ -53,7 +53,11 @@ internal static class Streaming
 
         if (!await WaitAsync(() => API.HasNamedPtfxAssetLoaded(asset)))
         {
-            API.RemoveNamedPtfxAsset(asset);
+            // Somebody else may still be waiting on the same asset.
+            if (!PtfxAssets.ContainsKey(asset))
+            {
+                API.RemoveNamedPtfxAsset(asset);
+            }
 
             return false;
         }
@@ -61,6 +65,13 @@ internal static class Streaming
         Hold(PtfxAssets, asset);
 
         return true;
+    }
+
+    public static void RequestPtfx(string asset)
+    {
+        API.RequestNamedPtfxAsset(asset);
+
+        Hold(PtfxAssets, asset);
     }
 
     public static void ReleasePtfx(string asset)

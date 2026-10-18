@@ -864,6 +864,7 @@ internal static class EnglishStrings
             [Loc.VehicleOptions.PlaneTurbulenceDescription] = "How much planes get pushed around by the air, as a percentage. ~b~100~s~ is the amount the game normally uses, ~b~0~s~ makes them fly perfectly steady.",
             [Loc.VehicleOptions.AnchorBoat] = "Anchor Boat",
             [Loc.VehicleOptions.AnchorBoatDescription] = "Drops the anchor so the boat stops drifting. Only works on a boat, and only where the water is deep enough for the game to allow it.",
+            [Loc.VehicleOptions.AircraftWeaponsInUse] = "The other pilot is using the bombs and countermeasures right now. You can still look through the bomb camera.",
 
             [Loc.VehicleOptions.Radio] = "Radio",
             [Loc.VehicleOptions.RadioDescription] = "Pick the station every vehicle you get into starts on, and take stations you never want to hear off the radio wheel.",
@@ -1543,6 +1544,8 @@ internal static class EnglishStrings
             [Loc.Bully.SoundDescription] = "Plays a loud scary sound with a flash on their screen. The mountain lion has no flash, it growls from somewhere close by. Pick a sound with the arrows.",
             [Loc.Bully.Fireworks] = "Fireworks",
             [Loc.Bully.FireworksDescription] = "Lets off a bunch of fireworks right around their head.",
+            [Loc.Bully.Chaff] = "Chaff",
+            [Loc.Bully.ChaffDescription] = "Fires clouds of aircraft chaff all around them, like a jet flying right past. Only they see it.",
             [Loc.Bully.Beast] = "Beast Scare",
             [Loc.Bully.BeastDescription] = "A beast appears in front of them out of a cloud of smoke, roars and breathes fire at them. Only they see it.",
             [Loc.Bully.Carjack] = "Carjackers",

@@ -75,5 +75,8 @@ public static class VehicleOptions
 
     public const string AnchorBoat = "vMenu.Enhanced.Menus.VehicleOptions.AnchorBoat";
 
+    // Has no menu row, this permission is just to be able to fire bombs and countermeasures.
+    public const string BombsAndFlares = "vMenu.Enhanced.Menus.VehicleOptions.BombsAndFlares";
+
     public const string Radio = "vMenu.Enhanced.Menus.VehicleOptions.Radio";
 }

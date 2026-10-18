@@ -18,6 +18,7 @@ You make these yourself by copying `permissions.cfg.example` and `configuration.
 
 | File | What it is for |
 | --- | --- |
+| [aircraft-weapons.json](/vmenu/enhanced/configuration/aircraft-weapons-json/) | Where bombs, flares, chaff and smoke leave addon aircraft. |
 | [announcements.json](/vmenu/enhanced/configuration/announcements-json/) | Messages that are sent to everybody automatically. |
 | [blips.json](/vmenu/enhanced/configuration/blips-json/) | Markers on the map. |
 | [clothing-presets.json](/vmenu/enhanced/configuration/clothing-presets-json/) | Outfits everybody can wear. |

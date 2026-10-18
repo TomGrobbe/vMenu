@@ -37,6 +37,10 @@ internal static class ScreenPranks
 
     private const string FlameAsset = "weap_xs_vehicle_weapons";
 
+    private const string ChaffAsset = "scr_sm_counter";
+
+    private const string ChaffSoundSet = "DLC_SM_Countermeasures_Sounds";
+
     private const int IntoxicatedMs = 25000;
 
     private const int TimecycleMs = 20000;
@@ -57,6 +61,16 @@ internal static class ScreenPranks
     private const float FireworkRadius = 6f;
 
     private const float BeastDistance = 16f;
+
+    private const int ChaffBursts = 18;
+
+    private const int ChaffPerLap = 6;
+
+    private const int ChaffSpacingMs = 100;
+
+    private const float ChaffRadius = 3f;
+
+    private const float ChaffScale = 3f;
 
     private static readonly (string Prop, string Effect)[] Fireworks =
     [
@@ -107,6 +121,8 @@ internal static class ScreenPranks
     private static readonly Window Coloured = new();
 
     private static bool _beast;
+
+    private static bool _chaff;
 
     private static bool _drugged;
 
@@ -372,6 +388,66 @@ internal static class ScreenPranks
             }
 
             Streaming.ReleasePtfx(FireworksAsset);
+        }
+    }
+
+    public static async Task Chaff(BullyRun run)
+    {
+        if (_chaff)
+        {
+            run.Busy();
+
+            return;
+        }
+
+        _chaff = true;
+
+        var loaded = false;
+
+        try
+        {
+            loaded = await Streaming.PtfxAsync(ChaffAsset);
+
+            if (!loaded)
+            {
+                run.Failed();
+
+                return;
+            }
+
+            run.Started();
+
+            var stopAllCount = BullyState.StopAllCount;
+
+            var start = Dice.Float(0f, MathF.Tau);
+
+            for (var index = 0; index < ChaffBursts && stopAllCount == BullyState.StopAllCount; index++)
+            {
+                var centre = API.GetEntityCoords(API.PlayerPedId(), false);
+                var angle = start + index * MathF.Tau / ChaffPerLap;
+                var spot = centre + new Vector3(MathF.Cos(angle) * ChaffRadius, MathF.Sin(angle) * ChaffRadius, Dice.Float(0.5f, 2f));
+
+                Fx.Burst(ChaffAsset, "scr_sm_counter_chaff", spot, ChaffScale, Fx.HeadingTowards(spot, centre));
+
+                if (index % ChaffPerLap == 0)
+                {
+                    Fx.Sound("chaff_released", ChaffSoundSet, centre);
+                    API.ShakeGameplayCam(ExplosionShake, 0.1f);
+                }
+
+                await BaseScript.Delay(ChaffSpacingMs);
+            }
+
+            await BaseScript.Delay(4000);
+        }
+        finally
+        {
+            if (loaded)
+            {
+                Streaming.ReleasePtfx(ChaffAsset);
+            }
+
+            _chaff = false;
         }
     }
 

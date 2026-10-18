@@ -90,6 +90,7 @@ export default defineConfig({
           items: [
             { label: 'Overview', link: '/configuration/' },
             { label: 'Peds, vehicles and weapons', link: '/configuration/peds-vehicles-weapons/' },
+            { label: 'aircraft-weapons.json', link: '/configuration/aircraft-weapons-json/' },
             { label: 'announcements.json', link: '/configuration/announcements-json/' },
             { label: 'blips.json', link: '/configuration/blips-json/' },
             { label: 'clothing-presets.json', link: '/configuration/clothing-presets-json/' },

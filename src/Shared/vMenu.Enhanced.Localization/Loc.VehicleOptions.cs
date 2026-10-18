@@ -721,6 +721,8 @@ public static partial class Loc
 
         public const string AnchorBoatDescription = "vehicleoptions.anchor.desc";
 
+        public const string AircraftWeaponsInUse = "vehicleoptions.aircraftweapons.inuse";
+
         #endregion
 
         #region Radio

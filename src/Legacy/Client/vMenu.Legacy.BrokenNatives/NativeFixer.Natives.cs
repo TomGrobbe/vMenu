@@ -141,6 +141,14 @@ public static partial class NativeFixer
     public static string GetControlInstructionalButton(int control, int action, bool allowXOSwap)
         => Function.Call<string>((Hash)0x0499D7B09FC9B407UL, control, action, allowXOSwap);
 
+    public static bool GetCurrentPedVehicleWeapon(int pedIndex, out int returnWeaponType)
+    {
+        uint temp1 = 0;
+        var __result = API.GetCurrentPedVehicleWeapon(pedIndex, ref temp1);
+        returnWeaponType = unchecked((int)temp1);
+        return __result;
+    }
+
     public static uint GetEntityModel(int entityIndex)
         => unchecked((uint)API.GetEntityModel(entityIndex));
 
@@ -278,6 +286,16 @@ public static partial class NativeFixer
         Vector3 temp4 = default;
         var __result = API.GetPointOnRoadSide(vInputNodePosition_x, vInputNodePosition_y, vInputNodePosition_z, iDirection, ref temp4);
         vOutPositionByRoad = temp4;
+        return __result;
+    }
+
+    public static bool GetProjectileOfProjectileTypeWithinDistance(int ped, uint weaponType, float distance, out Vector3 positionOut, out int entityIndex, bool needsToBeStationary)
+    {
+        Vector3 temp3 = default;
+        var temp4 = 0;
+        var __result = API.GetProjectileNearPed(ped, weaponType, distance, ref temp3, ref temp4, needsToBeStationary);
+        positionOut = temp3;
+        entityIndex = temp4;
         return __result;
     }
 
@@ -629,6 +647,9 @@ public static partial class NativeFixer
     public static void SetSuperJumpThisFrame(int pedIndex)
         => API.SetSuperJumpThisFrame(pedIndex);
 
+    public static void SetVehicleAllowHomingMissleLockonSynced(int vehicleIndex, bool bAllowHomingMissileLockon, bool bIgnoreMisisonVehCheck)
+        => API.SetVehicleCanBeLockedOn(vehicleIndex, bAllowHomingMissileLockon, bIgnoreMisisonVehCheck);
+
     public static void SetVehicleAsNoLongerNeeded(ref int vehicleIndex)
         => API.SetVehicleAsNoLongerNeeded(ref vehicleIndex);
 
@@ -650,11 +671,20 @@ public static partial class NativeFixer
     public static int SetupShopPedApparelQueryTu(int character, int shop, int locate, int apparelType, int anchorPoint, int componentType)
         => Function.Call<int>((Hash)0x9BDF59818B1E38C1UL, character, shop, locate, apparelType, anchorPoint, componentType);
 
+    public static void ShootSingleBulletBetweenCoordsIgnoreEntityNew(float vecStartCoors_x, float vecStartCoors_y, float vecStartCoors_z, float vecEndCoors_x, float vecEndCoors_y, float vecEndCoors_z, int damageCaused, bool bPerfectAccuracy, uint weapon, int pedIndex, bool bCreateTraceVfx, bool bAllowRumble, float initialVelocity, int ignoreEntity, bool bForceCreateNewProjectileObject, bool bDisablePlayerCoverStartAdjustment, int targetEntity, bool bDoDeadCheck, bool bFreezeProjectileWaitingOnCollision, bool bSetIgnoreCollisionEntity, bool bIgnoreCollisionResetNoBB)
+        => Function.Call((Hash)0xBFE5756E7407064AUL, vecStartCoors_x, vecStartCoors_y, vecStartCoors_z, vecEndCoors_x, vecEndCoors_y, vecEndCoors_z, damageCaused, bPerfectAccuracy, weapon, pedIndex, bCreateTraceVfx, bAllowRumble, initialVelocity, ignoreEntity, bForceCreateNewProjectileObject, bDisablePlayerCoverStartAdjustment, targetEntity, bDoDeadCheck, bFreezeProjectileWaitingOnCollision, bSetIgnoreCollisionEntity, bIgnoreCollisionResetNoBB);
+
     public static void SmashVehicleWindow(int vehicleIndex, int windowNumber)
         => API.SmashVehicleWindow(vehicleIndex, windowNumber);
 
     public static int StartNetworkedParticleFxLoopedOnEntity(string fxName, int entityIndex, float vecPosition_x, float vecPosition_y, float vecPosition_z, float vecRotation_x, float vecRotation_y, float vecRotation_z, float scale, bool invertAxisX, bool invertAxisY, bool invertAxisZ, float colorR, float colorG, float colorB, bool terminateOnOwnerLeave)
         => Function.Call<int>((Hash)0x6F60E89A7B64EE1DUL, fxName, entityIndex, vecPosition_x, vecPosition_y, vecPosition_z, vecRotation_x, vecRotation_y, vecRotation_z, scale, invertAxisX, invertAxisY, invertAxisZ, colorR, colorG, colorB, terminateOnOwnerLeave);
+
+    public static int StartNetworkedParticleFxLoopedOnEntityBone(string fxName, int entityIndex, float vecPosition_x, float vecPosition_y, float vecPosition_z, float vecRotation_x, float vecRotation_y, float vecRotation_z, int boneIndex, float scale, bool invertAxisX, bool invertAxisY, bool invertAxisZ, float colorR, float colorG, float colorB, bool terminateOnOwnerLeave)
+        => Function.Call<int>((Hash)0xDDE23F30CC5A0F03UL, fxName, entityIndex, vecPosition_x, vecPosition_y, vecPosition_z, vecRotation_x, vecRotation_y, vecRotation_z, boneIndex, scale, invertAxisX, invertAxisY, invertAxisZ, colorR, colorG, colorB, terminateOnOwnerLeave);
+
+    public static bool StartNetworkedParticleFxNonLoopedAtCoord(string fxName, float vecPosition_x, float vecPosition_y, float vecPosition_z, float vecRotation_x, float vecRotation_y, float vecRotation_z, float scale, bool invertAxisX, bool invertAxisY, bool invertAxisZ, bool ignoreScopeChecks)
+        => Function.Call<int>((Hash)0xF56B8137DF10135DUL, fxName, vecPosition_x, vecPosition_y, vecPosition_z, vecRotation_x, vecRotation_y, vecRotation_z, scale, invertAxisX, invertAxisY, invertAxisZ, ignoreScopeChecks) != 0;
 
     public static bool StartParticleFxNonLoopedAtCoord(string fxName, float vecPosition_x, float vecPosition_y, float vecPosition_z, float vecRotation_x, float vecRotation_y, float vecRotation_z, float scale, bool invertAxisX, bool invertAxisY, bool invertAxisZ)
         => Function.Call<int>((Hash)0x25129531F77B9ED3UL, fxName, vecPosition_x, vecPosition_y, vecPosition_z, vecRotation_x, vecRotation_y, vecRotation_z, scale, invertAxisX, invertAxisY, invertAxisZ) != 0;

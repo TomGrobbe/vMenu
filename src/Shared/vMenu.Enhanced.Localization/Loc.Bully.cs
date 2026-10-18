@@ -178,6 +178,10 @@ public static partial class Loc
 
         public const string FireworksDescription = "bully.effect.fireworks.desc";
 
+        public const string Chaff = "bully.effect.chaff";
+
+        public const string ChaffDescription = "bully.effect.chaff.desc";
+
         public const string Beast = "bully.effect.beast";
 
         public const string BeastDescription = "bully.effect.beast.desc";

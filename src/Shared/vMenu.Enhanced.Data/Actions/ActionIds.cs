@@ -27,6 +27,8 @@ public static class ActionIds
     public static class VehicleOptions
     {
         public const string DeleteVehicle = "VehicleOptions.DeleteVehicle";
+
+        public const string AircraftWeapon = "VehicleOptions.AircraftWeapon";
     }
 
     public static class PersonalVehicle

@@ -27,6 +27,7 @@ using vMenu.Enhanced.Menus.Players.Character;
 using vMenu.Enhanced.Menus.Props;
 using vMenu.Enhanced.Menus.Teleport;
 using vMenu.Enhanced.Menus.Vehicles;
+using vMenu.Enhanced.Menus.Vehicles.Aircraft;
 using vMenu.Enhanced.Menus.Vehicles.AutoPilot;
 using vMenu.Enhanced.Menus.Weapons;
 using vMenu.Enhanced.Menus.Weapons.Saved;
@@ -84,6 +85,8 @@ public sealed class Main : IScript
         TeleportSync.RegisterEventHandlers();
         ClothingPresetSync.RegisterEventHandlers();
         VehicleExtraLabels.RegisterEventHandlers();
+        AircraftWeaponConfig.RegisterEventHandlers();
+        AircraftWeaponOwner.RegisterEventHandlers();
         LocationBlipSync.RegisterEventHandlers();
 
         PedModelSync.RegisterEventHandlers();
@@ -155,6 +158,7 @@ public sealed class Main : IScript
         VehicleVisibility.Initialize();
         VehicleTurbulence.Initialize();
         VehicleAnchor.Initialize();
+        AircraftWeapons.Initialize();
         VehicleRadio.Initialize();
         PersonalVehicleFeature.Initialize();
         VehicleAutoPilot.Initialize();
@@ -214,6 +218,7 @@ public sealed class Main : IScript
         TeleportSync.Request();
         ClothingPresetSync.Request();
         VehicleExtraLabels.Request();
+        AircraftWeaponConfig.Request();
         LocationBlipSync.Request();
 
         PedModelSync.Request();
