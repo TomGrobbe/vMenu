@@ -58,3 +58,32 @@
 #menuapi .menuapi-row:last-child {
     border-radius: 0 0 var(--menuapi-radius) var(--menuapi-radius);
 }
+
+#menuapi-buttons {
+    --menuapi-buttons-font: "Segoe UI", Tahoma, sans-serif;
+    --menuapi-buttons-font-size: 17px;
+    --menuapi-buttons-font-weight: 600;
+    --menuapi-buttons-text: rgb(242 242 242);
+
+    --menuapi-buttons-bg: rgb(19 12 13 / 85%);
+    --menuapi-buttons-radius: 12px;
+    --menuapi-buttons-shadow: 0 2px 8px rgb(0 0 0 / 45%);
+    --menuapi-buttons-separator: 1px solid rgb(255 255 255 / 15%);
+
+    --menuapi-buttons-key-font: "Segoe UI", Tahoma, sans-serif;
+    --menuapi-buttons-key-font-weight: 600;
+    --menuapi-buttons-key-radius: 6px;
+    --menuapi-buttons-key-bg: rgb(242 124 118 / 90%);
+    --menuapi-buttons-key-text: rgb(24 8 8);
+
+    --menuapi-buttons-pad: rgb(255 255 255 / 15%);
+    --menuapi-buttons-pad-text: rgb(242 242 242);
+    --menuapi-buttons-a: rgb(126 217 137);
+    --menuapi-buttons-b: rgb(255 178 82);
+    --menuapi-buttons-x: rgb(138 190 255);
+    --menuapi-buttons-y: rgb(237 180 75);
+    --menuapi-buttons-mouse-highlight: rgb(242 124 118 / 90%);
+    --menuapi-buttons-spinner: rgb(242 242 242);
+    --menuapi-buttons-spinner-alt: rgb(242 124 118 / 90%);
+    --menuapi-buttons-unbound: rgb(255 178 82);
+}

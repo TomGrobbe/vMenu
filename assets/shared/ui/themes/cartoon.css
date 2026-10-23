@@ -86,3 +86,35 @@
 #menuapi .menuapi-icon {
     filter: invert(1);
 }
+
+#menuapi-buttons {
+    --menuapi-buttons-font: "Fredoka", "Segoe UI", system-ui, sans-serif;
+    --menuapi-buttons-font-size: 18px;
+    --menuapi-buttons-font-weight: 600;
+    --menuapi-buttons-text: rgb(254 243 217);
+
+    --menuapi-buttons-bg: rgb(26 21 35 / 97%);
+    --menuapi-buttons-radius: 18px;
+    --menuapi-buttons-shadow: 0 5px 16px rgb(26 21 35 / 45%);
+    --menuapi-buttons-padding: 0 10px;
+
+    --menuapi-buttons-key-font: "Fredoka", "Segoe UI", system-ui, sans-serif;
+    --menuapi-buttons-key-font-weight: 600;
+    --menuapi-buttons-key-radius: 8px;
+    --menuapi-buttons-key-bg: rgb(254 243 217);
+    --menuapi-buttons-key-text: rgb(26 21 35);
+
+    --menuapi-buttons-pad: rgb(107 70 224);
+    --menuapi-buttons-pad-text: rgb(254 243 217);
+    --menuapi-buttons-a: rgb(127 224 200);
+    --menuapi-buttons-b: rgb(255 143 143);
+    --menuapi-buttons-x: rgb(183 155 255);
+    --menuapi-buttons-y: rgb(255 214 102);
+    --menuapi-buttons-mouse: rgb(254 243 217);
+    --menuapi-buttons-mouse-lines: rgb(26 21 35);
+    --menuapi-buttons-mouse-highlight: rgb(183 155 255);
+    --menuapi-buttons-spinner: rgb(254 243 217);
+    --menuapi-buttons-spinner-alt: rgb(127 224 200);
+    --menuapi-buttons-unbound: rgb(255 143 143);
+    --menuapi-buttons-plus: rgb(183 155 255);
+}
