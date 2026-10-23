@@ -34,11 +34,11 @@ Once your players are running a build that has this setting, you can change it f
 The very first time is the exception. A brand new setting only starts listening for changes after the client has loaded the build that introduced it, so the first player of the day needs to have joined once with this version.
 :::
 
-:::caution[The button hints stay as they are]
-The row of button prompts along the bottom of the screen is drawn by the game itself, not by vMenu, so no skin can reach it. It keeps the Grand Theft Auto look whichever skin you pick.
+:::note[The button hints follow the skin too]
+The row of button prompts in the bottom right of the screen, the one that tells players which key does what, changes along with the skin. Pick `gta` and it looks exactly like the one the game draws itself.
 :::
 
-## More skins than these four
+## More skins than these seven
 
 vMenu's seven skins are not the end of it. Any resource on your server can hand vMenu a theme of its own, a CSS file that stays in that resource, and vMenu then treats it exactly like the seven above. The `Skin` setting accepts its name, and it is offered to your players the same way.
 

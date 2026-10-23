@@ -101,6 +101,8 @@ emit(
 - **css** is a path inside your own resource, or a full `https://cfx-nui-<resource>/` url naming another one. vMenu's menu page loads it from there, so nothing is copied into vMenu. Addresses out on the internet are refused.
 - **banner** is the picture on top of the menu. One of vMenu's own, `default`, `gold`, `green`, `red`, `dark`, `cartoon`, or `none` for the plain Grand Theft Auto one, or a `.png`, `.jpg` or `.webp` of your own, given the same way as the stylesheet. An image needs a MenuAPI new enough to load banners out of another resource, and falls back to vMenu's default banner otherwise.
 
+The stylesheet styles the button hints in the bottom right of the screen as well. Those go in a `#menuapi-buttons` block next to the `#menuapi` one, and every setting is listed in the [instructional buttons section](https://docs.vespura.com/menuapi/fivem/reference/theming/#instructional-buttons) of the MenuAPI docs. A theme without that block keeps the hints in the look of the game itself.
+
 Every file the stylesheet uses has to be listed in your `fxmanifest.lua` under `files`, or the game has no copy of it to serve. Fonts and images inside the stylesheet are resolved relative to the stylesheet itself.
 
 Send the whole set in one go: a second registration replaces everything that resource registered before, and its themes are dropped the moment it stops. vMenu answers on `vMenu.Enhanced:Plugins:<your resource>:ThemesRegistered` with `accepted`, `errors` and `warnings`, which is where a refused theme tells you why. Send it once when your resource starts, and again whenever vMenu says `vMenu.Enhanced:Plugins:Ready`, which is what it says when it restarts.
