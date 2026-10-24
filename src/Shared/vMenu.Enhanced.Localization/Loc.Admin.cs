@@ -13,23 +13,14 @@ public static partial class Loc
         [English("The tools that only your staff team can reach. Nobody without staff access can even see this menu.")]
         public const string LinkDescription = "admin.link.desc";
 
-        [English("Players")]
+        [English("Players", "Things you can do to whoever is standing closest to you.")]
         public const string PlayersGroup = "admin.players.group";
 
-        [English("Things you can do to whoever is standing closest to you.")]
-        public const string PlayersGroupDescription = "admin.players.group.desc";
-
-        [English("Vehicles")]
+        [English("Vehicles", "Getting rid of vehicles, one at a time or all at once.")]
         public const string VehiclesGroup = "admin.vehicles.group";
 
-        [English("Getting rid of vehicles, one at a time or all at once.")]
-        public const string VehiclesGroupDescription = "admin.vehicles.group.desc";
-
-        [English("Server")]
+        [English("Server", "Things that affect everybody on the server at once.")]
         public const string ServerGroup = "admin.server.group";
-
-        [English("Things that affect everybody on the server at once.")]
-        public const string ServerGroupDescription = "admin.server.group.desc";
 
         [English("There is ~y~nobody~s~ close enough to you for that.")]
         public const string NobodyNearby = "admin.nobodynearby";
@@ -55,12 +46,10 @@ public static partial class Loc
         [English("~y~{player}~s~ is still loading in, so there is nothing to act on yet.")]
         public const string StillJoining = "admin.stilljoining";
 
-        [English("Clear Area")]
-        public const string ClearArea = "admin.cleararea";
-
         [English(
+            "Clear Area",
             "Tidy the world up around you. Wrecks, dropped props, wandering people, scorch marks, dirt and broken street lights all go back to how they started. This is not only for you: everybody standing near you has the same patch of world cleaned up at the same moment.")]
-        public const string ClearAreaDescription = "admin.cleararea.desc";
+        public const string ClearArea = "admin.cleararea";
 
         [English(
             "~r~Are you sure?~s~ This clears the world for everybody near you, not only for you. Press again to go ahead.")]
@@ -78,12 +67,10 @@ public static partial class Loc
         [English("The area could not be cleared.")]
         public const string ClearAreaFailed = "admin.cleararea.failed";
 
-        [English("Freeze Closest Player")]
-        public const string Freeze = "admin.freeze";
-
         [English(
+            "Freeze Closest Player",
             "Pin whoever is standing closest to you to the spot, so they cannot walk, run or drive away. Press it again on the same person to let them move.")]
-        public const string FreezeDescription = "admin.freeze.desc";
+        public const string Freeze = "admin.freeze";
 
         [English("~y~{player}~s~ has been frozen.")]
         public const string FreezeDone = "admin.freeze.done";
@@ -125,30 +112,24 @@ public static partial class Loc
         [English("You have been ~g~put down~s~.")]
         public const string ReleasedByStaff = "admin.released.byStaff";
 
-        [English("Delete Vehicle")]
+        [English(
+            "Delete Vehicle",
+            "Delete the vehicle in front of you, or the one you are sat in whether you are driving it or not. Ordinary players can only delete a vehicle they are driving.")]
         public const string DeleteVehicle = "admin.deletevehicle";
 
         [English(
-            "Delete the vehicle in front of you, or the one you are sat in whether you are driving it or not. Ordinary players can only delete a vehicle they are driving.")]
-        public const string DeleteVehicleDescription = "admin.deletevehicle.desc";
-
-        [English("Delete Empty Vehicles")]
-        public const string DeleteEmptyVehicles = "admin.deleteemptyvehicles";
-
-        [English(
+            "Delete Empty Vehicles",
             "Removes vehicles nobody is sat in, anywhere on the server. The map keeps its own traffic, and anything with somebody in it is left alone, so this only clears up what players spawned and walked away from.")]
-        public const string DeleteEmptyVehiclesDescription = "admin.deleteemptyvehicles.desc";
+        public const string DeleteEmptyVehicles = "admin.deleteemptyvehicles";
 
         [English(
             "~r~Are you sure?~s~ Every player spawned vehicle nobody is sat in goes, everywhere, for everybody. Press again to go ahead.")]
         public const string DeleteEmptyVehiclesConfirm = "admin.deleteemptyvehicles.confirm";
 
-        [English("Delete All Vehicles")]
-        public const string DeleteAllVehicles = "admin.deleteallvehicles";
-
         [English(
+            "Delete All Vehicles",
             "Remove every vehicle on the whole server, including the ones people are sat in right now. Only reach for this when a wipe is really what you want.")]
-        public const string DeleteAllVehiclesDescription = "admin.deleteallvehicles.desc";
+        public const string DeleteAllVehicles = "admin.deleteallvehicles";
 
         [English(
             "~r~Are you really sure?~s~ This yanks people out of vehicles they are driving, across the entire server. Press again to go ahead.")]
@@ -157,11 +138,10 @@ public static partial class Loc
         [English("Deleted ~g~{count}~s~ vehicle(s).")]
         public const string DeleteVehiclesDone = "admin.deletevehicles.done";
 
-        [English("Send Announcement")]
+        [English(
+            "Send Announcement",
+            "Put a message on the screen of everybody on the server, wherever they happen to be.")]
         public const string Announce = "admin.announce";
-
-        [English("Put a message on the screen of everybody on the server, wherever they happen to be.")]
-        public const string AnnounceDescription = "admin.announce.desc";
 
         [English("What should everybody be told?")]
         public const string AnnouncePrompt = "admin.announce.prompt";
@@ -187,12 +167,10 @@ public static partial class Loc
         [English("{count} scheduled")]
         public const string ScheduleSubtitle = "admin.schedule.subtitle";
 
-        [English("Nothing Scheduled")]
-        public const string ScheduleEmpty = "admin.schedule.empty";
-
         [English(
+            "Nothing Scheduled",
             "No announcements are set to send themselves. Add one here, or fill in config/announcements.json on the server.")]
-        public const string ScheduleEmptyDescription = "admin.schedule.empty.desc";
+        public const string ScheduleEmpty = "admin.schedule.empty";
 
         [English("every {minutes}m")]
         public const string ScheduleEveryLabel = "admin.schedule.every";
@@ -228,18 +206,13 @@ public static partial class Loc
         [English("{trigger} · {text}\n~y~Press enter to manage announcement.")]
         public const string ScheduleRowDescription = "admin.schedule.row.desc";
 
-        [English("Switched Off")]
+        [English(
+            "Switched Off",
+            "Scheduled announcements are switched off on this server, so nothing listed here will send itself. Set vMenu.Enhanced.Admin.ScheduledAnnouncements to true in your configuration.cfg to turn them back on.")]
         public const string ScheduleDisabled = "admin.schedule.disabled";
 
-        [English(
-            "Scheduled announcements are switched off on this server, so nothing listed here will send itself. Set vMenu.Enhanced.Admin.ScheduledAnnouncements to true in your configuration.cfg to turn them back on.")]
-        public const string ScheduleDisabledDescription = "admin.schedule.disabled.desc";
-
-        [English("Add Announcement")]
+        [English("Add Announcement", "Write a new scheduled announcement and save it to the server.")]
         public const string ScheduleAdd = "admin.schedule.add";
-
-        [English("Write a new scheduled announcement and save it to the server.")]
-        public const string ScheduleAddDescription = "admin.schedule.add.desc";
 
         [English("What should this announcement be called?")]
         public const string ScheduleNamePrompt = "admin.schedule.name.prompt";
@@ -257,31 +230,24 @@ public static partial class Loc
         [English("~g~{name}~s~ has been added to the schedule.")]
         public const string ScheduleAdded = "admin.schedule.added";
 
-        [English("Remove")]
+        [English("Remove", "Take this announcement off the schedule for good.")]
         public const string ScheduleRemove = "admin.schedule.remove";
-
-        [English("Take this announcement off the schedule for good.")]
-        public const string ScheduleRemoveDescription = "admin.schedule.remove.desc";
 
         [English("~y~{name}~s~ has been taken off the schedule.")]
         public const string ScheduleRemoved = "admin.schedule.removed";
 
-        [English("Refresh All Permissions")]
-        public const string RefreshPermissions = "admin.refreshpermissions";
-
         [English(
+            "Refresh All Permissions",
             "Hand everybody on the server a fresh copy of what they are allowed to do. Use it once you have actually changed somebody's permissions on the server, so their menu catches up without them having to rejoin.")]
-        public const string RefreshPermissionsDescription = "admin.refreshpermissions.desc";
+        public const string RefreshPermissions = "admin.refreshpermissions";
 
         [English("Refreshed permissions for ~g~{count}~s~ player(s).")]
         public const string RefreshPermissionsDone = "admin.refreshpermissions.done";
 
-        [English("Return To The Default World")]
-        public const string ResetRoutingBucket = "admin.resetroutingbucket";
-
         [English(
+            "Return To The Default World",
             "Put yourself back in the world everybody else is in. Teleporting to a player in a separate world takes you along with them, and this is the way back out again.")]
-        public const string ResetRoutingBucketDescription = "admin.resetroutingbucket.desc";
+        public const string ResetRoutingBucket = "admin.resetroutingbucket";
 
         [English("Moved you out of world ~y~{bucket}~s~ and back into the default world.")]
         public const string ResetRoutingBucketDone = "admin.resetroutingbucket.done";
@@ -289,12 +255,10 @@ public static partial class Loc
         [English("You are already in the default world.")]
         public const string ResetRoutingBucketAlready = "admin.resetroutingbucket.already";
 
-        [English("See Private Messages")]
-        public const string SeePrivateMessages = "admin.seeprivatemessages";
-
         [English(
+            "See Private Messages",
             "Show a copy of every private message players send each other. Messages you send or receive yourself are not copied.")]
-        public const string SeePrivateMessagesDescription = "admin.seeprivatemessages.desc";
+        public const string SeePrivateMessages = "admin.seeprivatemessages";
 
         [English("~o~PM~s~ ~y~{sender}~s~ to ~y~{target}~s~: {message}")]
         public const string PrivateMessageCopy = "admin.seeprivatemessages.copy";

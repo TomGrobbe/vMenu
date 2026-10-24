@@ -48,11 +48,8 @@ public static partial class Loc
         [English("Showing every ped in ~y~{category}~s~ again.")]
         public const string FilterCleared = "pedmodels.filter.cleared";
 
-        [English("Spawn Ped By Name")]
+        [English("Spawn Ped By Name", "Turn into a ped by typing its model name.")]
         public const string SpawnByName = "pedmodels.byname";
-
-        [English("Turn into a ped by typing its model name.")]
-        public const string SpawnByNameDescription = "pedmodels.byname.desc";
 
         [English("Enter a ped model name")]
         public const string SpawnByNamePrompt = "pedmodels.byname.prompt";
@@ -69,10 +66,9 @@ public static partial class Loc
         [English("~r~{model}~s~ could not be loaded.")]
         public const string SpawnFailed = "pedmodels.spawnfailed";
 
-        [English("No ped models")]
+        [English(
+            "No ped models",
+            "The server owner has not put any peds in config/ped-models.json, so there is nothing to pick from.")]
         public const string Empty = "pedmodels.empty";
-
-        [English("The server owner has not put any peds in config/ped-models.json, so there is nothing to pick from.")]
-        public const string EmptyDescription = "pedmodels.empty.desc";
     }
 }

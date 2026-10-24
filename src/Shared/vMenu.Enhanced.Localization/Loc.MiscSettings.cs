@@ -13,42 +13,32 @@ public static partial class Loc
         [English("Change various settings about the menu.")]
         public const string LinkDescription = "miscsettings.link.desc";
 
-        [English("Language")]
+        [English("Language", "Select a language and press enter to apply it.")]
         public const string Language = "miscsettings.language";
-
-        [English("Select a language and press enter to apply it.")]
-        public const string LanguageDescription = "miscsettings.language.desc";
 
         [English(
             "This server does not offer ~y~{language}~s~, so vMenu is in English. Your preference is kept for servers that do, unless you decide to choose another language from the list of available languages.")]
         public const string LanguageUnavailable = "miscsettings.language.unavailable";
 
-        [English("Disable Idle Camera")]
+        [English(
+            "Disable Idle Camera",
+            "Stops the camera drifting around on its own when you stop touching the controls on foot.")]
         public const string DisableIdleCamera = "miscsettings.idlecam";
 
-        [English("Stops the camera drifting around on its own when you stop touching the controls on foot.")]
-        public const string DisableIdleCameraDescription = "miscsettings.idlecam.desc";
-
-        [English("Disable Vehicle Idle Camera")]
+        [English(
+            "Disable Vehicle Idle Camera",
+            "Stops the camera drifting around on its own while you sit in a vehicle. ~y~Note:~s~ this also stops you turning the cinematic camera on yourself.")]
         public const string DisableVehicleIdleCamera = "miscsettings.idlecam.vehicle";
 
         [English(
-            "Stops the camera drifting around on its own while you sit in a vehicle. ~y~Note:~s~ this also stops you turning the cinematic camera on yourself.")]
-        public const string DisableVehicleIdleCameraDescription = "miscsettings.idlecam.vehicle.desc";
-
-        [English("Finger Pointing")]
+            "Finger Pointing",
+            "Point your finger at whatever you are looking at, just like in GTA Online. Press ~b~B~s~ to start and press it again to stop, or click the right stick on a controller. It only works with your hands empty, a drawn weapon breaks the aiming animation. You can change the keybind in the pause menu under ~y~Settings~s~, ~y~Key Bindings~s~, ~y~FiveM~s~.")]
         public const string FingerPointing = "miscsettings.pointing";
 
         [English(
-            "Point your finger at whatever you are looking at, just like in GTA Online. Press ~b~B~s~ to start and press it again to stop, or click the right stick on a controller. It only works with your hands empty, a drawn weapon breaks the aiming animation. You can change the keybind in the pause menu under ~y~Settings~s~, ~y~Key Bindings~s~, ~y~FiveM~s~.")]
-        public const string FingerPointingDescription = "miscsettings.pointing.desc";
-
-        [English("Alert Staff")]
-        public const string AlertStaff = "miscsettings.alertstaff";
-
-        [English(
+            "Alert Staff",
             "Tell everybody on the staff team who is online that you need a hand, with a short note saying what is going on. Please only use this when you really do need somebody.")]
-        public const string AlertStaffDescription = "miscsettings.alertstaff.desc";
+        public const string AlertStaff = "miscsettings.alertstaff";
 
         [English("What do you need staff for?")]
         public const string AlertStaffPrompt = "miscsettings.alertstaff.prompt";

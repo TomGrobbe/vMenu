@@ -17,19 +17,15 @@ public static partial class Loc
         [English("Pick a scene from the story and play a part in it as your own character.")]
         public const string LinkDescription = "cutscenes.link.desc";
 
-        [English("Lamar's Haircut Roast")]
+        [English(
+            "Lamar's Haircut Roast",
+            "Lamar roasts your new haircut in Franklin's driveway, with you playing Franklin. You go back to where you were when it ends.")]
         public const string HaircutRoast = "cutscenes.haircut";
 
         [English(
-            "Lamar roasts your new haircut in Franklin's driveway, with you playing Franklin. You go back to where you were when it ends.")]
-        public const string HaircutRoastDescription = "cutscenes.haircut.desc";
-
-        [English("Pulled Over On The Bridge")]
-        public const string BridgePullOver = "cutscenes.pulledover";
-
-        [English(
+            "Pulled Over On The Bridge",
             "Trevor and Michael, dressed as cops, pull you over on a bridge and Trevor drags you out of your car. You go back to where you were when it ends.")]
-        public const string BridgePullOverDescription = "cutscenes.pulledover.desc";
+        public const string BridgePullOver = "cutscenes.pulledover";
 
         [English("You have to be on foot to start a cutscene.")]
         public const string NeedsOnFoot = "cutscenes.needsonfoot";

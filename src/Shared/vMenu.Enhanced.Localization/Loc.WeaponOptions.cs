@@ -13,20 +13,14 @@ public static partial class Loc
         [English("Get weapons, modify them, and set ammo options.")]
         public const string LinkDescription = "weaponoptions.link.desc";
 
-        [English("Get All Weapons")]
+        [English("Get All Weapons", "Get every weapon you are allowed, each one full.")]
         public const string GetAll = "weaponoptions.getall";
-
-        [English("Get every weapon you are allowed, each one full.")]
-        public const string GetAllDescription = "weaponoptions.getall.desc";
 
         [English("You were given ~g~{count}~s~ weapon(s).")]
         public const string GetAllDone = "weaponoptions.getall.done";
 
-        [English("Remove All Weapons")]
+        [English("Remove All Weapons", "Empty your inventory of every weapon.")]
         public const string RemoveAll = "weaponoptions.removeall";
-
-        [English("Empty your inventory of every weapon.")]
-        public const string RemoveAllDescription = "weaponoptions.removeall.desc";
 
         [English("All of your weapons were removed.")]
         public const string RemoveAllDone = "weaponoptions.removeall.done";
@@ -164,23 +158,14 @@ public static partial class Loc
         [English("{name} (Level {level})")]
         public const string GameLoadoutLevel = "weaponoptions.gameloadout.level";
 
-        [English("Unlimited Ammo")]
+        [English("Unlimited Ammo", "Never run out of ammunition.")]
         public const string UnlimitedAmmo = "weaponoptions.unlimitedammo";
 
-        [English("Never run out of ammunition.")]
-        public const string UnlimitedAmmoDescription = "weaponoptions.unlimitedammo.desc";
-
-        [English("No Reload")]
+        [English("No Reload", "Never have to reload.")]
         public const string NoReload = "weaponoptions.noreload";
 
-        [English("Never have to reload.")]
-        public const string NoReloadDescription = "weaponoptions.noreload.desc";
-
-        [English("Set All Ammo Count")]
+        [English("Set All Ammo Count", "Set how many rounds every weapon you are carrying has.")]
         public const string SetAllAmmo = "weaponoptions.setallammo";
-
-        [English("Set how many rounds every weapon you are carrying has.")]
-        public const string SetAllAmmoDescription = "weaponoptions.setallammo.desc";
 
         [English("Enter an ammo amount")]
         public const string SetAllAmmoPrompt = "weaponoptions.setallammo.prompt";
@@ -191,20 +176,14 @@ public static partial class Loc
         [English("Ammo was set on ~g~{count}~s~ weapon(s).")]
         public const string SetAllAmmoDone = "weaponoptions.setallammo.done";
 
-        [English("Refill All Ammo")]
+        [English("Refill All Ammo", "Fill up every weapon you are already carrying.")]
         public const string RefillAll = "weaponoptions.refillall";
-
-        [English("Fill up every weapon you are already carrying.")]
-        public const string RefillAllDescription = "weaponoptions.refillall.desc";
 
         [English("~g~{count}~s~ weapon(s) were filled up.")]
         public const string RefillAllDone = "weaponoptions.refillall.done";
 
-        [English("Spawn Weapon By Name")]
+        [English("Spawn Weapon By Name", "Give yourself a weapon by typing its spawn name.")]
         public const string SpawnByName = "weaponoptions.byname";
-
-        [English("Give yourself a weapon by typing its spawn name.")]
-        public const string SpawnByNameDescription = "weaponoptions.byname.desc";
 
         [English("Enter a weapon spawn name")]
         public const string SpawnByNamePrompt = "weaponoptions.byname.prompt";
@@ -221,17 +200,13 @@ public static partial class Loc
         [English("Weapon Options Menu")]
         public const string CategorySubtitle = "weaponoptions.category.subtitle";
 
-        [English("Weapon Categories")]
+        [English("Weapon Categories", "Everything below this point is a group of weapons you can take out.")]
         public const string GroupCategories = "weaponoptions.group.categories";
 
-        [English("Everything below this point is a group of weapons you can take out.")]
-        public const string GroupCategoriesDescription = "weaponoptions.group.categories.desc";
-
-        [English("No weapons")]
+        [English(
+            "No weapons",
+            "The server owner has not put any weapons in config/weapons.json, so there is nothing to pick from.")]
         public const string Empty = "weaponoptions.empty";
-
-        [English("The server owner has not put any weapons in config/weapons.json, so there is nothing to pick from.")]
-        public const string EmptyDescription = "weaponoptions.empty.desc";
 
         [English("Open the options for ~y~{weapon}~s~.")]
         public const string WeaponDescription = "weaponoptions.weapon.desc";
@@ -255,40 +230,28 @@ public static partial class Loc
         [English("Take this weapon back out of your inventory.")]
         public const string RemoveWeaponDescription = "weaponoptions.remove.desc";
 
-        [English("Refill Ammo")]
+        [English("Refill Ammo", "Fill this weapon up to its maximum ammo.")]
         public const string RefillAmmo = "weaponoptions.refillammo";
-
-        [English("Fill this weapon up to its maximum ammo.")]
-        public const string RefillAmmoDescription = "weaponoptions.refillammo.desc";
 
         [English("You have to get this weapon first.")]
         public const string NotHeld = "weaponoptions.notheld";
 
-        [English("Tint")]
+        [English("Tint", "Pick a colour for this weapon.")]
         public const string Tints = "weaponoptions.tints";
-
-        [English("Pick a colour for this weapon.")]
-        public const string TintsDescription = "weaponoptions.tints.desc";
 
         [English("Attach or remove this part. A tick on the left means it is fitted.")]
         public const string ComponentDescription = "weaponoptions.component.desc";
 
         #region parachute
 
-        [English("Parachute Options")]
+        [English("Parachute Options", "Everything to do with parachutes.")]
         public const string Parachute = "weaponoptions.parachute";
-
-        [English("Everything to do with parachutes.")]
-        public const string ParachuteDescription = "weaponoptions.parachute.desc";
 
         [English("Parachute Options")]
         public const string ParachuteSubtitle = "weaponoptions.parachute.subtitle";
 
-        [English("Toggle Primary Parachute")]
+        [English("Toggle Primary Parachute", "Put a parachute on your back, or take it off again.")]
         public const string TogglePrimary = "weaponoptions.parachute.primary";
-
-        [English("Put a parachute on your back, or take it off again.")]
-        public const string TogglePrimaryDescription = "weaponoptions.parachute.primary.desc";
 
         [English("Primary parachute added.")]
         public const string PrimaryAdded = "weaponoptions.parachute.primary.added";
@@ -296,48 +259,33 @@ public static partial class Loc
         [English("Primary parachute removed.")]
         public const string PrimaryRemoved = "weaponoptions.parachute.primary.removed";
 
-        [English("Enable Reserve Parachute")]
-        public const string EnableReserve = "weaponoptions.parachute.reserve";
-
         [English(
+            "Enable Reserve Parachute",
             "Adds a reserve chute. You need the primary one first, and once it is on it cannot be taken off again.")]
-        public const string EnableReserveDescription = "weaponoptions.parachute.reserve.desc";
+        public const string EnableReserve = "weaponoptions.parachute.reserve";
 
         [English("Reserve parachute added.")]
         public const string ReserveAdded = "weaponoptions.parachute.reserve.added";
 
-        [English("Auto Equip Parachutes")]
+        [English(
+            "Auto Equip Parachutes",
+            "Put a parachute and a reserve on automatically whenever you get into a plane or a helicopter.")]
         public const string AutoEquip = "weaponoptions.parachute.autoequip";
 
-        [English("Put a parachute and a reserve on automatically whenever you get into a plane or a helicopter.")]
-        public const string AutoEquipDescription = "weaponoptions.parachute.autoequip.desc";
-
-        [English("Unlimited Parachutes")]
+        [English("Unlimited Parachutes", "Never run out of parachutes or reserve chutes.")]
         public const string UnlimitedParachutes = "weaponoptions.parachute.unlimited";
 
-        [English("Never run out of parachutes or reserve chutes.")]
-        public const string UnlimitedParachutesDescription = "weaponoptions.parachute.unlimited.desc";
-
-        [English("Smoke Trail Colour")]
+        [English("Smoke Trail Colour", "Pick a smoke trail colour, then press select to change it.")]
         public const string SmokeColor = "weaponoptions.parachute.smoke";
-
-        [English("Pick a smoke trail colour, then press select to change it.")]
-        public const string SmokeColorDescription = "weaponoptions.parachute.smoke.desc";
 
         [English("Changing the colour takes a few seconds. Your smoke will not work until it is done.")]
         public const string SmokeColorChanging = "weaponoptions.parachute.smoke.changing";
 
-        [English("Primary Chute Style")]
+        [English("Primary Chute Style", "Pick how your primary parachute looks.")]
         public const string PrimaryStyle = "weaponoptions.parachute.primarystyle";
 
-        [English("Pick how your primary parachute looks.")]
-        public const string PrimaryStyleDescription = "weaponoptions.parachute.primarystyle.desc";
-
-        [English("Reserve Chute Style")]
+        [English("Reserve Chute Style", "Pick how your reserve parachute looks.")]
         public const string ReserveStyle = "weaponoptions.parachute.reservestyle";
-
-        [English("Pick how your reserve parachute looks.")]
-        public const string ReserveStyleDescription = "weaponoptions.parachute.reservestyle.desc";
 
         #endregion
 

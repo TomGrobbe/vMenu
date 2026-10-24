@@ -13,11 +13,8 @@ public static partial class Loc
         [English("Teleport around the map.")]
         public const string LinkDescription = "teleportmenu.link.desc";
 
-        [English("Teleport To Waypoint")]
+        [English("Teleport To Waypoint", "Teleports you to your set waypoint on the map.")]
         public const string TeleportToWaypoint = "teleportmenu.tptowp";
-
-        [English("Teleports you to your set waypoint on the map.")]
-        public const string TeleportToWaypointDescription = "teleportmenu.tptowp.desc";
 
         [English("No waypoint currently set.")]
         public const string NoWaypoint = "teleportmenu.tptowp.nowp";
@@ -25,11 +22,8 @@ public static partial class Loc
         [English("Waypoint is invalid.")]
         public const string WaypointInvalid = "teleportmenu.tptowp.invalid";
 
-        [English("Teleport To Coords")]
+        [English("Teleport To Coords", "Teleports you to the coords you type in.")]
         public const string TeleportToCoords = "teleportmenu.tptocoords";
-
-        [English("Teleports you to the coords you type in.")]
-        public const string TeleportToCoordsDescription = "teleportmenu.tptocoords.desc";
 
         [English("Type in coords to teleport to (X, Y, Z)")]
         public const string CoordsPrompt = "teleportmenu.tptocoords.prompt";
@@ -55,50 +49,29 @@ public static partial class Loc
         [English("That category does not exist on the server anymore.")]
         public const string CategoryGone = "teleportmenu.save.categorygone";
 
-        [English("Teleport Categories")]
+        [English("Teleport Categories", "Teleport to a location this server has set up.")]
         public const string TeleportCategories = "teleportmenu.categories";
 
-        [English("Teleport to a location this server has set up.")]
-        public const string TeleportCategoriesDescription = "teleportmenu.categories.desc";
-
-        [English("No Categories")]
+        [English("No Categories", "This server has no teleport categories set up.")]
         public const string NoCategories = "teleportmenu.categories.none";
 
-        [English("This server has no teleport categories set up.")]
-        public const string NoCategoriesDescription = "teleportmenu.categories.none.desc";
-
-        [English("No Locations")]
+        [English("No Locations", "This category has no locations in it.")]
         public const string NoLocations = "teleportmenu.categories.nolocations";
 
-        [English("This category has no locations in it.")]
-        public const string NoLocationsDescription = "teleportmenu.categories.nolocations.desc";
-
-        [English("Create Category")]
+        [English("Create Category", "Creates a teleportation category.")]
         public const string CreateCategory = "teleportmenu.categories.create";
 
-        [English("Creates a teleportation category.")]
-        public const string CreateCategoryDescription = "teleportmenu.categories.create.desc";
-
-        [English("Create Position")]
+        [English("Create Position", "Creates a teleportation position inside of the current category.")]
         public const string CreatePosition = "teleportmenu.categories.position";
 
-        [English("Creates a teleportation position inside of the current category.")]
-        public const string CreatePositionDescription = "teleportmenu.categories.position.desc";
-
-        [English("Delete Category")]
+        [English("Delete Category", "Pick a category and press enter to delete it, for everybody on the server.")]
         public const string DeleteCategory = "teleportmenu.categories.delete";
-
-        [English("Pick a category and press enter to delete it, for everybody on the server.")]
-        public const string DeleteCategoryDescription = "teleportmenu.categories.delete.desc";
 
         [English("~r~Delete {name} and every position in it? Press enter again to confirm.")]
         public const string DeleteCategoryConfirm = "teleportmenu.categories.delete.confirm";
 
-        [English("Delete Position")]
+        [English("Delete Position", "Pick a position and press enter to delete it, for everybody on the server.")]
         public const string DeletePosition = "teleportmenu.categories.position.delete";
-
-        [English("Pick a position and press enter to delete it, for everybody on the server.")]
-        public const string DeletePositionDescription = "teleportmenu.categories.position.delete.desc";
 
         [English("~r~Delete {name}? Press enter again to confirm.")]
         public const string DeletePositionConfirm = "teleportmenu.categories.position.delete.confirm";
@@ -127,11 +100,10 @@ public static partial class Loc
         [English("Description of the category you are creating.")]
         public const string CategoryDescription = "teleportmenu.categories.add.category.desc";
 
-        [English("Teleport Key")]
+        [English(
+            "Teleport Key",
+            "What your teleport key does. Rebind the key itself under Settings, Key Bindings, vMenu: Teleport.")]
         public const string KeyAction = "teleportmenu.key.action";
-
-        [English("What your teleport key does. Rebind the key itself under Settings, Key Bindings, vMenu: Teleport.")]
-        public const string KeyActionDescription = "teleportmenu.key.action.desc";
 
         [English("Disabled")]
         public const string KeyActionDisabled = "teleportmenu.key.action.disabled";

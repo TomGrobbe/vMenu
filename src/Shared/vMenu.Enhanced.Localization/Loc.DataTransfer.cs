@@ -24,29 +24,23 @@ public static partial class Loc
         [English("Nothing is saved on this computer yet.")]
         public const string SummaryEmpty = "datatransfer.summary.empty";
 
-        [English("Show My Transfer Code")]
-        public const string Export = "datatransfer.export";
-
         [English(
+            "Show My Transfer Code",
             "Put everything saved here into one code. Copy it somewhere safe, and you can bring all of it back later, or on another computer.")]
-        public const string ExportDescription = "datatransfer.export.desc";
+        public const string Export = "datatransfer.export";
 
         [English("Bring Data Back")]
         public const string ImportGroup = "datatransfer.import.group";
 
-        [English("Paste A Code")]
+        [English(
+            "Paste A Code",
+            "Paste a transfer code and add everything in it to what is already here. Nothing saved on this computer is deleted.")]
         public const string Merge = "datatransfer.import.merge";
 
         [English(
-            "Paste a transfer code and add everything in it to what is already here. Nothing saved on this computer is deleted.")]
-        public const string MergeDescription = "datatransfer.import.merge.desc";
-
-        [English("Paste A Code And Replace Everything")]
-        public const string Replace = "datatransfer.import.replace";
-
-        [English(
+            "Paste A Code And Replace Everything",
             "Paste a transfer code and start over from it. Everything vMenu has saved here is deleted first, so you end up with exactly what was in the code.")]
-        public const string ReplaceDescription = "datatransfer.import.replace.desc";
+        public const string Replace = "datatransfer.import.replace";
 
         [English(
             "~r~This deletes every vehicle, ped, loadout and setting saved on this computer~s~ before it reads the code. Press enter again if you are sure.")]

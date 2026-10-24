@@ -16,10 +16,7 @@ public static partial class Loc
         [English("Provided by the resource ~b~{resource}~s~.")]
         public const string RowDescription = "plugins.row.desc";
 
-        [English("Plugin Actions")]
+        [English("Plugin Actions", "Actions for this player, added by plugins on this server.")]
         public const string PlayerActions = "plugins.playeractions";
-
-        [English("Actions for this player, added by plugins on this server.")]
-        public const string PlayerActionsDescription = "plugins.playeractions.desc";
     }
 }

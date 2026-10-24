@@ -13,12 +13,10 @@ public static partial class Loc
         [English("Options for your current vehicle.")]
         public const string LinkDescription = "vehicleoptions.link.desc";
 
-        [English("Delete Vehicle")]
-        public const string DeleteVehicle = "vehicleoptions.delete";
-
         [English(
+            "Delete Vehicle",
             "Deletes the vehicle you are driving. You have to be in the driver seat, being a passenger is not enough.")]
-        public const string DeleteVehicleDescription = "vehicleoptions.delete.desc";
+        public const string DeleteVehicle = "vehicleoptions.delete";
 
         [English("~r~Are you sure you want to delete this vehicle? Press enter again to confirm.")]
         public const string DeleteVehicleConfirm = "vehicleoptions.delete.confirm";
@@ -44,11 +42,8 @@ public static partial class Loc
         [English("~g~Vehicle deleted~s~.")]
         public const string Deleted = "vehicleoptions.delete.success";
 
-        [English("Repair Vehicle")]
+        [English("Repair Vehicle", "Repairs all visual and mechanical damage on the vehicle you're driving.")]
         public const string RepairVehicle = "vehicleoptions.repair";
-
-        [English("Repairs all visual and mechanical damage on the vehicle you're driving.")]
-        public const string RepairVehicleDescription = "vehicleoptions.repair.desc";
 
         [English("You have to be the ~y~driver~s~ to repair this vehicle.")]
         public const string RepairNotDriver = "vehicleoptions.repair.notdriver";
@@ -62,11 +57,8 @@ public static partial class Loc
         [English("Vehicle ~g~repaired~s~.")]
         public const string Repaired = "vehicleoptions.repair.success";
 
-        [English("Wash Vehicle")]
+        [English("Wash Vehicle", "Cleans the dirt and the scrape marks off the vehicle you're driving.")]
         public const string WashVehicle = "vehicleoptions.wash";
-
-        [English("Cleans the dirt and the scrape marks off the vehicle you're driving.")]
-        public const string WashVehicleDescription = "vehicleoptions.wash.desc";
 
         [English("You have to be the ~y~driver~s~ to wash this vehicle.")]
         public const string WashNotDriver = "vehicleoptions.wash.notdriver";
@@ -80,12 +72,10 @@ public static partial class Loc
         [English("Vehicle ~g~washed~s~.")]
         public const string Washed = "vehicleoptions.wash.success";
 
-        [English("Cycle Seat")]
-        public const string CycleSeat = "vehicleoptions.cycleseat";
-
         [English(
+            "Cycle Seat",
             "Moves you to the next free seat, and back round to the driver's seat after the last one. Seats somebody else is in are skipped.")]
-        public const string CycleSeatDescription = "vehicleoptions.cycleseat.desc";
+        public const string CycleSeat = "vehicleoptions.cycleseat";
 
         [English("You have to be ~y~in a vehicle~s~ to change seats.")]
         public const string CycleSeatNoVehicle = "vehicleoptions.cycleseat.novehicle";
@@ -121,93 +111,66 @@ public static partial class Loc
 
         #region Section links
 
-        [English("Modifications")]
+        [English(
+            "Modifications",
+            "Every upgrade this vehicle can be fitted with, plus turbo, tyre smoke and window tint.")]
         public const string Modifications = "vehicleoptions.mods";
-
-        [English("Every upgrade this vehicle can be fitted with, plus turbo, tyre smoke and window tint.")]
-        public const string ModificationsDescription = "vehicleoptions.mods.desc";
 
         [English("Vehicle Modifications")]
         public const string ModificationsSubtitle = "vehicleoptions.mods.subtitle";
 
-        [English("Colours")]
+        [English("Colours", "Paint this vehicle, inside and out.")]
         public const string Colors = "vehicleoptions.colors";
-
-        [English("Paint this vehicle, inside and out.")]
-        public const string ColorsDescription = "vehicleoptions.colors.desc";
 
         [English("Vehicle Colours")]
         public const string ColorsSubtitle = "vehicleoptions.colors.subtitle";
 
-        [English("Liveries")]
+        [English("Liveries", "Pick one of the paint jobs this vehicle came with.")]
         public const string Liveries = "vehicleoptions.liveries";
-
-        [English("Pick one of the paint jobs this vehicle came with.")]
-        public const string LiveriesDescription = "vehicleoptions.liveries.desc";
 
         [English("Vehicle Liveries")]
         public const string LiveriesSubtitle = "vehicleoptions.liveries.subtitle";
 
-        [English("Extras")]
-        public const string Extras = "vehicleoptions.extras";
-
         [English(
+            "Extras",
             "Switch the optional parts this vehicle was built with on and off, such as push bars, roof racks and light bars.")]
-        public const string ExtrasDescription = "vehicleoptions.extras.desc";
+        public const string Extras = "vehicleoptions.extras";
 
         [English("Vehicle Extras")]
         public const string ExtrasSubtitle = "vehicleoptions.extras.subtitle";
 
-        [English("Neon Lights")]
+        [English("Neon Lights", "Underglow: which sides are lit, and what colour they are.")]
         public const string Neon = "vehicleoptions.neon";
-
-        [English("Underglow: which sides are lit, and what colour they are.")]
-        public const string NeonDescription = "vehicleoptions.neon.desc";
 
         [English("Vehicle Neon Lights")]
         public const string NeonSubtitle = "vehicleoptions.neon.subtitle";
 
-        [English("Headlights")]
+        [English("Headlights", "Fit xenon headlights and choose what colour they shine.")]
         public const string Lights = "vehicleoptions.lights";
-
-        [English("Fit xenon headlights and choose what colour they shine.")]
-        public const string LightsDescription = "vehicleoptions.lights.desc";
 
         [English("Vehicle Headlights")]
         public const string LightsSubtitle = "vehicleoptions.lights.subtitle";
 
-        [English("Wheels & Tyres")]
+        [English("Wheels & Tyres", "Wheel type, rims, custom tyres and bulletproof tyres.")]
         public const string Wheels = "vehicleoptions.wheels";
-
-        [English("Wheel type, rims, custom tyres and bulletproof tyres.")]
-        public const string WheelsDescription = "vehicleoptions.wheels.desc";
 
         [English("Vehicle Wheels & Tyres")]
         public const string WheelsSubtitle = "vehicleoptions.wheels.subtitle";
 
-        [English("Licence Plate")]
+        [English("Licence Plate", "Change what the plate says and which style it uses.")]
         public const string Plate = "vehicleoptions.plate";
-
-        [English("Change what the plate says and which style it uses.")]
-        public const string PlateDescription = "vehicleoptions.plate.desc";
 
         [English("Vehicle Licence Plate")]
         public const string PlateSubtitle = "vehicleoptions.plate.subtitle";
 
-        [English("Doors")]
+        [English("Doors", "Open, close and remove this vehicle's doors.")]
         public const string Doors = "vehicleoptions.doors";
-
-        [English("Open, close and remove this vehicle's doors.")]
-        public const string DoorsDescription = "vehicleoptions.doors.desc";
 
         [English("Vehicle Doors")]
         public const string DoorsSubtitle = "vehicleoptions.doors.subtitle";
 
-        [English("Windows")]
+        [English("Windows", "Roll the windows up and down, or smash them.")]
         public const string Windows = "vehicleoptions.windows";
-
-        [English("Roll the windows up and down, or smash them.")]
-        public const string WindowsDescription = "vehicleoptions.windows.desc";
 
         [English("Vehicle Windows")]
         public const string WindowsSubtitle = "vehicleoptions.windows.subtitle";
@@ -246,11 +209,8 @@ public static partial class Loc
         [English("Fit coloured tyre smoke, which shows when you spin the wheels. Mod slot {number}.")]
         public const string TyreSmokeDescription = "vehicleoptions.mods.tyresmoke.desc";
 
-        [English("Tyre Smoke Colour")]
+        [English("Tyre Smoke Colour", "What colour the tyre smoke is. Fit tyre smoke first, or you will not see it.")]
         public const string TyreSmokeColor = "vehicleoptions.mods.tyresmoke.color";
-
-        [English("What colour the tyre smoke is. Fit tyre smoke first, or you will not see it.")]
-        public const string TyreSmokeColorDescription = "vehicleoptions.mods.tyresmoke.color.desc";
 
         [English("Red")]
         public const string SmokeRed = "vehicleoptions.smoke.red";
@@ -285,11 +245,8 @@ public static partial class Loc
         [English("Black")]
         public const string SmokeBlack = "vehicleoptions.smoke.black";
 
-        [English("Window Tint")]
+        [English("Window Tint", "How dark the windows are.")]
         public const string WindowTint = "vehicleoptions.mods.tint";
-
-        [English("How dark the windows are.")]
-        public const string WindowTintDescription = "vehicleoptions.mods.tint.desc";
 
         [English("Stock")]
         public const string TintStock = "vehicleoptions.mods.tint.stock";
@@ -316,17 +273,13 @@ public static partial class Loc
 
         #region Wheels and tyres
 
-        [English("Wheel Type")]
+        [English(
+            "Wheel Type",
+            "Which family of rims this vehicle picks from. Changing it puts the rims back to stock.")]
         public const string WheelType = "vehicleoptions.wheels.type";
 
-        [English("Which family of rims this vehicle picks from. Changing it puts the rims back to stock.")]
-        public const string WheelTypeDescription = "vehicleoptions.wheels.type.desc";
-
-        [English("Custom Tyres")]
+        [English("Custom Tyres", "Fit the low profile tyres that come with these rims.")]
         public const string CustomTyres = "vehicleoptions.wheels.customtyres";
-
-        [English("Fit the low profile tyres that come with these rims.")]
-        public const string CustomTyresDescription = "vehicleoptions.wheels.customtyres.desc";
 
         [English("Bulletproof Tyres")]
         public const string BulletproofTyres = "vehicleoptions.wheels.bulletproof";
@@ -338,11 +291,10 @@ public static partial class Loc
             "Vehicle god mode is holding the tyres bulletproof on every vehicle you drive, so this cannot be changed here. Turn off Bulletproof Tyres in the god mode options to take it back.")]
         public const string BulletproofTyresLocked = "vehicleoptions.wheels.bulletproof.locked";
 
-        [English("Drift Tyres")]
+        [English(
+            "Drift Tyres",
+            "Low grip tyres that make the back end step out. Only some vehicles are built to take them.")]
         public const string DriftTyres = "vehicleoptions.wheels.drift";
-
-        [English("Low grip tyres that make the back end step out. Only some vehicles are built to take them.")]
-        public const string DriftTyresDescription = "vehicleoptions.wheels.drift.desc";
 
         [English("This vehicle cannot take ~y~drift tyres~s~.")]
         public const string DriftTyresUnsupported = "vehicleoptions.wheels.drift.unsupported";
@@ -453,36 +405,28 @@ public static partial class Loc
         [English("Default Alloy")]
         public const string ColorDefaultAlloy = "vehicleoptions.colors.defaultalloy";
 
-        [English("Factory Colour Combination")]
+        [English(
+            "Factory Colour Combination",
+            "The colour pairs this vehicle actually ships with. Picking one replaces both body colours.")]
         public const string PresetCombination = "vehicleoptions.colors.preset";
-
-        [English("The colour pairs this vehicle actually ships with. Picking one replaces both body colours.")]
-        public const string PresetCombinationDescription = "vehicleoptions.colors.preset.desc";
 
         [English("Combination {number}")]
         public const string PresetCombinationValue = "vehicleoptions.colors.preset.value";
 
-        [English("Paint Fade")]
+        [English(
+            "Paint Fade",
+            "How sun bleached the paint looks, from factory fresh on the left to badly faded on the right.")]
         public const string PaintFade = "vehicleoptions.colors.fade";
-
-        [English("How sun bleached the paint looks, from factory fresh on the left to badly faded on the right.")]
-        public const string PaintFadeDescription = "vehicleoptions.colors.fade.desc";
 
         #endregion
 
         #region Custom colour picker
 
-        [English("Custom Colour")]
+        [English("Custom Colour", "Mix your own colour instead of picking one from the game's list.")]
         public const string CustomColor = "vehicleoptions.rgb";
 
-        [English("Mix your own colour instead of picking one from the game's list.")]
-        public const string CustomColorDescription = "vehicleoptions.rgb.desc";
-
-        [English("Hex Colour Code")]
+        [English("Hex Colour Code", "Type a six character hex code, the same kind websites use, such as FF8800.")]
         public const string HexColor = "vehicleoptions.rgb.hex";
-
-        [English("Type a six character hex code, the same kind websites use, such as FF8800.")]
-        public const string HexColorDescription = "vehicleoptions.rgb.hex.desc";
 
         [English("Enter a hex colour code")]
         public const string HexColorPrompt = "vehicleoptions.rgb.hex.prompt";
@@ -502,27 +446,18 @@ public static partial class Loc
         [English("Left and right to change this channel. The colour is applied as you move.")]
         public const string ChannelDescription = "vehicleoptions.rgb.channel.desc";
 
-        [English("Back To A Game Colour")]
+        [English("Back To A Game Colour", "Drops the custom colour so the colour lists take over again.")]
         public const string ResetCustomColor = "vehicleoptions.rgb.reset";
-
-        [English("Drops the custom colour so the colour lists take over again.")]
-        public const string ResetCustomColorDescription = "vehicleoptions.rgb.reset.desc";
 
         #endregion
 
         #region Liveries
 
-        [English("Livery")]
+        [English("Livery", "The paint job printed onto the bodywork.")]
         public const string Livery = "vehicleoptions.liveries.livery";
 
-        [English("The paint job printed onto the bodywork.")]
-        public const string LiveryDescription = "vehicleoptions.liveries.livery.desc";
-
-        [English("Roof Livery")]
+        [English("Roof Livery", "A second paint job that only a few vehicles have, on the roof.")]
         public const string RoofLivery = "vehicleoptions.liveries.roof";
-
-        [English("A second paint job that only a few vehicles have, on the roof.")]
-        public const string RoofLiveryDescription = "vehicleoptions.liveries.roof.desc";
 
         [English("None")]
         public const string LiveryNone = "vehicleoptions.liveries.none";
@@ -557,11 +492,8 @@ public static partial class Loc
         [English("Switch this neon tube on or off.")]
         public const string NeonSideDescription = "vehicleoptions.neon.side.desc";
 
-        [English("Neon Colour")]
+        [English("Neon Colour", "What colour every neon tube on this vehicle glows.")]
         public const string NeonColor = "vehicleoptions.neon.color";
-
-        [English("What colour every neon tube on this vehicle glows.")]
-        public const string NeonColorDescription = "vehicleoptions.neon.color.desc";
 
         #endregion
 
@@ -573,11 +505,10 @@ public static partial class Loc
         [English("Fit brighter headlights, which is what lets you colour them. Mod slot {number}.")]
         public const string XenonLightsDescription = "vehicleoptions.lights.xenon.desc";
 
-        [English("Headlight Colour")]
+        [English(
+            "Headlight Colour",
+            "What colour the headlights shine. Fit xenon headlights first, or nothing changes.")]
         public const string HeadlightColor = "vehicleoptions.lights.color";
-
-        [English("What colour the headlights shine. Fit xenon headlights first, or nothing changes.")]
-        public const string HeadlightColorDescription = "vehicleoptions.lights.color.desc";
 
         [English("Default Xenon")]
         public const string HeadlightDefault = "vehicleoptions.lights.color.default";
@@ -586,20 +517,14 @@ public static partial class Loc
 
         #region Plate
 
-        [English("Plate Text")]
+        [English("Plate Text", "What is written on the licence plate. Eight characters at most.")]
         public const string PlateText = "vehicleoptions.plate.text";
-
-        [English("What is written on the licence plate. Eight characters at most.")]
-        public const string PlateTextDescription = "vehicleoptions.plate.text.desc";
 
         [English("Enter the plate text")]
         public const string PlateTextPrompt = "vehicleoptions.plate.text.prompt";
 
-        [English("Plate Style")]
+        [English("Plate Style", "Which state's plate design this vehicle carries.")]
         public const string PlateStyle = "vehicleoptions.plate.style";
-
-        [English("Which state's plate design this vehicle carries.")]
-        public const string PlateStyleDescription = "vehicleoptions.plate.style.desc";
 
         #endregion
 
@@ -632,17 +557,11 @@ public static partial class Loc
         [English("Open or close this door.")]
         public const string DoorDescription = "vehicleoptions.doors.item.desc";
 
-        [English("Open All Doors")]
+        [English("Open All Doors", "Opens every door this vehicle has, including the hood and trunk.")]
         public const string OpenAllDoors = "vehicleoptions.doors.openall";
 
-        [English("Opens every door this vehicle has, including the hood and trunk.")]
-        public const string OpenAllDoorsDescription = "vehicleoptions.doors.openall.desc";
-
-        [English("Close All Doors")]
+        [English("Close All Doors", "Shuts every door this vehicle has.")]
         public const string CloseAllDoors = "vehicleoptions.doors.closeall";
-
-        [English("Shuts every door this vehicle has.")]
-        public const string CloseAllDoorsDescription = "vehicleoptions.doors.closeall.desc";
 
         [English("Toggle vehicle doors")]
         public const string ToggleDoorsButton = "vehicleoptions.doors.toggleall.button";
@@ -650,11 +569,8 @@ public static partial class Loc
         [English("Open or close every vehicle door")]
         public const string ToggleDoorsBinding = "vehicleoptions.toggledoors.binding";
 
-        [English("Remove Door")]
+        [English("Remove Door", "Rips the chosen door off the vehicle. Repairing the vehicle puts it back.")]
         public const string RemoveDoor = "vehicleoptions.doors.remove";
-
-        [English("Rips the chosen door off the vehicle. Repairing the vehicle puts it back.")]
-        public const string RemoveDoorDescription = "vehicleoptions.doors.remove.desc";
 
         [English("~r~Rip {name} off this vehicle? Press enter again to confirm.")]
         public const string RemoveDoorConfirm = "vehicleoptions.doors.remove.confirm";
@@ -680,23 +596,14 @@ public static partial class Loc
         [English("Roll Down")]
         public const string WindowRollDown = "vehicleoptions.windows.down";
 
-        [English("Roll Down All Windows")]
+        [English("Roll Down All Windows", "Winds every window all the way down.")]
         public const string RollDownAllWindows = "vehicleoptions.windows.downall";
 
-        [English("Winds every window all the way down.")]
-        public const string RollDownAllWindowsDescription = "vehicleoptions.windows.downall.desc";
-
-        [English("Roll Up All Windows")]
+        [English("Roll Up All Windows", "Winds every window all the way up.")]
         public const string RollUpAllWindows = "vehicleoptions.windows.upall";
 
-        [English("Winds every window all the way up.")]
-        public const string RollUpAllWindowsDescription = "vehicleoptions.windows.upall.desc";
-
-        [English("Smash All Windows")]
+        [English("Smash All Windows", "Breaks every window. Repairing the vehicle puts them back.")]
         public const string SmashWindows = "vehicleoptions.windows.smash";
-
-        [English("Breaks every window. Repairing the vehicle puts them back.")]
-        public const string SmashWindowsDescription = "vehicleoptions.windows.smash.desc";
 
         [English("~r~Smash every window on this vehicle? Press enter again to confirm.")]
         public const string SmashWindowsConfirm = "vehicleoptions.windows.smash.confirm";
@@ -705,11 +612,8 @@ public static partial class Loc
 
         #region Dirt
 
-        [English("Dirt Level")]
+        [English("Dirt Level", "How dirty the vehicle looks, from spotless on the left to filthy on the right.")]
         public const string DirtLevel = "vehicleoptions.dirt.level";
-
-        [English("How dirty the vehicle looks, from spotless on the left to filthy on the right.")]
-        public const string DirtLevelDescription = "vehicleoptions.dirt.level.desc";
 
         [English("Spotless")]
         public const string DirtClean = "vehicleoptions.dirt.clean";
@@ -717,88 +621,65 @@ public static partial class Loc
         [English("Level {number}")]
         public const string DirtValue = "vehicleoptions.dirt.value";
 
-        [English("Keep Vehicle Clean")]
-        public const string KeepClean = "vehicleoptions.keepclean";
-
         [English(
+            "Keep Vehicle Clean",
             "Washes dust and dirt off again as soon as it appears. It does not clear mud, snow or the marks a crash leaves behind, repair the vehicle for those.")]
-        public const string KeepCleanDescription = "vehicleoptions.keepclean.desc";
+        public const string KeepClean = "vehicleoptions.keepclean";
 
         #endregion
 
         #region God mode
 
-        [English("Vehicle God Mode")]
+        [English(
+            "Vehicle God Mode",
+            "Stops your vehicle taking damage. Which kinds of damage it stops is up to the options below.")]
         public const string GodMode = "vehicleoptions.god";
 
-        [English("Stops your vehicle taking damage. Which kinds of damage it stops is up to the options below.")]
-        public const string GodModeDescription = "vehicleoptions.god.desc";
-
-        [English("God Mode Options")]
+        [English("God Mode Options", "Choose which kinds of damage god mode turns off.")]
         public const string GodModeOptions = "vehicleoptions.god.options";
-
-        [English("Choose which kinds of damage god mode turns off.")]
-        public const string GodModeOptionsDescription = "vehicleoptions.god.options.desc";
 
         [English("Vehicle God Mode Options")]
         public const string GodModeSubtitle = "vehicleoptions.god.subtitle";
 
-        [English("Invincible")]
+        [English(
+            "Invincible",
+            "Bullets, fire, explosions, collisions and melee all stop hurting the vehicle, and its doors stop coming off.")]
         public const string GodInvincible = "vehicleoptions.god.invincible";
 
-        [English(
-            "Bullets, fire, explosions, collisions and melee all stop hurting the vehicle, and its doors stop coming off.")]
-        public const string GodInvincibleDescription = "vehicleoptions.god.invincible.desc";
-
-        [English("Protect Engine")]
+        [English("Protect Engine", "The engine stops wearing out, and any damage it has already taken is undone.")]
         public const string GodEngine = "vehicleoptions.god.engine";
 
-        [English("The engine stops wearing out, and any damage it has already taken is undone.")]
-        public const string GodEngineDescription = "vehicleoptions.god.engine.desc";
-
-        [English("Prevent Visual Damage")]
+        [English(
+            "Prevent Visual Damage",
+            "Keeps scratches and other damage marks off the paint. It does not stop the bodywork being bent out of shape.")]
         public const string GodVisual = "vehicleoptions.god.visual";
 
         [English(
-            "Keeps scratches and other damage marks off the paint. It does not stop the bodywork being bent out of shape.")]
-        public const string GodVisualDescription = "vehicleoptions.god.visual.desc";
-
-        [English("Strong Wheels")]
+            "Strong Wheels",
+            "Wheels stop bending out of shape and ruining the handling. It does not make the tyres bulletproof.")]
         public const string GodStrongWheels = "vehicleoptions.god.strongwheels";
 
-        [English("Wheels stop bending out of shape and ruining the handling. It does not make the tyres bulletproof.")]
-        public const string GodStrongWheelsDescription = "vehicleoptions.god.strongwheels.desc";
-
-        [English("Bulletproof Tyres")]
+        [English(
+            "Bulletproof Tyres",
+            "Tyres stop bursting when they are shot or scraped, on every vehicle you drive. Whatever the vehicle had before you got in is put back when you leave it.")]
         public const string GodBulletproofTyres = "vehicleoptions.god.bulletprooftyres";
 
-        [English(
-            "Tyres stop bursting when they are shot or scraped, on every vehicle you drive. Whatever the vehicle had before you got in is put back when you leave it.")]
-        public const string GodBulletproofTyresDescription = "vehicleoptions.god.bulletprooftyres.desc";
-
-        [English("Prevent Ramp Damage")]
+        [English("Prevent Ramp Damage", "Stops vehicles such as the Ramp Buggy taking damage from their own ramp.")]
         public const string GodRamp = "vehicleoptions.god.ramp";
 
-        [English("Stops vehicles such as the Ramp Buggy taking damage from their own ramp.")]
-        public const string GodRampDescription = "vehicleoptions.god.ramp.desc";
-
-        [English("~r~Auto Repair")]
-        public const string GodAutoRepair = "vehicleoptions.god.autorepair";
-
         [English(
+            "~r~Auto Repair",
             "Repairs the vehicle the moment it takes any damage at all. Best left off, it fixes the car out from under you.")]
-        public const string GodAutoRepairDescription = "vehicleoptions.god.autorepair.desc";
+        public const string GodAutoRepair = "vehicleoptions.god.autorepair";
 
         #endregion
 
         #region Engine
 
-        [English("Engine")]
-        public const string Engine = "vehicleoptions.engine";
-
         [English(
+            "Engine",
             "Start and stop the engine, keep it running after you get out, and turn the power up well past anything the factory intended.")]
-        public const string EngineDescription = "vehicleoptions.engine.desc";
+        public const string Engine = "vehicleoptions.engine";
 
         [English("Engine Options")]
         public const string EngineSubtitle = "vehicleoptions.engine.subtitle";
@@ -809,18 +690,15 @@ public static partial class Loc
         [English("You have to be the driver to touch the engine.")]
         public const string EngineNotDriver = "vehicleoptions.engine.notdriver";
 
-        [English("Engine Always On")]
+        [English(
+            "Engine Always On",
+            "Leaves the engine running when you get out, instead of the game switching it off behind you.")]
         public const string EngineAlwaysOn = "vehicleoptions.engine.alwayson";
 
-        [English("Leaves the engine running when you get out, instead of the game switching it off behind you.")]
-        public const string EngineAlwaysOnDescription = "vehicleoptions.engine.alwayson.desc";
-
-        [English("Toggle Engine On/Off")]
-        public const string ToggleEngine = "vehicleoptions.engine.toggle";
-
         [English(
+            "Toggle Engine On/Off",
             "Starts the engine if it is off, stops it if it is running. Also on a key, ~b~Right Ctrl~s~ by default, which you can change in the pause menu under ~y~Settings~s~, ~y~Key Bindings~s~, ~y~FiveM~s~.")]
-        public const string ToggleEngineDescription = "vehicleoptions.engine.toggle.desc";
+        public const string ToggleEngine = "vehicleoptions.engine.toggle";
 
         [English("Engine ~g~started~s~.")]
         public const string EngineStarted = "vehicleoptions.engine.started";
@@ -831,35 +709,28 @@ public static partial class Loc
         [English("x{amount}")]
         public const string MultiplierOption = "vehicleoptions.multiplier.option";
 
-        [English("Enable Power Multiplier")]
+        [English(
+            "Enable Power Multiplier",
+            "Switches on the power multiplier picked below. Power is how hard the engine pulls once you are already moving.")]
         public const string PowerMultiplierEnabled = "vehicleoptions.power.enabled";
 
         [English(
-            "Switches on the power multiplier picked below. Power is how hard the engine pulls once you are already moving.")]
-        public const string PowerMultiplierEnabledDescription = "vehicleoptions.power.enabled.desc";
-
-        [English("Engine Power Multiplier")]
-        public const string PowerMultiplier = "vehicleoptions.power";
-
-        [English(
+            "Engine Power Multiplier",
             "How many times the normal engine power your vehicle gets. Anything past ~y~x8~s~ is more of a toy than a car.")]
-        public const string PowerMultiplierDescription = "vehicleoptions.power.desc";
+        public const string PowerMultiplier = "vehicleoptions.power";
 
         [English("Switch on ~b~Enable Power Multiplier~s~ above first.")]
         public const string PowerMultiplierLocked = "vehicleoptions.power.locked";
 
-        [English("Enable Torque Multiplier")]
+        [English(
+            "Enable Torque Multiplier",
+            "Switches on the torque multiplier picked below. Torque is the shove you get away from a standstill.")]
         public const string TorqueMultiplierEnabled = "vehicleoptions.torque.enabled";
 
-        [English("Switches on the torque multiplier picked below. Torque is the shove you get away from a standstill.")]
-        public const string TorqueMultiplierEnabledDescription = "vehicleoptions.torque.enabled.desc";
-
-        [English("Engine Torque Multiplier")]
-        public const string TorqueMultiplier = "vehicleoptions.torque";
-
         [English(
+            "Engine Torque Multiplier",
             "How many times the normal engine torque your vehicle gets. High values will happily flip a car onto its roof.")]
-        public const string TorqueMultiplierDescription = "vehicleoptions.torque.desc";
+        public const string TorqueMultiplier = "vehicleoptions.torque";
 
         [English("Switch on ~b~Enable Torque Multiplier~s~ above first.")]
         public const string TorqueMultiplierLocked = "vehicleoptions.torque.locked";
@@ -868,22 +739,18 @@ public static partial class Loc
 
         #region Handling
 
-        [English("Handling")]
-        public const string Handling = "vehicleoptions.handling";
-
         [English(
+            "Handling",
             "Cap your speed, freeze the vehicle where it stands, flip it back onto its wheels, hide it, or set the alarm off.")]
-        public const string HandlingDescription = "vehicleoptions.handling.desc";
+        public const string Handling = "vehicleoptions.handling";
 
         [English("Handling Options")]
         public const string HandlingSubtitle = "vehicleoptions.handling.subtitle";
 
-        [English("Speed Limiter")]
-        public const string SpeedLimiter = "vehicleoptions.speedlimiter";
-
         [English(
+            "Speed Limiter",
             "~b~Set~s~ caps the vehicle at the speed you are doing right now, ~b~Reset~s~ takes the cap off again, and ~b~Custom~s~ lets you type a number. Only the vehicle you are in is affected.")]
-        public const string SpeedLimiterDescription = "vehicleoptions.speedlimiter.desc";
+        public const string SpeedLimiter = "vehicleoptions.speedlimiter";
 
         [English("Set To Current Speed")]
         public const string SpeedLimiterSet = "vehicleoptions.speedlimiter.set";
@@ -918,18 +785,13 @@ public static partial class Loc
         [English("You have to be the driver to limit the speed.")]
         public const string SpeedLimiterNotDriver = "vehicleoptions.speedlimiter.notdriver";
 
-        [English("Freeze Vehicle")]
+        [English(
+            "Freeze Vehicle",
+            "Pins the vehicle exactly where it is, in mid air if that is where it happens to be. It thaws out on its own when you get out.")]
         public const string Freeze = "vehicleoptions.freeze";
 
-        [English(
-            "Pins the vehicle exactly where it is, in mid air if that is where it happens to be. It thaws out on its own when you get out.")]
-        public const string FreezeDescription = "vehicleoptions.freeze.desc";
-
-        [English("Flip Vehicle")]
+        [English("Flip Vehicle", "Drops the vehicle back onto all four wheels, the right way up.")]
         public const string Flip = "vehicleoptions.flip";
-
-        [English("Drops the vehicle back onto all four wheels, the right way up.")]
-        public const string FlipDescription = "vehicleoptions.flip.desc";
 
         [English("Vehicle set back on its wheels.")]
         public const string Flipped = "vehicleoptions.flip.done";
@@ -940,12 +802,10 @@ public static partial class Loc
         [English("You have to be the driver to flip the vehicle.")]
         public const string FlipNotDriver = "vehicleoptions.flip.notdriver";
 
-        [English("Toggle Vehicle Visibility")]
-        public const string Visibility = "vehicleoptions.visibility";
-
         [English(
+            "Toggle Vehicle Visibility",
             "Makes the vehicle invisible. You go invisible along with it, because the game hides everyone sitting inside. Both of you turn visible again the moment you get out, otherwise you would never find the vehicle to get back in.")]
-        public const string VisibilityDescription = "vehicleoptions.visibility.desc";
+        public const string Visibility = "vehicleoptions.visibility";
 
         [English("Vehicle is now ~y~invisible~s~.")]
         public const string VisibilityHidden = "vehicleoptions.visibility.hidden";
@@ -959,11 +819,10 @@ public static partial class Loc
         [English("You have to be the driver to hide the vehicle.")]
         public const string VisibilityNotDriver = "vehicleoptions.visibility.notdriver";
 
-        [English("Toggle Vehicle Alarm")]
+        [English(
+            "Toggle Vehicle Alarm",
+            "Sets the alarm off, or shuts it up if it is already going. It stops on its own after a while.")]
         public const string Alarm = "vehicleoptions.alarm";
-
-        [English("Sets the alarm off, or shuts it up if it is already going. It stops on its own after a while.")]
-        public const string AlarmDescription = "vehicleoptions.alarm.desc";
 
         [English("Alarm going off.")]
         public const string AlarmStarted = "vehicleoptions.alarm.started";
@@ -981,27 +840,19 @@ public static partial class Loc
 
         #region Damage
 
-        [English("Damage")]
+        [English("Damage", "Wreck the engine, nurse it back, and burst or fix the tyres.")]
         public const string Damage = "vehicleoptions.damage";
-
-        [English("Wreck the engine, nurse it back, and burst or fix the tyres.")]
-        public const string DamageDescription = "vehicleoptions.damage.desc";
 
         [English("Damage Options")]
         public const string DamageSubtitle = "vehicleoptions.damage.subtitle";
 
-        [English("Engine Health")]
+        [English(
+            "Engine Health",
+            "Sets how healthy the engine is, from dead on the left to perfect on the right. Below about a third it starts smoking, and near zero it catches fire.")]
         public const string EngineHealth = "vehicleoptions.enginehealth";
 
-        [English(
-            "Sets how healthy the engine is, from dead on the left to perfect on the right. Below about a third it starts smoking, and near zero it catches fire.")]
-        public const string EngineHealthDescription = "vehicleoptions.enginehealth.desc";
-
-        [English("Destroy Engine")]
+        [English("Destroy Engine", "Kills the engine outright. Repairing the vehicle brings it back.")]
         public const string DestroyEngine = "vehicleoptions.destroyengine";
-
-        [English("Kills the engine outright. Repairing the vehicle brings it back.")]
-        public const string DestroyEngineDescription = "vehicleoptions.destroyengine.desc";
 
         [English("~r~This will wreck your engine. Press enter again to confirm.")]
         public const string DestroyEngineConfirm = "vehicleoptions.destroyengine.confirm";
@@ -1009,12 +860,10 @@ public static partial class Loc
         [English("Engine destroyed.")]
         public const string EngineDestroyed = "vehicleoptions.destroyengine.done";
 
-        [English("Fix / Destroy Tyres")]
-        public const string Tyres = "vehicleoptions.tyres";
-
         [English(
+            "Fix / Destroy Tyres",
             "Pick a tyre and press enter to burst it, or press enter again to fix it. Only the tyres this vehicle actually has are listed.")]
-        public const string TyresDescription = "vehicleoptions.tyres.desc";
+        public const string Tyres = "vehicleoptions.tyres";
 
         [English("All Tyres")]
         public const string AllTyres = "vehicleoptions.tyres.all";
@@ -1038,35 +887,28 @@ public static partial class Loc
 
         #region Aircraft and boats
 
-        [English("Aircraft & Boats")]
+        [English(
+            "Aircraft & Boats",
+            "How rough the air is in helicopters and planes, and whether boats stay put when you stop.")]
         public const string Aircraft = "vehicleoptions.aircraft";
-
-        [English("How rough the air is in helicopters and planes, and whether boats stay put when you stop.")]
-        public const string AircraftDescription = "vehicleoptions.aircraft.desc";
 
         [English("Aircraft & Boat Options")]
         public const string AircraftSubtitle = "vehicleoptions.aircraft.subtitle";
 
-        [English("Helicopter Turbulence")]
+        [English(
+            "Helicopter Turbulence",
+            "How much helicopters get pushed around by the air, as a percentage. ~b~100~s~ is the amount the game normally uses, ~b~0~s~ makes them fly perfectly steady.")]
         public const string HelicopterTurbulence = "vehicleoptions.turbulence.heli";
 
         [English(
-            "How much helicopters get pushed around by the air, as a percentage. ~b~100~s~ is the amount the game normally uses, ~b~0~s~ makes them fly perfectly steady.")]
-        public const string HelicopterTurbulenceDescription = "vehicleoptions.turbulence.heli.desc";
-
-        [English("Plane Turbulence")]
+            "Plane Turbulence",
+            "How much planes get pushed around by the air, as a percentage. ~b~100~s~ is the amount the game normally uses, ~b~0~s~ makes them fly perfectly steady.")]
         public const string PlaneTurbulence = "vehicleoptions.turbulence.plane";
 
         [English(
-            "How much planes get pushed around by the air, as a percentage. ~b~100~s~ is the amount the game normally uses, ~b~0~s~ makes them fly perfectly steady.")]
-        public const string PlaneTurbulenceDescription = "vehicleoptions.turbulence.plane.desc";
-
-        [English("Anchor Boat")]
-        public const string AnchorBoat = "vehicleoptions.anchor";
-
-        [English(
+            "Anchor Boat",
             "Drops the anchor so the boat stops drifting. Only works on a boat, and only where the water is deep enough for the game to allow it.")]
-        public const string AnchorBoatDescription = "vehicleoptions.anchor.desc";
+        public const string AnchorBoat = "vehicleoptions.anchor";
 
         [English(
             "The other pilot is using the bombs and countermeasures right now. You can still look through the bomb camera.")]
@@ -1076,12 +918,10 @@ public static partial class Loc
 
         #region Radio
 
-        [English("Radio")]
-        public const string Radio = "vehicleoptions.radio";
-
         [English(
+            "Radio",
             "Pick the station every vehicle you get into starts on, and take stations you never want to hear off the radio wheel.")]
-        public const string RadioDescription = "vehicleoptions.radio.desc";
+        public const string Radio = "vehicleoptions.radio";
 
         [English("Radio Options")]
         public const string RadioSubtitle = "vehicleoptions.radio.subtitle";
@@ -1089,28 +929,23 @@ public static partial class Loc
         [English("Radio Off")]
         public const string RadioOff = "vehicleoptions.radio.off";
 
-        [English("Enable Default Radio Station")]
+        [English(
+            "Enable Default Radio Station",
+            "Tunes every vehicle you get into to the station picked below, instead of whatever the game felt like playing.")]
         public const string RadioDefaultEnabled = "vehicleoptions.radio.default.enabled";
 
         [English(
-            "Tunes every vehicle you get into to the station picked below, instead of whatever the game felt like playing.")]
-        public const string RadioDefaultEnabledDescription = "vehicleoptions.radio.default.enabled.desc";
-
-        [English("Default Radio Station")]
+            "Default Radio Station",
+            "The station every vehicle you get into starts on. Pick ~b~Radio Off~s~ for silence.")]
         public const string RadioDefaultStation = "vehicleoptions.radio.default";
-
-        [English("The station every vehicle you get into starts on. Pick ~b~Radio Off~s~ for silence.")]
-        public const string RadioDefaultStationDescription = "vehicleoptions.radio.default.desc";
 
         [English("Switch on ~b~Enable Default Radio Station~s~ above first.")]
         public const string RadioDefaultStationLocked = "vehicleoptions.radio.default.locked";
 
-        [English("Available Stations")]
-        public const string RadioBlocked = "vehicleoptions.radio.blocked";
-
         [English(
+            "Available Stations",
             "Choose which stations show up on the radio wheel at all. Your choices are remembered between sessions.")]
-        public const string RadioBlockedDescription = "vehicleoptions.radio.blocked.desc";
+        public const string RadioBlocked = "vehicleoptions.radio.blocked";
 
         [English("Available Radio Stations")]
         public const string RadioBlockedSubtitle = "vehicleoptions.radio.blocked.subtitle";
@@ -1118,22 +953,19 @@ public static partial class Loc
         [English("Ticked means this station shows on the radio wheel. Unticked takes it off entirely.")]
         public const string RadioStationDescription = "vehicleoptions.radio.station.desc";
 
-        [English("Turn All Stations Back On")]
+        [English(
+            "Turn All Stations Back On",
+            "Puts every station back on the radio wheel, undoing everything unticked below.")]
         public const string RadioUnblockAll = "vehicleoptions.radio.unblockall";
-
-        [English("Puts every station back on the radio wheel, undoing everything unticked below.")]
-        public const string RadioUnblockAllDescription = "vehicleoptions.radio.unblockall.desc";
 
         #endregion
 
         #region Doors
 
-        [English("Delete Removed Doors")]
-        public const string DeleteRemovedDoors = "vehicleoptions.deleteremoveddoors";
-
         [English(
+            "Delete Removed Doors",
             "When on, a door you rip off with ~b~Remove Door~s~ vanishes instead of being left lying in the road.")]
-        public const string DeleteRemovedDoorsDescription = "vehicleoptions.deleteremoveddoors.desc";
+        public const string DeleteRemovedDoors = "vehicleoptions.deleteremoveddoors";
 
         #endregion
     }

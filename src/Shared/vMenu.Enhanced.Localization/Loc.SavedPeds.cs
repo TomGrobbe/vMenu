@@ -15,11 +15,10 @@ public static partial class Loc
 
         #region Saving
 
-        [English("Save Current Ped")]
+        [English(
+            "Save Current Ped",
+            "Stores the ped you are wearing, with everything you have dressed it in, on this computer.")]
         public const string SaveCurrent = "savedpeds.save";
-
-        [English("Stores the ped you are wearing, with everything you have dressed it in, on this computer.")]
-        public const string SaveCurrentDescription = "savedpeds.save.desc";
 
         [English("Give this ped a name")]
         public const string NamePrompt = "savedpeds.save.name";
@@ -56,11 +55,10 @@ public static partial class Loc
         [English("A ~y~{model}~s~. Press enter for what you can do with it.")]
         public const string PedRowDescription = "savedpeds.ped.row.desc";
 
-        [English("Nothing Saved Yet")]
+        [English(
+            "Nothing Saved Yet",
+            "Dress a ped how you like it and use Save Current Ped, and it will show up here.")]
         public const string NoPeds = "savedpeds.empty";
-
-        [English("Dress a ped how you like it and use Save Current Ped, and it will show up here.")]
-        public const string NoPedsDescription = "savedpeds.empty.desc";
 
         [English(
             "This server does not have the ~r~{model}~s~ model, so this one cannot be worn here. You can still edit or delete it.")]
@@ -73,11 +71,8 @@ public static partial class Loc
 
         #region Categories
 
-        [English("Create Category")]
+        [English("Create Category", "Make a new group to sort your saved peds into.")]
         public const string CreateCategory = "savedpeds.categories.create";
-
-        [English("Make a new group to sort your saved peds into.")]
-        public const string CreateCategoryDescription = "savedpeds.categories.create.desc";
 
         [English("Category name")]
         public const string CategoryName = "savedpeds.categories.name";
@@ -85,21 +80,16 @@ public static partial class Loc
         [English("A short description of this category")]
         public const string CategoryDescriptionPrompt = "savedpeds.categories.description";
 
-        [English("Edit Category")]
-        public const string EditCategory = "savedpeds.categories.edit";
-
         [English(
+            "Edit Category",
             "Pick a category and press enter to give it a different name or description. The peds in it come along.")]
-        public const string EditCategoryDescription = "savedpeds.categories.edit.desc";
+        public const string EditCategory = "savedpeds.categories.edit";
 
         [English("That category is now ~g~{name}~s~.")]
         public const string CategoryEdited = "savedpeds.categories.edited";
 
-        [English("~r~Delete Category")]
+        [English("~r~Delete Category", "Removes a category. The peds in it are kept and move to Uncategorised.")]
         public const string DeleteCategory = "savedpeds.categories.delete";
-
-        [English("Removes a category. The peds in it are kept and move to Uncategorised.")]
-        public const string DeleteCategoryDescription = "savedpeds.categories.delete.desc";
 
         [English("~r~Delete {name}? Its peds move to Uncategorised. Press enter again to confirm.")]
         public const string DeleteCategoryConfirm = "savedpeds.categories.delete.confirm";
@@ -117,11 +107,8 @@ public static partial class Loc
 
         #region Acting on one ped
 
-        [English("Spawn Ped")]
+        [English("Spawn Ped", "Turns you into this ped, dressed exactly as you saved it.")]
         public const string Spawn = "savedpeds.spawn";
-
-        [English("Turns you into this ped, dressed exactly as you saved it.")]
-        public const string SpawnDescription = "savedpeds.spawn.desc";
 
         [English("The ~r~{model}~s~ model is not on this server, so this ped cannot be worn here.")]
         public const string SpawnModelMissing = "savedpeds.spawn.missing";
@@ -136,20 +123,14 @@ public static partial class Loc
             "You are now ~y~{name}~s~, but ~y~{count}~s~ piece(s) could not be put on. Run command ~y~vmenu_ped_diff {name}~s~ in F8 to see which.")]
         public const string RestoredPartially = "savedpeds.spawn.partial";
 
-        [English("Edit")]
+        [English("Edit", "Give this saved ped a different name or description.")]
         public const string Edit = "savedpeds.edit";
-
-        [English("Give this saved ped a different name or description.")]
-        public const string EditDescription = "savedpeds.edit.desc";
 
         [English("Saved as ~g~{name}~s~.")]
         public const string Edited = "savedpeds.edit.success";
 
-        [English("Duplicate")]
+        [English("Duplicate", "Saves a second copy of this ped under another name, leaving this one alone.")]
         public const string Duplicate = "savedpeds.duplicate";
-
-        [English("Saves a second copy of this ped under another name, leaving this one alone.")]
-        public const string DuplicateDescription = "savedpeds.duplicate.desc";
 
         [English("Name for the copy of {name}")]
         public const string DuplicatePrompt = "savedpeds.duplicate.prompt";
@@ -157,20 +138,18 @@ public static partial class Loc
         [English("Copied to ~g~{name}~s~.")]
         public const string Duplicated = "savedpeds.duplicate.success";
 
-        [English("Move To Category")]
+        [English(
+            "Move To Category",
+            "Put this ped into a different category. Press enter to apply the one you picked.")]
         public const string MoveToCategory = "savedpeds.move";
-
-        [English("Put this ped into a different category. Press enter to apply the one you picked.")]
-        public const string MoveToCategoryDescription = "savedpeds.move.desc";
 
         [English("Moved to ~g~{name}~s~.")]
         public const string Moved = "savedpeds.move.success";
 
-        [English("~r~Replace With Current Ped")]
+        [English(
+            "~r~Replace With Current Ped",
+            "Overwrites this save with the ped you are wearing right now, keeping the name and the category.")]
         public const string Replace = "savedpeds.replace";
-
-        [English("Overwrites this save with the ped you are wearing right now, keeping the name and the category.")]
-        public const string ReplaceDescription = "savedpeds.replace.desc";
 
         [English("~r~Overwrite {name} with the ped you are wearing? Press enter again to confirm.")]
         public const string ReplaceConfirm = "savedpeds.replace.confirm";
@@ -178,11 +157,8 @@ public static partial class Loc
         [English("~g~{name}~s~ now matches the ped you are wearing.")]
         public const string Replaced = "savedpeds.replace.success";
 
-        [English("~r~Delete")]
+        [English("~r~Delete", "Forgets this saved ped for good.")]
         public const string Delete = "savedpeds.delete";
-
-        [English("Forgets this saved ped for good.")]
-        public const string DeleteDescription = "savedpeds.delete.desc";
 
         [English("~r~Delete {name}? Press enter again to confirm.")]
         public const string DeleteConfirm = "savedpeds.delete.confirm";
@@ -201,11 +177,10 @@ public static partial class Loc
             "This ped was saved by a newer version of vMenu than the one this server runs, so some of it cannot be read here. You can still wear, duplicate and delete it, but editing and overwriting are not offered, because either would throw away the parts this version does not understand.")]
         public const string NewerBuildDescription = "savedpeds.newer.desc";
 
-        [English("Save As A New Ped")]
+        [English(
+            "Save As A New Ped",
+            "Saves the ped you are wearing under a new name, leaving the newer save untouched.")]
         public const string SaveAsNew = "savedpeds.newer.saveasnew";
-
-        [English("Saves the ped you are wearing under a new name, leaving the newer save untouched.")]
-        public const string SaveAsNewDescription = "savedpeds.newer.saveasnew.desc";
 
         [English(
             "~y~{name}~s~ was saved by a newer version of vMenu, so it was left alone. Save what you are wearing under a new name instead.")]

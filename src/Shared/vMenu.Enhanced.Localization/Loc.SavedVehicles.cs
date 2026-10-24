@@ -15,11 +15,10 @@ public static partial class Loc
 
         #region Saving
 
-        [English("Save Current Vehicle")]
+        [English(
+            "Save Current Vehicle",
+            "Stores the vehicle you are driving, with everything you have changed on it, on this computer.")]
         public const string SaveCurrent = "savedvehicles.save";
-
-        [English("Stores the vehicle you are driving, with everything you have changed on it, on this computer.")]
-        public const string SaveCurrentDescription = "savedvehicles.save.desc";
 
         [English("Give this vehicle a name")]
         public const string NamePrompt = "savedvehicles.save.name";
@@ -58,11 +57,10 @@ public static partial class Loc
         [English("A ~y~{model}~s~. Press enter for what you can do with it.")]
         public const string VehicleRowDescription = "savedvehicles.vehicle.row.desc";
 
-        [English("Nothing Saved Yet")]
+        [English(
+            "Nothing Saved Yet",
+            "Get into a vehicle you like and use Save Current Vehicle, and it will show up here.")]
         public const string NoVehicles = "savedvehicles.empty";
-
-        [English("Get into a vehicle you like and use Save Current Vehicle, and it will show up here.")]
-        public const string NoVehiclesDescription = "savedvehicles.empty.desc";
 
         [English(
             "This server does not have the ~r~{model}~s~ model, so this one cannot be spawned here. You can still edit or delete it.")]
@@ -72,11 +70,8 @@ public static partial class Loc
 
         #region Categories
 
-        [English("Create Category")]
+        [English("Create Category", "Make a new group to sort your saved vehicles into.")]
         public const string CreateCategory = "savedvehicles.categories.create";
-
-        [English("Make a new group to sort your saved vehicles into.")]
-        public const string CreateCategoryDescription = "savedvehicles.categories.create.desc";
 
         [English("Category name")]
         public const string CategoryName = "savedvehicles.categories.name";
@@ -84,21 +79,16 @@ public static partial class Loc
         [English("A short description of this category")]
         public const string CategoryDescriptionPrompt = "savedvehicles.categories.description";
 
-        [English("Edit Category")]
-        public const string EditCategory = "savedvehicles.categories.edit";
-
         [English(
+            "Edit Category",
             "Pick a category and press enter to give it a different name or description. The vehicles in it come along.")]
-        public const string EditCategoryDescription = "savedvehicles.categories.edit.desc";
+        public const string EditCategory = "savedvehicles.categories.edit";
 
         [English("That category is now ~g~{name}~s~.")]
         public const string CategoryEdited = "savedvehicles.categories.edited";
 
-        [English("~r~Delete Category")]
+        [English("~r~Delete Category", "Removes a category. The vehicles in it are kept and move to Uncategorised.")]
         public const string DeleteCategory = "savedvehicles.categories.delete";
-
-        [English("Removes a category. The vehicles in it are kept and move to Uncategorised.")]
-        public const string DeleteCategoryDescription = "savedvehicles.categories.delete.desc";
 
         [English("~r~Delete {name}? Its vehicles move to Uncategorised. Press enter again to confirm.")]
         public const string DeleteCategoryConfirm = "savedvehicles.categories.delete.confirm";
@@ -116,11 +106,10 @@ public static partial class Loc
 
         #region Acting on one vehicle
 
-        [English("Spawn Vehicle")]
+        [English(
+            "Spawn Vehicle",
+            "Brings this vehicle back exactly as you saved it, and puts you in the driver's seat.")]
         public const string Spawn = "savedvehicles.spawn";
-
-        [English("Brings this vehicle back exactly as you saved it, and puts you in the driver's seat.")]
-        public const string SpawnDescription = "savedvehicles.spawn.desc";
 
         [English("The ~r~{model}~s~ model is not on this server, so this vehicle cannot be spawned here.")]
         public const string SpawnModelMissing = "savedvehicles.spawn.missing";
@@ -135,20 +124,14 @@ public static partial class Loc
             "Spawned ~y~{name}~s~, but ~y~{count}~s~ setting(s) could not be applied. Run command ~y~vmenu_vehicle_diff {name}~s~ in F8 to see which.")]
         public const string RestoredPartially = "savedvehicles.spawn.partial";
 
-        [English("Edit")]
+        [English("Edit", "Give this saved vehicle a different name or description.")]
         public const string Edit = "savedvehicles.edit";
-
-        [English("Give this saved vehicle a different name or description.")]
-        public const string EditDescription = "savedvehicles.edit.desc";
 
         [English("Saved as ~g~{name}~s~.")]
         public const string Edited = "savedvehicles.edit.success";
 
-        [English("Duplicate")]
+        [English("Duplicate", "Saves a second copy of this vehicle under another name, leaving this one alone.")]
         public const string Duplicate = "savedvehicles.duplicate";
-
-        [English("Saves a second copy of this vehicle under another name, leaving this one alone.")]
-        public const string DuplicateDescription = "savedvehicles.duplicate.desc";
 
         [English("Name for the copy of {name}")]
         public const string DuplicatePrompt = "savedvehicles.duplicate.prompt";
@@ -156,20 +139,18 @@ public static partial class Loc
         [English("Copied to ~g~{name}~s~.")]
         public const string Duplicated = "savedvehicles.duplicate.success";
 
-        [English("Move To Category")]
+        [English(
+            "Move To Category",
+            "Put this vehicle into a different category. Press enter to apply the one you picked.")]
         public const string MoveToCategory = "savedvehicles.move";
-
-        [English("Put this vehicle into a different category. Press enter to apply the one you picked.")]
-        public const string MoveToCategoryDescription = "savedvehicles.move.desc";
 
         [English("Moved to ~g~{name}~s~.")]
         public const string Moved = "savedvehicles.move.success";
 
-        [English("~r~Replace With Current Vehicle")]
+        [English(
+            "~r~Replace With Current Vehicle",
+            "Overwrites this save with the vehicle you are driving right now, keeping the name and the category.")]
         public const string Replace = "savedvehicles.replace";
-
-        [English("Overwrites this save with the vehicle you are driving right now, keeping the name and the category.")]
-        public const string ReplaceDescription = "savedvehicles.replace.desc";
 
         [English("~r~Overwrite {name} with the vehicle you are driving? Press enter again to confirm.")]
         public const string ReplaceConfirm = "savedvehicles.replace.confirm";
@@ -177,11 +158,8 @@ public static partial class Loc
         [English("~g~{name}~s~ now matches the vehicle you are driving.")]
         public const string Replaced = "savedvehicles.replace.success";
 
-        [English("~r~Delete")]
+        [English("~r~Delete", "Forgets this saved vehicle for good.")]
         public const string Delete = "savedvehicles.delete";
-
-        [English("Forgets this saved vehicle for good.")]
-        public const string DeleteDescription = "savedvehicles.delete.desc";
 
         [English("~r~Delete {name}? Press enter again to confirm.")]
         public const string DeleteConfirm = "savedvehicles.delete.confirm";
@@ -200,11 +178,10 @@ public static partial class Loc
             "This vehicle was saved by a newer version of vMenu than the one this server runs, so some of it cannot be read here. You can still spawn, duplicate and delete it, but editing and overwriting are not offered, because either would throw away the parts this version does not understand.")]
         public const string NewerBuildDescription = "savedvehicles.newer.desc";
 
-        [English("Save As A New Vehicle")]
+        [English(
+            "Save As A New Vehicle",
+            "Saves the vehicle you are driving under a new name, leaving the newer save untouched.")]
         public const string SaveAsNew = "savedvehicles.newer.saveasnew";
-
-        [English("Saves the vehicle you are driving under a new name, leaving the newer save untouched.")]
-        public const string SaveAsNewDescription = "savedvehicles.newer.saveasnew.desc";
 
         [English(
             "~y~{name}~s~ was saved by a newer version of vMenu, so it was left alone. Save what you are driving under a new name instead.")]

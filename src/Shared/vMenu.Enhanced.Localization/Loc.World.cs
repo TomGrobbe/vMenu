@@ -27,39 +27,31 @@ public static partial class Loc
         [English("~y~{weather}~s~ (altered) · ~y~{time}~s~ (altered)")]
         public const string StatusBothForced = "world.status.bothforced";
 
-        [English("Weather")]
-        public const string Weather = "world.weather";
-
         [English(
+            "Weather",
             "Pick a weather type to hold, or the first option to let it follow the server cycle. Press Enter to apply.")]
-        public const string WeatherDescription = "world.weather.desc";
+        public const string Weather = "world.weather";
 
         [English("Dynamic (Server Cycle)")]
         public const string WeatherDynamic = "world.weather.dynamic";
 
-        [English("Set Time")]
-        public const string SetTime = "world.settime";
-
         [English(
+            "Set Time",
             "Type a time of day. The clock carries on from there, unless you have frozen it. Most formats work: 15:25, 3.25pm, 325pm, 1525.")]
-        public const string SetTimeDescription = "world.settime.desc";
+        public const string SetTime = "world.settime";
 
         [English("Time of day")]
         public const string SetTimePrompt = "world.settime.prompt";
 
-        [English("Preset Time")]
+        [English(
+            "Preset Time",
+            "Pick one of the times the server owner set up, then press Enter to move the clock to it. The clock carries on from there, unless you have frozen it.")]
         public const string TimePreset = "world.timepreset";
 
         [English(
-            "Pick one of the times the server owner set up, then press Enter to move the clock to it. The clock carries on from there, unless you have frozen it.")]
-        public const string TimePresetDescription = "world.timepreset.desc";
-
-        [English("Blackout")]
-        public const string Blackout = "world.blackout";
-
-        [English(
+            "Blackout",
             "Kills the lights across the map. Follow Weather Schedule uses the blackouts planned in a custom weather schedule, if the server has one. Press Enter to apply. Everybody on the server sees this.")]
-        public const string BlackoutDescription = "world.blackout.desc";
+        public const string Blackout = "world.blackout";
 
         [English("Follow Weather Schedule")]
         public const string BlackoutDynamic = "world.blackout.dynamic";
@@ -76,12 +68,10 @@ public static partial class Loc
         [English("Blackout is now ~y~{value}~s~.")]
         public const string BlackoutSet = "world.blackout.set";
 
-        [English("Snow Effects")]
-        public const string Snow = "world.snow";
-
         [English(
+            "Snow Effects",
             "Snow on the ground, footprints, tyre tracks and the snow particles. Automatic follows the weather. Press Enter to apply.")]
-        public const string SnowDescription = "world.snow.desc";
+        public const string Snow = "world.snow";
 
         [English("Weather Cycle")]
         public const string Cycle = "world.cycle";
@@ -114,12 +104,10 @@ public static partial class Loc
         [English("Snow effects are now ~y~{value}~s~.")]
         public const string SnowSet = "world.snow.set";
 
-        [English("Freeze Time")]
-        public const string FreezeTime = "world.freezetime";
-
         [English(
+            "Freeze Time",
             "Holds the clock where it is for everybody. The weather carries on changing. Letting it go winds the clock forward to the time it should have been.")]
-        public const string FreezeTimeDescription = "world.freezetime.desc";
+        public const string FreezeTime = "world.freezetime";
 
         [English("The clock is ~y~frozen~s~.")]
         public const string TimeFrozen = "world.time.frozen";
@@ -133,17 +121,13 @@ public static partial class Loc
         [English("~y~{weather}~s~ (altered) · ~y~{time}~s~ (frozen)")]
         public const string StatusWeatherForcedTimeFrozen = "world.status.weatherforcedtimefrozen";
 
-        [English("Reset To Dynamic Server Weather")]
+        [English(
+            "Reset To Dynamic Server Weather",
+            "Hands the weather back to the cycle that would currently be active in GTA Online.")]
         public const string ResetWeather = "world.resetweather";
 
-        [English("Hands the weather back to the cycle that would currently be active in GTA Online.")]
-        public const string ResetWeatherDescription = "world.resetweather.desc";
-
-        [English("Reset To Dynamic Server Time")]
+        [English("Reset To Dynamic Server Time", "Syncs the clock to GTA Online again.")]
         public const string ResetTime = "world.resettime";
-
-        [English("Syncs the clock to GTA Online again.")]
-        public const string ResetTimeDescription = "world.resettime.desc";
 
         [English("The weather is changing to ~y~{value}~s~. {transition}")]
         public const string WeatherSet = "world.weather.set";

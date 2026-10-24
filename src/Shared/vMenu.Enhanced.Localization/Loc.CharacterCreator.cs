@@ -15,23 +15,16 @@ public static partial class Loc
 
         #region Root
 
-        [English("Create Male Character")]
+        [English("Create Male Character", "Create a new male character.")]
         public const string CreateMale = "charactercreator.create.male";
 
-        [English("Create a new male character.")]
-        public const string CreateMaleDescription = "charactercreator.create.male.desc";
-
-        [English("Create Female Character")]
+        [English("Create Female Character", "Create a new female character.")]
         public const string CreateFemale = "charactercreator.create.female";
 
-        [English("Create a new female character.")]
-        public const string CreateFemaleDescription = "charactercreator.create.female.desc";
-
-        [English("Save Current Character")]
+        [English(
+            "Save Current Character",
+            "Save the freemode character you are using right now, even if something other than vMenu made it.")]
         public const string SaveCurrent = "charactercreator.savecurrent";
-
-        [English("Save the freemode character you are using right now, even if something other than vMenu made it.")]
-        public const string SaveCurrentDescription = "charactercreator.savecurrent.desc";
 
         [English("~r~You need to get out of your vehicle before you can use this.")]
         public const string InVehicle = "charactercreator.invehicle";
@@ -52,79 +45,56 @@ public static partial class Loc
         [English("Edit Character")]
         public const string EditSubtitle = "charactercreator.build.subtitle.edit";
 
-        [English("Randomize Character")]
+        [English("Randomize Character", "Give this character a completely random face, hair and set of clothes.")]
         public const string Randomize = "charactercreator.build.randomize";
 
-        [English("Give this character a completely random face, hair and set of clothes.")]
-        public const string RandomizeDescription = "charactercreator.build.randomize.desc";
-
-        [English("Character Inheritance")]
+        [English(
+            "Character Inheritance",
+            "Pick the two parents this character takes after, and how much of each one shows.")]
         public const string Inheritance = "charactercreator.build.inheritance";
-
-        [English("Pick the two parents this character takes after, and how much of each one shows.")]
-        public const string InheritanceDescription = "charactercreator.build.inheritance.desc";
 
         [English("Character Inheritance Options")]
         public const string InheritanceSubtitle = "charactercreator.build.inheritance.subtitle";
 
-        [English("Character Appearance")]
+        [English("Character Appearance", "Hair, facial hair, makeup and everything else drawn onto the skin.")]
         public const string Appearance = "charactercreator.build.appearance";
-
-        [English("Hair, facial hair, makeup and everything else drawn onto the skin.")]
-        public const string AppearanceDescription = "charactercreator.build.appearance.desc";
 
         [English("Character Appearance Options")]
         public const string AppearanceSubtitle = "charactercreator.build.appearance.subtitle";
 
-        [English("Character Face Shape Options")]
+        [English("Character Face Shape Options", "Twenty sliders for the shape of the face itself.")]
         public const string FaceShape = "charactercreator.build.faceshape";
-
-        [English("Twenty sliders for the shape of the face itself.")]
-        public const string FaceShapeDescription = "charactercreator.build.faceshape.desc";
 
         [English("Character Face Shape Options")]
         public const string FaceShapeSubtitle = "charactercreator.build.faceshape.subtitle";
 
-        [English("Character Tattoo Options")]
+        [English("Character Tattoo Options", "Tattoos and badges, sorted by where they go on the body.")]
         public const string Tattoos = "charactercreator.build.tattoos";
-
-        [English("Tattoos and badges, sorted by where they go on the body.")]
-        public const string TattoosDescription = "charactercreator.build.tattoos.desc";
 
         [English("Character Tattoo Options")]
         public const string TattoosSubtitle = "charactercreator.build.tattoos.subtitle";
 
-        [English("Character Clothes")]
+        [English("Character Clothes", "What this character is wearing.")]
         public const string Clothes = "charactercreator.build.clothes";
-
-        [English("What this character is wearing.")]
-        public const string ClothesDescription = "charactercreator.build.clothes.desc";
 
         [English("Character Clothing Options")]
         public const string ClothesSubtitle = "charactercreator.build.clothes.subtitle";
 
-        [English("Match Arms To Clothes")]
+        [English(
+            "Match Arms To Clothes",
+            "Pick the arms to match a top, undershirt or trousers you choose, the way GTA Online does. Turn this off to choose the arms yourself. ~r~Note:~s~ this is not perfect, and some tops/jackets require specific undershirts before it can pick a correct torso/arm combination.")]
         public const string FitTorso = "charactercreator.build.clothes.fittorso";
 
-        [English(
-            "Pick the arms to match a top, undershirt or trousers you choose, the way GTA Online does. Turn this off to choose the arms yourself. ~r~Note:~s~ this is not perfect, and some tops/jackets require specific undershirts before it can pick a correct torso/arm combination.")]
-        public const string FitTorsoDescription = "charactercreator.build.clothes.fittorso.desc";
-
-        [English("Character Props")]
+        [English("Character Props", "Hats, glasses, earrings, watches and bracelets.")]
         public const string Props = "charactercreator.build.props";
-
-        [English("Hats, glasses, earrings, watches and bracelets.")]
-        public const string PropsDescription = "charactercreator.build.props.desc";
 
         [English("Character Props Options")]
         public const string PropsSubtitle = "charactercreator.build.props.subtitle";
 
-        [English("Clothing Collections")]
-        public const string Collections = "charactercreator.build.collections";
-
         [English(
+            "Clothing Collections",
             "The same clothes, grouped by the update or addon pack that added them, which is easier when you know roughly where something came from.")]
-        public const string CollectionsDescription = "charactercreator.build.collections.desc";
+        public const string Collections = "charactercreator.build.collections";
 
         [English("Clothing Collections")]
         public const string CollectionsSubtitle = "charactercreator.build.collections.subtitle";
@@ -135,32 +105,20 @@ public static partial class Loc
         [English("Base Game")]
         public const string BaseCollection = "charactercreator.build.collections.base";
 
-        [English("Facial Expression")]
+        [English("Facial Expression", "The mood this character's face rests in.")]
         public const string Expression = "charactercreator.build.expression";
 
-        [English("The mood this character's face rests in.")]
-        public const string ExpressionDescription = "charactercreator.build.expression.desc";
-
-        [English("Character Category")]
+        [English("Character Category", "Which group this character is saved into.")]
         public const string Category = "charactercreator.build.category";
-
-        [English("Which group this character is saved into.")]
-        public const string CategoryDescription = "charactercreator.build.category.desc";
 
         [English("Uncategorised")]
         public const string Uncategorised = "charactercreator.build.category.none";
 
-        [English("Save Character")]
+        [English("Save Character", "Save this character and everything you have given it.")]
         public const string Save = "charactercreator.build.save";
 
-        [English("Save this character and everything you have given it.")]
-        public const string SaveDescription = "charactercreator.build.save.desc";
-
-        [English("Exit Without Saving")]
+        [English("Exit Without Saving", "Leave the creator and throw away everything you have changed.")]
         public const string Exit = "charactercreator.build.exit";
-
-        [English("Leave the creator and throw away everything you have changed.")]
-        public const string ExitDescription = "charactercreator.build.exit.desc";
 
         [English("Are you sure? You will lose every change you have made to this character.")]
         public const string ExitConfirm = "charactercreator.build.exit.confirm";
@@ -224,17 +182,15 @@ public static partial class Loc
         [English("Pick the skin tone this character takes after. Currently ~b~{name}~s~.")]
         public const string SkinRowDescription = "charactercreator.inheritance.skin.desc";
 
-        [English("Head Shape Mix")]
+        [English(
+            "Head Shape Mix",
+            "Slide towards ~b~Parent #1~s~ or ~b~Parent #2~s~ to decide whose face shape shows more.")]
         public const string ShapeMix = "charactercreator.inheritance.shapemix";
 
-        [English("Slide towards ~b~Parent #1~s~ or ~b~Parent #2~s~ to decide whose face shape shows more.")]
-        public const string ShapeMixDescription = "charactercreator.inheritance.shapemix.desc";
-
-        [English("Body Skin And Color Mix")]
+        [English(
+            "Body Skin And Color Mix",
+            "Slide towards ~b~Parent #1~s~ or ~b~Parent #2~s~ to decide whose skin texture and tone shows more.")]
         public const string SkinMix = "charactercreator.inheritance.skinmix";
-
-        [English("Slide towards ~b~Parent #1~s~ or ~b~Parent #2~s~ to decide whose skin texture and tone shows more.")]
-        public const string SkinMixDescription = "charactercreator.inheritance.skinmix.desc";
 
         [English("Parent #{number}")]
         public const string ParentUnnamed = "charactercreator.inheritance.parent.unnamed";
@@ -249,7 +205,7 @@ public static partial class Loc
 
         #region Appearance rows
 
-        [English("Hair Style")]
+        [English("Hair Style", "Pick this character's haircut.")]
         public const string HairStyle = "charactercreator.appearance.hair";
 
         [English("Hair Color")]
@@ -294,7 +250,7 @@ public static partial class Loc
         [English("Body Blemishes")]
         public const string OverlayBodyBlemishes = "charactercreator.appearance.bodyblemishes";
 
-        [English("Eye Colors")]
+        [English("Eye Colors", "Pick the colour of this character's eyes.")]
         public const string EyeColour = "charactercreator.appearance.eyes";
 
         [English("{name} Opacity")]
@@ -311,12 +267,6 @@ public static partial class Loc
 
         [English("What colour ~b~{name}~s~ is drawn in.")]
         public const string ColourRowDescription = "charactercreator.appearance.colour.desc";
-
-        [English("Pick this character's haircut.")]
-        public const string HairRowDescription = "charactercreator.appearance.hair.desc";
-
-        [English("Pick the colour of this character's eyes.")]
-        public const string EyeColourRowDescription = "charactercreator.appearance.eyes.desc";
 
         [English("This is not available for female characters.")]
         public const string MaleOnly = "charactercreator.appearance.maleonly";
@@ -471,11 +421,8 @@ public static partial class Loc
         [English("That is not a number between 1 and {max}.")]
         public const string TattooExactIdInvalid = "charactercreator.tattoos.exactid.invalid";
 
-        [English("Remove All Tattoos & Badges")]
+        [English("Remove All Tattoos & Badges", "Take every tattoo and badge off this character.")]
         public const string TattooRemoveAll = "charactercreator.tattoos.removeall";
-
-        [English("Take every tattoo and badge off this character.")]
-        public const string TattooRemoveAllDescription = "charactercreator.tattoos.removeall.desc";
 
         [English("Are you sure? Every tattoo and badge on this character will be removed.")]
         public const string TattooRemoveAllConfirm = "charactercreator.tattoos.removeall.confirm";
@@ -483,19 +430,15 @@ public static partial class Loc
         [English("Every tattoo and badge has been removed.")]
         public const string TattooRemoveAllDone = "charactercreator.tattoos.removeall.done";
 
-        [English("Nothing Here")]
+        [English(
+            "Nothing Here",
+            "The server owner's tattoo file has nothing for this part of the body, at least not for this character.")]
         public const string TattooZoneEmpty = "charactercreator.tattoos.empty";
 
         [English(
-            "The server owner's tattoo file has nothing for this part of the body, at least not for this character.")]
-        public const string TattooZoneEmptyDescription = "charactercreator.tattoos.empty.desc";
-
-        [English("No Tattoos Available")]
-        public const string TattooFileEmpty = "charactercreator.tattoos.file.empty";
-
-        [English(
+            "No Tattoos Available",
             "The server owner has no tattoos configured, so there is nothing to put on this character. They can add them in ~b~config/tattoos.json~s~.")]
-        public const string TattooFileEmptyDescription = "charactercreator.tattoos.file.empty.desc";
+        public const string TattooFileEmpty = "charactercreator.tattoos.file.empty";
 
         #endregion
 
@@ -516,12 +459,10 @@ public static partial class Loc
         [English("Turn Character")]
         public const string TurnCharacter = "charactercreator.camera.turncharacter";
 
-        [English("Disable Auto Camera")]
-        public const string DisableAutoCamera = "charactercreator.camera.auto";
-
         [English(
+            "Disable Auto Camera",
             "Stop the camera moving itself to whatever you are editing. Your own angle then stays where you left it.")]
-        public const string DisableAutoCameraDescription = "charactercreator.camera.auto.desc";
+        public const string DisableAutoCamera = "charactercreator.camera.auto";
 
         [English("Auto Camera: On")]
         public const string AutoCameraButtonOn = "charactercreator.camera.auto.button.on";
@@ -539,11 +480,8 @@ public static partial class Loc
 
         #region Saving
 
-        [English("Saved Characters")]
+        [English("Saved Characters", "Spawn, edit or delete your existing saved characters.")]
         public const string SavedCharacters = "charactercreator.saved";
-
-        [English("Spawn, edit or delete your existing saved characters.")]
-        public const string SavedCharactersDescription = "charactercreator.saved.desc";
 
         [English("Manage Saved Characters")]
         public const string SavedCharactersSubtitle = "charactercreator.saved.subtitle";
@@ -572,11 +510,8 @@ public static partial class Loc
         [English("The characters you sorted into ~b~{name}~s~.")]
         public const string CategoryRowDescription = "charactercreator.saved.category.row.desc";
 
-        [English("No Saved Characters")]
+        [English("No Saved Characters", "You have not saved a character yet. Create one and it will show up here.")]
         public const string NoCharacters = "charactercreator.saved.empty";
-
-        [English("You have not saved a character yet. Create one and it will show up here.")]
-        public const string NoCharactersDescription = "charactercreator.saved.empty.desc";
 
         [English(
             "~y~Saved by a newer version of vMenu.~s~ You can still wear it, but editing it here would throw away whatever that version added.")]
@@ -591,11 +526,8 @@ public static partial class Loc
         [English("{name}")]
         public const string ManageSubtitle = "charactercreator.manage.subtitle";
 
-        [English("Spawn Saved Character")]
+        [English("Spawn Saved Character", "Turn into this character.")]
         public const string Spawn = "charactercreator.manage.spawn";
-
-        [English("Turn into this character.")]
-        public const string SpawnDescription = "charactercreator.manage.spawn.desc";
 
         [English("You are now ~g~{name}~s~.")]
         public const string Spawned = "charactercreator.manage.spawn.done";
@@ -603,67 +535,51 @@ public static partial class Loc
         [English("You are now ~g~{name}~s~, but {count} thing(s) could not be applied. Press F8 to see which.")]
         public const string SpawnedWithDifferences = "charactercreator.manage.spawn.differences";
 
-        [English("Edit Saved Character")]
+        [English("Edit Saved Character", "Open this character back up in the creator.")]
         public const string EditCharacter = "charactercreator.manage.edit";
 
-        [English("Open this character back up in the creator.")]
-        public const string EditCharacterDescription = "charactercreator.manage.edit.desc";
-
-        [English("Edit What I Am Wearing")]
+        [English(
+            "Edit What I Am Wearing",
+            "Keep the clothes and hair you have on right now and edit those. Saving keeps them.")]
         public const string EditAsWorn = "charactercreator.manage.edit.asworn";
 
-        [English("Keep the clothes and hair you have on right now and edit those. Saving keeps them.")]
-        public const string EditAsWornDescription = "charactercreator.manage.edit.asworn.desc";
-
-        [English("Put The Saved Look Back On")]
+        [English(
+            "Put The Saved Look Back On",
+            "Throw away what you are wearing, put this character back on exactly as it was saved, and edit that.")]
         public const string EditRestored = "charactercreator.manage.edit.restored";
 
-        [English("Throw away what you are wearing, put this character back on exactly as it was saved, and edit that.")]
-        public const string EditRestoredDescription = "charactercreator.manage.edit.restored.desc";
-
-        [English("Character Outfits")]
-        public const string Outfits = "charactercreator.manage.outfits";
-
         [English(
+            "Character Outfits",
             "The sets of clothes saved against this character. Saving additional outfits allows you to easily swap between them without having to edit your character each time.")]
-        public const string OutfitsDescription = "charactercreator.manage.outfits.desc";
+        public const string Outfits = "charactercreator.manage.outfits";
 
         [English("Character Outfits")]
         public const string OutfitsSubtitle = "charactercreator.manage.outfits.subtitle";
 
-        [English("Character Hair & Makeup Styles")]
-        public const string Styles = "charactercreator.manage.styles";
-
         [English(
+            "Character Hair & Makeup Styles",
             "The different haircuts and grooming styles saved against this character. Saving additional hair and makeup styles allows you to easily swap between them without having to edit your character each time.")]
-        public const string StylesDescription = "charactercreator.manage.styles.desc";
+        public const string Styles = "charactercreator.manage.styles";
 
         [English("Hair & Makeup Styles")]
         public const string StylesSubtitle = "charactercreator.manage.styles.subtitle";
 
-        [English("Clone Saved Character")]
+        [English("Clone Saved Character", "Save a second copy of this character under another name.")]
         public const string Clone = "charactercreator.manage.clone";
-
-        [English("Save a second copy of this character under another name.")]
-        public const string CloneDescription = "charactercreator.manage.clone.desc";
 
         [English("Cloned to ~g~{name}~s~.")]
         public const string Cloned = "charactercreator.manage.clone.done";
 
-        [English("Set Character Category")]
+        [English("Set Character Category", "Move this character into another group. Select to save.")]
         public const string SetCategory = "charactercreator.manage.setcategory";
-
-        [English("Move this character into another group. Select to save.")]
-        public const string SetCategoryDescription = "charactercreator.manage.setcategory.desc";
 
         [English("Moved to ~b~{name}~s~.")]
         public const string CategoryChanged = "charactercreator.manage.setcategory.done";
 
-        [English("Set As Default Character")]
+        [English(
+            "Set As Default Character",
+            "Come back as this character whenever you respawn. Select again to clear it.")]
         public const string SetDefault = "charactercreator.manage.setdefault";
-
-        [English("Come back as this character whenever you respawn. Select again to clear it.")]
-        public const string SetDefaultDescription = "charactercreator.manage.setdefault.desc";
 
         [English("~g~{name}~s~ is now your default character.")]
         public const string DefaultSet = "charactercreator.manage.setdefault.done";
@@ -674,20 +590,14 @@ public static partial class Loc
         [English("~g~This character is currently set as your default character and will be used whenever you respawn.")]
         public const string IsDefault = "charactercreator.manage.isdefault";
 
-        [English("Rename Saved Character")]
+        [English("Rename Saved Character", "Change this character's name and description.")]
         public const string Rename = "charactercreator.manage.rename";
-
-        [English("Change this character's name and description.")]
-        public const string RenameDescription = "charactercreator.manage.rename.desc";
 
         [English("Renamed to ~g~{name}~s~.")]
         public const string Renamed = "charactercreator.manage.rename.done";
 
-        [English("Delete Saved Character")]
+        [English("Delete Saved Character", "Forget this character and everything saved against it.")]
         public const string Delete = "charactercreator.manage.delete";
-
-        [English("Forget this character and everything saved against it.")]
-        public const string DeleteDescription = "charactercreator.manage.delete.desc";
 
         [English("Are you sure? ~y~{name}~s~ and all of its outfits and styles will be gone.")]
         public const string DeleteConfirm = "charactercreator.manage.delete.confirm";
@@ -751,21 +661,17 @@ public static partial class Loc
         [English("Delete")]
         public const string VariantDelete = "charactercreator.variants.delete";
 
-        [English("Nothing Saved Yet")]
+        [English(
+            "Nothing Saved Yet",
+            "Nothing has been saved against this character yet. Wear something you like and save it here.")]
         public const string NoVariants = "charactercreator.variants.empty";
-
-        [English("Nothing has been saved against this character yet. Wear something you like and save it here.")]
-        public const string NoVariantsDescription = "charactercreator.variants.empty.desc";
 
         #endregion
 
         #region Categories
 
-        [English("Create Category")]
+        [English("Create Category", "Make a new group to sort your characters into.")]
         public const string CreateCategory = "charactercreator.categories.create";
-
-        [English("Make a new group to sort your characters into.")]
-        public const string CreateCategoryDescription = "charactercreator.categories.create.desc";
 
         [English("Enter a category name")]
         public const string CategoryName = "charactercreator.categories.name";
@@ -779,20 +685,14 @@ public static partial class Loc
         [English("You already have a category called ~y~{name}~s~.")]
         public const string CategoryNameTaken = "charactercreator.categories.nametaken";
 
-        [English("Edit Category")]
+        [English("Edit Category", "Rename a category, or change what it says.")]
         public const string EditCategory = "charactercreator.categories.edit";
-
-        [English("Rename a category, or change what it says.")]
-        public const string EditCategoryDescription = "charactercreator.categories.edit.desc";
 
         [English("~g~{name}~s~ has been updated.")]
         public const string CategoryEdited = "charactercreator.categories.edited";
 
-        [English("Delete Category")]
+        [English("Delete Category", "Forget a category. The characters in it are kept and become uncategorised.")]
         public const string DeleteCategory = "charactercreator.categories.delete";
-
-        [English("Forget a category. The characters in it are kept and become uncategorised.")]
-        public const string DeleteCategoryDescription = "charactercreator.categories.delete.desc";
 
         [English("Are you sure? ~y~{name}~s~ will be gone and everything in it becomes uncategorised.")]
         public const string DeleteCategoryConfirm = "charactercreator.categories.delete.confirm";
@@ -804,20 +704,16 @@ public static partial class Loc
 
         #region Outfit presets
 
-        [English("Outfit Presets")]
+        [English(
+            "Outfit Presets",
+            "Ready made outfits, both the ones this server published and the ones that came with the game.")]
         public const string Presets = "charactercreator.presets";
-
-        [English("Ready made outfits, both the ones this server published and the ones that came with the game.")]
-        public const string PresetsDescription = "charactercreator.presets.desc";
 
         [English("Outfit Presets")]
         public const string PresetsSubtitle = "charactercreator.presets.subtitle";
 
-        [English("Server Presets")]
+        [English("Server Presets", "The outfits the server owner published for everybody to use.")]
         public const string ServerPresets = "charactercreator.presets.server";
-
-        [English("The outfits the server owner published for everybody to use.")]
-        public const string ServerPresetsDescription = "charactercreator.presets.server.desc";
 
         [English("Server Presets")]
         public const string ServerPresetsSubtitle = "charactercreator.presets.server.subtitle";
@@ -835,17 +731,13 @@ public static partial class Loc
         [English("~y~{name}~s~ was saved on the other freemode model, so it would not look right on this one.")]
         public const string PresetWrongSex = "charactercreator.presets.wrongsex";
 
-        [English("Nothing Here Yet")]
+        [English("Nothing Here Yet", "The server owner has not published any outfits yet.")]
         public const string NoPresets = "charactercreator.presets.empty";
 
-        [English("The server owner has not published any outfits yet.")]
-        public const string NoPresetsDescription = "charactercreator.presets.empty.desc";
-
-        [English("Save Clothes To Server Presets")]
+        [English(
+            "Save Clothes To Server Presets",
+            "Publish what you are wearing so everybody on this server can put it on.")]
         public const string SavePreset = "charactercreator.presets.save";
-
-        [English("Publish what you are wearing so everybody on this server can put it on.")]
-        public const string SavePresetDescription = "charactercreator.presets.save.desc";
 
         [English("Enter a name for this preset")]
         public const string PresetNamePrompt = "charactercreator.presets.save.name";
@@ -868,11 +760,10 @@ public static partial class Loc
         [English("That category is not there any more.")]
         public const string PresetCategoryGone = "charactercreator.presets.save.categorygone";
 
-        [English("Create Preset Category")]
+        [English(
+            "Create Preset Category",
+            "Make a new group for the server's outfits, such as one for police uniforms.")]
         public const string CreatePresetCategory = "charactercreator.presets.categories.create";
-
-        [English("Make a new group for the server's outfits, such as one for police uniforms.")]
-        public const string CreatePresetCategoryDescription = "charactercreator.presets.categories.create.desc";
 
         [English("Enter a category name")]
         public const string PresetCategoryName = "charactercreator.presets.categories.name";
@@ -883,11 +774,8 @@ public static partial class Loc
         [English("~g~{name}~s~ has been created.")]
         public const string PresetCategoryCreated = "charactercreator.presets.categories.created";
 
-        [English("Delete Preset Category")]
+        [English("Delete Preset Category", "Forget a category and every outfit in it, for everybody on this server.")]
         public const string DeletePresetCategory = "charactercreator.presets.categories.delete";
-
-        [English("Forget a category and every outfit in it, for everybody on this server.")]
-        public const string DeletePresetCategoryDescription = "charactercreator.presets.categories.delete.desc";
 
         [English("Are you sure? ~y~{name}~s~ and every outfit in it will be gone for everybody.")]
         public const string DeletePresetCategoryConfirm = "charactercreator.presets.categories.delete.confirm";
@@ -895,11 +783,8 @@ public static partial class Loc
         [English("~y~{name}~s~ has been deleted.")]
         public const string PresetCategoryDeleted = "charactercreator.presets.categories.deleted";
 
-        [English("Delete Preset")]
+        [English("Delete Preset", "Remove one of the server's outfits, for everybody.")]
         public const string DeletePreset = "charactercreator.presets.delete";
-
-        [English("Remove one of the server's outfits, for everybody.")]
-        public const string DeletePresetDescription = "charactercreator.presets.delete.desc";
 
         [English("Are you sure? ~y~{name}~s~ will be gone for everybody on this server.")]
         public const string DeletePresetConfirm = "charactercreator.presets.delete.confirm";
@@ -911,12 +796,10 @@ public static partial class Loc
 
         #region GTA Online outfits
 
-        [English("Default Game Outfits")]
-        public const string OnlineOutfits = "charactercreator.online";
-
         [English(
+            "Default Game Outfits",
             "The ready made outfits that shipped with the game's own content packs. Or any addon packs the server owner installed.")]
-        public const string OnlineOutfitsDescription = "charactercreator.online.desc";
+        public const string OnlineOutfits = "charactercreator.online";
 
         [English("Default Game Outfits")]
         public const string OnlineOutfitsSubtitle = "charactercreator.online.subtitle";
@@ -931,17 +814,11 @@ public static partial class Loc
         public const string OnlineOutfitRowDescription = "charactercreator.online.row.desc";
 
 
-        [English("Reading Outfits")]
+        [English("Reading Outfits", "The game is being asked what outfits it has. Please wait.")]
         public const string OnlineLoading = "charactercreator.online.loading";
 
-        [English("The game is being asked what outfits it has. Please wait.")]
-        public const string OnlineLoadingDescription = "charactercreator.online.loading.desc";
-
-        [English("Nothing Here")]
+        [English("Nothing Here", "The game reported no preset outfits for this character.")]
         public const string OnlineEmpty = "charactercreator.online.empty";
-
-        [English("The game reported no preset outfits for this character.")]
-        public const string OnlineEmptyDescription = "charactercreator.online.empty.desc";
 
 
         [English("Outfit #{number}")]

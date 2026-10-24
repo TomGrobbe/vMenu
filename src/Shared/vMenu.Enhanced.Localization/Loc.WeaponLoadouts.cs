@@ -13,11 +13,8 @@ public static partial class Loc
         [English("Save the weapons you are carrying, and get them back later.")]
         public const string LinkDescription = "weaponloadouts.link.desc";
 
-        [English("Save Loadout")]
+        [English("Save Loadout", "Save the weapons you are carrying right now into a new loadout.")]
         public const string Save = "weaponloadouts.save";
-
-        [English("Save the weapons you are carrying right now into a new loadout.")]
-        public const string SaveDescription = "weaponloadouts.save.desc";
 
         [English("Enter a name for this loadout")]
         public const string SavePrompt = "weaponloadouts.save.prompt";
@@ -34,11 +31,8 @@ public static partial class Loc
         [English("~r~You are not carrying any weapons to save.")]
         public const string SaveNothingHeld = "weaponloadouts.save.nothingheld";
 
-        [English("Manage Loadouts")]
+        [English("Manage Loadouts", "Look through the loadouts you have saved.")]
         public const string Manage = "weaponloadouts.manage";
-
-        [English("Look through the loadouts you have saved.")]
-        public const string ManageDescription = "weaponloadouts.manage.desc";
 
         [English("Saved Loadouts")]
         public const string ManageSubtitle = "weaponloadouts.manage.subtitle";
@@ -46,11 +40,10 @@ public static partial class Loc
         [English("Manage Loadout")]
         public const string ManageTitle = "weaponloadouts.manage.title";
 
-        [English("No saved loadouts")]
+        [English(
+            "No saved loadouts",
+            "You have not saved any loadouts yet. Carry the weapons you want, then use Save Loadout.")]
         public const string Empty = "weaponloadouts.empty";
-
-        [English("You have not saved any loadouts yet. Carry the weapons you want, then use Save Loadout.")]
-        public const string EmptyDescription = "weaponloadouts.empty.desc";
 
         [English("Manage the ~y~{name}~s~ loadout.")]
         public const string LoadoutDescription = "weaponloadouts.loadout.desc";
@@ -58,11 +51,8 @@ public static partial class Loc
         [English("{count} weapon(s)")]
         public const string WeaponCount = "weaponloadouts.loadout.count";
 
-        [English("Equip Loadout")]
+        [English("Equip Loadout", "Take out this loadout. Everything you are carrying now is removed first.")]
         public const string Equip = "weaponloadouts.equip";
-
-        [English("Take out this loadout. Everything you are carrying now is removed first.")]
-        public const string EquipDescription = "weaponloadouts.equip.desc";
 
         [English("Loadout ~g~{name}~s~ was equipped.")]
         public const string Equipped = "weaponloadouts.equipped";
@@ -74,11 +64,8 @@ public static partial class Loc
         [English("You do not have permission to equip loadouts.")]
         public const string EquipDenied = "weaponloadouts.equip.denied";
 
-        [English("Rename Loadout")]
+        [English("Rename Loadout", "Give this loadout a different name.")]
         public const string Rename = "weaponloadouts.rename";
-
-        [English("Give this loadout a different name.")]
-        public const string RenameDescription = "weaponloadouts.rename.desc";
 
         [English("Enter a new name for this loadout")]
         public const string RenamePrompt = "weaponloadouts.rename.prompt";
@@ -86,11 +73,8 @@ public static partial class Loc
         [English("Renamed to ~g~{name}~s~.")]
         public const string Renamed = "weaponloadouts.renamed";
 
-        [English("Clone Loadout")]
+        [English("Clone Loadout", "Make a second copy of this loadout under a new name.")]
         public const string Clone = "weaponloadouts.clone";
-
-        [English("Make a second copy of this loadout under a new name.")]
-        public const string CloneDescription = "weaponloadouts.clone.desc";
 
         [English("Enter a name for the copy")]
         public const string ClonePrompt = "weaponloadouts.clone.prompt";
@@ -98,46 +82,36 @@ public static partial class Loc
         [English("Copied to ~g~{name}~s~.")]
         public const string Cloned = "weaponloadouts.cloned";
 
-        [English("Set As Default Loadout")]
-        public const string SetDefault = "weaponloadouts.setdefault";
-
         [English(
+            "Set As Default Loadout",
             "Make this the loadout you get back whenever you respawn. A tick on the left marks the one you picked.")]
-        public const string SetDefaultDescription = "weaponloadouts.setdefault.desc";
+        public const string SetDefault = "weaponloadouts.setdefault";
 
         [English("~g~{name}~s~ is now your default loadout.")]
         public const string DefaultSet = "weaponloadouts.setdefault.done";
 
-        [English("~r~Replace Loadout")]
+        [English(
+            "~r~Replace Loadout",
+            "~r~Overwrite this loadout with the weapons you are carrying right now. This cannot be undone.")]
         public const string Replace = "weaponloadouts.replace";
-
-        [English("~r~Overwrite this loadout with the weapons you are carrying right now. This cannot be undone.")]
-        public const string ReplaceDescription = "weaponloadouts.replace.desc";
 
         [English("~g~{name}~s~ was replaced with what you are carrying.")]
         public const string Replaced = "weaponloadouts.replaced";
 
-        [English("~r~Delete Loadout")]
+        [English("~r~Delete Loadout", "~r~Delete this loadout. This cannot be undone.")]
         public const string Delete = "weaponloadouts.delete";
-
-        [English("~r~Delete this loadout. This cannot be undone.")]
-        public const string DeleteDescription = "weaponloadouts.delete.desc";
 
         [English("~g~{name}~s~ was deleted.")]
         public const string Deleted = "weaponloadouts.deleted";
 
-        [English("Restore Default Loadout On Respawn")]
+        [English(
+            "Restore Default Loadout On Respawn",
+            "Once you have picked a default loadout, get it back automatically every time you respawn, and when you join the server.")]
         public const string RestoreOnRespawn = "weaponloadouts.onrespawn";
 
         [English(
-            "Once you have picked a default loadout, get it back automatically every time you respawn, and when you join the server.")]
-        public const string RestoreOnRespawnDescription = "weaponloadouts.onrespawn.desc";
-
-        [English("Keep Weapons On Ped Change")]
-        public const string KeepOnPedChange = "weaponloadouts.onpedchange";
-
-        [English(
+            "Keep Weapons On Ped Change",
             "Changing your ped normally takes your weapons with it. Leave this on and you get back exactly what you were carrying, with the same attachments, tints and ammo. A weapon that vMenu does not know about cannot be carried over.")]
-        public const string KeepOnPedChangeDescription = "weaponloadouts.onpedchange.desc";
+        public const string KeepOnPedChange = "weaponloadouts.onpedchange";
     }
 }

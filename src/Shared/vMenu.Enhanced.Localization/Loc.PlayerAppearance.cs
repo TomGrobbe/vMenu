@@ -15,22 +15,18 @@ public static partial class Loc
 
         #region Pages
 
-        [English("Ped Customization")]
-        public const string Customize = "playerappearance.customize";
-
         [English(
+            "Ped Customization",
             "Everything this ped can wear, one row per body slot. The numbers on each row are the ids, so you can tell somebody else exactly what you picked.")]
-        public const string CustomizeDescription = "playerappearance.customize.desc";
+        public const string Customize = "playerappearance.customize";
 
         [English("Everything This Ped Can Wear")]
         public const string CustomizeSubtitle = "playerappearance.customize.subtitle";
 
-        [English("Ped Collections")]
-        public const string Collections = "playerappearance.collections";
-
         [English(
+            "Ped Collections",
             "The same clothes, grouped by the game update they came with. Useful when you know roughly when something was added.")]
-        public const string CollectionsDescription = "playerappearance.collections.desc";
+        public const string Collections = "playerappearance.collections";
 
         [English("Browse By Game Update")]
         public const string CollectionsSubtitle = "playerappearance.collections.subtitle";
@@ -39,12 +35,10 @@ public static partial class Loc
             "This ped does not have any collections other than the base collection. Ped collections will be available for models that have DLC updates, or streamed collections only (typically the multiplayer peds).")]
         public const string CollectionsLocked = "playerappearance.collections.locked";
 
-        [English("Random Outfit")]
-        public const string Random = "playerappearance.random";
-
         [English(
+            "Random Outfit",
             "Dresses this ped in a combination the game itself considers a sensible one for it. Quicker than working through every slot when you just want a different look.")]
-        public const string RandomDescription = "playerappearance.random.desc";
+        public const string Random = "playerappearance.random";
 
         [English("~g~Gave this ped a random outfit~s~.")]
         public const string RandomDone = "playerappearance.random.done";
@@ -114,11 +108,8 @@ public static partial class Loc
         [English("[7] Bracelets")]
         public const string PropBracelets = "playerappearance.prop.bracelets";
 
-        [English("~b~Props")]
+        [English("~b~Props", "Everything below here goes on top of the clothes, such as a hat or a pair of glasses.")]
         public const string PropsHeading = "playerappearance.props.heading";
-
-        [English("Everything below here goes on top of the clothes, such as a hat or a pair of glasses.")]
-        public const string PropsHeadingDescription = "playerappearance.props.heading.desc";
 
         #endregion
 
@@ -168,12 +159,10 @@ public static partial class Loc
 
         #region Everything else
 
-        [English("Walking Style")]
-        public const string WalkingStyle = "playerappearance.walk";
-
         [English(
+            "Walking Style",
             "How you walk and run. Press enter to try the one you picked. Some of these were animated for one kind of body and will not suit every ped.")]
-        public const string WalkingStyleDescription = "playerappearance.walk.desc";
+        public const string WalkingStyle = "playerappearance.walk";
 
         [English("Normal")]
         public const string WalkingStyleNormal = "playerappearance.walk.normal";
@@ -184,12 +173,10 @@ public static partial class Loc
         [English("The game has no ~y~{style}~s~ animations for this ped, so you are still walking the way you were.")]
         public const string WalkingStyleUnavailable = "playerappearance.walk.unavailable";
 
-        [English("Illuminated Clothing")]
-        public const string Glow = "playerappearance.glow";
-
         [English(
+            "Illuminated Clothing",
             "Makes clothes that light up flash or fade, and everybody around you sees it. Most outfits have nothing that lights up, so on those this does nothing.")]
-        public const string GlowDescription = "playerappearance.glow.desc";
+        public const string Glow = "playerappearance.glow";
 
         [English("Off")]
         public const string GlowOff = "playerappearance.glow.off";
@@ -203,11 +190,10 @@ public static partial class Loc
         [English("Flash")]
         public const string GlowFlash = "playerappearance.glow.flash";
 
-        [English("~r~Reset To Default")]
+        [English(
+            "~r~Reset To Default",
+            "Puts this ped back in the clothes it spawns with and takes off everything it is wearing on top.")]
         public const string Reset = "playerappearance.reset";
-
-        [English("Puts this ped back in the clothes it spawns with and takes off everything it is wearing on top.")]
-        public const string ResetDescription = "playerappearance.reset.desc";
 
         [English("~r~Put this ped back to its default look? Press enter again to confirm.")]
         public const string ResetConfirm = "playerappearance.reset.confirm";
@@ -215,11 +201,10 @@ public static partial class Loc
         [English("~g~Back to the default look~s~.")]
         public const string ResetDone = "playerappearance.reset.done";
 
-        [English("Nothing To Change")]
+        [English(
+            "Nothing To Change",
+            "This ped has no clothes or props the game will let you swap. Animals are usually like this.")]
         public const string Empty = "playerappearance.empty";
-
-        [English("This ped has no clothes or props the game will let you swap. Animals are usually like this.")]
-        public const string EmptyDescription = "playerappearance.empty.desc";
 
 
 

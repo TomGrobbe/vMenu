@@ -22,30 +22,19 @@ public static partial class Loc
         [English("What your vehicle is currently doing.")]
         public const string GroupStatusDescription = "autopilot.group.status.desc";
 
-        [English("Where To")]
+        [English("Where To", "Give your ped somewhere to take you.")]
         public const string GroupStart = "autopilot.group.start";
 
-        [English("Give your ped somewhere to take you.")]
-        public const string GroupStartDescription = "autopilot.group.start.desc";
-
-        [English("Control")]
+        [English("Control", "Hold the current job, pick it back up, or call it off.")]
         public const string GroupControl = "autopilot.group.control";
 
-        [English("Hold the current job, pick it back up, or call it off.")]
-        public const string GroupControlDescription = "autopilot.group.control.desc";
-
-        [English("Driving Profiles In Use")]
+        [English(
+            "Driving Profiles In Use",
+            "Which saved profile applies to each kind of vehicle. Which one applies is decided by what you are sitting in.")]
         public const string GroupProfiles = "autopilot.group.profiles";
 
-        [English(
-            "Which saved profile applies to each kind of vehicle. Which one applies is decided by what you are sitting in.")]
-        public const string GroupProfilesDescription = "autopilot.group.profiles.desc";
-
-        [English("Manage")]
+        [English("Manage", "Build your own profiles, and keep your saved places and routes.")]
         public const string GroupManage = "autopilot.group.manage";
-
-        [English("Build your own profiles, and keep your saved places and routes.")]
-        public const string GroupManageDescription = "autopilot.group.manage.desc";
 
         #endregion
 
@@ -73,33 +62,24 @@ public static partial class Loc
 
         #region Starting a task
 
-        [English("Drive To Waypoint")]
+        [English(
+            "Drive To Waypoint",
+            "Take me to the waypoint I set on the map. Set one first, or there is nowhere to go.")]
         public const string DriveToWaypoint = "autopilot.drivetowaypoint";
 
-        [English("Take me to the waypoint I set on the map. Set one first, or there is nowhere to go.")]
-        public const string DriveToWaypointDescription = "autopilot.drivetowaypoint.desc";
-
-        [English("Drive Around Randomly")]
+        [English(
+            "Drive Around Randomly",
+            "Just drive, with no particular destination. Helicopters and planes pick a new spot every time they arrive.")]
         public const string DriveWander = "autopilot.drivewander";
 
-        [English(
-            "Just drive, with no particular destination. Helicopters and planes pick a new spot every time they arrive.")]
-        public const string DriveWanderDescription = "autopilot.drivewander.desc";
-
-        [English("Drive To Saved Point")]
+        [English("Drive To Saved Point", "Pick one of the places you saved and go there.")]
         public const string DriveToPoint = "autopilot.drivetopoint";
-
-        [English("Pick one of the places you saved and go there.")]
-        public const string DriveToPointDescription = "autopilot.drivetopoint.desc";
 
         [English("Saved Points")]
         public const string DriveToPointSubtitle = "autopilot.drivetopoint.subtitle";
 
-        [English("Replay Recorded Path")]
+        [English("Replay Recorded Path", "Pick a route you recorded and drive it point by point.")]
         public const string ReplayPath = "autopilot.replaypath";
-
-        [English("Pick a route you recorded and drive it point by point.")]
-        public const string ReplayPathDescription = "autopilot.replaypath.desc";
 
         [English("Recorded Paths")]
         public const string ReplayPathSubtitle = "autopilot.replaypath.subtitle";
@@ -132,11 +112,8 @@ public static partial class Loc
         [English("Carry on from where you paused.")]
         public const string ResumeDescription = "autopilot.resume.desc";
 
-        [English("Stop")]
+        [English("Stop", "End the job entirely. There is nothing left to resume afterwards.")]
         public const string Stop = "autopilot.stop";
-
-        [English("End the job entirely. There is nothing left to resume afterwards.")]
-        public const string StopDescription = "autopilot.stop.desc";
 
         [English("Auto pilot paused.")]
         public const string Paused = "autopilot.paused";
@@ -147,12 +124,10 @@ public static partial class Loc
         [English("Auto pilot stopped.")]
         public const string Stopped = "autopilot.stopped";
 
-        [English("When Stopping")]
-        public const string StopAction = "autopilot.stopaction";
-
         [English(
+            "When Stopping",
             "What the vehicle does when you pause or stop. Parking only applies to road vehicles, everything else brakes instead.")]
-        public const string StopActionDescription = "autopilot.stopaction.desc";
+        public const string StopAction = "autopilot.stopaction";
 
         [English("Park properly")]
         public const string StopActionPark = "autopilot.stopaction.park";
@@ -163,11 +138,10 @@ public static partial class Loc
         [English("Coast to a stop")]
         public const string StopActionCoast = "autopilot.stopaction.coast";
 
-        [English("Cruise Speed")]
+        [English(
+            "Cruise Speed",
+            "How fast to travel, in metres per second. A profile with its own speed set overrides this.")]
         public const string CruiseSpeed = "autopilot.cruisespeed";
-
-        [English("How fast to travel, in metres per second. A profile with its own speed set overrides this.")]
-        public const string CruiseSpeedDescription = "autopilot.cruisespeed.desc";
 
         [English("Vehicle maximum")]
         public const string CruiseSpeedAuto = "autopilot.cruisespeed.auto";
@@ -189,29 +163,17 @@ public static partial class Loc
 
         #region Active profiles
 
-        [English("Cars And Bikes")]
+        [English("Cars And Bikes", "The profile used for anything that drives on roads.")]
         public const string ProfileVehicle = "autopilot.profile.vehicle";
 
-        [English("The profile used for anything that drives on roads.")]
-        public const string ProfileVehicleDescription = "autopilot.profile.vehicle.desc";
-
-        [English("Planes")]
+        [English("Planes", "The profile used for planes.")]
         public const string ProfilePlane = "autopilot.profile.plane";
 
-        [English("The profile used for planes.")]
-        public const string ProfilePlaneDescription = "autopilot.profile.plane.desc";
-
-        [English("Boats")]
+        [English("Boats", "The profile used for boats.")]
         public const string ProfileBoat = "autopilot.profile.boat";
 
-        [English("The profile used for boats.")]
-        public const string ProfileBoatDescription = "autopilot.profile.boat.desc";
-
-        [English("Helicopters")]
+        [English("Helicopters", "The profile used for helicopters.")]
         public const string ProfileHeli = "autopilot.profile.heli";
-
-        [English("The profile used for helicopters.")]
-        public const string ProfileHeliDescription = "autopilot.profile.heli.desc";
 
         #endregion
 
@@ -241,11 +203,8 @@ public static partial class Loc
         [English("{count} profile(s) here, {presets} of them built in.")]
         public const string CategoryDescription = "autopilot.category.desc";
 
-        [English("Create Profile")]
+        [English("Create Profile", "Start a new empty profile in this category, then tick the behaviour you want.")]
         public const string CreateProfile = "autopilot.profile.create";
-
-        [English("Start a new empty profile in this category, then tick the behaviour you want.")]
-        public const string CreateProfileDescription = "autopilot.profile.create.desc";
 
         [English("Name this profile")]
         public const string ProfileNamePrompt = "autopilot.profile.name.prompt";
@@ -286,11 +245,8 @@ public static partial class Loc
         [English("~r~This was saved by a newer version of vMenu, so it cannot be changed here.")]
         public const string ProfileNewerBuild = "autopilot.profile.newerbuild";
 
-        [English("Rename")]
+        [English("Rename", "Change the name and description of this profile.")]
         public const string ProfileRename = "autopilot.profile.rename";
-
-        [English("Change the name and description of this profile.")]
-        public const string ProfileRenameDescription = "autopilot.profile.rename.desc";
 
         [English("New name")]
         public const string ProfileRenamePrompt = "autopilot.profile.rename.prompt";
@@ -298,29 +254,20 @@ public static partial class Loc
         [English("Renamed to ~g~{name}~s~.")]
         public const string ProfileRenamed = "autopilot.profile.renamed";
 
-        [English("Duplicate")]
+        [English("Duplicate", "Make a copy of this profile under a new name.")]
         public const string ProfileDuplicate = "autopilot.profile.duplicate";
-
-        [English("Make a copy of this profile under a new name.")]
-        public const string ProfileDuplicateDescription = "autopilot.profile.duplicate.desc";
 
         [English("Name for the copy")]
         public const string ProfileDuplicatePrompt = "autopilot.profile.duplicate.prompt";
 
-        [English("Use This Profile")]
+        [English("Use This Profile", "Make this the profile every vehicle in this category uses.")]
         public const string ProfileUse = "autopilot.profile.use";
-
-        [English("Make this the profile every vehicle in this category uses.")]
-        public const string ProfileUseDescription = "autopilot.profile.use.desc";
 
         [English("~g~{name}~s~ is now in use.")]
         public const string ProfileInUse = "autopilot.profile.inuse";
 
-        [English("~r~Delete Profile")]
+        [English("~r~Delete Profile", "Remove this profile for good.")]
         public const string ProfileDelete = "autopilot.profile.delete";
-
-        [English("Remove this profile for good.")]
-        public const string ProfileDeleteDescription = "autopilot.profile.delete.desc";
 
         [English("~r~Delete {name}? Press enter again to confirm.")]
         public const string ProfileDeleteConfirm = "autopilot.profile.delete.confirm";
@@ -328,35 +275,26 @@ public static partial class Loc
         [English("~g~{name}~s~ was deleted.")]
         public const string ProfileDeleted = "autopilot.profile.deleted";
 
-        [English("Flight Height")]
+        [English("Flight Height", "How high to cruise, in metres.")]
         public const string ProfileFlightHeight = "autopilot.profile.flightheight";
 
-        [English("How high to cruise, in metres.")]
-        public const string ProfileFlightHeightDescription = "autopilot.profile.flightheight.desc";
-
-        [English("Minimum Height Above Ground")]
+        [English("Minimum Height Above Ground", "How much clearance to keep over the terrain, in metres.")]
         public const string ProfileMinHeight = "autopilot.profile.minheight";
 
-        [English("How much clearance to keep over the terrain, in metres.")]
-        public const string ProfileMinHeightDescription = "autopilot.profile.minheight.desc";
-
-        [English("Cruise Speed")]
+        [English(
+            "Cruise Speed",
+            "Speed for this profile, in metres per second. Zero means use the vehicle maximum instead.")]
         public const string ProfileCruiseSpeed = "autopilot.profile.cruisespeed";
 
-        [English("Speed for this profile, in metres per second. Zero means use the vehicle maximum instead.")]
-        public const string ProfileCruiseSpeedDescription = "autopilot.profile.cruisespeed.desc";
-
-        [English("Line Up Precisely")]
+        [English(
+            "Line Up Precisely",
+            "Take more care lining up with the destination. Slower, but it arrives where you meant.")]
         public const string ProfilePrecise = "autopilot.profile.precise";
 
-        [English("Take more care lining up with the destination. Slower, but it arrives where you meant.")]
-        public const string ProfilePreciseDescription = "autopilot.profile.precise.desc";
-
-        [English("No profiles of your own yet")]
+        [English(
+            "No profiles of your own yet",
+            "Only the built in ones are here. Create one, or duplicate a built in profile to get started.")]
         public const string ProfilesEmpty = "autopilot.profiles.empty";
-
-        [English("Only the built in ones are here. Create one, or duplicate a built in profile to get started.")]
-        public const string ProfilesEmptyDescription = "autopilot.profiles.empty.desc";
 
         #endregion
 
@@ -371,29 +309,17 @@ public static partial class Loc
         [English("The places you saved, and the routes you recorded.")]
         public const string RoutesLinkDescription = "autopilot.routes.link.desc";
 
-        [English("Saved Points")]
+        [English("Saved Points", "Single places you can be driven to.")]
         public const string GroupPoints = "autopilot.group.points";
 
-        [English("Single places you can be driven to.")]
-        public const string GroupPointsDescription = "autopilot.group.points.desc";
-
-        [English("Recorded Paths")]
+        [English("Recorded Paths", "Routes made of many points, replayed in order.")]
         public const string GroupPaths = "autopilot.group.paths";
 
-        [English("Routes made of many points, replayed in order.")]
-        public const string GroupPathsDescription = "autopilot.group.paths.desc";
-
-        [English("Save Where I Am")]
+        [English("Save Where I Am", "Remember the spot you are standing or parked on right now.")]
         public const string SavePosition = "autopilot.point.savehere";
 
-        [English("Remember the spot you are standing or parked on right now.")]
-        public const string SavePositionDescription = "autopilot.point.savehere.desc";
-
-        [English("Save My Waypoint")]
+        [English("Save My Waypoint", "Remember the place your map waypoint is pointing at.")]
         public const string SaveWaypoint = "autopilot.point.savewaypoint";
-
-        [English("Remember the place your map waypoint is pointing at.")]
-        public const string SaveWaypointDescription = "autopilot.point.savewaypoint.desc";
 
         [English("Name this place")]
         public const string PointNamePrompt = "autopilot.point.name.prompt";
@@ -410,35 +336,23 @@ public static partial class Loc
         [English("~r~That could not be saved. A newer version of vMenu may have written it.")]
         public const string PointRefused = "autopilot.point.refused";
 
-        [English("No saved points yet")]
+        [English("No saved points yet", "Save where you are, or save your waypoint, and it will show up here.")]
         public const string PointsEmpty = "autopilot.points.empty";
-
-        [English("Save where you are, or save your waypoint, and it will show up here.")]
-        public const string PointsEmptyDescription = "autopilot.points.empty.desc";
 
         [English("{description}")]
         public const string PointRowDescription = "autopilot.point.row.desc";
 
-        [English("Drive Here")]
+        [English("Drive Here", "Set off for this place now.")]
         public const string PointDriveHere = "autopilot.point.drivehere";
 
-        [English("Set off for this place now.")]
-        public const string PointDriveHereDescription = "autopilot.point.drivehere.desc";
-
-        [English("Rename")]
+        [English("Rename", "Change the name and description of this place.")]
         public const string PointRename = "autopilot.point.rename";
-
-        [English("Change the name and description of this place.")]
-        public const string PointRenameDescription = "autopilot.point.rename.desc";
 
         [English("Renamed to ~g~{name}~s~.")]
         public const string PointRenamed = "autopilot.point.renamed";
 
-        [English("~r~Delete Point")]
+        [English("~r~Delete Point", "Forget this place for good.")]
         public const string PointDelete = "autopilot.point.delete";
-
-        [English("Forget this place for good.")]
-        public const string PointDeleteDescription = "autopilot.point.delete.desc";
 
         [English("~r~Delete {name}? Press enter again to confirm.")]
         public const string PointDeleteConfirm = "autopilot.point.delete.confirm";
@@ -446,35 +360,23 @@ public static partial class Loc
         [English("~g~{name}~s~ was deleted.")]
         public const string PointDeleted = "autopilot.point.deleted";
 
-        [English("No recorded paths yet")]
+        [English("No recorded paths yet", "Record one and it will show up here, ready to replay.")]
         public const string PathsEmpty = "autopilot.paths.empty";
-
-        [English("Record one and it will show up here, ready to replay.")]
-        public const string PathsEmptyDescription = "autopilot.paths.empty.desc";
 
         [English("{description}\n~b~{count}~s~ point(s), about ~b~{length}~s~ m long.")]
         public const string PathRowDescription = "autopilot.path.row.desc";
 
-        [English("Replay This Path")]
+        [English("Replay This Path", "Drive the route from its first point to its last.")]
         public const string PathReplay = "autopilot.path.replay";
 
-        [English("Drive the route from its first point to its last.")]
-        public const string PathReplayDescription = "autopilot.path.replay.desc";
-
-        [English("Rename")]
+        [English("Rename", "Change the name and description of this path.")]
         public const string PathRename = "autopilot.path.rename";
-
-        [English("Change the name and description of this path.")]
-        public const string PathRenameDescription = "autopilot.path.rename.desc";
 
         [English("Renamed to ~g~{name}~s~.")]
         public const string PathRenamed = "autopilot.path.renamed";
 
-        [English("~r~Delete Path")]
+        [English("~r~Delete Path", "Remove this route and every point in it.")]
         public const string PathDelete = "autopilot.path.delete";
-
-        [English("Remove this route and every point in it.")]
-        public const string PathDeleteDescription = "autopilot.path.delete.desc";
 
         [English("~r~Delete {name}? Press enter again to confirm.")]
         public const string PathDeleteConfirm = "autopilot.path.delete.confirm";
@@ -482,11 +384,8 @@ public static partial class Loc
         [English("~g~{name}~s~ was deleted.")]
         public const string PathDeleted = "autopilot.path.deleted";
 
-        [English("Points")]
+        [English("Points", "Look through the points in this route and take any of them out.")]
         public const string PathPointsList = "autopilot.path.points";
-
-        [English("Look through the points in this route and take any of them out.")]
-        public const string PathPointsListDescription = "autopilot.path.points.desc";
 
         [English("Points In This Path")]
         public const string PathPointsListSubtitle = "autopilot.path.points.subtitle";
@@ -541,11 +440,10 @@ public static partial class Loc
         [English("Stop dropping points. What you have so far is kept.")]
         public const string RecorderStopDescription = "autopilot.record.stop.desc";
 
-        [English("Drop Point Here")]
+        [English(
+            "Drop Point Here",
+            "Add a point at exactly where you are right now, whether or not automatic points are on.")]
         public const string RecorderDrop = "autopilot.record.drop";
-
-        [English("Add a point at exactly where you are right now, whether or not automatic points are on.")]
-        public const string RecorderDropDescription = "autopilot.record.drop.desc";
 
         [English("Point added, {count} so far.")]
         public const string RecorderDropped = "autopilot.record.dropped";
@@ -553,32 +451,24 @@ public static partial class Loc
         [English("~r~This path is full at {count} points. Save it and start another.")]
         public const string RecorderFull = "autopilot.record.full";
 
-        [English("Undo Last Point")]
+        [English("Undo Last Point", "Take the most recent point back off again.")]
         public const string RecorderUndo = "autopilot.record.undo";
-
-        [English("Take the most recent point back off again.")]
-        public const string RecorderUndoDescription = "autopilot.record.undo.desc";
 
         [English("Point removed, {count} left.")]
         public const string RecorderUndone = "autopilot.record.undone";
 
-        [English("Automatic Point Spacing")]
+        [English(
+            "Automatic Point Spacing",
+            "How far you have to move before another point drops by itself, in metres.")]
         public const string RecorderSpacing = "autopilot.record.spacing";
 
-        [English("How far you have to move before another point drops by itself, in metres.")]
-        public const string RecorderSpacingDescription = "autopilot.record.spacing.desc";
-
-        [English("Automatic Points")]
+        [English(
+            "Automatic Points",
+            "Drop points on their own as you drive. Turn this off to place every point by hand.")]
         public const string RecorderAuto = "autopilot.record.auto";
 
-        [English("Drop points on their own as you drive. Turn this off to place every point by hand.")]
-        public const string RecorderAutoDescription = "autopilot.record.auto.desc";
-
-        [English("Save Path")]
+        [English("Save Path", "Give this route a name and keep it.")]
         public const string RecorderSave = "autopilot.record.save";
-
-        [English("Give this route a name and keep it.")]
-        public const string RecorderSaveDescription = "autopilot.record.save.desc";
 
         [English("Name this path")]
         public const string RecorderNamePrompt = "autopilot.record.name.prompt";
@@ -598,11 +488,8 @@ public static partial class Loc
         [English("~r~There is nothing to save yet. Record or drop at least one point first.")]
         public const string RecorderEmpty = "autopilot.record.empty";
 
-        [English("~r~Discard")]
+        [English("~r~Discard", "Throw away everything recorded so far and start over.")]
         public const string RecorderDiscard = "autopilot.record.discard";
-
-        [English("Throw away everything recorded so far and start over.")]
-        public const string RecorderDiscardDescription = "autopilot.record.discard.desc";
 
         [English("~r~Throw away all {count} point(s)? Press enter again to confirm.")]
         public const string RecorderDiscardConfirm = "autopilot.record.discard.confirm";

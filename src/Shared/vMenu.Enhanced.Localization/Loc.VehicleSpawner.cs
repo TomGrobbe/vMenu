@@ -13,20 +13,14 @@ public static partial class Loc
         [English("Spawn a vehicle.")]
         public const string LinkDescription = "vehiclespawner.link.desc";
 
-        [English("Spawn Vehicle By Category")]
+        [English("Spawn Vehicle By Category", "Spawn a vehicle from a list of vehicle categories.")]
         public const string SpawnByCategory = "vehiclespawner.bycategory";
-
-        [English("Spawn a vehicle from a list of vehicle categories.")]
-        public const string SpawnByCategoryDescription = "vehiclespawner.bycategory.desc";
 
         [English("Spawn vehicles by category")]
         public const string SpawnByCategorySubtitle = "vehiclespawner.bycategory.subtitle";
 
-        [English("Spawn Vehicle By Name")]
+        [English("Spawn Vehicle By Name", "Spawn a vehicle by typing its model name.")]
         public const string SpawnByName = "vehiclespawner.byname";
-
-        [English("Spawn a vehicle by typing its model name.")]
-        public const string SpawnByNameDescription = "vehiclespawner.byname.desc";
 
         [English("Enter a vehicle model name")]
         public const string SpawnByNamePrompt = "vehiclespawner.byname.prompt";
@@ -46,12 +40,10 @@ public static partial class Loc
         [English("Vehicle Spawner Menu")]
         public const string CategorySubtitle = "vehiclespawner.category.subtitle";
 
-        [English("Spawn Inside Vehicle")]
-        public const string SpawnInside = "vehiclespawner.spawninside";
-
         [English(
+            "Spawn Inside Vehicle",
             "When turned on, spawns you inside of the vehicle. Turn it off and it will spawn the car in front of you instead.")]
-        public const string SpawnInsideDescription = "vehiclespawner.spawninside.desc";
+        public const string SpawnInside = "vehiclespawner.spawninside";
 
         [English("Spawn Inside: On")]
         public const string SpawnInsideButtonOn = "vehiclespawner.spawninside.button.on";
@@ -62,11 +54,10 @@ public static partial class Loc
         [English("Spawn vehicles inside or outside")]
         public const string SpawnInsideBinding = "vehiclespawner.spawninside.binding";
 
-        [English("Replace Previous Vehicle")]
+        [English(
+            "Replace Previous Vehicle",
+            "Delete the vehicle you spawned last when you spawn a new one, or the one you are driving.")]
         public const string ReplacePrevious = "vehiclespawner.replaceprevious";
-
-        [English("Delete the vehicle you spawned last when you spawn a new one, or the one you are driving.")]
-        public const string ReplacePreviousDescription = "vehiclespawner.replaceprevious.desc";
 
         [English("This server always replaces your previous vehicle, so this cannot be turned off.")]
         public const string ReplacePreviousLocked = "vehiclespawner.replaceprevious.locked";
