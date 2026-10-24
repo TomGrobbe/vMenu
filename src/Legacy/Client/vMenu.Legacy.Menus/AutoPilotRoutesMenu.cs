@@ -95,7 +95,7 @@ public sealed class AutoPilotRoutesMenu : MenuDefinition
     {
         var rows = new List<MenuEntry>
         {
-            Group(Loc.AutoPilot.GroupPoints, Loc.AutoPilot.GroupPointsDescription),
+            AutoPilotRows.Group(Loc.AutoPilot.GroupPoints, Loc.AutoPilot.GroupPointsDescription),
 
             new ButtonEntry
             {
@@ -117,7 +117,7 @@ public sealed class AutoPilotRoutesMenu : MenuDefinition
 
         if (points.Count == 0)
         {
-            rows.Add(Placeholder(Loc.AutoPilot.PointsEmpty, Loc.AutoPilot.PointsEmptyDescription));
+            rows.Add(AutoPilotRows.Placeholder(Loc.AutoPilot.PointsEmpty, Loc.AutoPilot.PointsEmptyDescription));
         }
 
         foreach (var entry in points)
@@ -140,7 +140,7 @@ public sealed class AutoPilotRoutesMenu : MenuDefinition
             });
         }
 
-        rows.Add(Group(Loc.AutoPilot.GroupPaths, Loc.AutoPilot.GroupPathsDescription));
+        rows.Add(AutoPilotRows.Group(Loc.AutoPilot.GroupPaths, Loc.AutoPilot.GroupPathsDescription));
 
         rows.Add(new ButtonEntry
         {
@@ -154,7 +154,7 @@ public sealed class AutoPilotRoutesMenu : MenuDefinition
 
         if (paths.Count == 0)
         {
-            rows.Add(Placeholder(Loc.AutoPilot.PathsEmpty, Loc.AutoPilot.PathsEmptyDescription));
+            rows.Add(AutoPilotRows.Placeholder(Loc.AutoPilot.PathsEmpty, Loc.AutoPilot.PathsEmptyDescription));
 
             return rows;
         }
@@ -706,19 +706,6 @@ public sealed class AutoPilotRoutesMenu : MenuDefinition
 
         return total;
     }
-
-    private static SeparatorEntry Group(string textKey, string descriptionKey) => new()
-    {
-        Text = MenuText.Key(textKey),
-        Description = MenuText.Key(descriptionKey),
-    };
-
-    private static ButtonEntry Placeholder(string textKey, string descriptionKey) => new()
-    {
-        Text = MenuText.Key(textKey),
-        Description = MenuText.Key(descriptionKey),
-        ReadEnabled = () => false,
-    };
 
     private static MenuText Num(int value) =>
         MenuText.Literal(value.ToString(CultureInfo.InvariantCulture));

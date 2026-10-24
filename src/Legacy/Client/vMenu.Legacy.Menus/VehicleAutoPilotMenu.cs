@@ -42,7 +42,7 @@ public sealed class VehicleAutoPilotMenu : MenuDefinition
 
         VehicleAutoPilot.Changed += () => MenuRegistry.Refresh(menu.Menu);
 
-        menu.Entries.Add(Group(Loc.AutoPilot.GroupStatus, Loc.AutoPilot.GroupStatusDescription));
+        menu.Entries.Add(AutoPilotRows.Group(Loc.AutoPilot.GroupStatus, Loc.AutoPilot.GroupStatusDescription));
 
         menu.Entries.Add(new SeparatorEntry
         {
@@ -51,7 +51,7 @@ public sealed class VehicleAutoPilotMenu : MenuDefinition
             ShowArrows = false,
         });
 
-        menu.Entries.Add(Group(Loc.AutoPilot.GroupStart, Loc.AutoPilot.GroupStartDescription));
+        menu.Entries.Add(AutoPilotRows.Group(Loc.AutoPilot.GroupStart, Loc.AutoPilot.GroupStartDescription));
 
         menu.Entries.Add(new ButtonEntry
         {
@@ -95,7 +95,7 @@ public sealed class VehicleAutoPilotMenu : MenuDefinition
             OnSelected = _ => _pathPicker?.Open(),
         });
 
-        menu.Entries.Add(Group(Loc.AutoPilot.GroupControl, Loc.AutoPilot.GroupControlDescription));
+        menu.Entries.Add(AutoPilotRows.Group(Loc.AutoPilot.GroupControl, Loc.AutoPilot.GroupControlDescription));
 
         menu.Entries.Add(new ButtonEntry
         {
@@ -163,7 +163,7 @@ public sealed class VehicleAutoPilotMenu : MenuDefinition
             },
         });
 
-        menu.Entries.Add(Group(Loc.AutoPilot.GroupProfiles, Loc.AutoPilot.GroupProfilesDescription));
+        menu.Entries.Add(AutoPilotRows.Group(Loc.AutoPilot.GroupProfiles, Loc.AutoPilot.GroupProfilesDescription));
 
         menu.Entries.Add(ProfileRow(
             AutoPilotCategory.Vehicle, Loc.AutoPilot.ProfileVehicle, Loc.AutoPilot.ProfileVehicleDescription));
@@ -177,7 +177,7 @@ public sealed class VehicleAutoPilotMenu : MenuDefinition
         menu.Entries.Add(ProfileRow(
             AutoPilotCategory.Helicopter, Loc.AutoPilot.ProfileHeli, Loc.AutoPilot.ProfileHeliDescription));
 
-        menu.Entries.Add(Group(Loc.AutoPilot.GroupManage, Loc.AutoPilot.GroupManageDescription));
+        menu.Entries.Add(AutoPilotRows.Group(Loc.AutoPilot.GroupManage, Loc.AutoPilot.GroupManageDescription));
 
         menu.Entries.Add(SubmenuEntry.For(new AutoPilotProfilesMenu()));
 
@@ -231,7 +231,7 @@ public sealed class VehicleAutoPilotMenu : MenuDefinition
 
         if (points.Count == 0)
         {
-            rows.Add(Placeholder(Loc.AutoPilot.PointsEmpty, Loc.AutoPilot.PointsEmptyDescription));
+            rows.Add(AutoPilotRows.Placeholder(Loc.AutoPilot.PointsEmpty, Loc.AutoPilot.PointsEmptyDescription));
 
             return rows;
         }
@@ -270,7 +270,7 @@ public sealed class VehicleAutoPilotMenu : MenuDefinition
 
         if (paths.Count == 0)
         {
-            rows.Add(Placeholder(Loc.AutoPilot.PathsEmpty, Loc.AutoPilot.PathsEmptyDescription));
+            rows.Add(AutoPilotRows.Placeholder(Loc.AutoPilot.PathsEmpty, Loc.AutoPilot.PathsEmptyDescription));
 
             return rows;
         }
@@ -337,18 +337,5 @@ public sealed class VehicleAutoPilotMenu : MenuDefinition
 
         return MenuText.Key(Loc.AutoPilot.StatusPaused, ("what", doing)).Resolve(Localizer.Current);
     }
-
-    private static SeparatorEntry Group(string textKey, string descriptionKey) => new()
-    {
-        Text = MenuText.Key(textKey),
-        Description = MenuText.Key(descriptionKey),
-    };
-
-    private static ButtonEntry Placeholder(string textKey, string descriptionKey) => new()
-    {
-        Text = MenuText.Key(textKey),
-        Description = MenuText.Key(descriptionKey),
-        ReadEnabled = () => false,
-    };
 
 }
