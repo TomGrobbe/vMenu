@@ -1,24 +1,14 @@
-using System.Reflection;
-
 using vMenu.Enhanced.Logging;
 
 namespace vMenu.Enhanced.Localization;
 
-/// <summary>Reports localization gaps once at startup. A Loc constant guarantees the key exists in code, not
-/// that any table has text for it, and without this the first sign of a gap is a marker in a menu
-/// nobody opened yet.</summary>
+/// <summary>Reports translation gaps once at startup, so the first sign of one is not a marker in a menu nobody
+/// opened yet. English needs no check: the build refuses a key without it.</summary>
 public static class LocalizationSelfCheck
 {
     public static void Run()
     {
-        var keys = CollectKeys(typeof(Loc));
-
-        var missing = keys.Where(key => !LanguageCatalog.English.TryGet(key, out _)).ToArray();
-
-        if (missing.Length > 0)
-        {
-            Log.Error($"[Localization] The English table is missing {missing.Length} key(s): {string.Join(", ", missing)}");
-        }
+        var english = LanguageCatalog.English;
 
         foreach (var language in LanguageCatalog.Available)
         {
@@ -27,44 +17,17 @@ public static class LocalizationSelfCheck
                 continue;
             }
 
-            // An entry nobody names is dead weight at best, and a mistyped key at worst: one that silently never
-            // resolves, because the lookup asks for the constant, not this string.
-            var orphans = table.Keys.Where(key => !keys.Contains(key)).ToArray();
+            // An entry English does not have is dead weight at best, and a mistyped key at worst: one that silently
+            // never resolves, because the lookup asks for the key, not this string.
+            var orphans = table.Keys.Where(key => !english.ContainsKey(key)).ToArray();
 
             if (orphans.Length > 0)
             {
-                Log.Warning($"[Localization] '{language}' has {orphans.Length} entrie(s) no Loc constant names: {string.Join(", ", orphans)}");
+                Log.Warning($"[Localization] '{language}' has {orphans.Length} entrie(s) English does not have: {string.Join(", ", orphans)}");
             }
 
             // Partial translations are by design, so coverage is reported rather than warned about.
-            Log.Debug($"[Localization] '{language}' ({table.NativeName}): {keys.Count(table.ContainsKey)}/{keys.Count} key(s).");
-        }
-    }
-
-    private static HashSet<string> CollectKeys(Type container)
-    {
-        var keys = new HashSet<string>(StringComparer.Ordinal);
-
-        Walk(container);
-
-        return keys;
-
-        void Walk(Type type)
-        {
-            foreach (var field in type.GetFields(BindingFlags.Public | BindingFlags.Static))
-            {
-                // A const string is a literal, non-readonly field.
-                if (field.IsLiteral && !field.IsInitOnly && field.FieldType == typeof(string)
-                    && field.GetRawConstantValue() is string value)
-                {
-                    keys.Add(value);
-                }
-            }
-
-            foreach (var nested in type.GetNestedTypes(BindingFlags.Public))
-            {
-                Walk(nested);
-            }
+            Log.Debug($"[Localization] '{language}' ({table.NativeName}): {english.Keys.Count(table.ContainsKey)}/{english.Keys.Count} key(s).");
         }
     }
 }
