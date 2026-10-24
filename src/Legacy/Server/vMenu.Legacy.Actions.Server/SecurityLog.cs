@@ -28,7 +28,7 @@ public static class SecurityLog
 
     private static readonly Dictionary<int, int> RepairedAt = [];
 
-    private static readonly Dictionary<int, Refusals> RefusedBy = [];
+    private static readonly PlayerWindows RefusedBy = new();
 
     private static int _startedAt;
 
@@ -80,39 +80,20 @@ public static class SecurityLog
         }
 
         var now = NativeFixer.GetGameTimer();
+        var refusals = RefusedBy.For(source.ServerId(), now, RefusalWindowMs);
 
-        if (!RefusedBy.TryGetValue(source.ServerId(), out var refusals))
-        {
-            refusals = new Refusals();
+        refusals.Add(now);
 
-            RefusedBy[source.ServerId()] = refusals;
-        }
-
-        while (refusals.Stamps.Count > 0 && now - refusals.Stamps[0] >= RefusalWindowMs)
-        {
-            refusals.Stamps.RemoveAt(0);
-        }
-
-        refusals.Stamps.Add(now);
-
-        if (refusals.Stamps.Count < allowance * RefusalFactor)
+        if (refusals.Count < allowance * RefusalFactor || !refusals.FirstReportIn(now, RefusalWindowMs))
         {
             return;
         }
-
-        if (refusals.Reported && now - refusals.ReportedAt < RefusalWindowMs)
-        {
-            return;
-        }
-
-        refusals.Reported = true;
-        refusals.ReportedAt = now;
 
         WebhookLog.Security(
             WebhookActor.For(source),
             "kept firing an action long after the server started refusing it.",
             ("action", Field(actionId)),
-            ("refused", refusals.Stamps.Count + " time(s) in " + (RefusalWindowMs / 1000) + "s"));
+            ("refused", refusals.Count + " time(s) in " + (RefusalWindowMs / 1000) + "s"));
     }
 
     public static void MalformedRequest(Player source, string actionId)
@@ -131,7 +112,7 @@ public static class SecurityLog
     public static void Forget(int serverId)
     {
         RepairedAt.Remove(serverId);
-        RefusedBy.Remove(serverId);
+        RefusedBy.Forget(serverId);
     }
 
     private static bool Watching() =>
@@ -140,13 +121,4 @@ public static class SecurityLog
         && NativeFixer.GetGameTimer() - _startedAt >= StartupQuietMs;
 
     private static string Field(string value) => WebhookText.Clean(value, MaxFieldLength);
-
-    private sealed class Refusals
-    {
-        public List<int> Stamps { get; } = [];
-
-        public bool Reported { get; set; }
-
-        public int ReportedAt { get; set; }
-    }
 }

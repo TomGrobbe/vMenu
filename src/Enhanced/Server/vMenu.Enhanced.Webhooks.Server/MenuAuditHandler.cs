@@ -242,7 +242,7 @@ public static class MenuAuditHandler
 
     private sealed class MenuAuditLimit
     {
-        private readonly Dictionary<int, List<int>> _byPlayer = [];
+        private readonly PlayerWindows _windows = new();
 
         private bool _reported;
 
@@ -255,24 +255,14 @@ public static class MenuAuditHandler
 
             if (limit <= 0 || window <= 0)
             {
-                if (_byPlayer.Count > 0)
-                {
-                    _byPlayer.Clear();
-                }
+                _windows.Clear();
 
                 return true;
             }
 
             var now = Native.GetGameTimer();
 
-            Sweep(now, window);
-
-            if (!_byPlayer.TryGetValue(serverId, out var stamps))
-            {
-                stamps = [];
-
-                _byPlayer[serverId] = stamps;
-            }
+            var stamps = _windows.For(serverId, now, window);
 
             if (stamps.Count < limit)
             {
@@ -286,7 +276,7 @@ public static class MenuAuditHandler
             return false;
         }
 
-        public void Forget(int serverId) => _byPlayer.Remove(serverId);
+        public void Forget(int serverId) => _windows.Forget(serverId);
 
         private void ReportOnce(int serverId, int now, int limit, int window)
         {
@@ -308,38 +298,6 @@ public static class MenuAuditHandler
                 WebhookActor.For(serverId),
                 "went over the menu action limit, so the rest of what they do is not being logged.",
                 ("limit", limit.ToString(CultureInfo.InvariantCulture) + " actions per " + seconds + "s"));
-        }
-
-        private void Sweep(int now, int window)
-        {
-            List<int>? finished = null;
-
-            foreach (var pair in _byPlayer)
-            {
-                var stamps = pair.Value;
-
-                while (stamps.Count > 0 && now - stamps[0] >= window)
-                {
-                    stamps.RemoveAt(0);
-                }
-
-                if (stamps.Count == 0)
-                {
-                    finished ??= [];
-
-                    finished.Add(pair.Key);
-                }
-            }
-
-            if (finished is null)
-            {
-                return;
-            }
-
-            foreach (var serverId in finished)
-            {
-                _byPlayer.Remove(serverId);
-            }
         }
     }
 }
