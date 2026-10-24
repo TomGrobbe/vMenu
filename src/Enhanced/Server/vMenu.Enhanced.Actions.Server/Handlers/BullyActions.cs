@@ -59,15 +59,13 @@ public static class BullyActions
 
     private static readonly Dictionary<int, MugRound> Mugs = [];
 
-    private static readonly Dictionary<int, PendingEffect> Pending = [];
+    private static readonly ClientRequests<string> Requests = new();
 
     private static readonly Dictionary<int, SpawnRecord> Spawned = [];
 
     private static readonly Dictionary<int, SpawnWindow> SpawnWindows = [];
 
     private static HashSet<uint>? _spawnedModels;
-
-    private static int _lastRequestId;
 
     private static bool _registered;
 
@@ -298,10 +296,7 @@ public static class BullyActions
             SpawnWindows[target] = new SpawnWindow(expires);
         }
 
-        var requestId = ++_lastRequestId;
-        var pending = new PendingEffect(target, new TaskCompletionSource<string>());
-
-        Pending[requestId] = pending;
+        var (requestId, outcome) = Requests.Open(target);
 
         API.EmitClient(
             target,
@@ -311,7 +306,7 @@ public static class BullyActions
             option,
             string.Join(BullyEvents.ListSeparator, victims.Select(Targets.Id)));
 
-        return pending.Outcome.Task;
+        return outcome;
     }
 
     private static async Task<string[]> ConfirmAsync(IReadOnlyList<Task<string>> outcomes)
@@ -325,25 +320,13 @@ public static class BullyActions
             await API.Delay(0);
         }
 
-        foreach (var unanswered in Pending.Where(pair => outcomes.Contains(pair.Value.Outcome.Task)).Select(pair => pair.Key).ToList())
-        {
-            Pending.Remove(unanswered);
-        }
+        Requests.Close(outcomes);
 
         return outcomes.Select(outcome => outcome.IsCompletedSuccessfully ? outcome.Result : BullyEvents.Unconfirmed).ToArray();
     }
 
-    private static void OnResult([FromSource] Player source, string requestId, string outcome)
-    {
-        if (ActionArgs.TryInt(requestId, out var id)
-            && Pending.TryGetValue(id, out var pending)
-            && pending.Target == source.Handle)
-        {
-            Pending.Remove(id);
-
-            pending.Outcome.TrySetResult(outcome);
-        }
-    }
+    private static void OnResult([FromSource] Player source, string requestId, string outcome) =>
+        Requests.TryAnswer(source, requestId, outcome);
 
     private static string? Unmet(BullyRequirement requirement, int ped)
     {
@@ -651,10 +634,7 @@ public static class BullyActions
 
         BullyPrivateWorlds.Forget(source);
 
-        foreach (var pending in Pending.Values.Where(pending => pending.Target == source).ToList())
-        {
-            pending.Outcome.TrySetResult(BullyEvents.RefusedFailed);
-        }
+        Requests.AnswerAllFrom(source, BullyEvents.RefusedFailed);
 
         SpawnWindows.Remove(source);
 
@@ -799,8 +779,6 @@ public static class BullyActions
     private static string NameOf(int serverId) => Native.GetPlayerName(Targets.Id(serverId));
 
     private sealed record Target(int Id, int Ped, Vector3 Position, int Bucket);
-
-    private sealed record PendingEffect(int Target, TaskCompletionSource<string> Outcome);
 
     private sealed record MugRound(long ExpiresAt, HashSet<int> Victims);
 

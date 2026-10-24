@@ -79,19 +79,14 @@ public static class OnlinePlayerActions
 
     private static readonly HashSet<int> Connected = [];
 
-    private static readonly Dictionary<int, PendingMessage> Unacknowledged = [];
+    private static readonly ClientRequests<bool> Messages = new("OnlinePlayers", "message");
 
-    private static readonly Dictionary<int, PendingWanted> UnansweredWanted = [];
+    private static readonly ClientRequests<int> WantedLevels = new("OnlinePlayers", "wanted level request");
 
-    private static readonly Dictionary<int, PendingStatus> UnansweredStatus = [];
+    private static readonly ClientRequests<(bool Player, bool Vehicle)> GodModes =
+        new("OnlinePlayers", "god mode request");
 
     private static int _revision;
-
-    private static int _lastMessageId;
-
-    private static int _lastWantedId;
-
-    private static int _lastStatusId;
 
     private static readonly ActionRateLimit Limit = new(
         "online players",
@@ -383,40 +378,18 @@ public static class OnlinePlayerActions
             return ActionResponse.NotReady();
         }
 
-        var requestId = ++_lastWantedId;
-        var answered = new TaskCompletionSource<int>();
-
-        UnansweredWanted[requestId] = new PendingWanted(target, answered);
-
-        API.EmitClient(
+        var (answered, reached) = await WantedLevels.AskAsync(
             target,
-            PlayerEvents.SetWantedLevel,
-            requestId.ToString(CultureInfo.InvariantCulture),
-            stars.ToString(CultureInfo.InvariantCulture));
+            id => API.EmitClient(target, PlayerEvents.SetWantedLevel, id, stars.ToString(CultureInfo.InvariantCulture)),
+            AckTimeoutMs);
 
-        int reached;
-
-        try
+        if (!answered)
         {
-            var timeout = API.Delay(AckTimeoutMs);
+            Log.Warning(
+                $"[OnlinePlayers] {source.Name} set the wanted level of "
+                + $"{Native.GetPlayerName(target.ToString())}, which was never acknowledged.");
 
-            if (await Task.WhenAny(answered.Task, timeout) == timeout)
-            {
-                Log.Warning(
-                    $"[OnlinePlayers] {source.Name} set the wanted level of "
-                    + $"{Native.GetPlayerName(target.ToString())}, which was never acknowledged.");
-
-                return ActionResponse.NotReady();
-            }
-
-            reached = answered.Task.Result;
-        }
-        finally
-        {
-            UnansweredWanted.Remove(requestId);
-
-            // Back onto the thread the reply has to go out on, the awaits above having left it.
-            await API.Delay(0);
+            return ActionResponse.NotReady();
         }
 
         var landed = reached == stars ? "which stuck." : $"which landed on {reached}.";
@@ -430,25 +403,10 @@ public static class OnlinePlayerActions
 
     private static void OnWantedLevelAcknowledged([FromSource] Player source, string requestId, string reached)
     {
-        if (!ActionArgs.TryInt(requestId, out var id)
-            || !UnansweredWanted.TryGetValue(id, out var pending))
+        if (ActionArgs.TryInt(reached, out var level))
         {
-            return;
+            WantedLevels.TryAnswer(source, requestId, Math.Clamp(level, 0, MaxWantedLevel));
         }
-
-        if (pending.Target != source.Handle)
-        {
-            Log.Warning($"[OnlinePlayers] {source.Name} answered wanted level request {id}, which was not theirs. Ignored.");
-
-            return;
-        }
-
-        if (!ActionArgs.TryInt(reached, out var level))
-        {
-            return;
-        }
-
-        pending.Answered.TrySetResult(Math.Clamp(level, 0, MaxWantedLevel));
     }
 
     private static ActionResponse Kick(Player source, string[] args)
@@ -739,8 +697,6 @@ public static class OnlinePlayerActions
             return ActionResponse.NotReady();
         }
 
-        var messageId = ++_lastMessageId;
-        var delivered = new TaskCompletionSource<bool>();
         var message = args[1].Trim();
 
         // Only the client prompt enforces the limit, and this text is copied to staff and the webhooks.
@@ -750,36 +706,20 @@ public static class OnlinePlayerActions
         }
 
         var targetName = Native.GetPlayerName(target.ToString(CultureInfo.InvariantCulture));
-        var acknowledged = true;
 
-        Unacknowledged[messageId] = new PendingMessage(target, delivered);
-
-        API.EmitClient(
+        var (acknowledged, _) = await Messages.AskAsync(
             target,
-            PlayerEvents.Message,
-            messageId.ToString(CultureInfo.InvariantCulture),
-            source.Name,
-            message);
-
-        PrivateMessageCopies.Send(source, target, targetName, message);
-
-        try
-        {
-            var timeout = API.Delay(AckTimeoutMs);
-
-            if (await Task.WhenAny(delivered.Task, timeout) == timeout)
+            id =>
             {
-                Log.Warning($"[OnlinePlayers] {source.Name}'s message to {targetName} was never acknowledged.");
+                API.EmitClient(target, PlayerEvents.Message, id, source.Name, message);
 
-                acknowledged = false;
-            }
-        }
-        finally
+                PrivateMessageCopies.Send(source, target, targetName, message);
+            },
+            AckTimeoutMs);
+
+        if (!acknowledged)
         {
-            Unacknowledged.Remove(messageId);
-
-            // Back onto the thread the reply has to go out on, the awaits above having left it.
-            await API.Delay(0);
+            Log.Warning($"[OnlinePlayers] {source.Name}'s message to {targetName} was never acknowledged.");
         }
 
         PrivateMessageCopies.Record(source, target, targetName, message, acknowledged);
@@ -789,27 +729,8 @@ public static class OnlinePlayerActions
 
     // A named method rather than a lambda, so the binder finds FromSourceAttribute on it. Without that
     // the Player binds to wire argument 0 and the id shifts by one.
-    private static void OnMessageAcknowledged([FromSource] Player source, string messageId)
-    {
-        if (!ActionArgs.TryInt(messageId, out var id)
-            || !Unacknowledged.TryGetValue(id, out var pending))
-        {
-            // Either it already timed out, or somebody is making them up. Neither is worth a log line.
-            return;
-        }
-
-        // Only the player it was sent to can say it arrived, otherwise anyone could confirm delivery of a
-        // message they never received.
-        if (pending.Target != source.Handle)
-        {
-            Log.Warning($"[OnlinePlayers] {source.Name} acknowledged message {id}, which was sent to {Native.GetPlayerName(pending.Target.ToString
-                ())}. Ignored.");
-
-            return;
-        }
-
-        pending.Delivered.TrySetResult(true);
-    }
+    private static void OnMessageAcknowledged([FromSource] Player source, string messageId) =>
+        Messages.TryAnswer(source, messageId, true);
 
     private static ActionResponse DeleteVehicle(Player source, string[] args)
     {
@@ -929,30 +850,10 @@ public static class OnlinePlayerActions
             return ActionResponse.NotReady();
         }
 
-        var requestId = ++_lastStatusId;
-        var answered = new TaskCompletionSource<(bool Player, bool Vehicle)>();
-
-        UnansweredStatus[requestId] = new PendingStatus(target, answered);
-
-        API.EmitClient(target, PlayerEvents.GetGodMode, requestId.ToString(CultureInfo.InvariantCulture));
-
-        (bool Player, bool Vehicle) reported;
-        bool answerable;
-
-        try
-        {
-            var timeout = API.Delay(AckTimeoutMs);
-
-            answerable = await Task.WhenAny(answered.Task, timeout) != timeout;
-
-            reported = answerable ? answered.Task.Result : default;
-        }
-        finally
-        {
-            UnansweredStatus.Remove(requestId);
-
-            await API.Delay(0);
-        }
+        var (answerable, reported) = await GodModes.AskAsync(
+            target,
+            id => API.EmitClient(target, PlayerEvents.GetGodMode, id),
+            AckTimeoutMs);
 
         if (!answerable)
         {
@@ -977,23 +878,8 @@ public static class OnlinePlayerActions
             vehicleGod ? StatusOn : StatusOff);
     }
 
-    private static void OnGodModeAcknowledged([FromSource] Player source, string requestId, bool playerGod, bool vehicleGod)
-    {
-        if (!ActionArgs.TryInt(requestId, out var id)
-            || !UnansweredStatus.TryGetValue(id, out var pending))
-        {
-            return;
-        }
-
-        if (pending.Target != source.Handle)
-        {
-            Log.Warning($"[OnlinePlayers] {source.Name} answered god mode request {id}, which was not theirs. Ignored.");
-
-            return;
-        }
-
-        pending.Answered.TrySetResult((playerGod, vehicleGod));
-    }
+    private static void OnGodModeAcknowledged([FromSource] Player source, string requestId, bool playerGod, bool vehicleGod) =>
+        GodModes.TryAnswer(source, requestId, (playerGod, vehicleGod));
 
     private static ActionResponse RefreshPermissions(Player source, string[] args)
     {
@@ -1008,27 +894,6 @@ public static class OnlinePlayerActions
         }
 
         return ActionResponse.Ok();
-    }
-
-    private sealed class PendingMessage(int target, TaskCompletionSource<bool> delivered)
-    {
-        public int Target { get; } = target;
-
-        public TaskCompletionSource<bool> Delivered { get; } = delivered;
-    }
-
-    private sealed class PendingWanted(int target, TaskCompletionSource<int> answered)
-    {
-        public int Target { get; } = target;
-
-        public TaskCompletionSource<int> Answered { get; } = answered;
-    }
-
-    private sealed class PendingStatus(int target, TaskCompletionSource<(bool Player, bool Vehicle)> answered)
-    {
-        public int Target { get; } = target;
-
-        public TaskCompletionSource<(bool Player, bool Vehicle)> Answered { get; } = answered;
     }
 
     // Compared as a set rather than counted, so one player leaving as another joins still registers.

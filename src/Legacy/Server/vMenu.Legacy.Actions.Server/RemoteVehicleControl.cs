@@ -18,9 +18,7 @@ public static class RemoteVehicleControl
 {
     private const int MaxCandidates = 3;
 
-    private static readonly Dictionary<int, PendingPerform> Unanswered = [];
-
-    private static int _lastRequestId;
+    private static readonly ClientRequests<string> Performs = new("PersonalVehicle", "request");
 
     private static bool _registered;
 
@@ -91,31 +89,18 @@ public static class RemoteVehicleControl
 
     private static async Task<string> AskAsync(int target, int networkId, string action, string[] args, int timeoutMs)
     {
-        var requestId = ++_lastRequestId;
-        var answered = new TaskCompletionSource<string>();
-
-        Unanswered[requestId] = new PendingPerform(target, answered);
-
-        Script.TriggerClientEvent(
+        var (answered, outcome) = await Performs.AskAsync(
             target,
-            PersonalVehicleEvents.Perform,
-            requestId.ToString(CultureInfo.InvariantCulture),
-            networkId.ToString(CultureInfo.InvariantCulture),
-            action,
-            args);
+            id => Script.TriggerClientEvent(
+                target,
+                PersonalVehicleEvents.Perform,
+                id,
+                networkId.ToString(CultureInfo.InvariantCulture),
+                action,
+                args),
+            timeoutMs);
 
-        try
-        {
-            var timeout = BaseScript.Delay(timeoutMs);
-
-            return await Task.WhenAny(answered.Task, timeout) != timeout ? answered.Task.Result : RemoteVehicleAction.Failed;
-        }
-        finally
-        {
-            Unanswered.Remove(requestId);
-
-            await BaseScript.Delay(0);
-        }
+        return answered && outcome is not null ? outcome : RemoteVehicleAction.Failed;
     }
 
     private static List<int> Candidates(int preferred, int entity)
@@ -173,28 +158,6 @@ public static class RemoteVehicleControl
     private static int ByDistance((int ServerId, float DistanceSquared) left, (int ServerId, float DistanceSquared) right) =>
         left.DistanceSquared.CompareTo(right.DistanceSquared);
 
-    private static void OnPerformed([FromSource] Player source, string requestId, string outcome)
-    {
-        if (!ActionArgs.TryInt(requestId, out var id)
-            || !Unanswered.TryGetValue(id, out var pending))
-        {
-            return;
-        }
-
-        if (pending.Target != source.ServerId())
-        {
-            Log.Warning($"[PersonalVehicle] {source.Name} answered request {id}, which was not theirs. Ignored.");
-
-            return;
-        }
-
-        pending.Answered.TrySetResult(outcome ?? RemoteVehicleAction.Failed);
-    }
-
-    private sealed class PendingPerform(int target, TaskCompletionSource<string> answered)
-    {
-        public int Target { get; } = target;
-
-        public TaskCompletionSource<string> Answered { get; } = answered;
-    }
+    private static void OnPerformed([FromSource] Player source, string requestId, string outcome) =>
+        Performs.TryAnswer(source, requestId, outcome ?? RemoteVehicleAction.Failed);
 }

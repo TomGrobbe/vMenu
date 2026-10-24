@@ -18,9 +18,7 @@ public static class RemotePlayerStatus
 {
     private const int AnswerTimeoutMs = 3000;
 
-    private static readonly Dictionary<int, PendingReport> Unanswered = [];
-
-    private static int _lastRequestId;
+    private static readonly ClientRequests<ClientReport> Reports = new();
 
     private static bool _registered;
 
@@ -39,30 +37,10 @@ public static class RemotePlayerStatus
     // Must start on the tick thread. Returns the status as JSON.
     public static async Task<string> CaptureAsync(int target, int ped)
     {
-        var requestId = ++_lastRequestId;
-        var answered = new TaskCompletionSource<ClientReport>();
-
-        Unanswered[requestId] = new PendingReport(target, answered);
-
-        Script.TriggerClientEvent(target, PlayerEvents.GetStatusReport, requestId.ToString(CultureInfo.InvariantCulture));
-
-        ClientReport? report = null;
-
-        try
-        {
-            var timeout = BaseScript.Delay(AnswerTimeoutMs);
-
-            if (await Task.WhenAny(answered.Task, timeout) != timeout)
-            {
-                report = answered.Task.Result;
-            }
-        }
-        finally
-        {
-            Unanswered.Remove(requestId);
-
-            await BaseScript.Delay(0);
-        }
+        var (_, report) = await Reports.AskAsync(
+            target,
+            id => Script.TriggerClientEvent(target, PlayerEvents.GetStatusReport, id),
+            AnswerTimeoutMs);
 
         return ServerJson.Serialize(Build(target, ped, report));
     }
@@ -125,26 +103,13 @@ public static class RemotePlayerStatus
         bool vehicleGod,
         string vehicleName,
         string vehicleModel,
-        string weapon)
-    {
-        if (!ActionArgs.TryInt(requestId, out var id)
-            || !Unanswered.TryGetValue(id, out var pending)
-            || pending.Target != source.ServerId())
-        {
-            return;
-        }
-
-        pending.Answered.TrySetResult(new ClientReport(playerGod, vehicleGod, vehicleName, vehicleModel, weapon));
-    }
+        string weapon) =>
+        Reports.TryAnswer(
+            source,
+            requestId,
+            new ClientReport(playerGod, vehicleGod, vehicleName, vehicleModel, weapon));
 
     private sealed record ClientReport(bool PlayerGod, bool VehicleGod, string VehicleName, string VehicleModel, string Weapon);
-
-    private sealed class PendingReport(int target, TaskCompletionSource<ClientReport> answered)
-    {
-        public int Target { get; } = target;
-
-        public TaskCompletionSource<ClientReport> Answered { get; } = answered;
-    }
 
     private sealed class StatusResponse
     {
