@@ -3,6 +3,7 @@
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
+    <Flavor>Enhanced</Flavor>
     <ResourceRoot>$(RepoRoot)build\enhanced\vMenu.Enhanced\</ResourceRoot>
     <IntermediateRoot>$(RepoRoot)build\intermediate\enhanced\</IntermediateRoot>
   </PropertyGroup>

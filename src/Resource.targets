@@ -148,7 +148,7 @@
       <Output TaskParameter="Lines" ItemName="TranslationCoverageLine" />
     </ReadLinesFromFile>
 
-    <Message Importance="high" Text="Translations: %(TranslationCoverageLine.Identity)" />
+    <Message Importance="high" Text="Translations ($(Flavor)): %(TranslationCoverageLine.Identity)" />
   </Target>
 
   <!--

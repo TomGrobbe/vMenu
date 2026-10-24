@@ -3,6 +3,7 @@
 
   <PropertyGroup>
     <TargetFramework>net462</TargetFramework>
+    <Flavor>Legacy</Flavor>
     <Nullable>annotations</Nullable>
     <ResourceRoot>$(RepoRoot)build\legacy\vMenu.Enhanced\</ResourceRoot>
     <IntermediateRoot>$(RepoRoot)build\intermediate\legacy\</IntermediateRoot>

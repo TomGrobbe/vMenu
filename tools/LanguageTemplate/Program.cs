@@ -263,8 +263,8 @@ static int Check(string[] args)
     }
 }
 
-// Reflection over the built assembly rather than parsing EnglishStrings.cs: the keys there are Loc
-// constants, so the source text alone does not say what any of them resolve to.
+// Reflection over the built assembly rather than parsing the source: the English table is generated at
+// build time from the [English] attributes on the Loc constants, so only the built table holds every key.
 static SortedDictionary<string, string> EnglishStrings(string clientFolder)
 {
     clientFolder = Path.GetFullPath(clientFolder);

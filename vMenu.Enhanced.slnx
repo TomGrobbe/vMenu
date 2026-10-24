@@ -129,6 +129,7 @@
     </Project>
     <Project Path="tools/LanguageTemplate/LanguageTemplate.csproj" />
     <Project Path="tools/LegacyChecks/LegacyChecks.csproj" />
+    <Project Path="tools/vMenu.Enhanced.Localization.Generator/vMenu.Enhanced.Localization.Generator.csproj" />
     <Project Path="tools/vMenu.Enhanced.NativeHooks.Generator/vMenu.Enhanced.NativeHooks.Generator.csproj" />
   </Folder>
 </Solution>
