@@ -1,6 +1,8 @@
 using CitizenFX.FiveM.Client;
 using CitizenFX.FiveM.Shared;
 
+using MenuAPI;
+
 namespace vMenu.Enhanced.Menus.Players.Character;
 
 internal static class CharacterCameraKeyBinding
@@ -14,6 +16,10 @@ internal static class CharacterCameraKeyBinding
     internal static int KeyboardControl { get; } = BindingControl(Command);
 
     internal static int ControllerControl { get; } = BindingControl(KeyMapping.Pad(Command));
+
+    internal static int UnboundControl { get; } = BindingControl($"{Command}:unbound");
+
+    internal static Control ControllerDefault => Control.FrontendRb;
 
     private static bool _registered;
 

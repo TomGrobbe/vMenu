@@ -474,10 +474,6 @@ public static class CharacterCamera
         var low = keyboard ? Control.ParachuteBrakeLeft : Control.Aim;
         var high = keyboard ? Control.ParachuteBrakeRight : Control.Attack;
 
-        var auto = keyboard
-            ? CharacterCameraKeyBinding.KeyboardControl
-            : CharacterCameraKeyBinding.ControllerControl;
-
         menu.CustomInstructionalButtons.Clear();
 
         menu.CustomInstructionalButtons.Add(new Menu.InstructionalButton(
@@ -500,10 +496,24 @@ public static class CharacterCamera
             localizer.Get(Loc.CharacterCreator.TurnCharacter)));
 
         menu.CustomInstructionalButtons.Add(new Menu.InstructionalButton(
-            Icon(auto),
+            AutoCameraIcon(keyboard),
             localizer.Get(AutoCameraDisabled
                 ? Loc.CharacterCreator.AutoCameraButtonOff
                 : Loc.CharacterCreator.AutoCameraButtonOn)));
+    }
+
+    private static string AutoCameraIcon(bool keyboard)
+    {
+        if (keyboard)
+        {
+            return Icon(CharacterCameraKeyBinding.KeyboardControl);
+        }
+
+        var icon = Icon(CharacterCameraKeyBinding.ControllerControl);
+
+        return icon == Icon(CharacterCameraKeyBinding.UnboundControl)
+            ? Icon((int)CharacterCameraKeyBinding.ControllerDefault)
+            : icon;
     }
 
     private static string Icon(int control) =>
