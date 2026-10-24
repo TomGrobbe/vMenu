@@ -40,10 +40,8 @@ internal static class RgbPicker
         // its own channel and the write needs all three.
         var current = target.Read() ?? new RgbValue(MaxChannel, MaxChannel, MaxChannel);
 
-        menu.Entries.Add(new ButtonEntry
+        menu.Entries.Add(new ButtonEntry(Loc.VehicleOptions.HexColor)
         {
-            Text = MenuText.Key(Loc.VehicleOptions.HexColor),
-            Description = MenuText.Key(Loc.VehicleOptions.HexColorDescription),
             OnSelectedAsync = _ => ApplyHexAsync(current, target),
         });
 
@@ -53,10 +51,8 @@ internal static class RgbPicker
 
         if (target.Clear is { } clear)
         {
-            menu.Entries.Add(new ButtonEntry
+            menu.Entries.Add(new ButtonEntry(Loc.VehicleOptions.ResetCustomColor)
             {
-                Text = MenuText.Key(Loc.VehicleOptions.ResetCustomColor),
-                Description = MenuText.Key(Loc.VehicleOptions.ResetCustomColorDescription),
                 OnSelected = _ => clear(),
             });
         }

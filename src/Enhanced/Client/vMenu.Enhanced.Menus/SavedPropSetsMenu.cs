@@ -81,10 +81,8 @@ public sealed class SavedPropSetsMenu : MenuDefinition
     {
         var rows = new List<MenuEntry>
         {
-            new ButtonEntry
+            new ButtonEntry(Loc.PropSpawner.SetsCreate)
             {
-                Text = MenuText.Key(Loc.PropSpawner.SetsCreate),
-                Description = MenuText.Key(Loc.PropSpawner.SetsCreateDescription),
                 Gate = PropSpawnerPermissions.SetsManage,
                 OnSelectedAsync = _ => CreateAsync(),
             },
@@ -94,10 +92,8 @@ public sealed class SavedPropSetsMenu : MenuDefinition
 
         if (sets.Count == 0)
         {
-            rows.Add(new ButtonEntry
+            rows.Add(new ButtonEntry(Loc.PropSpawner.SetsEmpty)
             {
-                Text = MenuText.Key(Loc.PropSpawner.SetsEmpty),
-                Description = MenuText.Key(Loc.PropSpawner.SetsEmptyDescription),
                 ReadEnabled = static () => false,
             });
 
@@ -134,50 +130,38 @@ public sealed class SavedPropSetsMenu : MenuDefinition
 
         return
         [
-            new ButtonEntry
+            new ButtonEntry(Loc.PropSpawner.SetsSpawn)
             {
-                Text = MenuText.Key(Loc.PropSpawner.SetsSpawn),
-                Description = MenuText.Key(Loc.PropSpawner.SetsSpawnDescription),
                 ReadEnabled = () => entry.Set.Props.Count > 0,
 
                 Configure = item => item.ItemData = SpawnRowMarker,
                 OnSelectedAsync = _ => SpawnAsync(entry),
             },
-            new ConfirmButtonEntry
+            new ConfirmButtonEntry(Loc.PropSpawner.SetsUnspawn)
             {
-                Text = MenuText.Key(Loc.PropSpawner.SetsUnspawn),
-                Description = MenuText.Key(Loc.PropSpawner.SetsUnspawnDescription),
                 ConfirmationDescription = MenuText.Key(Loc.PropSpawner.SetsUnspawnConfirm),
                 ReadEnabled = () => SpawnedProps.StandingFrom(entry.Set.Name) > 0,
                 OnConfirmed = _ => RemoveSpawned(entry),
             },
-            new ButtonEntry
+            new ButtonEntry(Loc.PropSpawner.SetsAddProp)
             {
-                Text = MenuText.Key(Loc.PropSpawner.SetsAddProp),
-                Description = MenuText.Key(Loc.PropSpawner.SetsAddPropDescription),
                 Gate = PropSpawnerPermissions.SetsManage,
                 OnSelectedAsync = _ => AddPropAsync(entry),
             },
-            new ButtonEntry
+            new ButtonEntry(Loc.PropSpawner.SetsRemoveList)
             {
-                Text = MenuText.Key(Loc.PropSpawner.SetsRemoveList),
-                Description = MenuText.Key(Loc.PropSpawner.SetsRemoveListDescription),
                 Label = MenuText.Literal("→"),
                 Gate = PropSpawnerPermissions.SetsManage,
                 ReadEnabled = () => entry.Set.Props.Count > 0,
                 OnSelected = _ => _removeMenu?.Open(),
             },
-            new ButtonEntry
+            new ButtonEntry(Loc.PropSpawner.SetsRename)
             {
-                Text = MenuText.Key(Loc.PropSpawner.SetsRename),
-                Description = MenuText.Key(Loc.PropSpawner.SetsRenameDescription),
                 Gate = PropSpawnerPermissions.SetsManage,
                 OnSelectedAsync = _ => RenameAsync(entry),
             },
-            new ConfirmButtonEntry
+            new ConfirmButtonEntry(Loc.PropSpawner.SetsDelete)
             {
-                Text = MenuText.Key(Loc.PropSpawner.SetsDelete),
-                Description = MenuText.Key(Loc.PropSpawner.SetsDeleteDescription),
                 ConfirmationDescription = MenuText.Key(Loc.PropSpawner.SetsDeleteConfirm),
                 Gate = PropSpawnerPermissions.SetsManage,
                 OnConfirmed = _ => Delete(entry),
@@ -196,10 +180,8 @@ public sealed class SavedPropSetsMenu : MenuDefinition
         {
             return
             [
-                new ButtonEntry
+                new ButtonEntry(Loc.PropSpawner.SetsNoProps)
                 {
-                    Text = MenuText.Key(Loc.PropSpawner.SetsNoProps),
-                    Description = MenuText.Key(Loc.PropSpawner.SetsNoPropsDescription),
                     ReadEnabled = static () => false,
                 },
             ];

@@ -48,19 +48,15 @@ internal static class OutfitPresetsMenu
 
         ClothingPresetSync.Changed += OnPresetsChanged;
 
-        menu.Entries.Add(new SubmenuEntry
+        menu.Entries.Add(new SubmenuEntry(Loc.CharacterCreator.ServerPresets)
         {
-            Text = MenuText.Key(Loc.CharacterCreator.ServerPresets),
-            Description = MenuText.Key(Loc.CharacterCreator.ServerPresetsDescription),
             MenuSubtitle = MenuText.Key(Loc.CharacterCreator.ServerPresetsSubtitle),
             Gate = CharacterCreatorPermissions.Presets,
             Build = BuildServerPresets,
         });
 
-        menu.Entries.Add(new SubmenuEntry
+        menu.Entries.Add(new SubmenuEntry(Loc.CharacterCreator.OnlineOutfits)
         {
-            Text = MenuText.Key(Loc.CharacterCreator.OnlineOutfits),
-            Description = MenuText.Key(Loc.CharacterCreator.OnlineOutfitsDescription),
             MenuSubtitle = MenuText.Key(Loc.CharacterCreator.OnlineOutfitsSubtitle),
             Gate = CharacterCreatorPermissions.OnlineOutfits,
             Build = BuildOnline,
@@ -93,10 +89,8 @@ internal static class OutfitPresetsMenu
     {
         var rows = new List<MenuEntry>
         {
-            new ButtonEntry
+            new ButtonEntry(Loc.CharacterCreator.CreatePresetCategory)
             {
-                Text = MenuText.Key(Loc.CharacterCreator.CreatePresetCategory),
-                Description = MenuText.Key(Loc.CharacterCreator.CreatePresetCategoryDescription),
                 Gate = CharacterCreatorPermissions.PresetsManage,
                 OnSelectedAsync = _ => CreateCategoryAsync(),
             },
@@ -124,11 +118,7 @@ internal static class OutfitPresetsMenu
 
         if (ClothingPresetSync.Categories.Count == 0)
         {
-            rows.Add(new ButtonEntry
-            {
-                Text = MenuText.Key(Loc.CharacterCreator.NoPresets),
-                Description = MenuText.Key(Loc.CharacterCreator.NoPresetsDescription),
-            });
+            rows.Add(new ButtonEntry(Loc.CharacterCreator.NoPresets));
         }
 
         return rows;
@@ -152,17 +142,13 @@ internal static class OutfitPresetsMenu
 
         var rows = new List<MenuEntry>
         {
-            new ButtonEntry
+            new ButtonEntry(Loc.CharacterCreator.SavePreset)
             {
-                Text = MenuText.Key(Loc.CharacterCreator.SavePreset),
-                Description = MenuText.Key(Loc.CharacterCreator.SavePresetDescription),
                 Gate = CharacterCreatorPermissions.PresetsManage,
                 OnSelectedAsync = _ => PublishAsync(category),
             },
-            new ConfirmButtonEntry
+            new ConfirmButtonEntry(Loc.CharacterCreator.DeletePresetCategory)
             {
-                Text = MenuText.Key(Loc.CharacterCreator.DeletePresetCategory),
-                Description = MenuText.Key(Loc.CharacterCreator.DeletePresetCategoryDescription),
                 ConfirmationDescription = MenuText.Key(
                     Loc.CharacterCreator.DeletePresetCategoryConfirm,
                     ("name", MenuText.Literal(category.Name))),
@@ -193,11 +179,7 @@ internal static class OutfitPresetsMenu
 
         if (category.Presets.Count == 0)
         {
-            rows.Add(new ButtonEntry
-            {
-                Text = MenuText.Key(Loc.CharacterCreator.NoPresets),
-                Description = MenuText.Key(Loc.CharacterCreator.NoPresetsDescription),
-            });
+            rows.Add(new ButtonEntry(Loc.CharacterCreator.NoPresets));
         }
 
         return rows;
@@ -215,10 +197,8 @@ internal static class OutfitPresetsMenu
             OnSelected = _ => Wear(preset),
         });
 
-        menu.Entries.Add(new ConfirmButtonEntry
+        menu.Entries.Add(new ConfirmButtonEntry(Loc.CharacterCreator.DeletePreset)
         {
-            Text = MenuText.Key(Loc.CharacterCreator.DeletePreset),
-            Description = MenuText.Key(Loc.CharacterCreator.DeletePresetDescription),
             ConfirmationDescription = MenuText.Key(Loc.CharacterCreator.DeletePresetConfirm, ("name", name)),
             Gate = CharacterCreatorPermissions.PresetsManage,
             OnConfirmedAsync = _ => RemovePresetAsync(category, preset),
@@ -270,11 +250,7 @@ internal static class OutfitPresetsMenu
         {
             return
             [
-                new ButtonEntry
-                {
-                    Text = MenuText.Key(Loc.CharacterCreator.OnlineLoading),
-                    Description = MenuText.Key(Loc.CharacterCreator.OnlineLoadingDescription),
-                },
+                new ButtonEntry(Loc.CharacterCreator.OnlineLoading),
             ];
         }
 
@@ -305,11 +281,7 @@ internal static class OutfitPresetsMenu
 
         if (rows.Count == 0)
         {
-            rows.Add(new ButtonEntry
-            {
-                Text = MenuText.Key(Loc.CharacterCreator.OnlineEmpty),
-                Description = MenuText.Key(Loc.CharacterCreator.OnlineEmptyDescription),
-            });
+            rows.Add(new ButtonEntry(Loc.CharacterCreator.OnlineEmpty));
         }
 
         return rows;
@@ -352,11 +324,7 @@ internal static class OutfitPresetsMenu
 
         if (rows.Count == 0)
         {
-            rows.Add(new ButtonEntry
-            {
-                Text = MenuText.Key(Loc.CharacterCreator.OnlineEmpty),
-                Description = MenuText.Key(Loc.CharacterCreator.OnlineEmptyDescription),
-            });
+            rows.Add(new ButtonEntry(Loc.CharacterCreator.OnlineEmpty));
         }
 
         return rows;

@@ -9,49 +9,39 @@ internal static class HandlingSection
 {
     public static void Build(MenuBuilder menu)
     {
-        menu.Entries.Add(new ListEntry
-        {
-            Text = MenuText.Key(Loc.VehicleOptions.SpeedLimiter),
-            Description = MenuText.Key(Loc.VehicleOptions.SpeedLimiterDescription),
-            Gate = VehicleOptionsPermissions.SpeedLimiter,
-            Options =
+        menu.Entries.Add(new ListEntry(
+            Loc.VehicleOptions.SpeedLimiter,
             [
                 MenuText.Key(Loc.VehicleOptions.SpeedLimiterSet),
                 MenuText.Key(Loc.VehicleOptions.SpeedLimiterReset),
                 MenuText.Key(Loc.VehicleOptions.SpeedLimiterCustom),
-            ],
+            ])
+        {
+            Gate = VehicleOptionsPermissions.SpeedLimiter,
             OnSelected = selected => VehicleSpeedLimiter.Apply(selected.SelectedIndex),
         });
 
-        menu.Entries.Add(new CheckboxEntry
+        menu.Entries.Add(new CheckboxEntry(Loc.VehicleOptions.Freeze)
         {
-            Text = MenuText.Key(Loc.VehicleOptions.Freeze),
-            Description = MenuText.Key(Loc.VehicleOptions.FreezeDescription),
             Gate = VehicleOptionsPermissions.Freeze,
             ReadState = () => VehicleFreeze.Enabled,
             OnChanged = changed => VehicleFreeze.SetEnabled(changed.Checked),
         });
 
-        menu.Entries.Add(new ButtonEntry
+        menu.Entries.Add(new ButtonEntry(Loc.VehicleOptions.Flip)
         {
-            Text = MenuText.Key(Loc.VehicleOptions.Flip),
-            Description = MenuText.Key(Loc.VehicleOptions.FlipDescription),
             Gate = VehicleOptionsPermissions.Flip,
             OnSelected = _ => VehicleFlip.FlipCurrent(),
         });
 
-        menu.Entries.Add(new ButtonEntry
+        menu.Entries.Add(new ButtonEntry(Loc.VehicleOptions.Visibility)
         {
-            Text = MenuText.Key(Loc.VehicleOptions.Visibility),
-            Description = MenuText.Key(Loc.VehicleOptions.VisibilityDescription),
             Gate = VehicleOptionsPermissions.Invisible,
             OnSelected = _ => VehicleVisibility.Toggle(),
         });
 
-        menu.Entries.Add(new ButtonEntry
+        menu.Entries.Add(new ButtonEntry(Loc.VehicleOptions.Alarm)
         {
-            Text = MenuText.Key(Loc.VehicleOptions.Alarm),
-            Description = MenuText.Key(Loc.VehicleOptions.AlarmDescription),
             Gate = VehicleOptionsPermissions.Alarm,
             OnSelected = _ => VehicleAlarm.Toggle(),
         });

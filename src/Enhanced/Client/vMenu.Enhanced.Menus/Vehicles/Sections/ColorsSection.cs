@@ -59,17 +59,13 @@ internal static class ColorsSection
 
         var rows = new List<MenuEntry>
         {
-            new SubmenuEntry
+            new SubmenuEntry(Loc.VehicleOptions.PrimaryColor)
             {
-                Text = MenuText.Key(Loc.VehicleOptions.PrimaryColor),
-                Description = MenuText.Key(Loc.VehicleOptions.PrimaryColorDescription),
                 MenuSubtitle = MenuText.Key(Loc.VehicleOptions.PrimaryColor),
                 Build = menu => BuildSlot(menu, primary: true),
             },
-            new SubmenuEntry
+            new SubmenuEntry(Loc.VehicleOptions.SecondaryColor)
             {
-                Text = MenuText.Key(Loc.VehicleOptions.SecondaryColor),
-                Description = MenuText.Key(Loc.VehicleOptions.SecondaryColorDescription),
                 MenuSubtitle = MenuText.Key(Loc.VehicleOptions.SecondaryColor),
                 Build = menu => BuildSlot(menu, primary: false),
             },
@@ -108,12 +104,8 @@ internal static class ColorsSection
             rows.Add(CombinationRow(combinations));
         }
 
-        rows.Add(new SliderEntry
+        rows.Add(new SliderEntry(Loc.VehicleOptions.PaintFade, 0, FadeSteps)
         {
-            Text = MenuText.Key(Loc.VehicleOptions.PaintFade),
-            Description = MenuText.Key(Loc.VehicleOptions.PaintFadeDescription),
-            Min = 0,
-            Max = FadeSteps,
             ShowDivider = true,
             ReadPosition = () => SectionRows.Driven() is { } current
                 ? Math.Clamp((int)Math.Round(Native.GetVehicleEnveffScale(current) * FadeSteps), 0, FadeSteps)
@@ -187,10 +179,8 @@ internal static class ColorsSection
             description,
             BodySwatches(VehicleColorTables.Worn, primary)));
 
-        rows.Add(new SubmenuEntry
+        rows.Add(new SubmenuEntry(Loc.VehicleOptions.CustomColor)
         {
-            Text = MenuText.Key(Loc.VehicleOptions.CustomColor),
-            Description = MenuText.Key(Loc.VehicleOptions.CustomColorDescription),
             MenuSubtitle = MenuText.Key(primary ? Loc.VehicleOptions.PrimaryColor : Loc.VehicleOptions.SecondaryColor),
             Build = rgb => RgbPicker.Build(rgb, primary ? PrimaryRgb() : SecondaryRgb()),
         });
@@ -434,11 +424,8 @@ internal static class ColorsSection
                 ("number", MenuText.Literal(number))));
         }
 
-        return new ListEntry
+        return new ListEntry(Loc.VehicleOptions.PresetCombination, options)
         {
-            Text = MenuText.Key(Loc.VehicleOptions.PresetCombination),
-            Description = MenuText.Key(Loc.VehicleOptions.PresetCombinationDescription),
-            Options = options,
             ReadSelectedIndex = () => SectionRows.Driven() is { } handle
                 ? Math.Clamp(Native.GetVehicleColourCombination(handle), 0, combinations - 1)
                 : 0,

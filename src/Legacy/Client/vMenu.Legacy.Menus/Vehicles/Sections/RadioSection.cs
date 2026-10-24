@@ -27,10 +27,8 @@ internal static class RadioSection
 
         return
         [
-            new CheckboxEntry
+            new CheckboxEntry(Loc.VehicleOptions.RadioDefaultEnabled)
             {
-                Text = MenuText.Key(Loc.VehicleOptions.RadioDefaultEnabled),
-                Description = MenuText.Key(Loc.VehicleOptions.RadioDefaultEnabledDescription),
                 ReadState = () => VehicleRadio.DefaultEnabled,
                 OnChanged = changed =>
                 {
@@ -39,20 +37,15 @@ internal static class RadioSection
                     MenuRegistry.Refresh(changed.Menu);
                 },
             },
-            new ListEntry
+            new ListEntry(Loc.VehicleOptions.RadioDefaultStation, options)
             {
-                Text = MenuText.Key(Loc.VehicleOptions.RadioDefaultStation),
-                Description = MenuText.Key(Loc.VehicleOptions.RadioDefaultStationDescription),
                 LockedDescription = MenuText.Key(Loc.VehicleOptions.RadioDefaultStationLocked),
                 Gate = MenuGate.When(static () => VehicleRadio.DefaultEnabled),
-                Options = options,
                 ReadSelectedIndex = () => Math.Max(IndexOf(stations, VehicleRadio.DefaultStation), 0),
                 OnIndexChanged = changed => VehicleRadio.SetDefaultStation(stations[changed.NewIndex]),
             },
-            new SubmenuEntry
+            new SubmenuEntry(Loc.VehicleOptions.RadioBlocked)
             {
-                Text = MenuText.Key(Loc.VehicleOptions.RadioBlocked),
-                Description = MenuText.Key(Loc.VehicleOptions.RadioBlockedDescription),
                 MenuTitle = MenuText.Key(Loc.VehicleOptions.Title),
                 MenuSubtitle = MenuText.Key(Loc.VehicleOptions.RadioBlockedSubtitle),
                 Build = RadioStationsSection.Build,

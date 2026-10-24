@@ -11,53 +11,44 @@ internal static class GodModeSection
     {
         menu.Entries.Add(Row(
             Loc.VehicleOptions.GodInvincible,
-            Loc.VehicleOptions.GodInvincibleDescription,
             static () => VehicleGodMode.Invincible,
             VehicleGodMode.SetInvincible));
 
         menu.Entries.Add(Row(
             Loc.VehicleOptions.GodEngine,
-            Loc.VehicleOptions.GodEngineDescription,
             static () => VehicleGodMode.ProtectEngine,
             VehicleGodMode.SetProtectEngine));
 
         menu.Entries.Add(Row(
             Loc.VehicleOptions.GodVisual,
-            Loc.VehicleOptions.GodVisualDescription,
             static () => VehicleGodMode.PreventVisualDamage,
             VehicleGodMode.SetPreventVisualDamage));
 
         menu.Entries.Add(Row(
             Loc.VehicleOptions.GodStrongWheels,
-            Loc.VehicleOptions.GodStrongWheelsDescription,
             static () => VehicleGodMode.StrongWheels,
             VehicleGodMode.SetStrongWheels));
 
         menu.Entries.Add(Row(
             Loc.VehicleOptions.GodBulletproofTyres,
-            Loc.VehicleOptions.GodBulletproofTyresDescription,
             static () => VehicleGodMode.BulletproofTyres,
             VehicleGodMode.SetBulletproofTyres));
 
         menu.Entries.Add(Row(
             Loc.VehicleOptions.GodRamp,
-            Loc.VehicleOptions.GodRampDescription,
             static () => VehicleGodMode.PreventRampDamage,
             VehicleGodMode.SetPreventRampDamage));
 
         menu.Entries.Add(Row(
             Loc.VehicleOptions.GodAutoRepair,
-            Loc.VehicleOptions.GodAutoRepairDescription,
             static () => VehicleGodMode.AutoRepair,
             VehicleGodMode.SetAutoRepair));
     }
 
     // No gate on the rows: the entry that opens this menu carries the one permission covering the lot.
-    private static CheckboxEntry Row(string textKey, string descriptionKey, Func<bool> read, Action<bool> write) =>
-        new()
+    private static CheckboxEntry Row(string textKey, Func<bool> read, Action<bool> write) =>
+        new(textKey)
         {
-            Text = MenuText.Key(textKey),
-            Description = MenuText.Key(descriptionKey),
             ReadState = read,
             OnChanged = changed => write(changed.Checked),
         };

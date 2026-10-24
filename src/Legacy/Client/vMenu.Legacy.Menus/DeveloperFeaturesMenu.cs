@@ -35,50 +35,38 @@ public sealed class DeveloperFeaturesMenu : MenuDefinition
 
     protected override void Build(MenuBuilder menu)
     {
-        menu.Entries.Add(new CheckboxEntry
+        menu.Entries.Add(new CheckboxEntry(Loc.DeveloperFeatures.VehicleDimensions)
         {
-            Text = MenuText.Key(Loc.DeveloperFeatures.VehicleDimensions),
-            Description = MenuText.Key(Loc.DeveloperFeatures.VehicleDimensionsDescription),
             ReadState = () => DeveloperFeaturesState.ShowVehicleDimensions,
             OnChanged = changed => DeveloperFeaturesState.ShowVehicleDimensions = changed.Checked,
         });
 
-        menu.Entries.Add(new CheckboxEntry
+        menu.Entries.Add(new CheckboxEntry(Loc.DeveloperFeatures.PropDimensions)
         {
-            Text = MenuText.Key(Loc.DeveloperFeatures.PropDimensions),
-            Description = MenuText.Key(Loc.DeveloperFeatures.PropDimensionsDescription),
             ReadState = () => DeveloperFeaturesState.ShowPropDimensions,
             OnChanged = changed => DeveloperFeaturesState.ShowPropDimensions = changed.Checked,
         });
 
-        menu.Entries.Add(new CheckboxEntry
+        menu.Entries.Add(new CheckboxEntry(Loc.DeveloperFeatures.PedDimensions)
         {
-            Text = MenuText.Key(Loc.DeveloperFeatures.PedDimensions),
-            Description = MenuText.Key(Loc.DeveloperFeatures.PedDimensionsDescription),
             ReadState = () => DeveloperFeaturesState.ShowPedDimensions,
             OnChanged = changed => DeveloperFeaturesState.ShowPedDimensions = changed.Checked,
         });
 
-        menu.Entries.Add(new CheckboxEntry
+        menu.Entries.Add(new CheckboxEntry(Loc.DeveloperFeatures.EntityHandles)
         {
-            Text = MenuText.Key(Loc.DeveloperFeatures.EntityHandles),
-            Description = MenuText.Key(Loc.DeveloperFeatures.EntityHandlesDescription),
             ReadState = () => DeveloperFeaturesState.ShowEntityHandles,
             OnChanged = changed => DeveloperFeaturesState.ShowEntityHandles = changed.Checked,
         });
 
-        menu.Entries.Add(new CheckboxEntry
+        menu.Entries.Add(new CheckboxEntry(Loc.DeveloperFeatures.EntityModels)
         {
-            Text = MenuText.Key(Loc.DeveloperFeatures.EntityModels),
-            Description = MenuText.Key(Loc.DeveloperFeatures.EntityModelsDescription),
             ReadState = () => DeveloperFeaturesState.ShowEntityModels,
             OnChanged = changed => DeveloperFeaturesState.ShowEntityModels = changed.Checked,
         });
 
-        menu.Entries.Add(new CheckboxEntry
+        menu.Entries.Add(new CheckboxEntry(Loc.DeveloperFeatures.NetworkOwners)
         {
-            Text = MenuText.Key(Loc.DeveloperFeatures.NetworkOwners),
-            Description = MenuText.Key(Loc.DeveloperFeatures.NetworkOwnersDescription),
             ReadState = () => DeveloperFeaturesState.ShowNetworkOwners,
             OnChanged = changed => DeveloperFeaturesState.ShowNetworkOwners = changed.Checked,
         });
@@ -116,20 +104,16 @@ public sealed class DeveloperFeaturesMenu : MenuDefinition
 
         // Sits in this menu for convenience only. It answers to neither the gate above nor a permission, so
         // its state is read live: the toggle command can flip it while the menu is open.
-        menu.Entries.Add(new CheckboxEntry
+        menu.Entries.Add(new CheckboxEntry(Loc.DeveloperFeatures.TicksOverlay)
         {
-            Text = MenuText.Key(Loc.DeveloperFeatures.TicksOverlay),
-            Description = MenuText.Key(Loc.DeveloperFeatures.TicksOverlayDescription),
             ReadState = () => TickOverlay.Visible,
             OnChanged = changed => TickOverlay.Set(changed.Checked),
         });
 
         // Here for convenience too, and read live for the same reason: its own command can flip it while
         // this menu is open.
-        menu.Entries.Add(new CheckboxEntry
+        menu.Entries.Add(new CheckboxEntry(Loc.DeveloperFeatures.PointingProbe)
         {
-            Text = MenuText.Key(Loc.DeveloperFeatures.PointingProbe),
-            Description = MenuText.Key(Loc.DeveloperFeatures.PointingProbeDescription),
             ReadState = () => FingerPointing.DebugVisible,
             OnChanged = changed => FingerPointing.SetDebug(changed.Checked),
         });

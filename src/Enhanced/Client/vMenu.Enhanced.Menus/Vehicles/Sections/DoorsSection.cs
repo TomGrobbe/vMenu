@@ -51,26 +51,20 @@ internal static class DoorsSection
             return SectionRows.BlockedOnly();
         }
 
-        rows.Add(new ButtonEntry
+        rows.Add(new ButtonEntry(Loc.VehicleOptions.OpenAllDoors)
         {
-            Text = MenuText.Key(Loc.VehicleOptions.OpenAllDoors),
-            Description = MenuText.Key(Loc.VehicleOptions.OpenAllDoorsDescription),
             OnSelected = _ => SetAll(menu, present, open: true),
         });
 
-        rows.Add(new ButtonEntry
+        rows.Add(new ButtonEntry(Loc.VehicleOptions.CloseAllDoors)
         {
-            Text = MenuText.Key(Loc.VehicleOptions.CloseAllDoors),
-            Description = MenuText.Key(Loc.VehicleOptions.CloseAllDoorsDescription),
             OnSelected = _ => SetAll(menu, present, open: false),
         });
 
         rows.Add(RemoveDoorRow(present));
 
-        rows.Add(new CheckboxEntry
+        rows.Add(new CheckboxEntry(Loc.VehicleOptions.DeleteRemovedDoors)
         {
-            Text = MenuText.Key(Loc.VehicleOptions.DeleteRemovedDoors),
-            Description = MenuText.Key(Loc.VehicleOptions.DeleteRemovedDoorsDescription),
             ReadState = () => UserDefaults.VehicleDeleteRemovedDoors.Value,
             OnChanged = changed => UserDefaults.VehicleDeleteRemovedDoors.Value = changed.Checked,
         });
@@ -115,14 +109,11 @@ internal static class DoorsSection
 
         var picked = 0;
 
-        return new ConfirmListEntry
+        return new ConfirmListEntry(Loc.VehicleOptions.RemoveDoor, options)
         {
-            Text = MenuText.Key(Loc.VehicleOptions.RemoveDoor),
-            Description = MenuText.Key(Loc.VehicleOptions.RemoveDoorDescription),
             ConfirmationDescription = MenuText.Key(
                 Loc.VehicleOptions.RemoveDoorConfirm,
                 ("name", MenuText.From(() => NameAt(present, picked)))),
-            Options = options,
             OnIndexChanged = changed => picked = changed.NewIndex,
             OnConfirmed = confirmed =>
             {

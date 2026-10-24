@@ -37,18 +37,14 @@ public sealed class TeleportMenu : MenuDefinition
 
     protected override void Build(MenuBuilder menu)
     {
-        menu.Entries.Add(new ButtonEntry
+        menu.Entries.Add(new ButtonEntry(Loc.TeleportMenu.TeleportToWaypoint)
         {
-            Text = MenuText.Key(Loc.TeleportMenu.TeleportToWaypoint),
-            Description = MenuText.Key(Loc.TeleportMenu.TeleportToWaypointDescription),
             Gate = TeleportMenuPermissions.Waypoint,
             OnSelectedAsync = _ => TeleportTargets.ToWaypointAsync(),
         });
 
-        menu.Entries.Add(new ButtonEntry
+        menu.Entries.Add(new ButtonEntry(Loc.TeleportMenu.TeleportToCoords)
         {
-            Text = MenuText.Key(Loc.TeleportMenu.TeleportToCoords),
-            Description = MenuText.Key(Loc.TeleportMenu.TeleportToCoordsDescription),
             Gate = TeleportMenuPermissions.Coords,
             OnSelectedAsync = _ => TeleportTargets.ToTypedCoordsAsync(),
         });
@@ -87,10 +83,8 @@ public sealed class TeleportMenu : MenuDefinition
 
         RebuildCategories();
 
-        menu.Entries.Add(new ButtonEntry
+        menu.Entries.Add(new ButtonEntry(Loc.TeleportMenu.TeleportCategories)
         {
-            Text = MenuText.Key(Loc.TeleportMenu.TeleportCategories),
-            Description = MenuText.Key(Loc.TeleportMenu.TeleportCategoriesDescription),
             // Without this the row opens for anybody, and a player the server withholds the list from just
             // finds an empty menu instead of a locked row.
             Gate = TeleportMenuPermissions.Category,
@@ -99,16 +93,14 @@ public sealed class TeleportMenu : MenuDefinition
 
         // Ungated, and always all three, because this only says what the key should try. Whether the player
         // is allowed to do it is the key's business, when they press it.
-        menu.Entries.Add(new ListEntry
-        {
-            Text = MenuText.Key(Loc.TeleportMenu.KeyAction),
-            Description = MenuText.Key(Loc.TeleportMenu.KeyActionDescription),
-            Options =
+        menu.Entries.Add(new ListEntry(
+            Loc.TeleportMenu.KeyAction,
             [
                 MenuText.Key(Loc.TeleportMenu.KeyActionDisabled),
                 MenuText.Key(Loc.TeleportMenu.KeyActionWaypoint),
                 MenuText.Key(Loc.TeleportMenu.KeyActionCoords),
-            ],
+            ])
+        {
             ReadSelectedIndex = () => UserDefaults.TeleportKeyAction.Value,
 
             // On scroll rather than on select: it is three cheap options and nothing has to be applied, so
@@ -167,13 +159,11 @@ public sealed class TeleportMenu : MenuDefinition
 
         if (rows.Count == 0)
         {
-            rows.Add(Placeholder(Loc.TeleportMenu.NoCategories, Loc.TeleportMenu.NoCategoriesDescription));
+            rows.Add(Placeholder(Loc.TeleportMenu.NoCategories));
         }
 
-        rows.Add(new ButtonEntry
+        rows.Add(new ButtonEntry(Loc.TeleportMenu.CreateCategory)
         {
-            Text = MenuText.Key(Loc.TeleportMenu.CreateCategory),
-            Description = MenuText.Key(Loc.TeleportMenu.CreateCategoryDescription),
             Gate = TeleportMenuPermissions.Manage,
             OnSelectedAsync = _ => CreateCategoryAsync(),
         });
@@ -202,14 +192,11 @@ public sealed class TeleportMenu : MenuDefinition
 
         var picked = 0;
 
-        return new ConfirmListEntry
+        return new ConfirmListEntry(Loc.TeleportMenu.DeleteCategory, options)
         {
-            Text = MenuText.Key(Loc.TeleportMenu.DeleteCategory),
-            Description = MenuText.Key(Loc.TeleportMenu.DeleteCategoryDescription),
             ConfirmationDescription = MenuText.Key(
                 Loc.TeleportMenu.DeleteCategoryConfirm,
                 ("name", MenuText.From(() => NameAt(categories, picked)))),
-            Options = options,
             Gate = TeleportMenuPermissions.Manage,
             OnIndexChanged = changed => picked = changed.NewIndex,
             OnConfirmedAsync = confirmed => DeleteCategoryAsync(NameAt(categories, confirmed.SelectedIndex)),
@@ -247,13 +234,11 @@ public sealed class TeleportMenu : MenuDefinition
 
         if (rows.Count == 0)
         {
-            rows.Add(Placeholder(Loc.TeleportMenu.NoLocations, Loc.TeleportMenu.NoLocationsDescription));
+            rows.Add(Placeholder(Loc.TeleportMenu.NoLocations));
         }
 
-        rows.Add(new ButtonEntry
+        rows.Add(new ButtonEntry(Loc.TeleportMenu.CreatePosition)
         {
-            Text = MenuText.Key(Loc.TeleportMenu.CreatePosition),
-            Description = MenuText.Key(Loc.TeleportMenu.CreatePositionDescription),
             Gate = TeleportMenuPermissions.Manage,
             OnSelectedAsync = _ => CreatePositionAsync(),
         });
@@ -279,14 +264,11 @@ public sealed class TeleportMenu : MenuDefinition
 
         var picked = 0;
 
-        return new ConfirmListEntry
+        return new ConfirmListEntry(Loc.TeleportMenu.DeletePosition, options)
         {
-            Text = MenuText.Key(Loc.TeleportMenu.DeletePosition),
-            Description = MenuText.Key(Loc.TeleportMenu.DeletePositionDescription),
             ConfirmationDescription = MenuText.Key(
                 Loc.TeleportMenu.DeletePositionConfirm,
                 ("name", MenuText.From(() => NameAt(locations, picked)))),
-            Options = options,
             Gate = TeleportMenuPermissions.Manage,
             OnIndexChanged = changed => picked = changed.NewIndex,
             OnConfirmedAsync = confirmed =>
@@ -370,11 +352,7 @@ public sealed class TeleportMenu : MenuDefinition
     private static string Coord(float value) => value.ToString("0.##", CultureInfo.InvariantCulture);
 
     // A row rather than an empty menu: MenuAPI ignores every direction key while a menu has no items.
-    private static ButtonEntry Placeholder(string text, string description) => new()
-    {
-        Text = MenuText.Key(text),
-        Description = MenuText.Key(description),
-    };
+    private static ButtonEntry Placeholder(string textKey) => new(textKey);
 
     private static void Report(ActionResult result)
     {

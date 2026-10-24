@@ -59,17 +59,13 @@ public sealed class PersonalVehicleWindowsMenu : MenuDefinition
             });
         }
 
-        rows.Add(new ButtonEntry
+        rows.Add(new ButtonEntry(Loc.PersonalVehicle.RollDownAllWindows)
         {
-            Text = MenuText.Key(Loc.PersonalVehicle.RollDownAllWindows),
-            Description = MenuText.Key(Loc.PersonalVehicle.RollDownAllWindowsDescription),
             OnSelectedAsync = _ => PersonalVehicle.SetAllWindowsAsync(up: false),
         });
 
-        rows.Add(new ButtonEntry
+        rows.Add(new ButtonEntry(Loc.PersonalVehicle.RollUpAllWindows)
         {
-            Text = MenuText.Key(Loc.PersonalVehicle.RollUpAllWindows),
-            Description = MenuText.Key(Loc.PersonalVehicle.RollUpAllWindowsDescription),
             OnSelectedAsync = _ => PersonalVehicle.SetAllWindowsAsync(up: true),
         });
 

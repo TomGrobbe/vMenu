@@ -57,17 +57,13 @@ public sealed class StaffAlertsMenu : MenuDefinition
 
     private void BuildActions(MenuBuilder actions)
     {
-        actions.Entries.Add(new ButtonEntry
+        actions.Entries.Add(new ButtonEntry(Loc.StaffAlerts.Respond)
         {
-            Text = MenuText.Key(Loc.StaffAlerts.Respond),
-            Description = MenuText.Key(Loc.StaffAlerts.RespondDescription),
             OnSelectedAsync = _ => RespondAsync(),
         });
 
-        actions.Entries.Add(new ButtonEntry
+        actions.Entries.Add(new ButtonEntry(Loc.StaffAlerts.Show)
         {
-            Text = MenuText.Key(Loc.StaffAlerts.Show),
-            Description = MenuText.Key(Loc.StaffAlerts.ShowDescription),
             OnSelected = _ =>
             {
                 if (_selected is { } alert)
@@ -77,10 +73,8 @@ public sealed class StaffAlertsMenu : MenuDefinition
             },
         });
 
-        actions.Entries.Add(new ConfirmButtonEntry
+        actions.Entries.Add(new ConfirmButtonEntry(Loc.StaffAlerts.Dismiss)
         {
-            Text = MenuText.Key(Loc.StaffAlerts.Dismiss),
-            Description = MenuText.Key(Loc.StaffAlerts.DismissDescription),
             OnConfirmedAsync = _ => DismissAsync(),
         });
     }
@@ -134,11 +128,7 @@ public sealed class StaffAlertsMenu : MenuDefinition
         if (_alerts.Count == 0)
         {
             menu.AddRange([
-                new ButtonEntry
-                {
-                    Text = MenuText.Key(Loc.StaffAlerts.Empty),
-                    Description = MenuText.Key(Loc.StaffAlerts.EmptyDescription),
-                },
+                new ButtonEntry(Loc.StaffAlerts.Empty),
             ]);
 
             AddHideRow(menu);
@@ -174,15 +164,9 @@ public sealed class StaffAlertsMenu : MenuDefinition
     private void AddHideRow(MenuBuilder menu)
     {
         menu.AddRange([
-            new SeparatorEntry
+            new SeparatorEntry(Loc.StaffAlerts.HideGroup),
+            new CheckboxEntry(Loc.StaffAlerts.Hide)
             {
-                Text = MenuText.Key(Loc.StaffAlerts.HideGroup),
-                Description = MenuText.Key(Loc.StaffAlerts.HideGroupDescription),
-            },
-            new CheckboxEntry
-            {
-                Text = MenuText.Key(Loc.StaffAlerts.Hide),
-                Description = MenuText.Key(Loc.StaffAlerts.HideDescription),
                 ReadState = () => StaffAlertsFeature.Hidden,
                 OnChanged = changed =>
                 {

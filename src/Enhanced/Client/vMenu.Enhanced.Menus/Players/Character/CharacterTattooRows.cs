@@ -50,10 +50,8 @@ internal static class CharacterTattooRows
             menu.Entries.Add(Row(zone, name));
         }
 
-        menu.Entries.Add(new ConfirmButtonEntry
+        menu.Entries.Add(new ConfirmButtonEntry(Loc.CharacterCreator.TattooRemoveAll)
         {
-            Text = MenuText.Key(Loc.CharacterCreator.TattooRemoveAll),
-            Description = MenuText.Key(Loc.CharacterCreator.TattooRemoveAllDescription),
             ConfirmationDescription = MenuText.Key(Loc.CharacterCreator.TattooRemoveAllConfirm),
             Gate = CharacterCreatorPermissions.Create,
             OnConfirmed = _ => RemoveAll(),

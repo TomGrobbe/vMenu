@@ -65,12 +65,9 @@ public sealed class WorldMenu : MenuDefinition
         menu.OnOpened = opened => StartStatus(opened.Menu);
         menu.OnClosed = _ => StopStatus();
 
-        menu.Entries.Add(new ListEntry
+        menu.Entries.Add(new ListEntry(Loc.World.Weather, WeatherOptions())
         {
-            Text = MenuText.Key(Loc.World.Weather),
-            Description = MenuText.Key(Loc.World.WeatherDescription),
             Gate = WeatherAllowed,
-            Options = WeatherOptions(),
             ReadSelectedIndex = () => WorldState.WeatherOverride is { } type ? (int)type + 1 : 0,
             OnSelectedAsync = async selected =>
             {
@@ -96,29 +93,22 @@ public sealed class WorldMenu : MenuDefinition
             },
         });
 
-        menu.Entries.Add(new ButtonEntry
+        menu.Entries.Add(new ButtonEntry(Loc.World.SetTime)
         {
-            Text = MenuText.Key(Loc.World.SetTime),
-            Description = MenuText.Key(Loc.World.SetTimeDescription),
             Gate = TimeAllowed,
             OnSelectedAsync = _ => PromptForTimeAsync(),
         });
 
-        menu.Entries.Add(new ListEntry
+        menu.Entries.Add(new ListEntry(Loc.World.TimePreset, Presets)
         {
-            Text = MenuText.Key(Loc.World.TimePreset),
-            Description = MenuText.Key(Loc.World.TimePresetDescription),
             Gate = PresetsAllowed,
-            Options = Presets,
             OnSelectedAsync = selected => Presets.SecondOfDay(selected.SelectedIndex) is { } secondOfDay
                 ? SetTimeAsync(secondOfDay)
                 : Task.CompletedTask,
         });
 
-        menu.Entries.Add(new CheckboxEntry
+        menu.Entries.Add(new CheckboxEntry(Loc.World.FreezeTime)
         {
-            Text = MenuText.Key(Loc.World.FreezeTime),
-            Description = MenuText.Key(Loc.World.FreezeTimeDescription),
             Gate = FreezeAllowed,
             ReadState = static () => WorldState.IsTimeFrozen,
             OnChangedAsync = changed => SendStateAsync(
@@ -127,12 +117,11 @@ public sealed class WorldMenu : MenuDefinition
                 changed.Checked ? Loc.World.TimeFrozen : Loc.World.TimeUnfrozen),
         });
 
-        menu.Entries.Add(new ListEntry
+        menu.Entries.Add(new ListEntry(
+            Loc.World.Blackout,
+            ModeOptions(BlackoutModes.Selectable, Loc.World.BlackoutName))
         {
-            Text = MenuText.Key(Loc.World.Blackout),
-            Description = MenuText.Key(Loc.World.BlackoutDescription),
             Gate = BlackoutAllowed,
-            Options = ModeOptions(BlackoutModes.Selectable, Loc.World.BlackoutName),
             ReadSelectedIndex = static () => (int)WorldState.Blackout,
             OnSelectedAsync = selected =>
             {
@@ -146,12 +135,9 @@ public sealed class WorldMenu : MenuDefinition
             },
         });
 
-        menu.Entries.Add(new ListEntry
+        menu.Entries.Add(new ListEntry(Loc.World.Snow, ModeOptions(SnowModes.Selectable, Loc.World.SnowName))
         {
-            Text = MenuText.Key(Loc.World.Snow),
-            Description = MenuText.Key(Loc.World.SnowDescription),
             Gate = SnowAllowed,
-            Options = ModeOptions(SnowModes.Selectable, Loc.World.SnowName),
             ReadSelectedIndex = static () => (int)WorldState.SnowSetting,
             OnSelectedAsync = selected =>
             {
@@ -189,10 +175,8 @@ public sealed class WorldMenu : MenuDefinition
             },
         });
 
-        menu.Entries.Add(new ButtonEntry
+        menu.Entries.Add(new ButtonEntry(Loc.World.ResetWeather)
         {
-            Text = MenuText.Key(Loc.World.ResetWeather),
-            Description = MenuText.Key(Loc.World.ResetWeatherDescription),
             Gate = WeatherAllowed,
             OnSelectedAsync = _ => SendAsync(
                 ActionIds.WeatherOptions.SetWeather,
@@ -201,10 +185,8 @@ public sealed class WorldMenu : MenuDefinition
                 WeatherOptionsSettings.TransitionSeconds),
         });
 
-        menu.Entries.Add(new ButtonEntry
+        menu.Entries.Add(new ButtonEntry(Loc.World.ResetTime)
         {
-            Text = MenuText.Key(Loc.World.ResetTime),
-            Description = MenuText.Key(Loc.World.ResetTimeDescription),
             Gate = TimeAllowed,
             OnSelectedAsync = _ => SendAsync(
                 ActionIds.TimeOptions.SetTime,

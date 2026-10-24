@@ -38,7 +38,6 @@ internal static class LiveriesSection
             rows.Add(LiveryRow(
                 handle,
                 Loc.VehicleOptions.Livery,
-                Loc.VehicleOptions.LiveryDescription,
                 liveries,
                 API.GetVehicleLivery,
                 API.SetVehicleLivery));
@@ -51,7 +50,6 @@ internal static class LiveriesSection
             rows.Add(LiveryRow(
                 handle,
                 Loc.VehicleOptions.RoofLivery,
-                Loc.VehicleOptions.RoofLiveryDescription,
                 roofLiveries,
                 API.GetVehicleRoofLivery,
                 API.SetVehicleRoofLivery));
@@ -68,7 +66,6 @@ internal static class LiveriesSection
     private static ListEntry LiveryRow(
         int handle,
         string textKey,
-        string descriptionKey,
         int count,
         Func<int, int> read,
         Action<int, int> write)
@@ -92,11 +89,8 @@ internal static class LiveriesSection
                     ("number", MenuText.Literal(number))));
         }
 
-        return new ListEntry
+        return new ListEntry(textKey, options)
         {
-            Text = MenuText.Key(textKey),
-            Description = MenuText.Key(descriptionKey),
-            Options = options,
             ReadSelectedIndex = () => SectionRows.Driven() is { } current
                 ? Math.Clamp(read(current) + 1, 0, options.Count - 1)
                 : 0,

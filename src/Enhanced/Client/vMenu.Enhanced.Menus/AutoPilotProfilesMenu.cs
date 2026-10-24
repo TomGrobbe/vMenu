@@ -97,10 +97,8 @@ public sealed class AutoPilotProfilesMenu : MenuDefinition
     {
         var rows = new List<MenuEntry>
         {
-            new ButtonEntry
+            new ButtonEntry(Loc.AutoPilot.CreateProfile)
             {
-                Text = MenuText.Key(Loc.AutoPilot.CreateProfile),
-                Description = MenuText.Key(Loc.AutoPilot.CreateProfileDescription),
                 OnSelectedAsync = _ => CreateAsync(),
             },
         };
@@ -114,10 +112,8 @@ public sealed class AutoPilotProfilesMenu : MenuDefinition
 
         if (saved.Count == 0)
         {
-            rows.Add(new ButtonEntry
+            rows.Add(new ButtonEntry(Loc.AutoPilot.ProfilesEmpty)
             {
-                Text = MenuText.Key(Loc.AutoPilot.ProfilesEmpty),
-                Description = MenuText.Key(Loc.AutoPilot.ProfilesEmptyDescription),
                 ReadEnabled = () => false,
             });
 
@@ -183,10 +179,8 @@ public sealed class AutoPilotProfilesMenu : MenuDefinition
 
         rows.AddRange(Extras(profile.Category));
 
-        rows.Add(new ButtonEntry
+        rows.Add(new ButtonEntry(Loc.AutoPilot.ProfileUse)
         {
-            Text = MenuText.Key(Loc.AutoPilot.ProfileUse),
-            Description = MenuText.Key(Loc.AutoPilot.ProfileUseDescription),
             ReadEnabled = () => !AutoPilotDefaults.IsSelected(profile.Category, profile.Name),
             OnSelected = _ =>
             {
@@ -198,10 +192,8 @@ public sealed class AutoPilotProfilesMenu : MenuDefinition
             },
         });
 
-        rows.Add(new ButtonEntry
+        rows.Add(new ButtonEntry(Loc.AutoPilot.ProfileDuplicate)
         {
-            Text = MenuText.Key(Loc.AutoPilot.ProfileDuplicate),
-            Description = MenuText.Key(Loc.AutoPilot.ProfileDuplicateDescription),
             OnSelectedAsync = _ => DuplicateAsync(profile),
         });
 
@@ -210,19 +202,15 @@ public sealed class AutoPilotProfilesMenu : MenuDefinition
             return rows;
         }
 
-        rows.Add(new ButtonEntry
+        rows.Add(new ButtonEntry(Loc.AutoPilot.ProfileRename)
         {
-            Text = MenuText.Key(Loc.AutoPilot.ProfileRename),
-            Description = MenuText.Key(Loc.AutoPilot.ProfileRenameDescription),
             LockedDescription = LockReason(),
             ReadEnabled = Editable,
             OnSelectedAsync = _ => RenameAsync(),
         });
 
-        rows.Add(new ConfirmButtonEntry
+        rows.Add(new ConfirmButtonEntry(Loc.AutoPilot.ProfileDelete)
         {
-            Text = MenuText.Key(Loc.AutoPilot.ProfileDelete),
-            Description = MenuText.Key(Loc.AutoPilot.ProfileDeleteDescription),
             ConfirmationDescription = MenuText.Key(Loc.AutoPilot.ProfileDeleteConfirm, ("name", profile.Name)),
             ReadEnabled = Editable,
             OnConfirmed = _ => Delete(),
@@ -267,7 +255,6 @@ public sealed class AutoPilotProfilesMenu : MenuDefinition
         {
             Number(
                 Loc.AutoPilot.ProfileCruiseSpeed,
-                Loc.AutoPilot.ProfileCruiseSpeedDescription,
                 () => (int)(_profile?.CruiseSpeed ?? 0f),
                 value => value.CruiseSpeed,
                 (profile, value) => profile.CruiseSpeed = value,
@@ -283,7 +270,6 @@ public sealed class AutoPilotProfilesMenu : MenuDefinition
 
         rows.Add(Number(
             Loc.AutoPilot.ProfileFlightHeight,
-            Loc.AutoPilot.ProfileFlightHeightDescription,
             () => _profile?.FlightHeight ?? 0,
             profile => profile.FlightHeight,
             (profile, value) => profile.FlightHeight = (int)value,
@@ -293,7 +279,6 @@ public sealed class AutoPilotProfilesMenu : MenuDefinition
 
         rows.Add(Number(
             Loc.AutoPilot.ProfileMinHeight,
-            Loc.AutoPilot.ProfileMinHeightDescription,
             () => _profile?.MinHeightAboveTerrain ?? 0,
             profile => profile.MinHeightAboveTerrain,
             (profile, value) => profile.MinHeightAboveTerrain = (int)value,
@@ -306,10 +291,8 @@ public sealed class AutoPilotProfilesMenu : MenuDefinition
             return rows;
         }
 
-        rows.Add(new CheckboxEntry
+        rows.Add(new CheckboxEntry(Loc.AutoPilot.ProfilePrecise)
         {
-            Text = MenuText.Key(Loc.AutoPilot.ProfilePrecise),
-            Description = MenuText.Key(Loc.AutoPilot.ProfilePreciseDescription),
             LockedDescription = LockReason(),
             ReadEnabled = Editable,
             ReadState = () => _profile?.Precise ?? false,
@@ -336,7 +319,6 @@ public sealed class AutoPilotProfilesMenu : MenuDefinition
 
     private DynamicListEntry Number(
         string textKey,
-        string descriptionKey,
         Func<int> read,
         Func<SavedDrivingProfile, float> current,
         Action<SavedDrivingProfile, float> apply,
@@ -344,14 +326,10 @@ public sealed class AutoPilotProfilesMenu : MenuDefinition
         int max,
         string? zeroKey)
     {
-        return new DynamicListEntry
-        {
-            Text = MenuText.Key(textKey),
-            Description = MenuText.Key(descriptionKey),
-            LockedDescription = LockReason(),
-            ReadEnabled = Editable,
-            ReadValue = () => Display(read(), zeroKey),
-            Change = changing =>
+        return new DynamicListEntry(
+            textKey,
+            () => Display(read(), zeroKey),
+            changing =>
             {
                 if (_entry is not { } entry)
                 {
@@ -369,7 +347,10 @@ public sealed class AutoPilotProfilesMenu : MenuDefinition
                 Refresh();
 
                 return Display(read(), zeroKey);
-            },
+            })
+        {
+            LockedDescription = LockReason(),
+            ReadEnabled = Editable,
         };
     }
 

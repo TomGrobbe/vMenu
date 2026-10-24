@@ -138,10 +138,8 @@ internal sealed class SavedCharacters
     {
         var rows = new List<MenuEntry>
         {
-            new ButtonEntry
+            new ButtonEntry(Loc.CharacterCreator.CreateCategory)
             {
-                Text = MenuText.Key(Loc.CharacterCreator.CreateCategory),
-                Description = MenuText.Key(Loc.CharacterCreator.CreateCategoryDescription),
                 Gate = CharacterCreatorPermissions.Manage,
                 OnSelectedAsync = _ => CreateCategoryAsync(),
             },
@@ -152,10 +150,8 @@ internal sealed class SavedCharacters
 
         if (categories.Count > 0)
         {
-            rows.Add(new ButtonEntry
+            rows.Add(new ButtonEntry(Loc.CharacterCreator.EditCategory)
             {
-                Text = MenuText.Key(Loc.CharacterCreator.EditCategory),
-                Description = MenuText.Key(Loc.CharacterCreator.EditCategoryDescription),
                 Gate = CharacterCreatorPermissions.Manage,
                 OnSelectedAsync = _ => EditCategoryAsync(categories),
             });
@@ -165,11 +161,7 @@ internal sealed class SavedCharacters
 
         if (characters.Count == 0)
         {
-            rows.Add(new ButtonEntry
-            {
-                Text = MenuText.Key(Loc.CharacterCreator.NoCharacters),
-                Description = MenuText.Key(Loc.CharacterCreator.NoCharactersDescription),
-            });
+            rows.Add(new ButtonEntry(Loc.CharacterCreator.NoCharacters));
 
             return rows;
         }
@@ -188,14 +180,11 @@ internal sealed class SavedCharacters
     {
         var picked = 0;
 
-        return new ConfirmListEntry
+        return new ConfirmListEntry(Loc.CharacterCreator.DeleteCategory, Names(categories))
         {
-            Text = MenuText.Key(Loc.CharacterCreator.DeleteCategory),
-            Description = MenuText.Key(Loc.CharacterCreator.DeleteCategoryDescription),
             ConfirmationDescription = MenuText.Key(
                 Loc.CharacterCreator.DeleteCategoryConfirm,
                 ("name", MenuText.From(() => NameAt(categories, picked)))),
-            Options = Names(categories),
             Gate = CharacterCreatorPermissions.Manage,
             OnIndexChanged = changed => picked = changed.NewIndex,
             OnConfirmed = confirmed => DeleteCategory(categories, confirmed.SelectedIndex),
@@ -282,11 +271,7 @@ internal sealed class SavedCharacters
 
         if (rows.Count == 0)
         {
-            rows.Add(new ButtonEntry
-            {
-                Text = MenuText.Key(Loc.CharacterCreator.NoCharacters),
-                Description = MenuText.Key(Loc.CharacterCreator.NoCharactersDescription),
-            });
+            rows.Add(new ButtonEntry(Loc.CharacterCreator.NoCharacters));
         }
 
         return rows;
@@ -333,55 +318,43 @@ internal sealed class SavedCharacters
 
         var rows = new List<MenuEntry>
         {
-            new ButtonEntry
+            new ButtonEntry(Loc.CharacterCreator.Spawn)
             {
-                Text = MenuText.Key(Loc.CharacterCreator.Spawn),
-                Description = MenuText.Key(Loc.CharacterCreator.SpawnDescription),
                 Gate = CharacterCreatorPermissions.Spawn,
                 OnSelectedAsync = _ => SpawnAsync(entry),
             },
-            new ButtonEntry
+            new ButtonEntry(Loc.CharacterCreator.EditCharacter)
             {
-                Text = MenuText.Key(Loc.CharacterCreator.EditCharacter),
-                Description = MenuText.Key(Loc.CharacterCreator.EditCharacterDescription),
                 LockedDescription = MenuText.Key(Loc.CharacterCreator.FromNewerBuild),
                 Gate = MenuGate.Permission(CharacterCreatorPermissions.Create)
                     & MenuGate.When(() => !entry.IsFromNewerBuild),
                 Behaviour = GateBehaviour.Lock,
                 OnSelectedAsync = _ => EditAsync(entry),
             },
-            VariantsRow(Loc.CharacterCreator.Outfits, Loc.CharacterCreator.OutfitsDescription, outfits: true),
-            VariantsRow(Loc.CharacterCreator.Styles, Loc.CharacterCreator.StylesDescription, outfits: false),
-            new ButtonEntry
+            VariantsRow(Loc.CharacterCreator.Outfits, outfits: true),
+            VariantsRow(Loc.CharacterCreator.Styles, outfits: false),
+            new ButtonEntry(Loc.CharacterCreator.Clone)
             {
-                Text = MenuText.Key(Loc.CharacterCreator.Clone),
-                Description = MenuText.Key(Loc.CharacterCreator.CloneDescription),
                 Gate = CharacterCreatorPermissions.Manage,
                 OnSelectedAsync = _ => CloneAsync(entry),
             },
             CategoryRow(entry),
-            new ButtonEntry
+            new ButtonEntry(Loc.CharacterCreator.SetDefault)
             {
-                Text = MenuText.Key(Loc.CharacterCreator.SetDefault),
-                Description = MenuText.Key(Loc.CharacterCreator.SetDefaultDescription),
                 ReadRightIcon = () => IsDefault(entry) ? MenuItem.Icon.TICK : MenuItem.Icon.NONE,
                 Gate = CharacterCreatorPermissions.SetDefault,
                 OnSelected = _ => ToggleDefault(entry),
             },
-            new ButtonEntry
+            new ButtonEntry(Loc.CharacterCreator.Rename)
             {
-                Text = MenuText.Key(Loc.CharacterCreator.Rename),
-                Description = MenuText.Key(Loc.CharacterCreator.RenameDescription),
                 LockedDescription = MenuText.Key(Loc.CharacterCreator.FromNewerBuild),
                 Gate = MenuGate.Permission(CharacterCreatorPermissions.Manage)
                     & MenuGate.When(() => !entry.IsFromNewerBuild),
                 Behaviour = GateBehaviour.Lock,
                 OnSelectedAsync = _ => RenameAsync(entry),
             },
-            new ConfirmButtonEntry
+            new ConfirmButtonEntry(Loc.CharacterCreator.Delete)
             {
-                Text = MenuText.Key(Loc.CharacterCreator.Delete),
-                Description = MenuText.Key(Loc.CharacterCreator.DeleteDescription),
                 ConfirmationDescription = MenuText.Key(Loc.CharacterCreator.DeleteConfirm, ("name", name)),
                 Gate = CharacterCreatorPermissions.Manage,
                 OnConfirmed = _ => Delete(entry),
@@ -391,10 +364,8 @@ internal sealed class SavedCharacters
         return rows;
     }
 
-    private ButtonEntry VariantsRow(string name, string description, bool outfits) => new()
+    private ButtonEntry VariantsRow(string textKey, bool outfits) => new(textKey)
     {
-        Text = MenuText.Key(name),
-        Description = MenuText.Key(description),
         Label = MenuText.Literal("→"),
         Gate = CharacterCreatorPermissions.Spawn,
         OnSelected = _ =>
@@ -416,11 +387,8 @@ internal sealed class SavedCharacters
             options.Add(MenuText.Literal(category.Name));
         }
 
-        return new ListEntry
+        return new ListEntry(Loc.CharacterCreator.SetCategory, options)
         {
-            Text = MenuText.Key(Loc.CharacterCreator.SetCategory),
-            Description = MenuText.Key(Loc.CharacterCreator.SetCategoryDescription),
-            Options = options,
             Gate = CharacterCreatorPermissions.Manage,
             SelectedIndex = Math.Max(0, IndexOf(names, entry.Character.Category)),
 
@@ -488,11 +456,7 @@ internal sealed class SavedCharacters
 
         if (count == 0)
         {
-            rows.Add(new ButtonEntry
-            {
-                Text = MenuText.Key(Loc.CharacterCreator.NoVariants),
-                Description = MenuText.Key(Loc.CharacterCreator.NoVariantsDescription),
-            });
+            rows.Add(new ButtonEntry(Loc.CharacterCreator.NoVariants));
 
             return rows;
         }
@@ -861,18 +825,14 @@ internal sealed class SavedCharacters
 
     private void BuildEditChoice(MenuBuilder menu)
     {
-        menu.Entries.Add(new ButtonEntry
+        menu.Entries.Add(new ButtonEntry(Loc.CharacterCreator.EditAsWorn)
         {
-            Text = MenuText.Key(Loc.CharacterCreator.EditAsWorn),
-            Description = MenuText.Key(Loc.CharacterCreator.EditAsWornDescription),
             Gate = CharacterCreatorPermissions.Create,
             OnSelectedAsync = _ => Edit(restore: false),
         });
 
-        menu.Entries.Add(new ButtonEntry
+        menu.Entries.Add(new ButtonEntry(Loc.CharacterCreator.EditRestored)
         {
-            Text = MenuText.Key(Loc.CharacterCreator.EditRestored),
-            Description = MenuText.Key(Loc.CharacterCreator.EditRestoredDescription),
             Gate = CharacterCreatorPermissions.Create,
             OnSelectedAsync = _ => Edit(restore: true),
         });

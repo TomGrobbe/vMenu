@@ -11,27 +11,21 @@ internal static class EngineSection
 {
     public static void Build(MenuBuilder menu)
     {
-        menu.Entries.Add(new CheckboxEntry
+        menu.Entries.Add(new CheckboxEntry(Loc.VehicleOptions.EngineAlwaysOn)
         {
-            Text = MenuText.Key(Loc.VehicleOptions.EngineAlwaysOn),
-            Description = MenuText.Key(Loc.VehicleOptions.EngineAlwaysOnDescription),
             Gate = VehicleOptionsPermissions.EngineAlwaysOn,
             ReadState = () => VehicleEngine.AlwaysOn,
             OnChanged = changed => VehicleEngine.SetAlwaysOn(changed.Checked),
         });
 
-        menu.Entries.Add(new ButtonEntry
+        menu.Entries.Add(new ButtonEntry(Loc.VehicleOptions.ToggleEngine)
         {
-            Text = MenuText.Key(Loc.VehicleOptions.ToggleEngine),
-            Description = MenuText.Key(Loc.VehicleOptions.ToggleEngineDescription),
             Gate = VehicleOptionsPermissions.ToggleEngine,
             OnSelected = _ => VehicleEngine.Toggle(),
         });
 
-        menu.Entries.Add(new CheckboxEntry
+        menu.Entries.Add(new CheckboxEntry(Loc.VehicleOptions.PowerMultiplierEnabled)
         {
-            Text = MenuText.Key(Loc.VehicleOptions.PowerMultiplierEnabled),
-            Description = MenuText.Key(Loc.VehicleOptions.PowerMultiplierEnabledDescription),
             Gate = VehicleOptionsPermissions.PowerMultiplier,
             ReadState = () => VehiclePerformance.PowerEnabled,
             OnChanged = changed =>
@@ -44,17 +38,14 @@ internal static class EngineSection
 
         menu.Entries.Add(MultiplierRow(
             Loc.VehicleOptions.PowerMultiplier,
-            Loc.VehicleOptions.PowerMultiplierDescription,
             Loc.VehicleOptions.PowerMultiplierLocked,
             VehicleOptionsPermissions.PowerMultiplier,
             () => VehiclePerformance.PowerEnabled,
             () => VehiclePerformance.PowerMultiplier,
             VehiclePerformance.SetPowerMultiplier));
 
-        menu.Entries.Add(new CheckboxEntry
+        menu.Entries.Add(new CheckboxEntry(Loc.VehicleOptions.TorqueMultiplierEnabled)
         {
-            Text = MenuText.Key(Loc.VehicleOptions.TorqueMultiplierEnabled),
-            Description = MenuText.Key(Loc.VehicleOptions.TorqueMultiplierEnabledDescription),
             Gate = VehicleOptionsPermissions.TorqueMultiplier,
             ReadState = () => VehiclePerformance.TorqueEnabled,
             OnChanged = changed =>
@@ -67,7 +58,6 @@ internal static class EngineSection
 
         menu.Entries.Add(MultiplierRow(
             Loc.VehicleOptions.TorqueMultiplier,
-            Loc.VehicleOptions.TorqueMultiplierDescription,
             Loc.VehicleOptions.TorqueMultiplierLocked,
             VehicleOptionsPermissions.TorqueMultiplier,
             () => VehiclePerformance.TorqueEnabled,
@@ -77,7 +67,6 @@ internal static class EngineSection
 
     private static ListEntry MultiplierRow(
         string textKey,
-        string descriptionKey,
         string lockedKey,
         string permission,
         Func<bool> enabled,
@@ -91,13 +80,10 @@ internal static class EngineSection
             options.Add(MenuText.Key(Loc.VehicleOptions.MultiplierOption, ("amount", MenuText.Literal(step.ToString()))));
         }
 
-        return new ListEntry
+        return new ListEntry(textKey, options)
         {
-            Text = MenuText.Key(textKey),
-            Description = MenuText.Key(descriptionKey),
             LockedDescription = MenuText.Key(lockedKey),
             Gate = MenuGate.Permission(permission) & MenuGate.When(enabled),
-            Options = options,
             ReadSelectedIndex = () => Math.Max(Array.IndexOf(VehiclePerformance.Steps, read()), 0),
             OnIndexChanged = changed => write(VehiclePerformance.Steps[changed.NewIndex]),
         };

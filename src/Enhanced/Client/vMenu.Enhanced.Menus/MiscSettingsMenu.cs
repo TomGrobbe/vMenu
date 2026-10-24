@@ -14,43 +14,34 @@ public sealed class MiscSettingsMenu : MenuDefinition
 {
     protected override void Build(MenuBuilder menu)
     {
-        menu.Entries.Add(new ListEntry
+        menu.Entries.Add(new ListEntry(
+            Loc.MiscSettings.Language,
+            [.. Localizer.Current.AvailableLanguages.Select(NativeLanguageName)])
         {
-            Text = MenuText.Key(Loc.MiscSettings.Language),
-            Description = MenuText.Key(Loc.MiscSettings.LanguageDescription),
-            Options = [.. Localizer.Current.AvailableLanguages.Select(NativeLanguageName)],
             ReadSelectedIndex = CurrentIndex,
             OnSelected = Apply,
         });
 
-        menu.Entries.Add(new CheckboxEntry
+        menu.Entries.Add(new CheckboxEntry(Loc.MiscSettings.DisableIdleCamera)
         {
-            Text = MenuText.Key(Loc.MiscSettings.DisableIdleCamera),
-            Description = MenuText.Key(Loc.MiscSettings.DisableIdleCameraDescription),
             ReadState = () => UserPreferences.IsIdleCameraDisabled,
             OnChanged = changed => UserPreferences.SetIdleCameraDisabled(changed.Checked),
         });
 
-        menu.Entries.Add(new CheckboxEntry
+        menu.Entries.Add(new CheckboxEntry(Loc.MiscSettings.DisableVehicleIdleCamera)
         {
-            Text = MenuText.Key(Loc.MiscSettings.DisableVehicleIdleCamera),
-            Description = MenuText.Key(Loc.MiscSettings.DisableVehicleIdleCameraDescription),
             ReadState = () => UserPreferences.IsVehicleIdleCameraDisabled,
             OnChanged = changed => UserPreferences.SetVehicleIdleCameraDisabled(changed.Checked),
         });
 
-        menu.Entries.Add(new CheckboxEntry
+        menu.Entries.Add(new CheckboxEntry(Loc.MiscSettings.FingerPointing)
         {
-            Text = MenuText.Key(Loc.MiscSettings.FingerPointing),
-            Description = MenuText.Key(Loc.MiscSettings.FingerPointingDescription),
             ReadState = () => FingerPointing.Enabled,
             OnChanged = changed => FingerPointing.SetEnabled(changed.Checked),
         });
 
-        menu.Entries.Add(new ButtonEntry
+        menu.Entries.Add(new ButtonEntry(Loc.MiscSettings.AlertStaff)
         {
-            Text = MenuText.Key(Loc.MiscSettings.AlertStaff),
-            Description = MenuText.Key(Loc.MiscSettings.AlertStaffDescription),
             Gate = MenuGate.Setting(StaffAlertSettings.Enabled),
             Behaviour = GateBehaviour.Hide,
             OnSelectedAsync = _ => StaffAlerts.RaiseAsync(),

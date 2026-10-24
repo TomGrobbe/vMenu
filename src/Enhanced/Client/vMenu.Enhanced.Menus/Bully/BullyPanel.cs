@@ -58,10 +58,8 @@ internal sealed class BullyPanel
 
         if (Everyone)
         {
-            menu.Entries.Add(new CheckboxEntry
+            menu.Entries.Add(new CheckboxEntry(Loc.Bully.IncludeSelf)
             {
-                Text = MenuText.Key(Loc.Bully.IncludeSelf),
-                Description = MenuText.Key(Loc.Bully.IncludeSelfDescription),
                 ReadState = () => _includeSelf,
                 OnChanged = changed => _includeSelf = changed.Checked,
             });
@@ -91,10 +89,8 @@ internal sealed class BullyPanel
         BullyEffects.Timecycle => OptionRow(effect, ScreenPranks.Timecycles.Count, Loc.Bully.TimecycleOption),
         BullyEffects.Sound => OptionRow(effect, ScreenPranks.SoundCount, Loc.Bully.SoundOption),
         CutscenesLink => CutscenesRow(),
-        _ => new ButtonEntry
+        _ => new ButtonEntry(Loc.Bully.EffectName(effect))
         {
-            Text = MenuText.Key(Loc.Bully.EffectName(effect)),
-            Description = MenuText.Key(Loc.Bully.EffectDescription(effect)),
             Gate = TurnedOnGate(effect),
             Behaviour = GateBehaviour.Lock,
             LockedDescription = MenuText.Key(Loc.Bully.TurnedOff),
@@ -102,23 +98,20 @@ internal sealed class BullyPanel
         },
     };
 
-    private SubmenuEntry CutscenesRow() => new()
+    private SubmenuEntry CutscenesRow() => new(Loc.Bully.CutscenesGroup)
     {
-        Text = MenuText.Key(Loc.Bully.CutscenesGroup),
-        Description = MenuText.Key(Loc.Bully.CutscenesDescription),
         MenuTitle = Everyone ? default : MenuText.From(() => _target?.Invoke()?.Name ?? string.Empty),
         MenuSubtitle = MenuText.Key(Loc.Bully.CutscenesGroup),
         Build = cutscenes => cutscenes.Entries.AddRange(CutsceneCatalog.All.Select(entry => EffectRow(entry.Id))),
     };
 
-    private ListEntry OptionRow(string effect, int count, Func<int, string> key) => new()
+    private ListEntry OptionRow(string effect, int count, Func<int, string> key) => new(
+        Loc.Bully.EffectName(effect),
+        Enumerable.Range(0, count).Select(index => MenuText.Key(key(index))).ToList())
     {
-        Text = MenuText.Key(Loc.Bully.EffectName(effect)),
-        Description = MenuText.Key(Loc.Bully.EffectDescription(effect)),
         Gate = TurnedOnGate(effect),
         Behaviour = GateBehaviour.Lock,
         LockedDescription = MenuText.Key(Loc.Bully.TurnedOff),
-        Options = Enumerable.Range(0, count).Select(index => MenuText.Key(key(index))).ToList(),
         OnSelectedAsync = selected => ApplyAsync(effect, selected.SelectedIndex.ToString(CultureInfo.InvariantCulture)),
     };
 
@@ -127,10 +120,8 @@ internal sealed class BullyPanel
             ? MenuGate.When(() => !ClientConfig.Value(setting))
             : MenuGate.Always;
 
-    private CheckboxEntry ToggleRow(string toggle) => new()
+    private CheckboxEntry ToggleRow(string toggle) => new(Loc.Bully.ToggleName(toggle))
     {
-        Text = MenuText.Key(Loc.Bully.ToggleName(toggle)),
-        Description = MenuText.Key(Loc.Bully.ToggleDescription(toggle)),
         ReadState = () => _active.Contains(toggle),
         OnChangedAsync = changed => SetToggleAsync(toggle, changed.Checked),
     };

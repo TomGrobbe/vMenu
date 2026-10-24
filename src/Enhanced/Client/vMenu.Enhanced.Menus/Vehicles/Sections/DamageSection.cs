@@ -27,20 +27,14 @@ internal static class DamageSection
 
         return
         [
-            new SliderEntry
+            new SliderEntry(Loc.VehicleOptions.EngineHealth, 0, HealthStops)
             {
-                Text = MenuText.Key(Loc.VehicleOptions.EngineHealth),
-                Description = MenuText.Key(Loc.VehicleOptions.EngineHealthDescription),
                 Gate = VehicleOptionsPermissions.EngineHealth,
-                Min = 0,
-                Max = HealthStops,
                 ReadPosition = () => (int)MathF.Round(VehicleEngine.Health() / HealthStep),
                 OnMoved = moved => VehicleEngine.SetHealth(moved.NewPosition * HealthStep),
             },
-            new ConfirmButtonEntry
+            new ConfirmButtonEntry(Loc.VehicleOptions.DestroyEngine)
             {
-                Text = MenuText.Key(Loc.VehicleOptions.DestroyEngine),
-                Description = MenuText.Key(Loc.VehicleOptions.DestroyEngineDescription),
                 ConfirmationDescription = MenuText.Key(Loc.VehicleOptions.DestroyEngineConfirm),
                 Gate = VehicleOptionsPermissions.EngineHealth,
                 OnConfirmed = _ =>
@@ -67,12 +61,9 @@ internal static class DamageSection
                 ("number", MenuText.Literal((wheel + 1).ToString()))));
         }
 
-        return new ListEntry
+        return new ListEntry(Loc.VehicleOptions.Tyres, options)
         {
-            Text = MenuText.Key(Loc.VehicleOptions.Tyres),
-            Description = MenuText.Key(Loc.VehicleOptions.TyresDescription),
             Gate = VehicleOptionsPermissions.Tyres,
-            Options = options,
             OnSelected = selected =>
             {
                 if (SectionRows.Driven() is not { } vehicle)

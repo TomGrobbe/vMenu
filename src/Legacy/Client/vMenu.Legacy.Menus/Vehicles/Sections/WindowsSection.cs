@@ -46,24 +46,18 @@ internal static class WindowsSection
             rows.Add(WindowRow(window.Index, window.TextKey));
         }
 
-        rows.Add(new ButtonEntry
+        rows.Add(new ButtonEntry(Loc.VehicleOptions.RollDownAllWindows)
         {
-            Text = MenuText.Key(Loc.VehicleOptions.RollDownAllWindows),
-            Description = MenuText.Key(Loc.VehicleOptions.RollDownAllWindowsDescription),
             OnSelected = _ => SetAll(up: false),
         });
 
-        rows.Add(new ButtonEntry
+        rows.Add(new ButtonEntry(Loc.VehicleOptions.RollUpAllWindows)
         {
-            Text = MenuText.Key(Loc.VehicleOptions.RollUpAllWindows),
-            Description = MenuText.Key(Loc.VehicleOptions.RollUpAllWindowsDescription),
             OnSelected = _ => SetAll(up: true),
         });
 
-        rows.Add(new ConfirmButtonEntry
+        rows.Add(new ConfirmButtonEntry(Loc.VehicleOptions.SmashWindows)
         {
-            Text = MenuText.Key(Loc.VehicleOptions.SmashWindows),
-            Description = MenuText.Key(Loc.VehicleOptions.SmashWindowsDescription),
             ConfirmationDescription = MenuText.Key(Loc.VehicleOptions.SmashWindowsConfirm),
             OnConfirmed = _ =>
             {

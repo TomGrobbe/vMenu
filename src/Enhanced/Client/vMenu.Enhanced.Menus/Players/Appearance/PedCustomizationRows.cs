@@ -109,7 +109,7 @@ public static class PedCustomizationRows
         {
             if (rows.Count > 0)
             {
-                rows.Add(Notice(Loc.PlayerAppearance.PropsHeading, Loc.PlayerAppearance.PropsHeadingDescription));
+                rows.Add(new ButtonEntry(Loc.PlayerAppearance.PropsHeading));
             }
 
             rows.AddRange(props);
@@ -119,14 +119,8 @@ public static class PedCustomizationRows
         // row of its own rather than no rows at all.
         return rows.Count > 0
             ? rows
-            : [Notice(Loc.PlayerAppearance.Empty, Loc.PlayerAppearance.EmptyDescription)];
+            : [new ButtonEntry(Loc.PlayerAppearance.Empty)];
     }
-
-    private static ButtonEntry Notice(string text, string description) => new()
-    {
-        Text = MenuText.Key(text),
-        Description = MenuText.Key(description),
-    };
 
     // The handler fires for the menu rather than for a row, so the row it landed on has to be able to
     // say which slot it edits.
@@ -541,10 +535,8 @@ public static class PedCustomizationRows
             ComponentDescription(scope, PedComponentSlots.Torso));
     }
 
-    private static CheckboxEntry FitTorsoRow() => new()
+    private static CheckboxEntry FitTorsoRow() => new(Loc.CharacterCreator.FitTorso)
     {
-        Text = MenuText.Key(Loc.CharacterCreator.FitTorso),
-        Description = MenuText.Key(Loc.CharacterCreator.FitTorsoDescription),
         Gate = CharacterCreatorPermissions.Create,
         ReadState = () => TorsoFit.IsEnabled,
         OnChanged = changed => TorsoFit.SetEnabled(changed.Checked),

@@ -21,24 +21,18 @@ internal static class ManageBlipsMenu
 
     internal static void Build(MenuBuilder menu)
     {
-        menu.Entries.Add(new ButtonEntry
+        menu.Entries.Add(new ButtonEntry(Loc.DisplaySettings.BlipAddAlwaysOn)
         {
-            Text = MenuText.Key(Loc.DisplaySettings.BlipAddAlwaysOn),
-            Description = MenuText.Key(Loc.DisplaySettings.BlipAddAlwaysOnDescription),
             OnSelectedAsync = _ => AddHereAsync(AlwaysOnList),
         });
 
-        menu.Entries.Add(new ButtonEntry
+        menu.Entries.Add(new ButtonEntry(Loc.DisplaySettings.BlipAddToggleable)
         {
-            Text = MenuText.Key(Loc.DisplaySettings.BlipAddToggleable),
-            Description = MenuText.Key(Loc.DisplaySettings.BlipAddToggleableDescription),
             OnSelectedAsync = _ => AddHereAsync(ToggleableList),
         });
 
-        menu.Entries.Add(new ConfirmButtonEntry
+        menu.Entries.Add(new ConfirmButtonEntry(Loc.DisplaySettings.BlipRemoveNearest)
         {
-            Text = MenuText.Key(Loc.DisplaySettings.BlipRemoveNearest),
-            Description = MenuText.Key(Loc.DisplaySettings.BlipRemoveNearestDescription),
             ConfirmationDescription = MenuText.Key(Loc.DisplaySettings.BlipRemoveNearestConfirm),
             OnConfirmedAsync = _ => RemoveNearestAsync(),
         });

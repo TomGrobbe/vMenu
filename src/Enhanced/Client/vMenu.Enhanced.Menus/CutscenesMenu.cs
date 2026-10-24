@@ -19,10 +19,8 @@ public sealed class CutscenesMenu : MenuDefinition
 
     protected override void Build(MenuBuilder menu)
     {
-        menu.Entries.AddRange(CutsceneCatalog.All.Select(entry => new ButtonEntry
+        menu.Entries.AddRange(CutsceneCatalog.All.Select(entry => new ButtonEntry(Loc.Cutscenes.Name(entry.Id))
         {
-            Text = MenuText.Key(Loc.Cutscenes.Name(entry.Id)),
-            Description = MenuText.Key(Loc.Cutscenes.Description(entry.Id)),
             OnSelectedAsync = _ => CutscenePlayer.FromMenuAsync(entry.Id),
         }));
     }

@@ -29,24 +29,20 @@ public sealed class BullyMenu : MenuDefinition
 
     protected override void Build(MenuBuilder menu)
     {
-        menu.Entries.Add(Submenu(Loc.Bully.SelfMenu, Loc.Bully.SelfMenuDescription, BullyPanel.ForSelf().Build));
-        menu.Entries.Add(Submenu(Loc.Bully.EveryoneMenu, Loc.Bully.EveryoneMenuDescription, BullyPanel.ForEveryone().Build));
-        menu.Entries.Add(Submenu(Loc.Bully.ServerMenu, Loc.Bully.ServerMenuDescription, BuildServer));
-        menu.Entries.Add(Submenu(Loc.Bully.ActiveMenu, Loc.Bully.ActiveMenuDescription, BuildActive));
+        menu.Entries.Add(Submenu(Loc.Bully.SelfMenu, BullyPanel.ForSelf().Build));
+        menu.Entries.Add(Submenu(Loc.Bully.EveryoneMenu, BullyPanel.ForEveryone().Build));
+        menu.Entries.Add(Submenu(Loc.Bully.ServerMenu, BuildServer));
+        menu.Entries.Add(Submenu(Loc.Bully.ActiveMenu, BuildActive));
 
-        menu.Entries.Add(new ConfirmButtonEntry
+        menu.Entries.Add(new ConfirmButtonEntry(Loc.Bully.StopAll)
         {
-            Text = MenuText.Key(Loc.Bully.StopAll),
-            Description = MenuText.Key(Loc.Bully.StopAllDescription),
             ConfirmationDescription = MenuText.Key(Loc.Bully.StopAllConfirm),
             OnConfirmedAsync = _ => InvokeAsync(MenuText.Key(Loc.Bully.StopAllDone), ActionIds.Bully.StopAll),
         });
     }
 
-    private static SubmenuEntry Submenu(string text, string description, Action<MenuBuilder> build) => new()
+    private static SubmenuEntry Submenu(string textKey, Action<MenuBuilder> build) => new(textKey)
     {
-        Text = MenuText.Key(text),
-        Description = MenuText.Key(description),
         Build = build,
     };
 
@@ -56,10 +52,9 @@ public sealed class BullyMenu : MenuDefinition
 
         menu.OnOpenedAsync = _ => ReadActiveAsync();
 
-        menu.Entries.AddRange(BullyToggles.ServerWide.Select(toggle => new CheckboxEntry
+        menu.Entries.AddRange(BullyToggles.ServerWide.Select(toggle => new CheckboxEntry(
+            Loc.Bully.ToggleName(toggle))
         {
-            Text = MenuText.Key(Loc.Bully.ToggleName(toggle)),
-            Description = MenuText.Key(Loc.Bully.ToggleDescription(toggle)),
             ReadState = () => _serverToggles.Contains(toggle),
             OnChangedAsync = changed => InvokeAsync(
                 MenuText.Key(changed.Checked ? Loc.Bully.ServerToggleOn : Loc.Bully.ServerToggleOff),
@@ -123,11 +118,7 @@ public sealed class BullyMenu : MenuDefinition
 
         if (entries.Count == 0)
         {
-            entries.Add(new ButtonEntry
-            {
-                Text = MenuText.Key(Loc.Bully.ActiveEmpty),
-                Description = MenuText.Key(Loc.Bully.ActiveEmptyDescription),
-            });
+            entries.Add(new ButtonEntry(Loc.Bully.ActiveEmpty));
         }
 
         active.ClearEntries();

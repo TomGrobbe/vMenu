@@ -23,18 +23,14 @@ public sealed class PropSpawnerMenu : MenuDefinition
     {
         menu.OnOpened = _ => MenuRegistry.Refresh(menu.Menu);
 
-        menu.Entries.Add(new ButtonEntry
+        menu.Entries.Add(new ButtonEntry(Loc.PropSpawner.SpawnByName)
         {
-            Text = MenuText.Key(Loc.PropSpawner.SpawnByName),
-            Description = MenuText.Key(Loc.PropSpawner.SpawnByNameDescription),
             Gate = PropSpawnerPermissions.Spawn,
             OnSelectedAsync = _ => SpawnByNameAsync(),
         });
 
-        menu.Entries.Add(new SubmenuEntry
+        menu.Entries.Add(new SubmenuEntry(Loc.PropSpawner.Recents)
         {
-            Text = MenuText.Key(Loc.PropSpawner.Recents),
-            Description = MenuText.Key(Loc.PropSpawner.RecentsDescription),
             MenuSubtitle = MenuText.Key(Loc.PropSpawner.RecentsSubtitle),
             Gate = PropSpawnerPermissions.Spawn,
             Build = BuildRecents,
@@ -42,28 +38,22 @@ public sealed class PropSpawnerMenu : MenuDefinition
 
         menu.Entries.Add(SubmenuEntry.For(new SavedPropSetsMenu()));
 
-        menu.Entries.Add(new CheckboxEntry
+        menu.Entries.Add(new CheckboxEntry(Loc.PropSpawner.Networked)
         {
-            Text = MenuText.Key(Loc.PropSpawner.Networked),
-            Description = MenuText.Key(Loc.PropSpawner.NetworkedDescription),
             LockedDescription = MenuText.Key(Loc.PropSpawner.NetworkedLocked),
             Gate = PropSpawnerPermissions.Networked,
             ReadState = () => PropSpawnOptions.Networked,
             OnChanged = changed => PropSpawnOptions.SetNetworked(changed.Checked),
         });
 
-        menu.Entries.Add(new CheckboxEntry
+        menu.Entries.Add(new CheckboxEntry(Loc.PropSpawner.Frozen)
         {
-            Text = MenuText.Key(Loc.PropSpawner.Frozen),
-            Description = MenuText.Key(Loc.PropSpawner.FrozenDescription),
             ReadState = () => PropSpawnOptions.Frozen,
             OnChanged = changed => PropSpawnOptions.SetFrozen(changed.Checked),
         });
 
-        menu.Entries.Add(new CheckboxEntry
+        menu.Entries.Add(new CheckboxEntry(Loc.PropSpawner.SnapToGround)
         {
-            Text = MenuText.Key(Loc.PropSpawner.SnapToGround),
-            Description = MenuText.Key(Loc.PropSpawner.SnapToGroundDescription),
             ReadState = () => PropSpawnOptions.SnapToGround,
             OnChanged = changed => PropSpawnOptions.SetSnapToGround(changed.Checked),
         });
@@ -83,20 +73,16 @@ public sealed class PropSpawnerMenu : MenuDefinition
             },
         });
 
-        menu.Entries.Add(new SubmenuEntry
+        menu.Entries.Add(new SubmenuEntry(Loc.PropSpawner.Nearby)
         {
-            Text = MenuText.Key(Loc.PropSpawner.Nearby),
-            Description = MenuText.Key(Loc.PropSpawner.NearbyDescription),
             MenuSubtitle = MenuText.Key(Loc.PropSpawner.NearbySubtitle),
             Gate = MenuGate.Permission(PropSpawnerPermissions.Delete)
                 | MenuGate.Permission(PropSpawnerPermissions.Manage),
             Build = NearbyProps.Build,
         });
 
-        menu.Entries.Add(new ConfirmButtonEntry
+        menu.Entries.Add(new ConfirmButtonEntry(Loc.PropSpawner.DeleteAll)
         {
-            Text = MenuText.Key(Loc.PropSpawner.DeleteAll),
-            Description = MenuText.Key(Loc.PropSpawner.DeleteAllDescription),
             ConfirmationDescription = MenuText.Key(Loc.PropSpawner.DeleteAllConfirm),
             Gate = PropSpawnerPermissions.Delete,
             ReadEnabled = () => SpawnedProps.Count > 0,
@@ -142,10 +128,8 @@ public sealed class PropSpawnerMenu : MenuDefinition
         {
             return
             [
-                new ButtonEntry
+                new ButtonEntry(Loc.PropSpawner.RecentsEmpty)
                 {
-                    Text = MenuText.Key(Loc.PropSpawner.RecentsEmpty),
-                    Description = MenuText.Key(Loc.PropSpawner.RecentsEmptyDescription),
                     ReadEnabled = static () => false,
                 },
             ];

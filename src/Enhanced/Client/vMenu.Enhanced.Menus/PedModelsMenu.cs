@@ -35,10 +35,8 @@ public sealed class PedModelsMenu : MenuDefinition
 
     protected override void Build(MenuBuilder menu)
     {
-        menu.Entries.Add(new ButtonEntry
+        menu.Entries.Add(new ButtonEntry(Loc.PedModels.SpawnByName)
         {
-            Text = MenuText.Key(Loc.PedModels.SpawnByName),
-            Description = MenuText.Key(Loc.PedModels.SpawnByNameDescription),
             Gate = PedModelsPermissions.SpawnByName,
             OnSelectedAsync = _ => SpawnByNameAsync(),
         });
@@ -69,11 +67,7 @@ public sealed class PedModelsMenu : MenuDefinition
         {
             // A row rather than an empty menu, so the reason is on screen instead of leaving the player
             // wondering whether something is broken.
-            menu.Entries.Add(new ButtonEntry
-            {
-                Text = MenuText.Key(Loc.PedModels.Empty),
-                Description = MenuText.Key(Loc.PedModels.EmptyDescription),
-            });
+            menu.Entries.Add(new ButtonEntry(Loc.PedModels.Empty));
         }
     }
 

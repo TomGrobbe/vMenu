@@ -31,11 +31,8 @@ internal static class DirtSection
             options.Add(MenuText.Key(Loc.VehicleOptions.DirtValue, ("number", MenuText.Literal(number))));
         }
 
-        return new ListEntry
+        return new ListEntry(Loc.VehicleOptions.DirtLevel, options)
         {
-            Text = MenuText.Key(Loc.VehicleOptions.DirtLevel),
-            Description = MenuText.Key(Loc.VehicleOptions.DirtLevelDescription),
-            Options = options,
             Gate = gate,
             ReadSelectedIndex = () => SectionRows.Driven() is { } handle
                 ? Math.Clamp((int)API.GetVehicleDirtLevel(handle), 0, MaxDirt)

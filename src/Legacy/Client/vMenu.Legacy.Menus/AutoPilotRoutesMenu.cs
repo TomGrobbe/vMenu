@@ -95,19 +95,15 @@ public sealed class AutoPilotRoutesMenu : MenuDefinition
     {
         var rows = new List<MenuEntry>
         {
-            AutoPilotRows.Group(Loc.AutoPilot.GroupPoints, Loc.AutoPilot.GroupPointsDescription),
+            new SeparatorEntry(Loc.AutoPilot.GroupPoints),
 
-            new ButtonEntry
+            new ButtonEntry(Loc.AutoPilot.SavePosition)
             {
-                Text = MenuText.Key(Loc.AutoPilot.SavePosition),
-                Description = MenuText.Key(Loc.AutoPilot.SavePositionDescription),
                 OnSelectedAsync = _ => SavePointAsync(Here()),
             },
 
-            new ButtonEntry
+            new ButtonEntry(Loc.AutoPilot.SaveWaypoint)
             {
-                Text = MenuText.Key(Loc.AutoPilot.SaveWaypoint),
-                Description = MenuText.Key(Loc.AutoPilot.SaveWaypointDescription),
                 ReadEnabled = API.IsWaypointActive,
                 OnSelectedAsync = _ => SaveWaypointAsync(),
             },
@@ -117,7 +113,7 @@ public sealed class AutoPilotRoutesMenu : MenuDefinition
 
         if (points.Count == 0)
         {
-            rows.Add(AutoPilotRows.Placeholder(Loc.AutoPilot.PointsEmpty, Loc.AutoPilot.PointsEmptyDescription));
+            rows.Add(AutoPilotRows.Placeholder(Loc.AutoPilot.PointsEmpty));
         }
 
         foreach (var entry in points)
@@ -140,12 +136,10 @@ public sealed class AutoPilotRoutesMenu : MenuDefinition
             });
         }
 
-        rows.Add(AutoPilotRows.Group(Loc.AutoPilot.GroupPaths, Loc.AutoPilot.GroupPathsDescription));
+        rows.Add(new SeparatorEntry(Loc.AutoPilot.GroupPaths));
 
-        rows.Add(new ButtonEntry
+        rows.Add(new ButtonEntry(Loc.AutoPilot.RecordPath)
         {
-            Text = MenuText.Key(Loc.AutoPilot.RecordPath),
-            Description = MenuText.Key(Loc.AutoPilot.RecordPathDescription),
             Label = MenuText.Literal("→"),
             OnSelected = _ => _recorderMenu?.Open(),
         });
@@ -154,7 +148,7 @@ public sealed class AutoPilotRoutesMenu : MenuDefinition
 
         if (paths.Count == 0)
         {
-            rows.Add(AutoPilotRows.Placeholder(Loc.AutoPilot.PathsEmpty, Loc.AutoPilot.PathsEmptyDescription));
+            rows.Add(AutoPilotRows.Placeholder(Loc.AutoPilot.PathsEmpty));
 
             return rows;
         }
@@ -195,10 +189,8 @@ public sealed class AutoPilotRoutesMenu : MenuDefinition
             return rows;
         }
 
-        rows.Add(new ButtonEntry
+        rows.Add(new ButtonEntry(Loc.AutoPilot.PointDriveHere)
         {
-            Text = MenuText.Key(Loc.AutoPilot.PointDriveHere),
-            Description = MenuText.Key(Loc.AutoPilot.PointDriveHereDescription),
             OnSelected = _ =>
             {
                 if (VehicleAutoPilot.DriveToPoint(entry.Point))
@@ -208,18 +200,14 @@ public sealed class AutoPilotRoutesMenu : MenuDefinition
             },
         });
 
-        rows.Add(new ButtonEntry
+        rows.Add(new ButtonEntry(Loc.AutoPilot.PointRename)
         {
-            Text = MenuText.Key(Loc.AutoPilot.PointRename),
-            Description = MenuText.Key(Loc.AutoPilot.PointRenameDescription),
             ReadEnabled = () => !entry.IsFromNewerBuild,
             OnSelectedAsync = _ => RenamePointAsync(entry),
         });
 
-        rows.Add(new ConfirmButtonEntry
+        rows.Add(new ConfirmButtonEntry(Loc.AutoPilot.PointDelete)
         {
-            Text = MenuText.Key(Loc.AutoPilot.PointDelete),
-            Description = MenuText.Key(Loc.AutoPilot.PointDeleteDescription),
             ConfirmationDescription = MenuText.Key(Loc.AutoPilot.PointDeleteConfirm, ("name", entry.Point.Name)),
             OnConfirmed = _ =>
             {
@@ -339,10 +327,8 @@ public sealed class AutoPilotRoutesMenu : MenuDefinition
             return rows;
         }
 
-        rows.Add(new ButtonEntry
+        rows.Add(new ButtonEntry(Loc.AutoPilot.PathReplay)
         {
-            Text = MenuText.Key(Loc.AutoPilot.PathReplay),
-            Description = MenuText.Key(Loc.AutoPilot.PathReplayDescription),
             OnSelected = _ =>
             {
                 if (VehicleAutoPilot.ReplayPath(entry.Path))
@@ -355,26 +341,20 @@ public sealed class AutoPilotRoutesMenu : MenuDefinition
             },
         });
 
-        rows.Add(new ButtonEntry
+        rows.Add(new ButtonEntry(Loc.AutoPilot.PathPointsList)
         {
-            Text = MenuText.Key(Loc.AutoPilot.PathPointsList),
-            Description = MenuText.Key(Loc.AutoPilot.PathPointsListDescription),
             Label = MenuText.Literal(entry.Path.Points.Count.ToString(CultureInfo.InvariantCulture)),
             OnSelected = _ => _pathPointsMenu?.Open(),
         });
 
-        rows.Add(new ButtonEntry
+        rows.Add(new ButtonEntry(Loc.AutoPilot.PathRename)
         {
-            Text = MenuText.Key(Loc.AutoPilot.PathRename),
-            Description = MenuText.Key(Loc.AutoPilot.PathRenameDescription),
             ReadEnabled = () => !entry.IsFromNewerBuild,
             OnSelectedAsync = _ => RenamePathAsync(entry),
         });
 
-        rows.Add(new ConfirmButtonEntry
+        rows.Add(new ConfirmButtonEntry(Loc.AutoPilot.PathDelete)
         {
-            Text = MenuText.Key(Loc.AutoPilot.PathDelete),
-            Description = MenuText.Key(Loc.AutoPilot.PathDeleteDescription),
             ConfirmationDescription = MenuText.Key(Loc.AutoPilot.PathDeleteConfirm, ("name", entry.Path.Name)),
             OnConfirmed = _ =>
             {
@@ -512,10 +492,8 @@ public sealed class AutoPilotRoutesMenu : MenuDefinition
                 },
             },
 
-            new ButtonEntry
+            new ButtonEntry(Loc.AutoPilot.RecorderDrop)
             {
-                Text = MenuText.Key(Loc.AutoPilot.RecorderDrop),
-                Description = MenuText.Key(Loc.AutoPilot.RecorderDropDescription),
                 ReadEnabled = () => !PathRecorder.IsFull,
                 OnSelected = _ =>
                 {
@@ -532,10 +510,8 @@ public sealed class AutoPilotRoutesMenu : MenuDefinition
                 },
             },
 
-            new ButtonEntry
+            new ButtonEntry(Loc.AutoPilot.RecorderUndo)
             {
-                Text = MenuText.Key(Loc.AutoPilot.RecorderUndo),
-                Description = MenuText.Key(Loc.AutoPilot.RecorderUndoDescription),
                 ReadEnabled = () => PathRecorder.Count > 0,
                 OnSelected = _ =>
                 {
@@ -548,20 +524,14 @@ public sealed class AutoPilotRoutesMenu : MenuDefinition
                 },
             },
 
-            new CheckboxEntry
+            new CheckboxEntry(Loc.AutoPilot.RecorderAuto)
             {
-                Text = MenuText.Key(Loc.AutoPilot.RecorderAuto),
-                Description = MenuText.Key(Loc.AutoPilot.RecorderAutoDescription),
                 ReadState = () => UserDefaults.AutoPilotAutoRecord.Value,
                 OnChanged = changed => UserDefaults.AutoPilotAutoRecord.Value = changed.Checked,
             },
 
-            new SliderEntry
+            new SliderEntry(Loc.AutoPilot.RecorderSpacing, MinSpacing / SpacingStep, MaxSpacing / SpacingStep)
             {
-                Text = MenuText.Key(Loc.AutoPilot.RecorderSpacing),
-                Description = MenuText.Key(Loc.AutoPilot.RecorderSpacingDescription),
-                Min = MinSpacing / SpacingStep,
-                Max = MaxSpacing / SpacingStep,
                 ReadPosition = () => Math.Clamp(
                     UserDefaults.AutoPilotPathSpacing.Value / SpacingStep,
                     MinSpacing / SpacingStep,
@@ -569,18 +539,14 @@ public sealed class AutoPilotRoutesMenu : MenuDefinition
                 OnMoved = moved => UserDefaults.AutoPilotPathSpacing.Value = moved.NewPosition * SpacingStep,
             },
 
-            new ButtonEntry
+            new ButtonEntry(Loc.AutoPilot.RecorderSave)
             {
-                Text = MenuText.Key(Loc.AutoPilot.RecorderSave),
-                Description = MenuText.Key(Loc.AutoPilot.RecorderSaveDescription),
                 ReadEnabled = () => PathRecorder.Count > 0,
                 OnSelectedAsync = _ => SavePathAsync(),
             },
 
-            new ConfirmButtonEntry
+            new ConfirmButtonEntry(Loc.AutoPilot.RecorderDiscard)
             {
-                Text = MenuText.Key(Loc.AutoPilot.RecorderDiscard),
-                Description = MenuText.Key(Loc.AutoPilot.RecorderDiscardDescription),
                 ConfirmationDescription = MenuText.Key(
                     Loc.AutoPilot.RecorderDiscardConfirm,
                     ("count", MenuText.From(() => PathRecorder.Count.ToString(CultureInfo.InvariantCulture)))),

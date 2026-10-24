@@ -30,10 +30,8 @@ public sealed class RecordingMenu : MenuDefinition
 
         Localizer.Changed += ApplyGalleryText;
 
-        menu.Entries.Add(new ButtonEntry
+        menu.Entries.Add(new ButtonEntry(Loc.RecordingMenu.TakePic)
         {
-            Text = MenuText.Key(Loc.RecordingMenu.TakePic),
-            Description = MenuText.Key(Loc.RecordingMenu.TakePicDescription),
             OnSelected = _ =>
             {
                 API.BeginTakeHighQualityPhoto();
@@ -43,19 +41,15 @@ public sealed class RecordingMenu : MenuDefinition
                 Notifications.Success(MenuText.Key(Loc.RecordingMenu.TakePicDone));
             },
         });
-        menu.Entries.Add(new ButtonEntry
+        menu.Entries.Add(new ButtonEntry(Loc.RecordingMenu.OpenGallery)
         {
-            Text = MenuText.Key(Loc.RecordingMenu.OpenGallery),
-            Description = MenuText.Key(Loc.RecordingMenu.OpenGalleryDescription),
             OnSelected = _ =>
             {
                 API.ActivateFrontendMenu(Hashing.Joaat("FE_MENU_VERSION_MP_PAUSE"), true, 3);
             },
         });
-        menu.Entries.Add(new ButtonEntry
+        menu.Entries.Add(new ButtonEntry(Loc.RecordingMenu.StartStopRecording)
         {
-            Text = MenuText.Key(Loc.RecordingMenu.StartStopRecording),
-            Description = MenuText.Key(Loc.RecordingMenu.StartStopRecordingDescription),
             OnSelected = _ =>
             {
                 if (!API.IsRecording())
@@ -72,10 +66,8 @@ public sealed class RecordingMenu : MenuDefinition
                 }
             },
         });
-        menu.Entries.Add(new ButtonEntry
+        menu.Entries.Add(new ButtonEntry(Loc.RecordingMenu.CancelRecording)
         {
-            Text = MenuText.Key(Loc.RecordingMenu.CancelRecording),
-            Description = MenuText.Key(Loc.RecordingMenu.CancelRecordingDescription),
             OnSelected = _ =>
             {
                 if (!API.IsRecording())
@@ -90,10 +82,8 @@ public sealed class RecordingMenu : MenuDefinition
                 Notifications.Info(MenuText.Key(Loc.RecordingMenu.RecordingCancelled));
             },
         });
-        menu.Entries.Add(new ButtonEntry
+        menu.Entries.Add(new ButtonEntry(Loc.RecordingMenu.OpenRockstarEditor)
         {
-            Text = MenuText.Key(Loc.RecordingMenu.OpenRockstarEditor),
-            Description = MenuText.Key(Loc.RecordingMenu.OpenRockstarEditorDescription),
             OnSelectedAsync = async _ =>
             {
                 API.NetworkStartSoloTutorialSession();

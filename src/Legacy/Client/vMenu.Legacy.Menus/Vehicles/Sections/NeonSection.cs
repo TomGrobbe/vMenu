@@ -42,10 +42,8 @@ internal static class NeonSection
             Tube(Loc.VehicleOptions.NeonLeft, Left),
             Tube(Loc.VehicleOptions.NeonRight, Right),
             ColorRow(),
-            new SubmenuEntry
+            new SubmenuEntry(Loc.VehicleOptions.CustomColor)
             {
-                Text = MenuText.Key(Loc.VehicleOptions.CustomColor),
-                Description = MenuText.Key(Loc.VehicleOptions.CustomColorDescription),
                 MenuSubtitle = MenuText.Key(Loc.VehicleOptions.NeonColor),
                 Build = rgb => RgbPicker.Build(rgb, Target()),
             },
@@ -100,11 +98,8 @@ internal static class NeonSection
             options.Add(GameLabels.GameOrLiteral(color.GxtKey, GameLabels.Humanise(color.GxtKey)));
         }
 
-        return new ListEntry
+        return new ListEntry(Loc.VehicleOptions.NeonColor, options)
         {
-            Text = MenuText.Key(Loc.VehicleOptions.NeonColor),
-            Description = MenuText.Key(Loc.VehicleOptions.NeonColorDescription),
-            Options = options,
             ReadSelectedIndex = () =>
             {
                 if (Target().Read() is not { } current)

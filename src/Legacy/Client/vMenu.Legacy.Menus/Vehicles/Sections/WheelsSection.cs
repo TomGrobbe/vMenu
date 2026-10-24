@@ -43,10 +43,8 @@ internal static class WheelsSection
             // the vehicle rather than to the press.
             CheckboxEntry? customTyres = null;
 
-            customTyres = new CheckboxEntry
+            customTyres = new CheckboxEntry(Loc.VehicleOptions.CustomTyres)
             {
-                Text = MenuText.Key(Loc.VehicleOptions.CustomTyres),
-                Description = MenuText.Key(Loc.VehicleOptions.CustomTyresDescription),
                 ReadState = ReadCustomTyres,
                 OnChanged = changed =>
                 {
@@ -87,10 +85,8 @@ internal static class WheelsSection
 
         if (API.GetGameBuildNumber() >= DriftTyresBuild)
         {
-            rows.Add(new CheckboxEntry
+            rows.Add(new CheckboxEntry(Loc.VehicleOptions.DriftTyres)
             {
-                Text = MenuText.Key(Loc.VehicleOptions.DriftTyres),
-                Description = MenuText.Key(Loc.VehicleOptions.DriftTyresDescription),
                 ReadState = () => SectionRows.Driven() is { } current && API.GetDriftTyresEnabled(current),
                 OnChanged = changed => SetDriftTyres(changed.Checked),
             });
@@ -108,11 +104,8 @@ internal static class WheelsSection
             options.Add(MenuText.Key(key));
         }
 
-        return new ListEntry
+        return new ListEntry(Loc.VehicleOptions.WheelType, options)
         {
-            Text = MenuText.Key(Loc.VehicleOptions.WheelType),
-            Description = MenuText.Key(Loc.VehicleOptions.WheelTypeDescription),
-            Options = options,
             ReadSelectedIndex = () => SectionRows.Driven() is { } handle
                 ? Math.Clamp(API.GetVehicleWheelType(handle), 0, options.Count - 1)
                 : 0,

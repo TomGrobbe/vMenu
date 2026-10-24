@@ -20,29 +20,20 @@ public sealed class DataTransferMenu : MenuDefinition
             Description = MenuText.From(Describe),
         });
 
-        menu.Entries.Add(new ButtonEntry
+        menu.Entries.Add(new ButtonEntry(Loc.DataTransfer.Export)
         {
-            Text = MenuText.Key(Loc.DataTransfer.Export),
-            Description = MenuText.Key(Loc.DataTransfer.ExportDescription),
             OnSelectedAsync = _ => DataTransfer.ExportAsync(),
         });
 
-        menu.Entries.Add(new SeparatorEntry
-        {
-            Text = MenuText.Key(Loc.DataTransfer.ImportGroup),
-        });
+        menu.Entries.Add(new SeparatorEntry(Loc.DataTransfer.ImportGroup));
 
-        menu.Entries.Add(new ButtonEntry
+        menu.Entries.Add(new ButtonEntry(Loc.DataTransfer.Merge)
         {
-            Text = MenuText.Key(Loc.DataTransfer.Merge),
-            Description = MenuText.Key(Loc.DataTransfer.MergeDescription),
             OnSelectedAsync = _ => DataTransfer.ImportAsync(KvpImportMode.Merge),
         });
 
-        menu.Entries.Add(new ConfirmButtonEntry
+        menu.Entries.Add(new ConfirmButtonEntry(Loc.DataTransfer.Replace)
         {
-            Text = MenuText.Key(Loc.DataTransfer.Replace),
-            Description = MenuText.Key(Loc.DataTransfer.ReplaceDescription),
             ConfirmationDescription = MenuText.Key(Loc.DataTransfer.ReplaceConfirm),
             OnConfirmedAsync = _ => DataTransfer.ImportAsync(KvpImportMode.Replace),
         });

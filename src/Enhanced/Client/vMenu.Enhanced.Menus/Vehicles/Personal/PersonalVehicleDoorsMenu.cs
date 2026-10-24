@@ -60,17 +60,13 @@ public sealed class PersonalVehicleDoorsMenu : MenuDefinition
             });
         }
 
-        rows.Add(new ButtonEntry
+        rows.Add(new ButtonEntry(Loc.PersonalVehicle.OpenAllDoors)
         {
-            Text = MenuText.Key(Loc.PersonalVehicle.OpenAllDoors),
-            Description = MenuText.Key(Loc.PersonalVehicle.OpenAllDoorsDescription),
             OnSelectedAsync = _ => PersonalVehicle.SetAllDoorsAsync(open: true),
         });
 
-        rows.Add(new ButtonEntry
+        rows.Add(new ButtonEntry(Loc.PersonalVehicle.ShutAllDoors)
         {
-            Text = MenuText.Key(Loc.PersonalVehicle.ShutAllDoors),
-            Description = MenuText.Key(Loc.PersonalVehicle.ShutAllDoorsDescription),
             OnSelectedAsync = _ => PersonalVehicle.SetAllDoorsAsync(open: false),
         });
 

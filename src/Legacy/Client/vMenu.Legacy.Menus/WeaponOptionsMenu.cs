@@ -53,10 +53,8 @@ public sealed class WeaponOptionsMenu : MenuDefinition
     {
         BuildTopLevel(menu);
 
-        menu.Entries.Add(new SubmenuEntry
+        menu.Entries.Add(new SubmenuEntry(Loc.WeaponOptions.Parachute)
         {
-            Text = MenuText.Key(Loc.WeaponOptions.Parachute),
-            Description = MenuText.Key(Loc.WeaponOptions.ParachuteDescription),
             MenuTitle = MenuText.Key(Loc.WeaponOptions.Title),
             MenuSubtitle = MenuText.Key(Loc.WeaponOptions.ParachuteSubtitle),
             Gate = WeaponOptionsPermissions.Parachute,
@@ -81,11 +79,7 @@ public sealed class WeaponOptionsMenu : MenuDefinition
 
         if (_categories.Length > 0)
         {
-            menu.Entries.Add(new SeparatorEntry
-            {
-                Text = MenuText.Key(Loc.WeaponOptions.GroupCategories),
-                Description = MenuText.Key(Loc.WeaponOptions.GroupCategoriesDescription),
-            });
+            menu.Entries.Add(new SeparatorEntry(Loc.WeaponOptions.GroupCategories));
         }
 
         foreach (var category in _categories)
@@ -107,20 +101,14 @@ public sealed class WeaponOptionsMenu : MenuDefinition
 
         if (_categories.Length == 0)
         {
-            menu.Entries.Add(new ButtonEntry
-            {
-                Text = MenuText.Key(Loc.WeaponOptions.Empty),
-                Description = MenuText.Key(Loc.WeaponOptions.EmptyDescription),
-            });
+            menu.Entries.Add(new ButtonEntry(Loc.WeaponOptions.Empty));
         }
     }
 
     private void BuildTopLevel(MenuBuilder menu)
     {
-        menu.Entries.Add(new ButtonEntry
+        menu.Entries.Add(new ButtonEntry(Loc.WeaponOptions.GetAll)
         {
-            Text = MenuText.Key(Loc.WeaponOptions.GetAll),
-            Description = MenuText.Key(Loc.WeaponOptions.GetAllDescription),
             Gate = WeaponOptionsPermissions.GetAll,
             OnSelected = _ => Notifications.Success(
                 MenuText.Key(
@@ -129,10 +117,8 @@ public sealed class WeaponOptionsMenu : MenuDefinition
                 Notifications.SpawnDurationMs),
         });
 
-        menu.Entries.Add(new ButtonEntry
+        menu.Entries.Add(new ButtonEntry(Loc.WeaponOptions.RemoveAll)
         {
-            Text = MenuText.Key(Loc.WeaponOptions.RemoveAll),
-            Description = MenuText.Key(Loc.WeaponOptions.RemoveAllDescription),
             Gate = WeaponOptionsPermissions.RemoveAll,
             OnSelected = _ =>
             {
@@ -142,46 +128,36 @@ public sealed class WeaponOptionsMenu : MenuDefinition
             },
         });
 
-        menu.Entries.Add(new CheckboxEntry
+        menu.Entries.Add(new CheckboxEntry(Loc.WeaponOptions.UnlimitedAmmo)
         {
-            Text = MenuText.Key(Loc.WeaponOptions.UnlimitedAmmo),
-            Description = MenuText.Key(Loc.WeaponOptions.UnlimitedAmmoDescription),
             Gate = WeaponOptionsPermissions.UnlimitedAmmo,
             ReadState = () => WeaponUnlimitedAmmo.Enabled,
             OnChanged = changed => WeaponUnlimitedAmmo.SetEnabled(changed.Checked),
         });
 
-        menu.Entries.Add(new CheckboxEntry
+        menu.Entries.Add(new CheckboxEntry(Loc.WeaponOptions.NoReload)
         {
-            Text = MenuText.Key(Loc.WeaponOptions.NoReload),
-            Description = MenuText.Key(Loc.WeaponOptions.NoReloadDescription),
             Gate = WeaponOptionsPermissions.NoReload,
             ReadState = () => WeaponNoReload.Enabled,
             OnChanged = changed => WeaponNoReload.SetEnabled(changed.Checked),
         });
 
-        menu.Entries.Add(new ButtonEntry
+        menu.Entries.Add(new ButtonEntry(Loc.WeaponOptions.SetAllAmmo)
         {
-            Text = MenuText.Key(Loc.WeaponOptions.SetAllAmmo),
-            Description = MenuText.Key(Loc.WeaponOptions.SetAllAmmoDescription),
             Gate = WeaponOptionsPermissions.SetAllAmmo,
             OnSelectedAsync = _ => SetAllAmmoAsync(),
         });
 
-        menu.Entries.Add(new ButtonEntry
+        menu.Entries.Add(new ButtonEntry(Loc.WeaponOptions.RefillAll)
         {
-            Text = MenuText.Key(Loc.WeaponOptions.RefillAll),
-            Description = MenuText.Key(Loc.WeaponOptions.RefillAllDescription),
             Gate = WeaponOptionsPermissions.SetAllAmmo,
             OnSelected = _ => Notifications.Success(MenuText.Key(
                 Loc.WeaponOptions.RefillAllDone,
                 ("count", MenuText.Literal(WeaponInventory.RefillAll().ToString(CultureInfo.InvariantCulture))))),
         });
 
-        menu.Entries.Add(new ButtonEntry
+        menu.Entries.Add(new ButtonEntry(Loc.WeaponOptions.SpawnByName)
         {
-            Text = MenuText.Key(Loc.WeaponOptions.SpawnByName),
-            Description = MenuText.Key(Loc.WeaponOptions.SpawnByNameDescription),
             Gate = WeaponOptionsPermissions.SpawnByName,
             OnSelectedAsync = _ => SpawnByNameAsync(),
         });
@@ -273,10 +249,8 @@ public sealed class WeaponOptionsMenu : MenuDefinition
             },
         });
 
-        weaponMenu.Add(new ButtonEntry
+        weaponMenu.Add(new ButtonEntry(Loc.WeaponOptions.RefillAmmo)
         {
-            Text = MenuText.Key(Loc.WeaponOptions.RefillAmmo),
-            Description = MenuText.Key(Loc.WeaponOptions.RefillAmmoDescription),
             Label = MenuText.From(() => AmmoLabel(hash)),
             LeftIcon = MenuItem.Icon.AMMO,
             WeaponStats = () => WeaponStatistics.For(hash),
@@ -291,11 +265,8 @@ public sealed class WeaponOptionsMenu : MenuDefinition
             },
         });
 
-        weaponMenu.Add(new ListEntry
+        weaponMenu.Add(new ListEntry(Loc.WeaponOptions.Tints, WeaponTints.Options(WeaponInventory.TintCount(hash)))
         {
-            Text = MenuText.Key(Loc.WeaponOptions.Tints),
-            Description = MenuText.Key(Loc.WeaponOptions.TintsDescription),
-            Options = WeaponTints.Options(WeaponInventory.TintCount(hash)),
             Gate = WeaponOptionsPermissions.Modify,
             WeaponStats = () => WeaponStatistics.For(hash),
             ReadSelectedIndex = () => WeaponInventory.Tint(hash),
@@ -347,19 +318,15 @@ public sealed class WeaponOptionsMenu : MenuDefinition
 
     private void BuildParachuteMenu(MenuBuilder parachuteMenu)
     {
-        parachuteMenu.Entries.Add(new ButtonEntry
+        parachuteMenu.Entries.Add(new ButtonEntry(Loc.WeaponOptions.TogglePrimary)
         {
-            Text = MenuText.Key(Loc.WeaponOptions.TogglePrimary),
-            Description = MenuText.Key(Loc.WeaponOptions.TogglePrimaryDescription),
             OnSelected = _ => Notifications.Success(MenuText.Key(ParachuteOptions.TogglePrimary()
                 ? Loc.WeaponOptions.PrimaryAdded
                 : Loc.WeaponOptions.PrimaryRemoved)),
         });
 
-        parachuteMenu.Entries.Add(new ButtonEntry
+        parachuteMenu.Entries.Add(new ButtonEntry(Loc.WeaponOptions.EnableReserve)
         {
-            Text = MenuText.Key(Loc.WeaponOptions.EnableReserve),
-            Description = MenuText.Key(Loc.WeaponOptions.EnableReserveDescription),
             OnSelected = _ =>
             {
                 ParachuteOptions.EnableReserve();
@@ -368,27 +335,22 @@ public sealed class WeaponOptionsMenu : MenuDefinition
             },
         });
 
-        parachuteMenu.Entries.Add(new CheckboxEntry
+        parachuteMenu.Entries.Add(new CheckboxEntry(Loc.WeaponOptions.AutoEquip)
         {
-            Text = MenuText.Key(Loc.WeaponOptions.AutoEquip),
-            Description = MenuText.Key(Loc.WeaponOptions.AutoEquipDescription),
             ReadState = () => ParachuteOptions.AutoEquipEnabled,
             OnChanged = changed => ParachuteOptions.SetAutoEquip(changed.Checked),
         });
 
-        parachuteMenu.Entries.Add(new CheckboxEntry
+        parachuteMenu.Entries.Add(new CheckboxEntry(Loc.WeaponOptions.UnlimitedParachutes)
         {
-            Text = MenuText.Key(Loc.WeaponOptions.UnlimitedParachutes),
-            Description = MenuText.Key(Loc.WeaponOptions.UnlimitedParachutesDescription),
             ReadState = () => ParachuteOptions.UnlimitedEnabled,
             OnChanged = changed => ParachuteOptions.SetUnlimited(changed.Checked),
         });
 
-        parachuteMenu.Entries.Add(new ListEntry
+        parachuteMenu.Entries.Add(new ListEntry(
+            Loc.WeaponOptions.SmokeColor,
+            [.. Enumerable.Range(0, ParachuteOptions.SmokeCount).Select(ParachuteOptions.SmokeName)])
         {
-            Text = MenuText.Key(Loc.WeaponOptions.SmokeColor),
-            Description = MenuText.Key(Loc.WeaponOptions.SmokeColorDescription),
-            Options = [.. Enumerable.Range(0, ParachuteOptions.SmokeCount).Select(ParachuteOptions.SmokeName)],
             // Applied on select rather than as the player scrolls: each change takes a few seconds, during which
             // the trail cannot be used.
             OnSelectedAsync = async selected =>
@@ -399,19 +361,17 @@ public sealed class WeaponOptionsMenu : MenuDefinition
             },
         });
 
-        parachuteMenu.Entries.Add(new ListEntry
+        parachuteMenu.Entries.Add(new ListEntry(
+            Loc.WeaponOptions.PrimaryStyle,
+            [.. Enumerable.Range(0, ParachuteOptions.StyleCount).Select(ParachuteOptions.StyleName)])
         {
-            Text = MenuText.Key(Loc.WeaponOptions.PrimaryStyle),
-            Description = MenuText.Key(Loc.WeaponOptions.PrimaryStyleDescription),
-            Options = [.. Enumerable.Range(0, ParachuteOptions.StyleCount).Select(ParachuteOptions.StyleName)],
             OnIndexChanged = changed => ParachuteOptions.SetPrimaryStyle(changed.NewIndex),
         });
 
-        parachuteMenu.Entries.Add(new ListEntry
+        parachuteMenu.Entries.Add(new ListEntry(
+            Loc.WeaponOptions.ReserveStyle,
+            [.. Enumerable.Range(0, ParachuteOptions.StyleCount).Select(ParachuteOptions.StyleName)])
         {
-            Text = MenuText.Key(Loc.WeaponOptions.ReserveStyle),
-            Description = MenuText.Key(Loc.WeaponOptions.ReserveStyleDescription),
-            Options = [.. Enumerable.Range(0, ParachuteOptions.StyleCount).Select(ParachuteOptions.StyleName)],
             OnIndexChanged = changed => ParachuteOptions.SetReserveStyle(changed.NewIndex),
         });
     }

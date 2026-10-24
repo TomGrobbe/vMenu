@@ -29,33 +29,27 @@ public sealed class CharacterCreatorMenu : MenuDefinition
 
         _builder.Finished = _saved.ShowAfterEditing;
 
-        menu.Entries.Add(CreateRow(Loc.CharacterCreator.CreateMale, Loc.CharacterCreator.CreateMaleDescription, male: true));
-        menu.Entries.Add(CreateRow(Loc.CharacterCreator.CreateFemale, Loc.CharacterCreator.CreateFemaleDescription, male: false));
+        menu.Entries.Add(CreateRow(Loc.CharacterCreator.CreateMale, male: true));
+        menu.Entries.Add(CreateRow(Loc.CharacterCreator.CreateFemale, male: false));
 
-        menu.Entries.Add(new ButtonEntry
+        menu.Entries.Add(new ButtonEntry(Loc.CharacterCreator.SaveCurrent)
         {
-            Text = MenuText.Key(Loc.CharacterCreator.SaveCurrent),
-            Description = MenuText.Key(Loc.CharacterCreator.SaveCurrentDescription),
             LockedDescription = MenuText.Key(Loc.CharacterCreator.InVehicle),
             Gate = MenuGate.Permission(CharacterCreatorPermissions.Save) & MenuGate.When(OnFoot),
             Behaviour = GateBehaviour.Lock,
             OnSelectedAsync = _ => AdoptAsync(),
         });
 
-        menu.Entries.Add(new SubmenuEntry
+        menu.Entries.Add(new SubmenuEntry(Loc.CharacterCreator.SavedCharacters)
         {
-            Text = MenuText.Key(Loc.CharacterCreator.SavedCharacters),
-            Description = MenuText.Key(Loc.CharacterCreator.SavedCharactersDescription),
             MenuSubtitle = MenuText.Key(Loc.CharacterCreator.SavedCharactersSubtitle),
             Gate = MenuGate.Permission(CharacterCreatorPermissions.Spawn)
                 | MenuGate.Permission(CharacterCreatorPermissions.Manage),
             Build = _saved.BuildRoot,
         });
 
-        menu.Entries.Add(new SubmenuEntry
+        menu.Entries.Add(new SubmenuEntry(Loc.CharacterCreator.Presets)
         {
-            Text = MenuText.Key(Loc.CharacterCreator.Presets),
-            Description = MenuText.Key(Loc.CharacterCreator.PresetsDescription),
             MenuSubtitle = MenuText.Key(Loc.CharacterCreator.PresetsSubtitle),
             Gate = MenuGate.Permission(CharacterCreatorPermissions.Presets)
                 | MenuGate.Permission(CharacterCreatorPermissions.OnlineOutfits),
@@ -65,10 +59,8 @@ public sealed class CharacterCreatorMenu : MenuDefinition
         menu.OnOpened = _ => MenuRegistry.Refresh(menu.Menu);
     }
 
-    private ButtonEntry CreateRow(string name, string description, bool male) => new()
+    private ButtonEntry CreateRow(string textKey, bool male) => new(textKey)
     {
-        Text = MenuText.Key(name),
-        Description = MenuText.Key(description),
         LockedDescription = MenuText.Key(Loc.CharacterCreator.InVehicle),
         Label = MenuText.Literal("→"),
         Gate = MenuGate.Permission(CharacterCreatorPermissions.Create) & MenuGate.When(OnFoot),

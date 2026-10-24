@@ -88,35 +88,27 @@ public sealed class VehicleSpawnerMenu : MenuDefinition
 
     protected override void Build(MenuBuilder menu)
     {
-        menu.Entries.Add(new ButtonEntry
+        menu.Entries.Add(new ButtonEntry(Loc.VehicleSpawner.SpawnByName)
         {
-            Text = MenuText.Key(Loc.VehicleSpawner.SpawnByName),
-            Description = MenuText.Key(Loc.VehicleSpawner.SpawnByNameDescription),
             Gate = VehicleSpawnerPermissions.SpawnByName,
             OnSelectedAsync = _ => SpawnByNameAsync(),
         });
 
-        menu.Entries.Add(new SubmenuEntry
+        menu.Entries.Add(new SubmenuEntry(Loc.VehicleSpawner.SpawnByCategory)
         {
-            Text = MenuText.Key(Loc.VehicleSpawner.SpawnByCategory),
-            Description = MenuText.Key(Loc.VehicleSpawner.SpawnByCategoryDescription),
             MenuTitle = MenuText.Key(Loc.VehicleSpawner.Title),
             MenuSubtitle = MenuText.Key(Loc.VehicleSpawner.SpawnByCategorySubtitle),
             Build = BuildCategoryList,
         });
 
-        menu.Entries.Add(new CheckboxEntry
+        menu.Entries.Add(new CheckboxEntry(Loc.VehicleSpawner.SpawnInside)
         {
-            Text = MenuText.Key(Loc.VehicleSpawner.SpawnInside),
-            Description = MenuText.Key(Loc.VehicleSpawner.SpawnInsideDescription),
             ReadState = () => VehicleSpawnOptions.SpawnInside,
             OnChanged = changed => VehicleSpawnOptions.SetSpawnInside(changed.Checked),
         });
 
-        menu.Entries.Add(new CheckboxEntry
+        menu.Entries.Add(new CheckboxEntry(Loc.VehicleSpawner.ReplacePrevious)
         {
-            Text = MenuText.Key(Loc.VehicleSpawner.ReplacePrevious),
-            Description = MenuText.Key(Loc.VehicleSpawner.ReplacePreviousDescription),
             LockedDescription = MenuText.Key(Loc.VehicleSpawner.ReplacePreviousLocked),
             Gate = VehicleSpawnerPermissions.AllowKeepPreviousVehicle,
             ReadState = () => VehicleSpawnOptions.ReplacePrevious,

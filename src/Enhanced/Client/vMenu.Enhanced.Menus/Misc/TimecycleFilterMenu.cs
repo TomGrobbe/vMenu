@@ -51,10 +51,8 @@ internal sealed class TimecycleFilterMenu(bool favoritesOnly)
     {
         _menu = menu;
 
-        menu.Entries.Add(new ButtonEntry
+        menu.Entries.Add(new ButtonEntry(Loc.DisplaySettings.TimecycleFilter)
         {
-            Text = MenuText.Key(Loc.DisplaySettings.TimecycleFilter),
-            Description = MenuText.Key(Loc.DisplaySettings.TimecycleFilterDescription),
             OnSelectedAsync = _ => PromptAsync(),
         });
 

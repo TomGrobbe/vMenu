@@ -38,13 +38,11 @@ internal static class CharacterInheritanceRows
 
         menu.Entries.Add(MixRow(
             Loc.CharacterCreator.ShapeMix,
-            Loc.CharacterCreator.ShapeMixDescription,
             core => core.Blend.ShapeMix,
             (core, mix) => core.Blend.ShapeMix = mix));
 
         menu.Entries.Add(MixRow(
             Loc.CharacterCreator.SkinMix,
-            Loc.CharacterCreator.SkinMixDescription,
             core => core.Blend.SkinMix,
             (core, mix) => core.Blend.SkinMix = mix));
 
@@ -87,18 +85,13 @@ internal static class CharacterInheritanceRows
     }
 
     private static SliderEntry MixRow(
-        string name,
-        string description,
+        string textKey,
         Func<MpCharacterCore, float> read,
         Action<MpCharacterCore, float> write)
     {
-        return new SliderEntry
+        return new SliderEntry(textKey, 0, MixSteps)
         {
-            Text = MenuText.Key(name),
-            Description = MenuText.Key(description),
             Gate = CharacterCreatorPermissions.Create,
-            Min = 0,
-            Max = MixSteps,
             Configure = item => item.ItemData = CameraFocus.Head,
             ReadPosition = () => CharacterEdit.Draft?.Core is { } core
                 ? (int)Math.Round(read(core) * MixSteps)

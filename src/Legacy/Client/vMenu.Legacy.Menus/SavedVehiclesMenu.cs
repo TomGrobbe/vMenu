@@ -85,17 +85,13 @@ public sealed class SavedVehiclesMenu : MenuDefinition
 
         var rows = new List<MenuEntry>
         {
-            new ButtonEntry
+            new ButtonEntry(Loc.SavedVehicles.SaveCurrent)
             {
-                Text = MenuText.Key(Loc.SavedVehicles.SaveCurrent),
-                Description = MenuText.Key(Loc.SavedVehicles.SaveCurrentDescription),
                 Gate = SavedVehiclesPermissions.Save,
                 OnSelectedAsync = _ => SaveCurrentAsync(),
             },
-            new ButtonEntry
+            new ButtonEntry(Loc.SavedVehicles.CreateCategory)
             {
-                Text = MenuText.Key(Loc.SavedVehicles.CreateCategory),
-                Description = MenuText.Key(Loc.SavedVehicles.CreateCategoryDescription),
                 Gate = SavedVehiclesPermissions.Manage,
                 OnSelectedAsync = _ => CreateCategoryAsync(),
             },
@@ -110,11 +106,7 @@ public sealed class SavedVehiclesMenu : MenuDefinition
 
         if (groups.Count == 0)
         {
-            rows.Add(new ButtonEntry
-            {
-                Text = MenuText.Key(Loc.SavedVehicles.NoVehicles),
-                Description = MenuText.Key(Loc.SavedVehicles.NoVehiclesDescription),
-            });
+            rows.Add(new ButtonEntry(Loc.SavedVehicles.NoVehicles));
 
             return rows;
         }
@@ -166,11 +158,8 @@ public sealed class SavedVehiclesMenu : MenuDefinition
             options.Add(MenuText.Literal(category.Name));
         }
 
-        return new ListEntry
+        return new ListEntry(Loc.SavedVehicles.EditCategory, options)
         {
-            Text = MenuText.Key(Loc.SavedVehicles.EditCategory),
-            Description = MenuText.Key(Loc.SavedVehicles.EditCategoryDescription),
-            Options = options,
             Gate = SavedVehiclesPermissions.Manage,
             OnSelectedAsync = selected => EditCategoryAsync(categories, selected.SelectedIndex),
         };
@@ -187,14 +176,11 @@ public sealed class SavedVehiclesMenu : MenuDefinition
 
         var picked = 0;
 
-        return new ConfirmListEntry
+        return new ConfirmListEntry(Loc.SavedVehicles.DeleteCategory, options)
         {
-            Text = MenuText.Key(Loc.SavedVehicles.DeleteCategory),
-            Description = MenuText.Key(Loc.SavedVehicles.DeleteCategoryDescription),
             ConfirmationDescription = MenuText.Key(
                 Loc.SavedVehicles.DeleteCategoryConfirm,
                 ("name", MenuText.From(() => NameAt(categories, picked)))),
-            Options = options,
             Gate = SavedVehiclesPermissions.Manage,
             OnIndexChanged = changed => picked = changed.NewIndex,
             OnConfirmed = confirmed =>
@@ -231,11 +217,7 @@ public sealed class SavedVehiclesMenu : MenuDefinition
 
         if (rows.Count == 0)
         {
-            rows.Add(new ButtonEntry
-            {
-                Text = MenuText.Key(Loc.SavedVehicles.NoVehicles),
-                Description = MenuText.Key(Loc.SavedVehicles.NoVehiclesDescription),
-            });
+            rows.Add(new ButtonEntry(Loc.SavedVehicles.NoVehicles));
         }
 
         return rows;
@@ -293,11 +275,7 @@ public sealed class SavedVehiclesMenu : MenuDefinition
         {
             return
             [
-                new ButtonEntry
-                {
-                    Text = MenuText.Key(Loc.SavedVehicles.NoVehicles),
-                    Description = MenuText.Key(Loc.SavedVehicles.NoVehiclesDescription),
-                },
+                new ButtonEntry(Loc.SavedVehicles.NoVehicles),
             ];
         }
 
@@ -305,19 +283,15 @@ public sealed class SavedVehiclesMenu : MenuDefinition
 
         var rows = new List<MenuEntry>
         {
-            new ButtonEntry
+            new ButtonEntry(Loc.SavedVehicles.Spawn)
             {
-                Text = MenuText.Key(Loc.SavedVehicles.Spawn),
-                Description = MenuText.Key(Loc.SavedVehicles.SpawnDescription),
                 Gate = SavedVehiclesPermissions.Spawn,
                 OnSelectedAsync = _ => SpawnAsync(entry),
             },
             EditRow(entry),
             MoveRow(entry),
-            new ButtonEntry
+            new ButtonEntry(Loc.SavedVehicles.Duplicate)
             {
-                Text = MenuText.Key(Loc.SavedVehicles.Duplicate),
-                Description = MenuText.Key(Loc.SavedVehicles.DuplicateDescription),
                 Gate = SavedVehiclesPermissions.Save,
                 OnSelectedAsync = _ => DuplicateAsync(entry),
             },
@@ -327,30 +301,24 @@ public sealed class SavedVehiclesMenu : MenuDefinition
         // in it, so the row becomes an offer to save alongside it instead.
         if (entry.IsFromNewerBuild)
         {
-            rows.Add(new ButtonEntry
+            rows.Add(new ButtonEntry(Loc.SavedVehicles.SaveAsNew)
             {
-                Text = MenuText.Key(Loc.SavedVehicles.SaveAsNew),
-                Description = MenuText.Key(Loc.SavedVehicles.SaveAsNewDescription),
                 Gate = SavedVehiclesPermissions.Save,
                 OnSelectedAsync = _ => SaveCurrentAsync(),
             });
         }
         else
         {
-            rows.Add(new ConfirmButtonEntry
+            rows.Add(new ConfirmButtonEntry(Loc.SavedVehicles.Replace)
             {
-                Text = MenuText.Key(Loc.SavedVehicles.Replace),
-                Description = MenuText.Key(Loc.SavedVehicles.ReplaceDescription),
                 ConfirmationDescription = MenuText.Key(Loc.SavedVehicles.ReplaceConfirm, ("name", name)),
                 Gate = SavedVehiclesPermissions.Manage,
                 OnConfirmed = _ => Replace(entry),
             });
         }
 
-        rows.Add(new ConfirmButtonEntry
+        rows.Add(new ConfirmButtonEntry(Loc.SavedVehicles.Delete)
         {
-            Text = MenuText.Key(Loc.SavedVehicles.Delete),
-            Description = MenuText.Key(Loc.SavedVehicles.DeleteDescription),
             ConfirmationDescription = MenuText.Key(Loc.SavedVehicles.DeleteConfirm, ("name", name)),
             Gate = SavedVehiclesPermissions.Manage,
             OnConfirmed = _ => Delete(entry),
@@ -368,10 +336,8 @@ public sealed class SavedVehiclesMenu : MenuDefinition
             Description = MenuText.Key(Loc.SavedVehicles.NewerBuildDescription),
             Gate = MenuGate.Never,
         }
-        : new ButtonEntry
+        : new ButtonEntry(Loc.SavedVehicles.Edit)
         {
-            Text = MenuText.Key(Loc.SavedVehicles.Edit),
-            Description = MenuText.Key(Loc.SavedVehicles.EditDescription),
             Gate = SavedVehiclesPermissions.Manage,
             OnSelectedAsync = _ => EditAsync(entry),
         };
@@ -387,11 +353,8 @@ public sealed class SavedVehiclesMenu : MenuDefinition
             options.Add(group.Length == 0 ? MenuText.Key(Loc.SavedVehicles.Uncategorised) : MenuText.Literal(group));
         }
 
-        return new ListEntry
+        return new ListEntry(Loc.SavedVehicles.MoveToCategory, options)
         {
-            Text = MenuText.Key(Loc.SavedVehicles.MoveToCategory),
-            Description = MenuText.Key(Loc.SavedVehicles.MoveToCategoryDescription),
-            Options = options,
             Gate = SavedVehiclesPermissions.Manage,
             ReadSelectedIndex = () => Math.Max(0, IndexOf(groups, GroupOf(entry))),
 

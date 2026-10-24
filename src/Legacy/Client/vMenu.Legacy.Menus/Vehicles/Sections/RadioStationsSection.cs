@@ -24,10 +24,8 @@ internal static class RadioStationsSection
 
         var rows = new List<MenuEntry>(stations.Count + 1)
         {
-            new ButtonEntry
+            new ButtonEntry(Loc.VehicleOptions.RadioUnblockAll)
             {
-                Text = MenuText.Key(Loc.VehicleOptions.RadioUnblockAll),
-                Description = MenuText.Key(Loc.VehicleOptions.RadioUnblockAllDescription),
                 OnSelected = _ =>
                 {
                     VehicleRadio.ClearBlocked();

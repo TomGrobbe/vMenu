@@ -21,10 +21,8 @@ public sealed class PersonalVehicleMenu : MenuDefinition
 {
     protected override void Build(MenuBuilder menu)
     {
-        menu.Entries.Add(new ButtonEntry
+        menu.Entries.Add(new ButtonEntry(Loc.PersonalVehicle.SetCurrent)
         {
-            Text = MenuText.Key(Loc.PersonalVehicle.SetCurrent),
-            Description = MenuText.Key(Loc.PersonalVehicle.SetCurrentDescription),
             OnSelectedAsync = _ => PersonalVehicle.MarkCurrentAsync(),
         });
 
@@ -36,64 +34,50 @@ public sealed class PersonalVehicleMenu : MenuDefinition
             ReadEnabled = static () => false,
         });
 
-        menu.Entries.Add(new CheckboxEntry
+        menu.Entries.Add(new CheckboxEntry(Loc.PersonalVehicle.ShowBlip)
         {
-            Text = MenuText.Key(Loc.PersonalVehicle.ShowBlip),
-            Description = MenuText.Key(Loc.PersonalVehicle.ShowBlipDescription),
             Gate = PersonalVehiclePermissions.Blip,
             ReadState = static () => PersonalVehicle.BlipWanted,
             OnChanged = changed => PersonalVehicle.SetBlipEnabled(changed.Checked),
         });
 
-        menu.Entries.Add(new ButtonEntry
+        menu.Entries.Add(new ButtonEntry(Loc.PersonalVehicle.Waypoint)
         {
-            Text = MenuText.Key(Loc.PersonalVehicle.Waypoint),
-            Description = MenuText.Key(Loc.PersonalVehicle.WaypointDescription),
             ReadEnabled = static () => PersonalVehicle.IsMarked,
             OnSelected = _ => PersonalVehicle.SetWaypoint(),
         });
 
-        menu.Entries.Add(new ButtonEntry
+        menu.Entries.Add(new ButtonEntry(Loc.PersonalVehicle.Kick)
         {
-            Text = MenuText.Key(Loc.PersonalVehicle.Kick),
-            Description = MenuText.Key(Loc.PersonalVehicle.KickDescription),
             Gate = PersonalVehiclePermissions.Kick,
             ReadEnabled = static () => PersonalVehicle.IsMarked,
             OnSelectedAsync = _ => PersonalVehicle.KickOccupantsAsync(),
         });
 
-        menu.Entries.Add(new ConfirmButtonEntry
+        menu.Entries.Add(new ConfirmButtonEntry(Loc.PersonalVehicle.Delete)
         {
-            Text = MenuText.Key(Loc.PersonalVehicle.Delete),
-            Description = MenuText.Key(Loc.PersonalVehicle.DeleteDescription),
             ConfirmationDescription = MenuText.Key(Loc.PersonalVehicle.DeleteConfirm),
             Gate = PersonalVehiclePermissions.Delete,
             ReadEnabled = static () => PersonalVehicle.IsMarked,
             OnConfirmedAsync = _ => PersonalVehicle.DeleteAsync(),
         });
 
-        menu.Entries.Add(new ButtonEntry
+        menu.Entries.Add(new ButtonEntry(Loc.PersonalVehicle.Forget)
         {
-            Text = MenuText.Key(Loc.PersonalVehicle.Forget),
-            Description = MenuText.Key(Loc.PersonalVehicle.ForgetDescription),
             ReadEnabled = static () => PersonalVehicle.IsMarked,
             OnSelectedAsync = _ => PersonalVehicle.ForgetAsync(),
         });
 
-        menu.Entries.Add(new CheckboxEntry
+        menu.Entries.Add(new CheckboxEntry(Loc.PersonalVehicle.Lock)
         {
-            Text = MenuText.Key(Loc.PersonalVehicle.Lock),
-            Description = MenuText.Key(Loc.PersonalVehicle.LockDescription),
             Gate = PersonalVehiclePermissions.Lock,
             ReadState = static () => PersonalVehicle.IsLocked,
             ReadEnabled = static () => PersonalVehicle.IsMarked,
             OnChangedAsync = changed => PersonalVehicle.SetLockedAsync(changed.Checked),
         });
 
-        menu.Entries.Add(new CheckboxEntry
+        menu.Entries.Add(new CheckboxEntry(Loc.PersonalVehicle.Electrocute)
         {
-            Text = MenuText.Key(Loc.PersonalVehicle.Electrocute),
-            Description = MenuText.Key(Loc.PersonalVehicle.ElectrocuteDescription),
             Gate = MenuGate.Setting(BullySettings.Enabled) & MenuGate.Permission(PersonalVehiclePermissions.Electrocute),
             Behaviour = GateBehaviour.Hide,
             ReadState = static () => PersonalVehicle.IsElectrified,
@@ -101,47 +85,39 @@ public sealed class PersonalVehicleMenu : MenuDefinition
             OnChangedAsync = changed => PersonalVehicle.SetElectrifiedAsync(changed.Checked),
         });
 
-        menu.Entries.Add(new CheckboxEntry
+        menu.Entries.Add(new CheckboxEntry(Loc.PersonalVehicle.Engine)
         {
-            Text = MenuText.Key(Loc.PersonalVehicle.Engine),
-            Description = MenuText.Key(Loc.PersonalVehicle.EngineDescription),
             Gate = PersonalVehiclePermissions.Engine,
             ReadState = static () => PersonalVehicle.IsEngineRunning,
             ReadEnabled = static () => PersonalVehicle.IsMarked,
             OnChangedAsync = changed => PersonalVehicle.SetEngineAsync(changed.Checked),
         });
 
-        menu.Entries.Add(new ListEntry
-        {
-            Text = MenuText.Key(Loc.PersonalVehicle.Lights),
-            Description = MenuText.Key(Loc.PersonalVehicle.LightsDescription),
-            Gate = PersonalVehiclePermissions.Lights,
-            ReadEnabled = static () => PersonalVehicle.IsMarked,
-            Options =
+        menu.Entries.Add(new ListEntry(
+            Loc.PersonalVehicle.Lights,
             [
                 MenuText.Key(Loc.PersonalVehicle.LightsAutomatic),
                 MenuText.Key(Loc.PersonalVehicle.LightsOff),
                 MenuText.Key(Loc.PersonalVehicle.LightsOn),
-            ],
+            ])
+        {
+            Gate = PersonalVehiclePermissions.Lights,
+            ReadEnabled = static () => PersonalVehicle.IsMarked,
             OnSelectedAsync = selected => PersonalVehicle.SetLightsAsync(LightState(selected.SelectedIndex)),
         });
 
         menu.Entries.Add(SubmenuEntry.For(new PersonalVehicleDoorsMenu()));
         menu.Entries.Add(SubmenuEntry.For(new PersonalVehicleWindowsMenu()));
 
-        menu.Entries.Add(new ButtonEntry
+        menu.Entries.Add(new ButtonEntry(Loc.PersonalVehicle.Horn)
         {
-            Text = MenuText.Key(Loc.PersonalVehicle.Horn),
-            Description = MenuText.Key(Loc.PersonalVehicle.HornDescription),
             Gate = PersonalVehiclePermissions.Horn,
             ReadEnabled = static () => PersonalVehicle.IsMarked,
             OnSelectedAsync = _ => PersonalVehicle.PlayHornTuneAsync(),
         });
 
-        menu.Entries.Add(new ConfirmButtonEntry
+        menu.Entries.Add(new ConfirmButtonEntry(Loc.PersonalVehicle.Explode)
         {
-            Text = MenuText.Key(Loc.PersonalVehicle.Explode),
-            Description = MenuText.Key(Loc.PersonalVehicle.ExplodeDescription),
             ConfirmationDescription = MenuText.Key(Loc.PersonalVehicle.ExplodeConfirm),
             Gate = PersonalVehiclePermissions.Explode,
             ReadEnabled = static () => PersonalVehicle.IsMarked,

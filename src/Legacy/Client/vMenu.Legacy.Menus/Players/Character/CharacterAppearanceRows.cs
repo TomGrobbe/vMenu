@@ -184,15 +184,10 @@ internal static class CharacterAppearanceRows
 
     private static DynamicListEntry HairStyleRow()
     {
-        return new DynamicListEntry
-        {
-            Text = MenuText.Key(Loc.CharacterCreator.HairStyle),
-            Description = MenuText.Key(Loc.CharacterCreator.HairRowDescription),
-            Gate = CharacterCreatorPermissions.Create,
-            Configure = item => item.ItemData = CameraFocus.Head,
-            ReadValue = HairValue,
-
-            Change = changing =>
+        return new DynamicListEntry(
+            Loc.CharacterCreator.HairStyle,
+            HairValue,
+            changing =>
             {
                 if (CharacterEdit.Style is { } style)
                 {
@@ -202,7 +197,10 @@ internal static class CharacterAppearanceRows
                 }
 
                 return HairValue();
-            },
+            })
+        {
+            Gate = CharacterCreatorPermissions.Create,
+            Configure = item => item.ItemData = CameraFocus.Head,
         };
     }
 
@@ -248,15 +246,10 @@ internal static class CharacterAppearanceRows
 
     private static DynamicListEntry EyeColourRow()
     {
-        return new DynamicListEntry
-        {
-            Text = MenuText.Key(Loc.CharacterCreator.EyeColour),
-            Description = MenuText.Key(Loc.CharacterCreator.EyeColourRowDescription),
-            Gate = CharacterCreatorPermissions.Create,
-            Configure = item => item.ItemData = CameraFocus.Head,
-            ReadValue = EyeValue,
-
-            Change = changing =>
+        return new DynamicListEntry(
+            Loc.CharacterCreator.EyeColour,
+            EyeValue,
+            changing =>
             {
                 if (CharacterEdit.Draft?.Core is { } core)
                 {
@@ -267,7 +260,10 @@ internal static class CharacterAppearanceRows
                 }
 
                 return EyeValue();
-            },
+            })
+        {
+            Gate = CharacterCreatorPermissions.Create,
+            Configure = item => item.ItemData = CameraFocus.Head,
         };
     }
 

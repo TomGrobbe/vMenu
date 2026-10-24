@@ -44,35 +44,27 @@ public sealed class WeaponLoadoutsMenu : MenuDefinition
         // Rebuilt on every open: saving, renaming and deleting all change what belongs in it.
         _listMenu.Builder.OnOpened = _ => FillList();
 
-        menu.Entries.Add(new ButtonEntry
+        menu.Entries.Add(new ButtonEntry(Loc.WeaponLoadouts.Save)
         {
-            Text = MenuText.Key(Loc.WeaponLoadouts.Save),
-            Description = MenuText.Key(Loc.WeaponLoadouts.SaveDescription),
             Gate = WeaponLoadoutsPermissions.Save,
             OnSelectedAsync = _ => SaveAsync(),
         });
 
-        menu.Entries.Add(new ButtonEntry
+        menu.Entries.Add(new ButtonEntry(Loc.WeaponLoadouts.Manage)
         {
-            Text = MenuText.Key(Loc.WeaponLoadouts.Manage),
-            Description = MenuText.Key(Loc.WeaponLoadouts.ManageDescription),
             Label = "→",
             OnSelected = _ => _listMenu?.Open(),
         });
 
-        menu.Entries.Add(new CheckboxEntry
+        menu.Entries.Add(new CheckboxEntry(Loc.WeaponLoadouts.RestoreOnRespawn)
         {
-            Text = MenuText.Key(Loc.WeaponLoadouts.RestoreOnRespawn),
-            Description = MenuText.Key(Loc.WeaponLoadouts.RestoreOnRespawnDescription),
             Gate = WeaponLoadoutsPermissions.EquipOnRespawn,
             ReadState = () => WeaponLoadoutRespawn.Enabled,
             OnChanged = changed => WeaponLoadoutRespawn.SetEnabled(changed.Checked),
         });
 
-        menu.Entries.Add(new CheckboxEntry
+        menu.Entries.Add(new CheckboxEntry(Loc.WeaponLoadouts.KeepOnPedChange)
         {
-            Text = MenuText.Key(Loc.WeaponLoadouts.KeepOnPedChange),
-            Description = MenuText.Key(Loc.WeaponLoadouts.KeepOnPedChangeDescription),
             Gate = WeaponLoadoutsPermissions.KeepOnPedChange,
             ReadState = () => WeaponCarryOver.Enabled,
             OnChanged = changed => WeaponCarryOver.SetEnabled(changed.Checked),
@@ -92,11 +84,7 @@ public sealed class WeaponLoadoutsMenu : MenuDefinition
 
         if (loadouts.Count == 0)
         {
-            listMenu.Builder.Add(new ButtonEntry
-            {
-                Text = MenuText.Key(Loc.WeaponLoadouts.Empty),
-                Description = MenuText.Key(Loc.WeaponLoadouts.EmptyDescription),
-            });
+            listMenu.Builder.Add(new ButtonEntry(Loc.WeaponLoadouts.Empty));
 
             return;
         }
@@ -131,34 +119,26 @@ public sealed class WeaponLoadoutsMenu : MenuDefinition
 
     private void BuildDetailMenu(MenuBuilder detailMenu)
     {
-        detailMenu.Entries.Add(new ButtonEntry
+        detailMenu.Entries.Add(new ButtonEntry(Loc.WeaponLoadouts.Equip)
         {
-            Text = MenuText.Key(Loc.WeaponLoadouts.Equip),
-            Description = MenuText.Key(Loc.WeaponLoadouts.EquipDescription),
             Gate = WeaponLoadoutsPermissions.Equip,
             OnSelectedAsync = _ => EquipAsync(),
         });
 
-        detailMenu.Entries.Add(new ButtonEntry
+        detailMenu.Entries.Add(new ButtonEntry(Loc.WeaponLoadouts.Rename)
         {
-            Text = MenuText.Key(Loc.WeaponLoadouts.Rename),
-            Description = MenuText.Key(Loc.WeaponLoadouts.RenameDescription),
             Gate = WeaponLoadoutsPermissions.Manage,
             OnSelectedAsync = _ => RenameAsync(),
         });
 
-        detailMenu.Entries.Add(new ButtonEntry
+        detailMenu.Entries.Add(new ButtonEntry(Loc.WeaponLoadouts.Clone)
         {
-            Text = MenuText.Key(Loc.WeaponLoadouts.Clone),
-            Description = MenuText.Key(Loc.WeaponLoadouts.CloneDescription),
             Gate = WeaponLoadoutsPermissions.Save,
             OnSelectedAsync = _ => CloneAsync(),
         });
 
-        detailMenu.Entries.Add(new ButtonEntry
+        detailMenu.Entries.Add(new ButtonEntry(Loc.WeaponLoadouts.SetDefault)
         {
-            Text = MenuText.Key(Loc.WeaponLoadouts.SetDefault),
-            Description = MenuText.Key(Loc.WeaponLoadouts.SetDefaultDescription),
             Gate = WeaponLoadoutsPermissions.Manage,
             ReadLeftIcon = () => _selected is { } loadout && WeaponLoadoutStore.IsDefault(loadout.Name)
                 ? MenuItem.Icon.TICK
@@ -180,18 +160,14 @@ public sealed class WeaponLoadoutsMenu : MenuDefinition
 
         // Two press rows. The framework clears a primed confirmation on open, on close and when the player
         // moves to another row, so none of them can be left armed the way vMenu's Replace was.
-        detailMenu.Entries.Add(new ConfirmButtonEntry
+        detailMenu.Entries.Add(new ConfirmButtonEntry(Loc.WeaponLoadouts.Replace)
         {
-            Text = MenuText.Key(Loc.WeaponLoadouts.Replace),
-            Description = MenuText.Key(Loc.WeaponLoadouts.ReplaceDescription),
             Gate = WeaponLoadoutsPermissions.Save,
             OnConfirmed = _ => Replace(),
         });
 
-        detailMenu.Entries.Add(new ConfirmButtonEntry
+        detailMenu.Entries.Add(new ConfirmButtonEntry(Loc.WeaponLoadouts.Delete)
         {
-            Text = MenuText.Key(Loc.WeaponLoadouts.Delete),
-            Description = MenuText.Key(Loc.WeaponLoadouts.DeleteDescription),
             Gate = WeaponLoadoutsPermissions.Manage,
             OnConfirmed = _ => Delete(),
         });

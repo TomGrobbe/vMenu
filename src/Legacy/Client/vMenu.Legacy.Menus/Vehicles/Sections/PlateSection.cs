@@ -30,11 +30,8 @@ internal static class PlateSection
 
         return
         [
-            new ButtonEntry
+            new ButtonEntry(Loc.VehicleOptions.PlateText)
             {
-                Text = MenuText.Key(Loc.VehicleOptions.PlateText),
-                Description = MenuText.Key(Loc.VehicleOptions.PlateTextDescription),
-
                 // The plate itself on the right, so the row shows what it currently says without opening anything.
                 Label = MenuText.From(() => SectionRows.Driven() is { } current
                     ? API.GetVehicleNumberPlateText(current) ?? string.Empty
@@ -42,11 +39,8 @@ internal static class PlateSection
 
                 OnSelectedAsync = _ => ChangeTextAsync(menu),
             },
-            new ListEntry
+            new ListEntry(Loc.VehicleOptions.PlateStyle, VehicleOptionTables.PlateStyles)
             {
-                Text = MenuText.Key(Loc.VehicleOptions.PlateStyle),
-                Description = MenuText.Key(Loc.VehicleOptions.PlateStyleDescription),
-                Options = VehicleOptionTables.PlateStyles,
                 ReadSelectedIndex = () => SectionRows.Driven() is { } current
                     ? Math.Clamp(API.GetVehicleNumberPlateTextIndex(current), 0, VehicleOptionTables.PlateStyles.Count - 1)
                     : 0,

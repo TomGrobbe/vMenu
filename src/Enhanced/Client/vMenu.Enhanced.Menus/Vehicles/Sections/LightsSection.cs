@@ -41,10 +41,8 @@ internal static class LightsSection
                 },
             },
             ColorRow(),
-            new SubmenuEntry
+            new SubmenuEntry(Loc.VehicleOptions.CustomColor)
             {
-                Text = MenuText.Key(Loc.VehicleOptions.CustomColor),
-                Description = MenuText.Key(Loc.VehicleOptions.CustomColorDescription),
                 MenuSubtitle = MenuText.Key(Loc.VehicleOptions.HeadlightColor),
                 Build = rgb => RgbPicker.Build(rgb, Target()),
             },
@@ -66,11 +64,8 @@ internal static class LightsSection
 
         var defaultIndex = options.Count - 1;
 
-        return new ListEntry
+        return new ListEntry(Loc.VehicleOptions.HeadlightColor, options)
         {
-            Text = MenuText.Key(Loc.VehicleOptions.HeadlightColor),
-            Description = MenuText.Key(Loc.VehicleOptions.HeadlightColorDescription),
-            Options = options,
             ReadSelectedIndex = () =>
             {
                 if (SectionRows.Driven() is not { } handle)

@@ -48,10 +48,8 @@ public sealed class PlayerAppearanceMenu : MenuDefinition
             child => PedCustomizationRows.Attach(child, () => PedVariationScope.ForCollection(CollectionName())),
             PlayerAppearancePermissions.Customize);
 
-        menu.Entries.Add(new SubmenuEntry
+        menu.Entries.Add(new SubmenuEntry(Loc.PlayerAppearance.Customize)
         {
-            Text = MenuText.Key(Loc.PlayerAppearance.Customize),
-            Description = MenuText.Key(Loc.PlayerAppearance.CustomizeDescription),
             MenuSubtitle = MenuText.Key(Loc.PlayerAppearance.CustomizeSubtitle),
             Gate = PlayerAppearancePermissions.Customize,
             Build = child => PedCustomizationRows.Attach(child, () => PedVariationScope.Global),
@@ -60,10 +58,8 @@ public sealed class PlayerAppearanceMenu : MenuDefinition
         // Locked rather than hidden while the ped has only the base game's clothes, which is nearly every
         // ped that is not one of the online character models. Grouping one collection by the update it came
         // from just repeats the page above, and a row that quietly disappears reads as imagined.
-        menu.Entries.Add(new SubmenuEntry
+        menu.Entries.Add(new SubmenuEntry(Loc.PlayerAppearance.Collections)
         {
-            Text = MenuText.Key(Loc.PlayerAppearance.Collections),
-            Description = MenuText.Key(Loc.PlayerAppearance.CollectionsDescription),
             LockedDescription = MenuText.Key(Loc.PlayerAppearance.CollectionsLocked),
             MenuSubtitle = MenuText.Key(Loc.PlayerAppearance.CollectionsSubtitle),
             Gate = MenuGate.Permission(PlayerAppearancePermissions.Customize) & MenuGate.When(HasSeveralCollections),
@@ -71,21 +67,16 @@ public sealed class PlayerAppearanceMenu : MenuDefinition
             Build = BuildCollectionList,
         });
 
-        menu.Entries.Add(new ButtonEntry
+        menu.Entries.Add(new ButtonEntry(Loc.PlayerAppearance.Random)
         {
-            Text = MenuText.Key(Loc.PlayerAppearance.Random),
-            Description = MenuText.Key(Loc.PlayerAppearance.RandomDescription),
             Gate = PlayerAppearancePermissions.Customize,
             OnSelected = _ => Randomise(),
         });
 
         menu.Entries.Add(WalkingStyleRow());
 
-        menu.Entries.Add(new ListEntry
+        menu.Entries.Add(new ListEntry(Loc.PlayerAppearance.Glow, GlowOptions)
         {
-            Text = MenuText.Key(Loc.PlayerAppearance.Glow),
-            Description = MenuText.Key(Loc.PlayerAppearance.GlowDescription),
-            Options = GlowOptions,
             Gate = PlayerAppearancePermissions.IlluminatedClothing,
             ReadSelectedIndex = () => (int)PedIlluminatedClothing.Style,
 
@@ -94,10 +85,8 @@ public sealed class PlayerAppearanceMenu : MenuDefinition
             OnIndexChanged = changed => PedIlluminatedClothing.Style = (ClothingGlow)changed.NewIndex,
         });
 
-        menu.Entries.Add(new ConfirmButtonEntry
+        menu.Entries.Add(new ConfirmButtonEntry(Loc.PlayerAppearance.Reset)
         {
-            Text = MenuText.Key(Loc.PlayerAppearance.Reset),
-            Description = MenuText.Key(Loc.PlayerAppearance.ResetDescription),
             ConfirmationDescription = MenuText.Key(Loc.PlayerAppearance.ResetConfirm),
             Gate = PlayerAppearancePermissions.Customize,
             OnConfirmed = _ => Reset(),
@@ -153,11 +142,7 @@ public sealed class PlayerAppearanceMenu : MenuDefinition
             ? rows
             :
             [
-                new ButtonEntry
-                {
-                    Text = MenuText.Key(Loc.PlayerAppearance.Empty),
-                    Description = MenuText.Key(Loc.PlayerAppearance.EmptyDescription),
-                },
+                new ButtonEntry(Loc.PlayerAppearance.Empty),
             ];
     }
 
@@ -181,11 +166,8 @@ public sealed class PlayerAppearanceMenu : MenuDefinition
             clipsets.Add(style.Clipset);
         }
 
-        return new ListEntry
+        return new ListEntry(Loc.PlayerAppearance.WalkingStyle, options)
         {
-            Text = MenuText.Key(Loc.PlayerAppearance.WalkingStyle),
-            Description = MenuText.Key(Loc.PlayerAppearance.WalkingStyleDescription),
-            Options = options,
             Gate = PlayerAppearancePermissions.WalkingStyle,
             ReadSelectedIndex = () => Math.Max(0, IndexOf(clipsets, PedWalkingStyle.Current)),
             OnSelectedAsync = selected => ApplyWalkAsync(options, clipsets, selected.SelectedIndex),

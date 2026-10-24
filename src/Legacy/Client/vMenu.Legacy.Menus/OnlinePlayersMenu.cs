@@ -267,11 +267,7 @@ public sealed class OnlinePlayersMenu : MenuDefinition
             // A row rather than an empty menu: MenuAPI ignores every direction key while a menu has no items,
             // which would leave the player unable to page or to search again.
             menu.AddRange([
-                new ButtonEntry
-                {
-                    Text = MenuText.Key(Loc.OnlinePlayers.NoResults),
-                    Description = MenuText.Key(Loc.OnlinePlayers.NoResultsDescription),
-                },
+                new ButtonEntry(Loc.OnlinePlayers.NoResults),
             ]);
 
             return;
@@ -316,75 +312,56 @@ public sealed class OnlinePlayersMenu : MenuDefinition
 
     private void BuildActions(MenuBuilder actions)
     {
-        actions.Entries.Add(new ButtonEntry
+        actions.Entries.Add(new ButtonEntry(Loc.OnlinePlayers.SendMessage)
         {
-            Text = MenuText.Key(Loc.OnlinePlayers.SendMessage),
-            Description = MenuText.Key(Loc.OnlinePlayers.SendMessageDescription),
             Gate = OnlinePlayersPermissions.SendMessage,
             OnSelectedAsync = _ => SendMessageAsync(),
         });
 
-        actions.Entries.Add(new ButtonEntry
+        actions.Entries.Add(new ButtonEntry(Loc.OnlinePlayers.TeleportTo)
         {
-            Text = MenuText.Key(Loc.OnlinePlayers.TeleportTo),
-            Description = MenuText.Key(Loc.OnlinePlayers.TeleportToDescription),
             Gate = OnlinePlayersPermissions.TeleportTo,
             OnSelectedAsync = _ => TeleportToAsync(),
         });
 
-        actions.Entries.Add(new ButtonEntry
+        actions.Entries.Add(new ButtonEntry(Loc.OnlinePlayers.TeleportIntoVehicle)
         {
-            Text = MenuText.Key(Loc.OnlinePlayers.TeleportIntoVehicle),
-            Description = MenuText.Key(Loc.OnlinePlayers.TeleportIntoVehicleDescription),
             Gate = OnlinePlayersPermissions.TeleportIntoVehicle,
             OnSelectedAsync = _ => TeleportIntoVehicleAsync(),
         });
 
-        actions.Entries.Add(new ButtonEntry
+        actions.Entries.Add(new ButtonEntry(Loc.OnlinePlayers.Summon)
         {
-            Text = MenuText.Key(Loc.OnlinePlayers.Summon),
-            Description = MenuText.Key(Loc.OnlinePlayers.SummonDescription),
             Gate = OnlinePlayersPermissions.Summon,
             OnSelectedAsync = _ => SummonAsync(),
         });
 
-        actions.Entries.Add(new ButtonEntry
+        actions.Entries.Add(new ButtonEntry(Loc.OnlinePlayers.SummonIntoVehicle)
         {
-            Text = MenuText.Key(Loc.OnlinePlayers.SummonIntoVehicle),
-            Description = MenuText.Key(Loc.OnlinePlayers.SummonIntoVehicleDescription),
             Gate = OnlinePlayersPermissions.SummonIntoVehicle,
             OnSelectedAsync = _ => SummonIntoVehicleAsync(),
         });
 
-        actions.Entries.Add(new ListEntry
+        actions.Entries.Add(new ListEntry(Loc.OnlinePlayers.SetWantedLevel, WantedLevels())
         {
-            Text = MenuText.Key(Loc.OnlinePlayers.SetWantedLevel),
-            Description = MenuText.Key(Loc.OnlinePlayers.SetWantedLevelDescription),
             Gate = OnlinePlayersPermissions.SetWantedLevel,
-            Options = WantedLevels(),
             OnSelectedAsync = selected => SetWantedLevelAsync(selected.SelectedIndex),
         });
 
-        actions.Entries.Add(new ButtonEntry
+        actions.Entries.Add(new ButtonEntry(Loc.OnlinePlayers.Kill)
         {
-            Text = MenuText.Key(Loc.OnlinePlayers.Kill),
-            Description = MenuText.Key(Loc.OnlinePlayers.KillDescription),
             Gate = OnlinePlayersPermissions.Kill,
             OnSelectedAsync = _ => SendAsync(ActionIds.OnlinePlayers.Kill, Loc.OnlinePlayers.KillDone, allowSelf: true),
         });
 
-        actions.Entries.Add(new ButtonEntry
+        actions.Entries.Add(new ButtonEntry(Loc.OnlinePlayers.Kick)
         {
-            Text = MenuText.Key(Loc.OnlinePlayers.Kick),
-            Description = MenuText.Key(Loc.OnlinePlayers.KickDescription),
             Gate = OnlinePlayersPermissions.Kick,
             OnSelectedAsync = _ => KickAsync(),
         });
 
-        actions.Entries.Add(new ConfirmButtonEntry
+        actions.Entries.Add(new ConfirmButtonEntry(Loc.OnlinePlayers.DeleteVehicle)
         {
-            Text = MenuText.Key(Loc.OnlinePlayers.DeleteVehicle),
-            Description = MenuText.Key(Loc.OnlinePlayers.DeleteVehicleDescription),
             ConfirmationDescription = MenuText.From(() => MenuText
                 .Key(Loc.OnlinePlayers.DeleteVehicleConfirm, ("player", MenuText.Literal(_selected?.Name ?? string.Empty)))
                 .Resolve(Localizer.Current)),
@@ -392,10 +369,8 @@ public sealed class OnlinePlayersMenu : MenuDefinition
             OnConfirmedAsync = _ => DeleteVehicleAsync(),
         });
 
-        actions.Entries.Add(new ConfirmButtonEntry
+        actions.Entries.Add(new ConfirmButtonEntry(Loc.OnlinePlayers.ExplodeVehicle)
         {
-            Text = MenuText.Key(Loc.OnlinePlayers.ExplodeVehicle),
-            Description = MenuText.Key(Loc.OnlinePlayers.ExplodeVehicleDescription),
             ConfirmationDescription = MenuText.From(() => MenuText
                 .Key(Loc.OnlinePlayers.ExplodeVehicleConfirm, ("player", MenuText.Literal(_selected?.Name ?? string.Empty)))
                 .Resolve(Localizer.Current)),
@@ -403,45 +378,35 @@ public sealed class OnlinePlayersMenu : MenuDefinition
             OnConfirmedAsync = _ => ExplodeVehicleAsync(),
         });
 
-        actions.Entries.Add(new ButtonEntry
+        actions.Entries.Add(new ButtonEntry(Loc.OnlinePlayers.CheckStatus)
         {
-            Text = MenuText.Key(Loc.OnlinePlayers.CheckStatus),
-            Description = MenuText.Key(Loc.OnlinePlayers.CheckStatusDescription),
             Gate = OnlinePlayersPermissions.CheckStatus,
             OnSelectedAsync = _ => CheckStatusAsync(),
         });
 
-        actions.Entries.Add(new ButtonEntry
+        actions.Entries.Add(new ButtonEntry(Loc.OnlinePlayers.Waypoint)
         {
-            Text = MenuText.Key(Loc.OnlinePlayers.Waypoint),
-            Description = MenuText.Key(Loc.OnlinePlayers.WaypointDescription),
             Gate = OnlinePlayersPermissions.Waypoint,
             OnSelectedAsync = _ => SetWaypointAsync(),
         });
 
-        actions.Entries.Add(new CheckboxEntry
+        actions.Entries.Add(new CheckboxEntry(Loc.OnlinePlayers.NoClipAccess)
         {
-            Text = MenuText.Key(Loc.OnlinePlayers.NoClipAccess),
-            Description = MenuText.Key(Loc.OnlinePlayers.NoClipAccessDescription),
             Gate = OnlinePlayersPermissions.NoClip,
             ReadState = () => _targetOwnsNoClip || _targetLentNoClip,
             ReadEnabled = () => !_targetOwnsNoClip,
             OnChangedAsync = _ => ToggleNoClipAccessAsync(),
         });
 
-        actions.Entries.Add(new CheckboxEntry
+        actions.Entries.Add(new CheckboxEntry(Loc.OnlinePlayers.NoClip)
         {
-            Text = MenuText.Key(Loc.OnlinePlayers.NoClip),
-            Description = MenuText.Key(Loc.OnlinePlayers.NoClipDescription),
             Gate = OnlinePlayersPermissions.NoClip,
             ReadState = () => _targetInNoClip,
             OnChangedAsync = _ => ToggleNoClipAsync(),
         });
 
-        actions.Entries.Add(new ButtonEntry
+        actions.Entries.Add(new ButtonEntry(Loc.OnlinePlayers.RefreshPermissions)
         {
-            Text = MenuText.Key(Loc.OnlinePlayers.RefreshPermissions),
-            Description = MenuText.Key(Loc.OnlinePlayers.RefreshPermissionsDescription),
             Gate = OnlinePlayersPermissions.RefreshPermissions,
             OnSelectedAsync = _ => SendAsync(
                 ActionIds.OnlinePlayers.RefreshPermissions,
@@ -457,19 +422,15 @@ public sealed class OnlinePlayersMenu : MenuDefinition
             _ => { },
             OnlinePlayersPermissions.Identifiers);
 
-        actions.Entries.Add(new ButtonEntry
+        actions.Entries.Add(new ButtonEntry(Loc.OnlinePlayers.Identifiers)
         {
-            Text = MenuText.Key(Loc.OnlinePlayers.Identifiers),
-            Description = MenuText.Key(Loc.OnlinePlayers.IdentifiersDescription),
             Label = MenuText.Literal("→"),
             Gate = OnlinePlayersPermissions.Identifiers,
             OnSelectedAsync = _ => ShowIdentifiersAsync(),
         });
 
-        actions.Entries.Add(new ButtonEntry
+        actions.Entries.Add(new ButtonEntry(Loc.OnlinePlayers.TxAdmin)
         {
-            Text = MenuText.Key(Loc.OnlinePlayers.TxAdmin),
-            Description = MenuText.Key(Loc.OnlinePlayers.TxAdminDescription),
             Gate = MenuGate.Permission(OnlinePlayersPermissions.TxAdmin) & MenuGate.When(TxAdminRunning),
             Behaviour = GateBehaviour.Hide,
             OnSelected = _ =>
@@ -481,10 +442,8 @@ public sealed class OnlinePlayersMenu : MenuDefinition
             },
         });
 
-        actions.Entries.Add(new SubmenuEntry
+        actions.Entries.Add(new SubmenuEntry(Loc.Bully.PlayerActions)
         {
-            Text = MenuText.Key(Loc.Bully.PlayerActions),
-            Description = MenuText.Key(Loc.Bully.PlayerActionsDescription),
             Gate = MenuGate.Setting(BullySettings.Enabled) & MenuGate.Permission(BullyPermissions.Menu),
             Behaviour = GateBehaviour.Hide,
             MenuTitle = MenuText.From(() => _selected?.Name ?? string.Empty),
@@ -493,10 +452,8 @@ public sealed class OnlinePlayersMenu : MenuDefinition
                 () => _selected is { } player ? (player.ServerId, player.Name) : ((int, string)?)null).Build,
         });
 
-        actions.Entries.Add(new SubmenuEntry
+        actions.Entries.Add(new SubmenuEntry(Loc.Plugins.PlayerActions)
         {
-            Text = MenuText.Key(Loc.Plugins.PlayerActions),
-            Description = MenuText.Key(Loc.Plugins.PlayerActionsDescription),
             Gate = MenuGate.When(PluginPlayerActions.AnyVisible),
             Behaviour = GateBehaviour.Hide,
             MenuTitle = MenuText.From(() => _selected?.Name ?? string.Empty),
@@ -731,11 +688,7 @@ public sealed class OnlinePlayersMenu : MenuDefinition
         if (result.Data.Length == 0)
         {
             identifiers.Builder.AddRange([
-                new ButtonEntry
-                {
-                    Text = MenuText.Key(Loc.OnlinePlayers.IdentifiersNone),
-                    Description = MenuText.Key(Loc.OnlinePlayers.IdentifiersNoneDescription),
-                },
+                new ButtonEntry(Loc.OnlinePlayers.IdentifiersNone),
             ]);
 
             identifiers.Open();

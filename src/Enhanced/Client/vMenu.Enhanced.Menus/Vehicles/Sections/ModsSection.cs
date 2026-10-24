@@ -143,11 +143,8 @@ internal static class ModsSection
             options.Add(MenuText.Key(color.NameKey));
         }
 
-        return new ListEntry
+        return new ListEntry(Loc.VehicleOptions.TyreSmokeColor, options)
         {
-            Text = MenuText.Key(Loc.VehicleOptions.TyreSmokeColor),
-            Description = MenuText.Key(Loc.VehicleOptions.TyreSmokeColorDescription),
-            Options = options,
             ReadSelectedIndex = ReadTyreSmokeIndex,
             OnIndexChanged = changed => PaintSmoke(changed.NewIndex),
         };
@@ -162,11 +159,8 @@ internal static class ModsSection
             options.Add(tint.Text);
         }
 
-        return new ListEntry
+        return new ListEntry(Loc.VehicleOptions.WindowTint, options)
         {
-            Text = MenuText.Key(Loc.VehicleOptions.WindowTint),
-            Description = MenuText.Key(Loc.VehicleOptions.WindowTintDescription),
-            Options = options,
             ReadSelectedIndex = () => SectionRows.Driven() is { } handle
                 ? VehicleOptionTables.IndexOfValue(VehicleOptionTables.WindowTints, Native.GetVehicleWindowTint(handle))
                 : 0,

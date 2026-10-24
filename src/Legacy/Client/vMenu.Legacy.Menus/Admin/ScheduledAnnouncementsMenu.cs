@@ -62,10 +62,8 @@ public sealed class ScheduledAnnouncementsMenu : MenuDefinition
     }
 
     private void BuildActions(MenuBuilder actions) =>
-        actions.Entries.Add(new ConfirmButtonEntry
+        actions.Entries.Add(new ConfirmButtonEntry(Loc.Admin.ScheduleRemove)
         {
-            Text = MenuText.Key(Loc.Admin.ScheduleRemove),
-            Description = MenuText.Key(Loc.Admin.ScheduleRemoveDescription),
             OnConfirmedAsync = _ => RemoveAsync(),
         });
 
@@ -121,21 +119,15 @@ public sealed class ScheduledAnnouncementsMenu : MenuDefinition
 
         if (!ScheduleRunning)
         {
-            rows.Add(new SeparatorEntry
+            rows.Add(new SeparatorEntry(Loc.Admin.ScheduleDisabled)
             {
-                Text = MenuText.Key(Loc.Admin.ScheduleDisabled),
-                Description = MenuText.Key(Loc.Admin.ScheduleDisabledDescription),
                 ShowArrows = false,
             });
         }
 
         if (_entries.Count == 0)
         {
-            rows.Add(new ButtonEntry
-            {
-                Text = MenuText.Key(Loc.Admin.ScheduleEmpty),
-                Description = MenuText.Key(Loc.Admin.ScheduleEmptyDescription),
-            });
+            rows.Add(new ButtonEntry(Loc.Admin.ScheduleEmpty));
         }
 
         foreach (var entry in _entries)
@@ -154,10 +146,8 @@ public sealed class ScheduledAnnouncementsMenu : MenuDefinition
             });
         }
 
-        rows.Add(new ButtonEntry
+        rows.Add(new ButtonEntry(Loc.Admin.ScheduleAdd)
         {
-            Text = MenuText.Key(Loc.Admin.ScheduleAdd),
-            Description = MenuText.Key(Loc.Admin.ScheduleAddDescription),
             OnSelectedAsync = _ => AddAsync(),
         });
 
