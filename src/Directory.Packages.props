@@ -16,4 +16,8 @@
     <PackageVersion Include="PolySharp" Version="1.15.0" />
     <PackageVersion Include="System.ValueTuple" Version="4.5.0" />
   </ItemGroup>
+  <ItemGroup>
+    <!-- MessagePack is runtime owned and never shipped, the runtime's copy is what loads, so only cfx can patch this. -->
+    <NuGetAuditSuppress Include="https://github.com/advisories/GHSA-qhrr-8q5h-9q3h" />
+  </ItemGroup>
 </Project>
