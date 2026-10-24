@@ -18,4 +18,7 @@ public static class ActionArgs
 
     public static bool TryFloat(string value, out float result) =>
         float.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out result);
+
+    public static string? Trimmed(string? value) =>
+        string.IsNullOrWhiteSpace(value) ? null : value.Trim();
 }

@@ -63,11 +63,7 @@ public static class IntegrationSnapshots
         _world = ServerJson.Serialize(world);
         _worldSignature = Signature(world);
 
-        var blips = LocationBlipActions.Payload;
-        if (!string.IsNullOrEmpty(blips) && blips != "{}")
-        {
-            _blips = blips;
-        }
+        _blips = LocationBlipActions.Payload;
 
         var teleports = TeleportActions.Payload;
         if (!ReferenceEquals(teleports, _teleportsSource))

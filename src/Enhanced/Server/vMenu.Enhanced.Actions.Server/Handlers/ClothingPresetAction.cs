@@ -1,4 +1,3 @@
-
 using CitizenFX.FiveM.Server;
 using CitizenFX.FiveM.Server.Entities;
 using CitizenFX.FiveM.Shared.Serialization;
@@ -7,8 +6,6 @@ using vMenu.Enhanced.Configuration.Server;
 using vMenu.Enhanced.Data.Actions;
 using vMenu.Enhanced.Data.Clothing;
 using vMenu.Enhanced.Logging;
-using vMenu.Enhanced.Permissions.Server;
-using vMenu.Enhanced.Players.Server;
 using vMenu.Enhanced.Serialization.Server;
 
 using CharacterCreatorPermissions = vMenu.Enhanced.Data.Permissions.Menus.CharacterCreator;
@@ -19,9 +16,14 @@ public static class ClothingPresetActions
 {
     private const string ConfigFile = "config/clothing-presets.json";
 
-    private static readonly List<ClothingPresetCategory> Categories = [];
+    private static readonly SyncedConfigFile<List<ClothingPresetCategory>> Store = new(
+        ConfigFile,
+        "Presets",
+        ClothingPresetEvents.Set,
+        CharacterCreatorPermissions.Presets,
+        "nothing was added");
 
-    private static string _payload = "[]";
+    private static List<ClothingPresetCategory> Categories => Store.Value;
 
     public static void Register()
     {
@@ -50,11 +52,11 @@ public static class ClothingPresetActions
         API.OnNetEvent(ClothingPresetEvents.Request, new Action<Player>(OnRequested), false);
     }
 
-    private static void OnRequested([FromSource] Player source) => SendTo(source);
+    private static void OnRequested([FromSource] Player source) => Store.SendTo(source);
 
     private static ActionResponse AddCategory(Player source, string[] args)
     {
-        if (args.Length < 2 || Trimmed(args[0]) is not { } name)
+        if (args.Length < 2 || ActionArgs.Trimmed(args[0]) is not { } name)
         {
             return ActionResponse.InvalidRequest();
         }
@@ -72,12 +74,12 @@ public static class ClothingPresetActions
 
         Categories.Add(added);
 
-        return Commit(source, $"added preset category '{name}'", () => Categories.Remove(added));
+        return Store.Commit(source, $"added preset category '{name}'", () => Categories.Remove(added));
     }
 
     private static ActionResponse AddPreset(Player source, string[] args)
     {
-        if (args.Length < 5 || Trimmed(args[1]) is not { } name)
+        if (args.Length < 5 || ActionArgs.Trimmed(args[1]) is not { } name)
         {
             return ActionResponse.InvalidRequest();
         }
@@ -87,7 +89,7 @@ public static class ClothingPresetActions
             return ActionResponse.NotFound();
         }
 
-        if (IndexOfPreset(category.Presets, name) >= 0)
+        if (category.Presets.IndexOfName(name, preset => preset.Name) >= 0)
         {
             return ActionResponse.Refused();
         }
@@ -105,7 +107,7 @@ public static class ClothingPresetActions
 
         category.Presets.Add(read);
 
-        return Commit(
+        return Store.Commit(
             source,
             $"published '{name}' to '{category.Name}'",
             () => category.Presets.Remove(read));
@@ -113,12 +115,12 @@ public static class ClothingPresetActions
 
     private static ActionResponse RemoveCategory(Player source, string[] args)
     {
-        if (args.Length < 1 || Trimmed(args[0]) is not { } name)
+        if (args.Length < 1 || ActionArgs.Trimmed(args[0]) is not { } name)
         {
             return ActionResponse.InvalidRequest();
         }
 
-        var at = IndexOfCategory(name);
+        var at = Categories.IndexOfName(name, category => category.Name);
 
         if (at < 0)
         {
@@ -129,12 +131,12 @@ public static class ClothingPresetActions
 
         Categories.RemoveAt(at);
 
-        return Commit(source, $"removed preset category '{removed.Name}'", () => Categories.Insert(at, removed));
+        return Store.Commit(source, $"removed preset category '{removed.Name}'", () => Categories.Insert(at, removed));
     }
 
     private static ActionResponse RemovePreset(Player source, string[] args)
     {
-        if (args.Length < 2 || Trimmed(args[1]) is not { } name)
+        if (args.Length < 2 || ActionArgs.Trimmed(args[1]) is not { } name)
         {
             return ActionResponse.InvalidRequest();
         }
@@ -144,7 +146,7 @@ public static class ClothingPresetActions
             return ActionResponse.NotFound();
         }
 
-        var at = IndexOfPreset(category.Presets, name);
+        var at = category.Presets.IndexOfName(name, preset => preset.Name);
 
         if (at < 0)
         {
@@ -155,86 +157,18 @@ public static class ClothingPresetActions
 
         category.Presets.RemoveAt(at);
 
-        return Commit(
+        return Store.Commit(
             source,
             $"removed '{removed.Name}' from '{category.Name}'",
             () => category.Presets.Insert(at, removed));
     }
 
-    private static ActionResponse Commit(Player source, string what, Action undo)
-    {
-        if (!ResourceFile.TryWrite(ConfigFile, "Presets", Categories, "nothing was added"))
-        {
-            undo();
-
-            return ActionResponse.Failed();
-        }
-
-        _payload = ServerJson.Serialize(Categories);
-
-        Broadcast();
-
-        Log.Debug($"[Presets] {source} {what}.");
-
-        return ActionResponse.Ok();
-    }
-
-    private static void Broadcast()
-    {
-        foreach (var connected in ConnectedPlayers.All())
-        {
-            SendTo(new Player(connected.ServerId));
-        }
-    }
-
-    private static void SendTo(Player player)
-    {
-        if (ServerPermissions.IsPlayerAllowed(player, CharacterCreatorPermissions.Presets))
-        {
-            API.EmitClient(player.Handle, ClothingPresetEvents.Set, _payload);
-        }
-    }
-
     private static ClothingPresetCategory? Find(string? name)
     {
-        var at = IndexOfCategory(name);
+        var at = Categories.IndexOfName(name, category => category.Name);
 
         return at >= 0 ? Categories[at] : null;
     }
-
-    private static int IndexOfCategory(string? name)
-    {
-        if (string.IsNullOrWhiteSpace(name))
-        {
-            return -1;
-        }
-
-        for (var index = 0; index < Categories.Count; index++)
-        {
-            if (string.Equals(Categories[index].Name, name.Trim(), StringComparison.OrdinalIgnoreCase))
-            {
-                return index;
-            }
-        }
-
-        return -1;
-    }
-
-    private static int IndexOfPreset(List<ClothingPreset> presets, string name)
-    {
-        for (var index = 0; index < presets.Count; index++)
-        {
-            if (string.Equals(presets[index].Name, name, StringComparison.OrdinalIgnoreCase))
-            {
-                return index;
-            }
-        }
-
-        return -1;
-    }
-
-    private static string? Trimmed(string? value) =>
-        string.IsNullOrWhiteSpace(value) ? null : value.Trim();
 
     private static void Load()
     {
@@ -264,7 +198,7 @@ public static class ClothingPresetActions
             Log.Debug($"[Presets] Category '{category.Name}' holds {category.Presets.Count} outfit(s).");
         }
 
-        _payload = ServerJson.Serialize(Categories);
+        Store.Rebuild();
     }
 
     private static List<ClothingPreset> Keep(List<ClothingPreset>? presets, string category)

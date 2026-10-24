@@ -117,14 +117,14 @@ public static class AnnouncementSchedule
     private static ActionResponse AddAnnouncement(Player source, string[] args)
     {
         if (args.Length < 5
-            || Trimmed(args[0]) is not { } name
-            || Trimmed(args[1]) is not { } text
+            || ActionArgs.Trimmed(args[0]) is not { } name
+            || ActionArgs.Trimmed(args[1]) is not { } text
             || !ActionArgs.TryInt(args[2], out var everyMinutes))
         {
             return ActionResponse.InvalidRequest();
         }
 
-        var at = Trimmed(args[3]) ?? string.Empty;
+        var at = ActionArgs.Trimmed(args[3]) ?? string.Empty;
         var clock = AnnouncementClock.IsGame(args[4]) ? AnnouncementClock.Game : AnnouncementClock.Real;
 
         var added = new Scheduled
@@ -165,7 +165,7 @@ public static class AnnouncementSchedule
     {
         if (args.Length < 2
             || !ActionArgs.TryInt(args[0], out var index)
-            || Trimmed(args[1]) is not { } name)
+            || ActionArgs.Trimmed(args[1]) is not { } name)
         {
             return ActionResponse.InvalidRequest();
         }
@@ -256,9 +256,6 @@ public static class AnnouncementSchedule
             "Admin",
             new ScheduleFile { Announcements = Entries },
             "nothing was changed");
-
-    private static string? Trimmed(string? value) =>
-        string.IsNullOrWhiteSpace(value) ? null : value.Trim();
 
     private static string Cap(string value, int limit) =>
         value.Length <= limit ? value : value[..limit];
