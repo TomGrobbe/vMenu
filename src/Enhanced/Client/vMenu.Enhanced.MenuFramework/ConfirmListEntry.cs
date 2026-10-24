@@ -1,3 +1,5 @@
+using System.Diagnostics.CodeAnalysis;
+
 using MenuAPI;
 
 using vMenu.Enhanced.Localization;
@@ -9,6 +11,20 @@ namespace vMenu.Enhanced.MenuFramework;
 /// back to asking, so nobody confirms one thing and deletes another.</summary>
 public sealed class ConfirmListEntry : ConfirmEntry<MenuListItem>
 {
+    /// <summary>For text that is not a plain translation key: set <see cref="MenuEntry.Text"/> in the initializer.</summary>
+    public ConfirmListEntry()
+    {
+    }
+
+    /// <summary>Takes the text from <paramref name="textKey"/>, and the description from <c>textKey + ".desc"</c> when
+    /// English has that key. Setting Description in the initializer still wins.</summary>
+    [SetsRequiredMembers]
+    public ConfirmListEntry(string textKey, IReadOnlyList<MenuText> options)
+        : base(textKey)
+    {
+        Options = options;
+    }
+
     public required IReadOnlyList<MenuText> Options { get; init; }
 
     /// <summary>The starting selection. Ignored when ReadSelectedIndex is set.</summary>

@@ -1,3 +1,5 @@
+using System.Diagnostics.CodeAnalysis;
+
 using MenuAPI;
 
 using vMenu.Enhanced.Localization;
@@ -6,6 +8,21 @@ namespace vMenu.Enhanced.MenuFramework;
 
 public sealed class DynamicListEntry : MenuEntry<MenuDynamicListItem>
 {
+    /// <summary>For text that is not a plain translation key: set <see cref="MenuEntry.Text"/> in the initializer.</summary>
+    public DynamicListEntry()
+    {
+    }
+
+    /// <summary>Takes the text from <paramref name="textKey"/>, and the description from <c>textKey + ".desc"</c> when
+    /// English has that key. Setting Description in the initializer still wins.</summary>
+    [SetsRequiredMembers]
+    public DynamicListEntry(string textKey, Func<string> readValue, Func<DynamicListChanging, string> change)
+        : base(textKey)
+    {
+        ReadValue = readValue;
+        Change = change;
+    }
+
     /// <summary>The value to show. Re-read on every refresh.</summary>
     public required Func<string> ReadValue { get; init; }
 

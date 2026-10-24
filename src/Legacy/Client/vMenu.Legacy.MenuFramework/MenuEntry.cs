@@ -1,3 +1,5 @@
+using System.Diagnostics.CodeAnalysis;
+
 using MenuAPI;
 
 using vMenu.Enhanced.Localization;
@@ -9,6 +11,26 @@ namespace vMenu.Enhanced.MenuFramework;
 /// framework rewrite text on a language change and the description on a permission change.</summary>
 public abstract class MenuEntry
 {
+    /// <summary>For text that is not a plain translation key: set <see cref="MenuEntry.Text"/> in the initializer.</summary>
+    protected MenuEntry()
+    {
+    }
+
+    /// <summary>Takes the text from <paramref name="textKey"/>, and the description from <c>textKey + ".desc"</c> when
+    /// English has that key. Setting Description in the initializer still wins.</summary>
+    [SetsRequiredMembers]
+    protected MenuEntry(string textKey)
+    {
+        Text = MenuText.Key(textKey);
+
+        var descriptionKey = textKey + ".desc";
+
+        if (LanguageCatalog.English.ContainsKey(descriptionKey))
+        {
+            Description = MenuText.Key(descriptionKey);
+        }
+    }
+
     public required MenuText Text { get; init; }
 
     public MenuText Description { get; init; }
@@ -109,6 +131,19 @@ public abstract class MenuEntry
 public abstract class MenuEntry<TItem> : MenuEntry
     where TItem : MenuItem
 {
+    /// <summary>For text that is not a plain translation key: set <see cref="MenuEntry.Text"/> in the initializer.</summary>
+    protected MenuEntry()
+    {
+    }
+
+    /// <summary>Takes the text from <paramref name="textKey"/>, and the description from <c>textKey + ".desc"</c> when
+    /// English has that key. Setting Description in the initializer still wins.</summary>
+    [SetsRequiredMembers]
+    protected MenuEntry(string textKey)
+        : base(textKey)
+    {
+    }
+
     /// <summary>Applied once, right after the item is created. The escape hatch for what the declaration does not
     /// model, such as ItemData, colour panels and slider bar colours.</summary>
     public Action<TItem>? Configure { get; init; }

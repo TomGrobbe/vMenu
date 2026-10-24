@@ -1,3 +1,5 @@
+using System.Diagnostics.CodeAnalysis;
+
 using MenuAPI;
 
 using vMenu.Enhanced.Localization;
@@ -8,6 +10,19 @@ namespace vMenu.Enhanced.MenuFramework;
 /// before consulting its bound submenu table, so a locked link cannot open anything.</summary>
 public sealed class SubmenuEntry : MenuEntry<MenuItem>
 {
+    /// <summary>For text that is not a plain translation key: set <see cref="MenuEntry.Text"/> in the initializer.</summary>
+    public SubmenuEntry()
+    {
+    }
+
+    /// <summary>Takes the text from <paramref name="textKey"/>, and the description from <c>textKey + ".desc"</c> when
+    /// English has that key. Setting Description in the initializer still wins.</summary>
+    [SetsRequiredMembers]
+    public SubmenuEntry(string textKey)
+        : base(textKey)
+    {
+    }
+
     /// <summary>Defaults to Text, so most declarations name the menu once.</summary>
     public MenuText MenuTitle { get; init; }
 

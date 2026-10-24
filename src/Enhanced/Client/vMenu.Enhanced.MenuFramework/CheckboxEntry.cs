@@ -1,3 +1,5 @@
+using System.Diagnostics.CodeAnalysis;
+
 using MenuAPI;
 
 using vMenu.Enhanced.Localization;
@@ -6,6 +8,19 @@ namespace vMenu.Enhanced.MenuFramework;
 
 public sealed class CheckboxEntry : MenuEntry<MenuCheckboxItem>
 {
+    /// <summary>For text that is not a plain translation key: set <see cref="MenuEntry.Text"/> in the initializer.</summary>
+    public CheckboxEntry()
+    {
+    }
+
+    /// <summary>Takes the text from <paramref name="textKey"/>, and the description from <c>textKey + ".desc"</c> when
+    /// English has that key. Setting Description in the initializer still wins.</summary>
+    [SetsRequiredMembers]
+    public CheckboxEntry(string textKey)
+        : base(textKey)
+    {
+    }
+
     /// <summary>The starting state. Ignored when ReadState is set.</summary>
     public bool Checked { get; init; }
 

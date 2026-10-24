@@ -1,3 +1,5 @@
+using System.Diagnostics.CodeAnalysis;
+
 using MenuAPI;
 
 using vMenu.Enhanced.Localization;
@@ -16,6 +18,19 @@ public abstract class ConfirmEntry<TItem> : MenuEntry<TItem>, IConfirmable
     where TItem : MenuItem
 {
     private bool _armed;
+
+    /// <summary>For text that is not a plain translation key: set <see cref="MenuEntry.Text"/> in the initializer.</summary>
+    protected ConfirmEntry()
+    {
+    }
+
+    /// <summary>Takes the text from <paramref name="textKey"/>, and the description from <c>textKey + ".desc"</c> when
+    /// English has that key. Setting Description in the initializer still wins.</summary>
+    [SetsRequiredMembers]
+    protected ConfirmEntry(string textKey)
+        : base(textKey)
+    {
+    }
 
     /// <summary>What the description says while the row waits. Colour it yourself with the game's markup, the same
     /// way the rest of the tables do.</summary>

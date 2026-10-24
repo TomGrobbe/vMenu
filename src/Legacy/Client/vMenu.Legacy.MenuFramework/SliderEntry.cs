@@ -1,3 +1,5 @@
+using System.Diagnostics.CodeAnalysis;
+
 using MenuAPI;
 
 using vMenu.Enhanced.Localization;
@@ -8,6 +10,21 @@ namespace vMenu.Enhanced.MenuFramework;
 /// exposing them read only, so a range that changes at runtime needs the menu rebuilt not refreshed.</summary>
 public sealed class SliderEntry : MenuEntry<MenuSliderItem>
 {
+    /// <summary>For text that is not a plain translation key: set <see cref="MenuEntry.Text"/> in the initializer.</summary>
+    public SliderEntry()
+    {
+    }
+
+    /// <summary>Takes the text from <paramref name="textKey"/>, and the description from <c>textKey + ".desc"</c> when
+    /// English has that key. Setting Description in the initializer still wins.</summary>
+    [SetsRequiredMembers]
+    public SliderEntry(string textKey, int min, int max)
+        : base(textKey)
+    {
+        Min = min;
+        Max = max;
+    }
+
     public required int Min { get; init; }
 
     public required int Max { get; init; }
