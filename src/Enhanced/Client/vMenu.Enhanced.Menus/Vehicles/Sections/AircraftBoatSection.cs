@@ -25,8 +25,8 @@ internal static class AircraftBoatSection
         {
             Gate = VehicleOptionsPermissions.AnchorBoat,
             ReadEnabled = VehicleAnchor.CanAnchorHere,
-            ReadState = () => VehicleAnchor.Enabled,
-            OnChanged = changed => VehicleAnchor.SetEnabled(changed.Checked),
+            ReadState = () => VehicleAnchor.Toggle.Enabled,
+            OnChanged = changed => VehicleAnchor.Toggle.SetEnabled(changed.Checked),
         });
 
         SectionRows.AutoRefresh(menu, () => MenuRegistry.Refresh(menu.Menu));

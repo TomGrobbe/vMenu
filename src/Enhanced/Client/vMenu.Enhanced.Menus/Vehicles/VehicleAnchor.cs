@@ -1,7 +1,6 @@
 using CitizenFX.FiveM.Client;
 
-using vMenu.Enhanced.Events;
-using vMenu.Enhanced.Permissions;
+using vMenu.Enhanced.Menus.Common;
 using vMenu.Enhanced.Storage;
 
 using VehicleOptionsPermissions = vMenu.Enhanced.Data.Permissions.Menus.VehicleOptions;
@@ -10,32 +9,13 @@ namespace vMenu.Enhanced.Menus.Vehicles;
 
 public static class VehicleAnchor
 {
-    private static bool _watching;
-
     private static int _anchored;
 
-    public static bool Enabled => UserDefaults.VehicleAnchorBoat.Value && IsAllowed;
-
-    private static bool IsAllowed => ClientPermissions.IsAllowed(VehicleOptionsPermissions.AnchorBoat);
-
-    public static void Initialize()
-    {
-        ClientPermissions.PermissionsChanged += Apply;
-
-        Apply();
-    }
-
-    public static void SetEnabled(bool enabled)
-    {
-        if (enabled && !IsAllowed)
-        {
-            return;
-        }
-
-        UserDefaults.VehicleAnchorBoat.Value = enabled;
-
-        Apply();
-    }
+    public static readonly ToggleFeature Toggle = new(
+        UserDefaults.VehicleAnchorBoat,
+        VehicleOptionsPermissions.AnchorBoat,
+        Apply,
+        ToggleWatch.VehicleChanged);
 
     public static bool CanAnchorHere()
     {
@@ -45,12 +25,8 @@ public static class VehicleAnchor
             && Native.CanAnchorBoatHere(vehicle);
     }
 
-    private static void Apply()
+    private static void Apply(bool on)
     {
-        var on = Enabled;
-
-        Watch(on);
-
         var vehicle = OwnVehicle.Driven();
 
         if (_anchored != 0 && (_anchored != vehicle || !on))
@@ -86,25 +62,4 @@ public static class VehicleAnchor
         Native.SetBoatFrozenWhenAnchored(vehicle, anchored);
         Native.SetForcedBoatLocationWhenAnchored(vehicle, anchored);
     }
-
-    private static void Watch(bool watching)
-    {
-        if (watching == _watching)
-        {
-            return;
-        }
-
-        _watching = watching;
-
-        if (watching)
-        {
-            LocalVehicleTicks.VehicleChanged += OnChanged;
-
-            return;
-        }
-
-        LocalVehicleTicks.VehicleChanged -= OnChanged;
-    }
-
-    private static void OnChanged(VehicleChanged _) => Apply();
 }

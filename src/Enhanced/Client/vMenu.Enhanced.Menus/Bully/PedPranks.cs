@@ -98,7 +98,7 @@ internal static class PedPranks
 
         Floppy.Close();
 
-        PlayerNoRagdoll.Reapply();
+        PlayerNoRagdoll.Toggle.Apply();
     }
 
     private static void Blast(int explosion, float raise)

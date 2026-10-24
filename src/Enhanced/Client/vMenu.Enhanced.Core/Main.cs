@@ -135,14 +135,14 @@ public sealed class Main : IScript
         PlayerGodMode.Initialize();
         PlayerSuperJump.Initialize();
         PlayerBeastMode.Initialize();
-        PlayerFastRun.Initialize();
-        PlayerFastSwim.Initialize();
+        PlayerFastRun.Toggle.Initialize();
+        PlayerFastSwim.Toggle.Initialize();
         MpStats.Initialize();
-        PlayerUnlimitedOxygen.Initialize();
+        PlayerUnlimitedOxygen.Toggle.Initialize();
         PlayerMoveSpeed.Initialize();
-        PlayerNoRagdoll.Initialize();
-        PlayerNoHelmet.Initialize();
-        PlayerInvisible.Initialize();
+        PlayerNoRagdoll.Toggle.Initialize();
+        PlayerNoHelmet.Toggle.Initialize();
+        PlayerInvisible.Toggle.Initialize();
         PlayerStayInVehicle.Initialize();
         PlayerFreeze.Initialize();
         EveryoneIgnoresPlayer.Initialize();
@@ -157,7 +157,7 @@ public sealed class Main : IScript
         VehicleFreeze.Initialize();
         VehicleVisibility.Initialize();
         VehicleTurbulence.Initialize();
-        VehicleAnchor.Initialize();
+        VehicleAnchor.Toggle.Initialize();
         AircraftWeapons.Initialize();
         VehicleRadio.Initialize();
         PersonalVehicleFeature.Initialize();
@@ -174,7 +174,7 @@ public sealed class Main : IScript
         {
             PlayerGodMode.Reapply();
             VehicleGodMode.Reapply();
-            PlayerInvisible.Reapply();
+            PlayerInvisible.Toggle.Apply();
             EveryoneIgnoresPlayer.Reapply();
             PlayerFreeze.Reapply();
         };

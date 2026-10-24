@@ -2,8 +2,7 @@ using CitizenFX.Core;
 using CitizenFX.Core.Native;
 
 using vMenu.Enhanced.Data.Ticks;
-using vMenu.Enhanced.Events;
-using vMenu.Enhanced.Permissions;
+using vMenu.Enhanced.Menus.Common;
 using vMenu.Enhanced.Storage;
 using vMenu.Enhanced.Ticks;
 
@@ -21,84 +20,38 @@ public static class VehicleKeepClean
     // sit under it. This sweep is what catches that.
     private const long SweepIntervalMs = 10000;
 
-    private static bool _watching;
-
     private static TickHandle? _sweep;
 
-    public static bool Enabled => UserDefaults.VehicleKeepClean.Value && IsAllowed;
-
-    private static bool IsAllowed => ClientPermissions.IsAllowed(VehicleOptionsPermissions.KeepClean);
+    // The dirt watcher re-seeds on a new vehicle rather than reporting it, so getting into one that is
+    // already filthy arrives as a vehicle change instead.
+    public static readonly ToggleFeature Toggle = new(
+        UserDefaults.VehicleKeepClean,
+        VehicleOptionsPermissions.KeepClean,
+        Apply,
+        ToggleWatch.VehicleChanged | ToggleWatch.VehicleDirtied);
 
     // Call once at startup, before permissions have arrived.
     public static void Initialize()
     {
-        ClientPermissions.PermissionsChanged += Apply;
+        _sweep = TickRegistry.Register("Vehicle.KeepClean", Wash, TickRate.Every(SweepIntervalMs), () => Toggle.Enabled);
 
-        _sweep = TickRegistry.Register("Vehicle.KeepClean", Sweep, TickRate.Every(SweepIntervalMs), () => Enabled);
-
-        Apply();
+        Toggle.Initialize();
     }
 
-    public static void SetEnabled(bool enabled)
+    private static void Apply(bool on)
     {
-        // The checkbox follows the permission, but a revoke can land between the two.
-        if (enabled && !IsAllowed)
-        {
-            return;
-        }
-
-        UserDefaults.VehicleKeepClean.Value = enabled;
-
-        Apply();
-    }
-
-    private static void Apply()
-    {
-        var on = Enabled;
-
-        Watch(on);
-
         _sweep?.Reevaluate();
 
-        if (!on)
+        if (on)
         {
-            return;
+            Wash();
         }
-
-        Wash(OwnVehicle.Driven());
     }
 
-    private static void Watch(bool watching)
+    private static void Wash()
     {
-        if (watching == _watching)
-        {
-            return;
-        }
+        var vehicle = OwnVehicle.Driven();
 
-        _watching = watching;
-
-        if (watching)
-        {
-            LocalVehicleTicks.VehicleDirtied += OnDirtied;
-            LocalVehicleTicks.VehicleChanged += OnChanged;
-
-            return;
-        }
-
-        LocalVehicleTicks.VehicleDirtied -= OnDirtied;
-        LocalVehicleTicks.VehicleChanged -= OnChanged;
-    }
-
-    private static void Sweep() => Wash(OwnVehicle.Driven());
-
-    private static void OnDirtied(VehicleDirtied _) => Wash(OwnVehicle.Driven());
-
-    // The dirt watcher re-seeds on a new vehicle rather than reporting it, so getting into one that is
-    // already filthy arrives here instead.
-    private static void OnChanged(VehicleChanged _) => Wash(OwnVehicle.Driven());
-
-    private static void Wash(int vehicle)
-    {
         if (vehicle == 0 || !API.DoesEntityExist(vehicle) || API.GetVehicleDirtLevel(vehicle) <= 0f)
         {
             return;

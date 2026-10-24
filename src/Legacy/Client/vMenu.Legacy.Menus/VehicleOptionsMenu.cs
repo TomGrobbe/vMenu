@@ -53,8 +53,8 @@ public sealed class VehicleOptionsMenu : MenuDefinition
         menu.Entries.Add(new CheckboxEntry(Loc.VehicleOptions.KeepClean)
         {
             Gate = VehicleOptionsPermissions.KeepClean,
-            ReadState = () => VehicleKeepClean.Enabled,
-            OnChanged = changed => VehicleKeepClean.SetEnabled(changed.Checked),
+            ReadState = () => VehicleKeepClean.Toggle.Enabled,
+            OnChanged = changed => VehicleKeepClean.Toggle.SetEnabled(changed.Checked),
         });
 
         menu.Entries.Add(DirtSection.Row(VehicleOptionsPermissions.Dirt));

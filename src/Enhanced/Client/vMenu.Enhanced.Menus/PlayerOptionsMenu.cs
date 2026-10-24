@@ -30,15 +30,15 @@ public sealed class PlayerOptionsMenu : MenuDefinition
         menu.Entries.Add(new CheckboxEntry(Loc.PlayerOptions.Invisible)
         {
             Gate = PlayerOptionsPermissions.Invisible,
-            ReadState = () => PlayerInvisible.Enabled,
-            OnChanged = changed => PlayerInvisible.SetEnabled(changed.Checked),
+            ReadState = () => PlayerInvisible.Toggle.Enabled,
+            OnChanged = changed => PlayerInvisible.Toggle.SetEnabled(changed.Checked),
         });
 
         menu.Entries.Add(new CheckboxEntry(Loc.PlayerOptions.NoRagdoll)
         {
             Gate = PlayerOptionsPermissions.NoRagdoll,
-            ReadState = () => PlayerNoRagdoll.Enabled,
-            OnChanged = changed => PlayerNoRagdoll.SetEnabled(changed.Checked),
+            ReadState = () => PlayerNoRagdoll.Toggle.Enabled,
+            OnChanged = changed => PlayerNoRagdoll.Toggle.SetEnabled(changed.Checked),
         });
 
         menu.Entries.Add(new CheckboxEntry(Loc.PlayerOptions.StayInVehicle)
@@ -91,22 +91,22 @@ public sealed class PlayerOptionsMenu : MenuDefinition
         menu.Entries.Add(new CheckboxEntry(Loc.PlayerOptions.FastRun)
         {
             Gate = PlayerOptionsPermissions.FastRun,
-            ReadState = () => PlayerFastRun.Enabled,
-            OnChanged = changed => PlayerFastRun.SetEnabled(changed.Checked),
+            ReadState = () => PlayerFastRun.Toggle.Enabled,
+            OnChanged = changed => PlayerFastRun.Toggle.SetEnabled(changed.Checked),
         });
 
         menu.Entries.Add(new CheckboxEntry(Loc.PlayerOptions.FastSwim)
         {
             Gate = PlayerOptionsPermissions.FastSwim,
-            ReadState = () => PlayerFastSwim.Enabled,
-            OnChanged = changed => PlayerFastSwim.SetEnabled(changed.Checked),
+            ReadState = () => PlayerFastSwim.Toggle.Enabled,
+            OnChanged = changed => PlayerFastSwim.Toggle.SetEnabled(changed.Checked),
         });
 
         menu.Entries.Add(new CheckboxEntry(Loc.PlayerOptions.UnlimitedOxygen)
         {
             Gate = PlayerOptionsPermissions.UnlimitedOxygen,
-            ReadState = () => PlayerUnlimitedOxygen.Enabled,
-            OnChanged = changed => PlayerUnlimitedOxygen.SetEnabled(changed.Checked),
+            ReadState = () => PlayerUnlimitedOxygen.Toggle.Enabled,
+            OnChanged = changed => PlayerUnlimitedOxygen.Toggle.SetEnabled(changed.Checked),
         });
 
         AddSpeedEntries(
@@ -168,8 +168,8 @@ public sealed class PlayerOptionsMenu : MenuDefinition
         menu.Entries.Add(new CheckboxEntry(Loc.PlayerOptions.NoHelmet)
         {
             Gate = PlayerOptionsPermissions.NoHelmet,
-            ReadState = () => PlayerNoHelmet.Enabled,
-            OnChanged = changed => PlayerNoHelmet.SetEnabled(changed.Checked),
+            ReadState = () => PlayerNoHelmet.Toggle.Enabled,
+            OnChanged = changed => PlayerNoHelmet.Toggle.SetEnabled(changed.Checked),
         });
 
         menu.Entries.Add(new ButtonEntry(Loc.PlayerOptions.ClearBlood)

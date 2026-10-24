@@ -1,7 +1,6 @@
 using CitizenFX.FiveM.Client;
 
-using vMenu.Enhanced.Events;
-using vMenu.Enhanced.Permissions;
+using vMenu.Enhanced.Menus.Common;
 using vMenu.Enhanced.Storage;
 
 using PlayerOptionsPermissions = vMenu.Enhanced.Data.Permissions.Menus.PlayerOptions;
@@ -22,38 +21,15 @@ public static class PlayerUnlimitedOxygen
     // Whether the ceiling is currently raised, so switching off knows there is work to do.
     private static bool _raised;
 
-    private static bool _watching;
+    // Drowning and being fished back out keeps the handle, so a ped change alone never catches it.
+    public static readonly ToggleFeature Toggle = new(
+        UserDefaults.PlayerUnlimitedOxygen,
+        PlayerOptionsPermissions.UnlimitedOxygen,
+        Apply,
+        ToggleWatch.PedChanged | ToggleWatch.PedRevived);
 
-    public static bool Enabled => UserDefaults.PlayerUnlimitedOxygen.Value && IsAllowed;
-
-    private static bool IsAllowed => ClientPermissions.IsAllowed(PlayerOptionsPermissions.UnlimitedOxygen);
-
-    public static void Initialize()
+    private static void Apply(bool on)
     {
-        ClientPermissions.PermissionsChanged += Apply;
-
-        Apply();
-    }
-
-    public static void SetEnabled(bool enabled)
-    {
-        // The checkbox follows the permission, but a revoke can land between the two.
-        if (enabled && !IsAllowed)
-        {
-            return;
-        }
-
-        UserDefaults.PlayerUnlimitedOxygen.Value = enabled;
-
-        Apply();
-    }
-
-    private static void Apply()
-    {
-        var on = Enabled;
-
-        Watch(on);
-
         // Off and never raised is every player who has not touched this, and writing a ceiling at them would
         // cost them whatever breath capacity they had earned.
         if (!on && !_raised)
@@ -96,31 +72,4 @@ public static class PlayerUnlimitedOxygen
         // is how much they had left rather than how much they started with.
         _ceiling = remaining > 0f ? remaining : FallbackCeiling;
     }
-
-    private static void Watch(bool watching)
-    {
-        if (watching == _watching)
-        {
-            return;
-        }
-
-        _watching = watching;
-
-        if (watching)
-        {
-            LocalPlayerTicks.PlayerPedIdChanged += OnPedChanged;
-            LocalPlayerTicks.PlayerPedRevived += OnRevived;
-
-            return;
-        }
-
-        LocalPlayerTicks.PlayerPedIdChanged -= OnPedChanged;
-        LocalPlayerTicks.PlayerPedRevived -= OnRevived;
-    }
-
-    // A respawn hands the player a new ped, on the game's defaults, so the answer has to be written again.
-    private static void OnPedChanged(PlayerPedIdChanged _) => Apply();
-
-    // Drowning and being fished back out keeps the handle, so the change above never fires for it.
-    private static void OnRevived(PlayerPedRevived _) => Apply();
 }

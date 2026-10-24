@@ -1,8 +1,7 @@
 using CitizenFX.Core;
 using CitizenFX.Core.Native;
 
-using vMenu.Enhanced.Events;
-using vMenu.Enhanced.Permissions;
+using vMenu.Enhanced.Menus.Common;
 using vMenu.Enhanced.Storage;
 
 using PlayerOptionsPermissions = vMenu.Enhanced.Data.Permissions.Menus.PlayerOptions;
@@ -15,42 +14,17 @@ public static class PlayerNoRagdoll
 {
     private static readonly PedProtection.Claim Protection = PedProtection.Register();
 
-    private static bool _watching;
+    // Dying ragdolls the ped whatever the flag said, and getting back up in the same body keeps the
+    // handle, so a ped change alone never catches it.
+    public static readonly ToggleFeature Toggle = new(
+        UserDefaults.PlayerNoRagdoll,
+        PlayerOptionsPermissions.NoRagdoll,
+        Apply,
+        ToggleWatch.PedChanged | ToggleWatch.PedRevived);
 
-    public static bool Enabled => UserDefaults.PlayerNoRagdoll.Value && IsAllowed;
-
-    private static bool IsAllowed => ClientPermissions.IsAllowed(PlayerOptionsPermissions.NoRagdoll);
-
-    // Call once at startup, before permissions have arrived.
-    public static void Initialize()
+    private static void Apply(bool on)
     {
-        ClientPermissions.PermissionsChanged += Apply;
-
-        Apply();
-    }
-
-    public static void SetEnabled(bool enabled)
-    {
-        // The checkbox follows the permission, but a revoke can land between the two.
-        if (enabled && !IsAllowed)
-        {
-            return;
-        }
-
-        UserDefaults.PlayerNoRagdoll.Value = enabled;
-
-        Apply();
-    }
-
-    public static void Reapply() => Apply();
-
-    private static void Apply()
-    {
-        var on = Enabled;
-
         Protection.Set(on, PedProtections.NotKnockedOffBike);
-
-        Watch(on);
 
         var ped = API.PlayerPedId();
 
@@ -61,32 +35,4 @@ public static class PlayerNoRagdoll
 
         API.SetPedCanRagdoll(ped, !on);
     }
-
-    private static void Watch(bool watching)
-    {
-        if (watching == _watching)
-        {
-            return;
-        }
-
-        _watching = watching;
-
-        if (watching)
-        {
-            LocalPlayerTicks.PlayerPedIdChanged += OnPedChanged;
-            LocalPlayerTicks.PlayerPedRevived += OnRevived;
-
-            return;
-        }
-
-        LocalPlayerTicks.PlayerPedIdChanged -= OnPedChanged;
-        LocalPlayerTicks.PlayerPedRevived -= OnRevived;
-    }
-
-    // A respawn hands the player a new ped, on the game's defaults, so the answer has to be written again.
-    private static void OnPedChanged(PlayerPedIdChanged _) => Apply();
-
-    // Dying ragdolls the ped whatever the flag said, and getting back up in the same body keeps the
-    // handle, so the change above never fires for it.
-    private static void OnRevived(PlayerPedRevived _) => Apply();
 }
