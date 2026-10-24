@@ -75,10 +75,10 @@ public static class LocationBlipActions
             return ActionResponse.NotFound();
         }
 
-        if (!TryParseInt(args[2], out var sprite) || !TryParseInt(args[3], out var colour)
-            || !TryParse(args[4], out var scale)
-            || !TryParse(args[5], out var x) || !TryParse(args[6], out var y)
-            || args.Length < 8 || !TryParse(args[7], out var z))
+        if (!ActionArgs.TryInt(args[2], out var sprite) || !ActionArgs.TryInt(args[3], out var colour)
+            || !ActionArgs.TryFloat(args[4], out var scale)
+            || !ActionArgs.TryFloat(args[5], out var x) || !ActionArgs.TryFloat(args[6], out var y)
+            || args.Length < 8 || !ActionArgs.TryFloat(args[7], out var z))
         {
             return ActionResponse.InvalidRequest();
         }
@@ -121,7 +121,7 @@ public static class LocationBlipActions
             return ActionResponse.NotFound();
         }
 
-        if (!TryParse(args[2], out var x) || !TryParse(args[3], out var y) || !TryParse(args[4], out var z))
+        if (!ActionArgs.TryFloat(args[2], out var x) || !ActionArgs.TryFloat(args[3], out var y) || !ActionArgs.TryFloat(args[4], out var z))
         {
             return ActionResponse.InvalidRequest();
         }
@@ -229,12 +229,6 @@ public static class LocationBlipActions
 
     private static string? Trimmed(string? value) =>
         string.IsNullOrWhiteSpace(value) ? null : value.Trim();
-
-    private static bool TryParse(string value, out float parsed) =>
-        float.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out parsed);
-
-    private static bool TryParseInt(string value, out int parsed) =>
-        int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out parsed);
 
     private static void Load()
     {

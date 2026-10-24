@@ -98,7 +98,7 @@ public static class TeleportActions
             return ActionResponse.NotFound();
         }
 
-        if (!TryParse(args[3], out var x) || !TryParse(args[4], out var y) || !TryParse(args[5], out var z))
+        if (!ActionArgs.TryFloat(args[3], out var x) || !ActionArgs.TryFloat(args[4], out var y) || !ActionArgs.TryFloat(args[5], out var z))
         {
             return ActionResponse.InvalidRequest();
         }
@@ -121,7 +121,7 @@ public static class TeleportActions
 
             // Optional, so anything unreadable is left unset rather than refused: without one the player simply
             // keeps whichever way they are already facing.
-            Heading = args.Length > 6 && TryParse(args[6], out var heading) ? heading : null,
+            Heading = args.Length > 6 && ActionArgs.TryFloat(args[6], out var heading) ? heading : null,
         };
 
         category.Locations.Add(added);
@@ -284,9 +284,6 @@ public static class TeleportActions
 
     private static string? Trimmed(string? value) =>
         string.IsNullOrWhiteSpace(value) ? null : value.Trim();
-
-    private static bool TryParse(string value, out float parsed) =>
-        float.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out parsed);
 
     // Read once, dropping anything malformed. A missing or unreadable file just means the category menu
     // starts empty.

@@ -270,7 +270,7 @@ public static class StaffAlertActions
             return picked;
         }
 
-        if (!int.TryParse(token, NumberStyles.Integer, CultureInfo.InvariantCulture, out var id))
+        if (!ActionArgs.TryInt(token, out var id))
         {
             return null;
         }

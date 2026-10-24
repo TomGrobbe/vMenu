@@ -1,5 +1,3 @@
-using System.Globalization;
-
 using CitizenFX.Core;
 using CitizenFX.Core.Native;
 
@@ -75,7 +73,7 @@ public static class BullyPrivateWorlds
             return;
         }
 
-        var id = Id(target);
+        var id = Targets.Id(target);
         var stay = new Stay(API.GetPlayerRoutingBucket(id), bucket);
 
         Stays[target] = stay;
@@ -108,7 +106,7 @@ public static class BullyPrivateWorlds
 
         foreach (var player in ConnectedPlayers.All())
         {
-            taken.Add(API.GetPlayerRoutingBucket(Id(player.ServerId)));
+            taken.Add(API.GetPlayerRoutingBucket(Targets.Id(player.ServerId)));
         }
 
         foreach (var stay in Stays.Values)
@@ -129,7 +127,7 @@ public static class BullyPrivateWorlds
 
     private static void Return(int target, Stay stay)
     {
-        var id = Id(target);
+        var id = Targets.Id(target);
 
         if (API.DoesPlayerExist(id) && API.GetPlayerRoutingBucket(id) == stay.Bucket)
         {
@@ -178,8 +176,6 @@ public static class BullyPrivateWorlds
             BullyEvents.PrivateWorldsKey,
             Stays.SelectMany(pair => new[] { pair.Key, pair.Value.Original, pair.Value.Bucket }).ToArray(),
             replicated: false);
-
-    private static string Id(int serverId) => serverId.ToString(CultureInfo.InvariantCulture);
 
     private sealed record Stay(int Original, int Bucket);
 }

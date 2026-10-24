@@ -18,8 +18,6 @@ public static class RemotePlayerStatus
 {
     private const int AnswerTimeoutMs = 3000;
 
-    private const int VehicleEntityType = 2;
-
     private static readonly Dictionary<int, PendingReport> Unanswered = [];
 
     private static int _lastRequestId;
@@ -94,7 +92,7 @@ public static class RemotePlayerStatus
 
         var vehicle = Native.GetVehiclePedIsIn(ped, false);
 
-        if (vehicle == 0 || !Native.DoesEntityExist(vehicle) || Native.GetEntityType(vehicle) != VehicleEntityType)
+        if (!Targets.IsVehicle(vehicle))
         {
             return new StatusResponse { Player = player };
         }
@@ -132,7 +130,7 @@ public static class RemotePlayerStatus
         string vehicleModel,
         string weapon)
     {
-        if (!int.TryParse(requestId, NumberStyles.Integer, CultureInfo.InvariantCulture, out var id)
+        if (!ActionArgs.TryInt(requestId, out var id)
             || !Unanswered.TryGetValue(id, out var pending)
             || pending.Target != source.Handle)
         {

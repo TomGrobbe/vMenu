@@ -146,12 +146,12 @@ public static class BullyActions
             return ActionResponse.Refused(BullyEvents.RefusedTurnedOff);
         }
 
-        if (!TryResolveTarget(args, out var target))
+        if (!Targets.TryResolve(args, out var target))
         {
             return ActionResponse.NotFound();
         }
 
-        if (PedOf(target) is not { } ped)
+        if (Targets.PedOf(target) is not { } ped)
         {
             return ActionResponse.NotReady();
         }
@@ -194,13 +194,13 @@ public static class BullyActions
         var targets = ConnectedPlayers.All()
             .Where(player => includeSelf || player.ServerId != source.ServerId())
             .Where(player => !BullyPrivateWorlds.IsBusy(player.ServerId))
-            .Select(player => (Id: player.ServerId, Ped: PedOf(player.ServerId) ?? 0))
+            .Select(player => (Id: player.ServerId, Ped: Targets.PedOf(player.ServerId) ?? 0))
             .Where(target => target.Ped != 0 && Unmet(effect.Requirement, target.Ped) is null)
             .Select(target => new Target(
                 target.Id,
                 target.Ped,
                 API.GetEntityCoords(target.Ped),
-                API.GetPlayerRoutingBucket(Id(target.Id))))
+                API.GetPlayerRoutingBucket(Targets.Id(target.Id))))
             .ToList();
 
         var groups = effect.Grouped ? Group(targets) : targets.Select(target => new List<Target> { target }).ToList();
@@ -305,10 +305,10 @@ public static class BullyActions
         Script.TriggerClientEvent(
             target,
             BullyEvents.Apply,
-            Id(requestId),
+            Targets.Id(requestId),
             effect.Id,
             option,
-            string.Join(BullyEvents.ListSeparator, victims.Select(Id)));
+            string.Join(BullyEvents.ListSeparator, victims.Select(Targets.Id)));
 
         return pending.Outcome.Task;
     }
@@ -334,7 +334,7 @@ public static class BullyActions
 
     private static void OnResult([FromSource] Player source, string requestId, string outcome)
     {
-        if (TryInt(requestId, out var id)
+        if (ActionArgs.TryInt(requestId, out var id)
             && Pending.TryGetValue(id, out var pending)
             && pending.Target == source.ServerId())
         {
@@ -359,7 +359,7 @@ public static class BullyActions
 
     private static ActionResponse SetToggle(string toggle, bool on, Player source, string[] args)
     {
-        if (!TryResolveTarget(args, out var target))
+        if (!Targets.TryResolve(args, out var target))
         {
             return ActionResponse.NotFound();
         }
@@ -410,7 +410,7 @@ public static class BullyActions
     }
 
     private static ActionResponse GetToggles(Player source, string[] args) =>
-        TryResolveTarget(args, out var target) && Toggles.TryGetValue(target, out var active)
+        Targets.TryResolve(args, out var target) && Toggles.TryGetValue(target, out var active)
             ? ActionResponse.Ok(active.ToArray())
             : ActionResponse.Ok();
 
@@ -418,7 +418,7 @@ public static class BullyActions
         ActionResponse.Ok(ServerToggles
             .Select(toggle => $"{BullyEvents.ServerScope}{BullyEvents.Separator}{toggle}")
             .Concat(Toggles.SelectMany(pair => pair.Value.Select(toggle =>
-                $"{BullyEvents.PlayerScope}{BullyEvents.Separator}{toggle}{BullyEvents.Separator}{Id(pair.Key)}{BullyEvents.Separator}{NameOf(pair.Key)}")))
+                $"{BullyEvents.PlayerScope}{BullyEvents.Separator}{toggle}{BullyEvents.Separator}{Targets.Id(pair.Key)}{BullyEvents.Separator}{NameOf(pair.Key)}")))
             .ToArray());
 
     private static ActionResponse StopAll(Player source, string[] args)
@@ -470,8 +470,8 @@ public static class BullyActions
     {
         if (!Transforms.TryGetValue(source, out var transform)
             || transform.Busy
-            || !TryInt(fromNetId, out var from)
-            || !TryInt(toNetId, out var to))
+            || !ActionArgs.TryInt(fromNetId, out var from)
+            || !ActionArgs.TryInt(toNetId, out var to))
         {
             return;
         }
@@ -533,7 +533,7 @@ public static class BullyActions
         {
             transform.Passengers[occupant] = seat;
 
-            Script.TriggerClientEvent(occupant, BullyEvents.TransformSeat, Id(to), Id(seat));
+            Script.TriggerClientEvent(occupant, BullyEvents.TransformSeat, Targets.Id(to), Targets.Id(seat));
         }
     }
 
@@ -541,11 +541,11 @@ public static class BullyActions
     {
         var passengers = Entity(transform.Replacement) is { } replacement
             ? Occupants(replacement, source)
-            : transform.Passengers.Where(pair => API.DoesPlayerExist(Id(pair.Key))).Select(pair => (pair.Key, pair.Value)).ToList();
+            : transform.Passengers.Where(pair => API.DoesPlayerExist(Targets.Id(pair.Key))).Select(pair => (pair.Key, pair.Value)).ToList();
 
         foreach (var (passenger, seat) in passengers)
         {
-            Script.TriggerClientEvent(passenger, BullyEvents.TransformSeat, Id(transform.Original), Id(seat));
+            Script.TriggerClientEvent(passenger, BullyEvents.TransformSeat, Targets.Id(transform.Original), Targets.Id(seat));
         }
     }
 
@@ -575,14 +575,14 @@ public static class BullyActions
 
     private static bool OwnedVehicle(int networkId, int owner) =>
         Entity(networkId) is { } entity
-        && API.GetEntityType(entity) == VehicleType
+        && Targets.IsVehicle(entity)
         && API.NetworkGetEntityOwner(entity) == owner;
 
     private static void OnAbductionBeam([FromSource] Player source, string state, string x, string y, string z, string height)
     {
         if (!Abductions.TryGetValue(source.ServerId(), out var expires)
             || Now > expires
-            || !float.TryParse(height, NumberStyles.Float, CultureInfo.InvariantCulture, out var beamHeight)
+            || !ActionArgs.TryFloat(height, out var beamHeight)
             || beamHeight is < 0f or > MaxBeamHeight)
         {
             return;
@@ -593,12 +593,12 @@ public static class BullyActions
             Abductions.Remove(source.ServerId());
         }
 
-        var id = Id(source.ServerId());
+        var id = Targets.Id(source.ServerId());
         var bucket = API.GetPlayerRoutingBucket(id);
 
         foreach (var player in ConnectedPlayers.All())
         {
-            if (player.ServerId != source.ServerId() && API.GetPlayerRoutingBucket(Id(player.ServerId)) == bucket)
+            if (player.ServerId != source.ServerId() && API.GetPlayerRoutingBucket(Targets.Id(player.ServerId)) == bucket)
             {
                 Script.TriggerClientEvent(player.ServerId, BullyEvents.ShowAbductionBeam, id, state, x, y, z, height);
             }
@@ -609,11 +609,11 @@ public static class BullyActions
     {
         if (!Mugs.TryGetValue(source.ServerId(), out var round)
             || Now > round.ExpiresAt
-            || !TryInt(victimId, out var victim)
+            || !ActionArgs.TryInt(victimId, out var victim)
             || !round.Victims.Remove(victim)
-            || !float.TryParse(x, NumberStyles.Float, CultureInfo.InvariantCulture, out var pushX)
-            || !float.TryParse(y, NumberStyles.Float, CultureInfo.InvariantCulture, out var pushY)
-            || !API.DoesPlayerExist(Id(victim)))
+            || !ActionArgs.TryFloat(x, out var pushX)
+            || !ActionArgs.TryFloat(y, out var pushY)
+            || !API.DoesPlayerExist(Targets.Id(victim)))
         {
             return;
         }
@@ -677,7 +677,7 @@ public static class BullyActions
             if (!SpawnWindows.TryGetValue(source, out var window)
                 || Now > window.ExpiresAt
                 || window.Count >= MaxSpawnsPerEffect
-                || !TryInt(networkId, out var id)
+                || !ActionArgs.TryInt(networkId, out var id)
                 || (Spawned.TryGetValue(id, out var existing) && Still(id, existing) is not null))
             {
                 return;
@@ -788,7 +788,7 @@ public static class BullyActions
     private static void PublishLod() =>
         API.SetConvarReplicated(
             BullyEvents.LodConvar,
-            string.Join(BullyEvents.ListSeparator, Toggles.Where(pair => pair.Value.Contains(BullyToggles.Lod)).Select(pair => Id(pair.Key))));
+            string.Join(BullyEvents.ListSeparator, Toggles.Where(pair => pair.Value.Contains(BullyToggles.Lod)).Select(pair => Targets.Id(pair.Key))));
 
     private static uint ModelOf(int entity) => (uint)API.GetEntityModel(entity);
 
@@ -802,22 +802,7 @@ public static class BullyActions
 
     private static string Option(string[] args, int index) => args.Length > index ? args[index] : string.Empty;
 
-    private static string Id(int serverId) => serverId.ToString(CultureInfo.InvariantCulture);
-
-    private static bool TryInt(string value, out int result) =>
-        int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out result);
-
-    private static int? PedOf(int serverId)
-    {
-        var ped = API.GetPlayerPed(Id(serverId));
-
-        return ped != 0 && API.DoesEntityExist(ped) ? ped : null;
-    }
-
-    private static string NameOf(int serverId) => API.GetPlayerName(Id(serverId));
-
-    private static bool TryResolveTarget(string[] args, out int serverId) =>
-        TryInt(Option(args, 0), out serverId) && API.DoesPlayerExist(Id(serverId));
+    private static string NameOf(int serverId) => API.GetPlayerName(Targets.Id(serverId));
 
     private sealed record Target(int Id, int Ped, Vector3 Position, int Bucket);
 

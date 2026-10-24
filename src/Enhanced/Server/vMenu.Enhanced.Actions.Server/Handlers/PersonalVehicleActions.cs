@@ -18,8 +18,6 @@ namespace vMenu.Enhanced.Actions.Server.Handlers;
 
 public static class PersonalVehicleActions
 {
-    private const int VehicleEntityType = 2;
-
     private const string DroppedEvent = "playerDropped";
 
     private static readonly ActionRateLimit Limit = new(
@@ -78,7 +76,7 @@ public static class PersonalVehicleActions
 
         var entity = Native.NetworkGetEntityFromNetworkId(networkId);
 
-        if (entity == 0 || !Native.DoesEntityExist(entity) || Native.GetEntityType(entity) != VehicleEntityType)
+        if (!Targets.IsVehicle(entity))
         {
             return 0;
         }
@@ -96,8 +94,7 @@ public static class PersonalVehicleActions
 
     private static ActionResponse Set(Player source, string[] args)
     {
-        if (args.Length < 1
-            || !int.TryParse(args[0], NumberStyles.Integer, CultureInfo.InvariantCulture, out var networkId))
+        if (!ActionArgs.TryInt(args, 0, out var networkId))
         {
             return ActionResponse.InvalidRequest();
         }
@@ -227,7 +224,7 @@ public static class PersonalVehicleActions
 
     private static Task<ActionResponse> SetLights(Player source, string[] args)
     {
-        if (!TryIndex(args, 0, out var state)
+        if (!ActionArgs.TryInt(args, 0, out var state)
             || (state != RemoteVehicleAction.LightsAutomatic
                 && state != RemoteVehicleAction.LightsOff
                 && state != RemoteVehicleAction.LightsOn))
@@ -240,7 +237,7 @@ public static class PersonalVehicleActions
 
     private static Task<ActionResponse> SetDoor(Player source, string[] args)
     {
-        if (!TryIndex(args, 0, out var door) || door < 0 || door >= RemoteVehicleAction.DoorCount)
+        if (!ActionArgs.TryInt(args, 0, out var door) || door < 0 || door >= RemoteVehicleAction.DoorCount)
         {
             return Task.FromResult(ActionResponse.InvalidRequest());
         }
@@ -260,7 +257,7 @@ public static class PersonalVehicleActions
 
     private static Task<ActionResponse> SetWindow(Player source, string[] args)
     {
-        if (!TryIndex(args, 0, out var window) || window < 0 || window >= RemoteVehicleAction.WindowCount)
+        if (!ActionArgs.TryInt(args, 0, out var window) || window < 0 || window >= RemoteVehicleAction.WindowCount)
         {
             return Task.FromResult(ActionResponse.InvalidRequest());
         }
@@ -375,14 +372,6 @@ public static class PersonalVehicleActions
         }
 
         return fallback;
-    }
-
-    private static bool TryIndex(string[] args, int index, out int value)
-    {
-        value = 0;
-
-        return args.Length > index
-            && int.TryParse(args[index], NumberStyles.Integer, CultureInfo.InvariantCulture, out value);
     }
 
     private static bool StillAVehicle(int networkId) => Resolve(networkId) != 0;

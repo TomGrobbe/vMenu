@@ -205,7 +205,7 @@ public static class VehicleExtraActions
 
         foreach (var extra in extras)
         {
-            if (!int.TryParse(extra.Key.Trim(), NumberStyles.Integer, CultureInfo.InvariantCulture, out var id))
+            if (!ActionArgs.TryInt(extra.Key.Trim(), out var id))
             {
                 Log.Warning($"[Config] Skipping extra '{extra.Key}' on '{model}' in {ConfigFile}: the id has to be a whole number in quotes.");
                 continue;

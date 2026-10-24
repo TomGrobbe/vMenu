@@ -33,8 +33,6 @@ public static class AdminActions
 
     private static readonly Random JitterRng = new();
 
-    private const int VehicleEntityType = 2;
-
     private const int FirstRandomPopulation = 1;
 
     private const int LastRandomPopulation = 5;
@@ -93,13 +91,13 @@ public static class AdminActions
         }
 
         var position = Native.GetEntityCoords(ped);
-        var bucket = Native.GetPlayerRoutingBucket(Handle(source.Handle));
+        var bucket = Native.GetPlayerRoutingBucket(Targets.Id(source.Handle));
         var radius = Radius();
         var cleared = 0;
 
         foreach (var player in ConnectedPlayers.All())
         {
-            if (Native.GetPlayerRoutingBucket(Handle(player.ServerId)) != bucket)
+            if (Native.GetPlayerRoutingBucket(Targets.Id(player.ServerId)) != bucket)
             {
                 continue;
             }
@@ -116,12 +114,12 @@ public static class AdminActions
 
     private static ActionResponse SetFrozen(Player source, string[] args)
     {
-        if (!TryResolveTarget(args, out var target))
+        if (!Targets.TryResolve(args, out var target))
         {
             return ActionResponse.NotFound();
         }
 
-        if (PedOf(target) is not { } targetPed)
+        if (Targets.PedOf(target) is not { } targetPed)
         {
             return ActionResponse.NotReady();
         }
@@ -149,12 +147,12 @@ public static class AdminActions
 
     private static ActionResponse SetHeld(Player source, string[] args)
     {
-        if (!TryResolveTarget(args, out var target))
+        if (!Targets.TryResolve(args, out var target))
         {
             return ActionResponse.NotFound();
         }
 
-        if (PedOf(target) is not { } targetPed)
+        if (Targets.PedOf(target) is not { } targetPed)
         {
             return ActionResponse.NotReady();
         }
@@ -194,7 +192,7 @@ public static class AdminActions
 
         Held[target] = source.Handle;
 
-        API.EmitClient(target, AdminEvents.Hold, Handle(source.Handle));
+        API.EmitClient(target, AdminEvents.Hold, Targets.Id(source.Handle));
 
         Log.Info($"[Admin] {source.Name} picked {name} up.");
 
@@ -203,7 +201,7 @@ public static class AdminActions
 
     private static ActionResponse DeleteVehicle(Player source, string[] args)
     {
-        if (args.Length < 1 || !int.TryParse(args[0], NumberStyles.Integer, CultureInfo.InvariantCulture, out var networkId))
+        if (!ActionArgs.TryInt(args, 0, out var networkId))
         {
             return ActionResponse.InvalidRequest();
         }
@@ -215,7 +213,7 @@ public static class AdminActions
             return ActionResponse.NotFound();
         }
 
-        if (Native.GetEntityType(entity) != VehicleEntityType)
+        if (!Targets.IsVehicle(entity))
         {
             return ActionResponse.InvalidRequest();
         }
@@ -315,7 +313,7 @@ public static class AdminActions
         // A player ped the pool has not caught up with yet must never have their car deleted under them.
         foreach (var player in ConnectedPlayers.All())
         {
-            var ped = Native.GetPlayerPed(Handle(player.ServerId));
+            var ped = Native.GetPlayerPed(Targets.Id(player.ServerId));
 
             if (ped == 0 || !Native.DoesEntityExist(ped))
             {
@@ -430,14 +428,14 @@ public static class AdminActions
     // Answers with the bucket they were in, so the client can tell "moved back" from "already there".
     private static ActionResponse ResetRoutingBucket(Player source, string[] args)
     {
-        var current = Native.GetPlayerRoutingBucket(Handle(source.Handle));
+        var current = Native.GetPlayerRoutingBucket(Targets.Id(source.Handle));
 
         if (current == DefaultRoutingBucket)
         {
             return ActionResponse.Ok(DefaultRoutingBucket.ToString(CultureInfo.InvariantCulture));
         }
 
-        Native.SetPlayerRoutingBucket(Handle(source.Handle), DefaultRoutingBucket);
+        Native.SetPlayerRoutingBucket(Targets.Id(source.Handle), DefaultRoutingBucket);
 
         Log.Info($"[Admin] {source.Name} moved themselves out of routing bucket {current}.");
 
@@ -522,31 +520,10 @@ public static class AdminActions
             <= reach * reach;
     }
 
-    private static bool TryResolveTarget(string[] args, out int serverId)
-    {
-        serverId = 0;
-
-        if (args.Length < 1 || !int.TryParse(args[0], NumberStyles.Integer, CultureInfo.InvariantCulture, out serverId))
-        {
-            return false;
-        }
-
-        return Native.DoesPlayerExist(Handle(serverId));
-    }
-
-    private static int? PedOf(int serverId)
-    {
-        var ped = Native.GetPlayerPed(Handle(serverId));
-
-        return ped != 0 && Native.DoesEntityExist(ped) ? ped : null;
-    }
-
     private static string NameOf(int serverId)
     {
-        var name = Native.GetPlayerName(Handle(serverId));
+        var name = Native.GetPlayerName(Targets.Id(serverId));
 
         return string.IsNullOrWhiteSpace(name) ? $"#{serverId}" : name;
     }
-
-    private static string Handle(int serverId) => serverId.ToString(CultureInfo.InvariantCulture);
 }

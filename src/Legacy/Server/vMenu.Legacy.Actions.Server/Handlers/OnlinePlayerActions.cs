@@ -45,8 +45,6 @@ public static class OnlinePlayerActions
 
     private const int MaxWantedLevel = 5;
 
-    private const int VehicleEntityType = 2;
-
     private const int DriverSeat = -1;
 
     private const string Deleted = "1";
@@ -230,7 +228,7 @@ public static class OnlinePlayerActions
             return true;
         }
 
-        if (int.TryParse(query, NumberStyles.Integer, CultureInfo.InvariantCulture, out var serverId)
+        if (ActionArgs.TryInt(query, out var serverId)
             && serverId == player.ServerId)
         {
             return true;
@@ -271,7 +269,7 @@ public static class OnlinePlayerActions
     // left out on purpose: it says where somebody lives rather than which account they are.
     private static ActionResponse GetIdentifiers(Player source, string[] args)
     {
-        if (!TryResolveTarget(args, out var target))
+        if (!Targets.TryResolve(args, out var target))
         {
             return ActionResponse.NotFound();
         }
@@ -300,7 +298,7 @@ public static class OnlinePlayerActions
 
     private static ActionResponse GetCoordsForTeleport(Player source, string[] args)
     {
-        if (!TryResolveTarget(args, out var target))
+        if (!Targets.TryResolve(args, out var target))
         {
             return ActionResponse.NotFound();
         }
@@ -312,12 +310,12 @@ public static class OnlinePlayerActions
 
     private static ActionResponse GetCoords(Player source, string[] args)
     {
-        if (!TryResolveTarget(args, out var target))
+        if (!Targets.TryResolve(args, out var target))
         {
             return ActionResponse.NotFound();
         }
 
-        if (PedOf(target) is not { } ped)
+        if (Targets.PedOf(target) is not { } ped)
         {
             return ActionResponse.NotReady();
         }
@@ -332,7 +330,7 @@ public static class OnlinePlayerActions
 
     private static ActionResponse GetVehicle(Player source, string[] args)
     {
-        if (!TryResolveTarget(args, out var target))
+        if (!Targets.TryResolve(args, out var target))
         {
             return ActionResponse.NotFound();
         }
@@ -342,7 +340,7 @@ public static class OnlinePlayerActions
             return ActionResponse.Refused();
         }
 
-        if (PedOf(target) is not { } ped)
+        if (Targets.PedOf(target) is not { } ped)
         {
             return ActionResponse.NotReady();
         }
@@ -370,20 +368,19 @@ public static class OnlinePlayerActions
 
     private static async Task<ActionResponse> SetWantedLevel(Player source, string[] args)
     {
-        if (!TryResolveTarget(args, out var target))
+        if (!Targets.TryResolve(args, out var target))
         {
             return ActionResponse.NotFound();
         }
 
-        if (args.Length < 2
-            || !int.TryParse(args[1], NumberStyles.Integer, CultureInfo.InvariantCulture, out var stars)
+        if (!ActionArgs.TryInt(args, 1, out var stars)
             || stars < 0
             || stars > MaxWantedLevel)
         {
             return ActionResponse.InvalidRequest();
         }
 
-        if (PedOf(target) is null)
+        if (Targets.PedOf(target) is null)
         {
             return ActionResponse.NotReady();
         }
@@ -435,7 +432,7 @@ public static class OnlinePlayerActions
 
     private static void OnWantedLevelAcknowledged([FromSource] Player source, string requestId, string reached)
     {
-        if (!int.TryParse(requestId, NumberStyles.Integer, CultureInfo.InvariantCulture, out var id)
+        if (!ActionArgs.TryInt(requestId, out var id)
             || !UnansweredWanted.TryGetValue(id, out var pending))
         {
             return;
@@ -448,7 +445,7 @@ public static class OnlinePlayerActions
             return;
         }
 
-        if (!int.TryParse(reached, NumberStyles.Integer, CultureInfo.InvariantCulture, out var level))
+        if (!ActionArgs.TryInt(reached, out var level))
         {
             return;
         }
@@ -458,7 +455,7 @@ public static class OnlinePlayerActions
 
     private static ActionResponse Kick(Player source, string[] args)
     {
-        if (!TryResolveTarget(args, out var target))
+        if (!Targets.TryResolve(args, out var target))
         {
             return ActionResponse.NotFound();
         }
@@ -478,12 +475,12 @@ public static class OnlinePlayerActions
 
     private static ActionResponse Kill(Player source, string[] args)
     {
-        if (!TryResolveTarget(args, out var target))
+        if (!Targets.TryResolve(args, out var target))
         {
             return ActionResponse.NotFound();
         }
 
-        if (PedOf(target) is null)
+        if (Targets.PedOf(target) is null)
         {
             return ActionResponse.NotReady();
         }
@@ -497,12 +494,12 @@ public static class OnlinePlayerActions
 
     private static ActionResponse SetNoClip(Player source, string[] args)
     {
-        if (!TryResolveTarget(args, out var target))
+        if (!Targets.TryResolve(args, out var target))
         {
             return ActionResponse.NotFound();
         }
 
-        if (PedOf(target) is null)
+        if (Targets.PedOf(target) is null)
         {
             return ActionResponse.NotReady();
         }
@@ -522,12 +519,12 @@ public static class OnlinePlayerActions
 
     private static ActionResponse SetNoClipAccess(Player source, string[] args)
     {
-        if (!TryResolveTarget(args, out var target))
+        if (!Targets.TryResolve(args, out var target))
         {
             return ActionResponse.NotFound();
         }
 
-        if (PedOf(target) is null)
+        if (Targets.PedOf(target) is null)
         {
             return ActionResponse.NotReady();
         }
@@ -552,7 +549,7 @@ public static class OnlinePlayerActions
 
     private static ActionResponse GetNoClip(Player source, string[] args)
     {
-        if (!TryResolveTarget(args, out var target))
+        if (!Targets.TryResolve(args, out var target))
         {
             return ActionResponse.NotFound();
         }
@@ -569,8 +566,6 @@ public static class OnlinePlayerActions
     private static string NameOf(int serverId) =>
         API.GetPlayerName(serverId.ToString(CultureInfo.InvariantCulture));
 
-    private static string Handle(int serverId) => serverId.ToString(CultureInfo.InvariantCulture);
-
     private static void MatchBucket(int mover, int reference)
     {
         if (!ServerConfig.Value(OnlinePlayerSettings.MatchRoutingBucket))
@@ -578,14 +573,14 @@ public static class OnlinePlayerActions
             return;
         }
 
-        var bucket = API.GetPlayerRoutingBucket(Handle(reference));
+        var bucket = API.GetPlayerRoutingBucket(Targets.Id(reference));
 
-        if (API.GetPlayerRoutingBucket(Handle(mover)) == bucket)
+        if (API.GetPlayerRoutingBucket(Targets.Id(mover)) == bucket)
         {
             return;
         }
 
-        NativeFixer.SetPlayerRoutingBucket(Handle(mover), bucket);
+        NativeFixer.SetPlayerRoutingBucket(Targets.Id(mover), bucket);
 
         Log.Info($"[OnlinePlayers] Moved {NameOf(mover)} into routing bucket {bucket}.");
     }
@@ -594,7 +589,7 @@ public static class OnlinePlayerActions
     // the world to stream in. Moving somebody from the server drops them through an unloaded map.
     private static ActionResponse Summon(Player source, string[] args)
     {
-        if (!TryResolveTarget(args, out var target))
+        if (!Targets.TryResolve(args, out var target))
         {
             return ActionResponse.NotFound();
         }
@@ -606,7 +601,7 @@ public static class OnlinePlayerActions
 
         // Somebody still on the loading screen has no character to move, and their client is not listening
         // for this yet either.
-        if (PedOf(target) is not { } targetPed)
+        if (Targets.PedOf(target) is not { } targetPed)
         {
             return ActionResponse.NotReady();
         }
@@ -647,7 +642,7 @@ public static class OnlinePlayerActions
 
     private static ActionResponse SummonIntoVehicle(Player source, string[] args)
     {
-        if (!TryResolveTarget(args, out var target))
+        if (!Targets.TryResolve(args, out var target))
         {
             return ActionResponse.NotFound();
         }
@@ -657,15 +652,14 @@ public static class OnlinePlayerActions
             return ActionResponse.Refused();
         }
 
-        if (args.Length < 2
-            || !int.TryParse(args[1], NumberStyles.Integer, CultureInfo.InvariantCulture, out var seat)
+        if (!ActionArgs.TryInt(args, 1, out var seat)
             || seat < DriverSeat
             || seat > MaxSeat)
         {
             return ActionResponse.InvalidRequest();
         }
 
-        if (PedOf(target) is not { } targetPed)
+        if (Targets.PedOf(target) is not { } targetPed)
         {
             return ActionResponse.NotReady();
         }
@@ -732,7 +726,7 @@ public static class OnlinePlayerActions
     // "Sent" when the other end never showed it is the one thing a sender actually wants to know.
     private static async Task<ActionResponse> SendMessage(Player source, string[] args)
     {
-        if (!TryResolveTarget(args, out var target))
+        if (!Targets.TryResolve(args, out var target))
         {
             return ActionResponse.NotFound();
         }
@@ -742,7 +736,7 @@ public static class OnlinePlayerActions
             return ActionResponse.InvalidRequest();
         }
 
-        if (PedOf(target) is null)
+        if (Targets.PedOf(target) is null)
         {
             return ActionResponse.NotReady();
         }
@@ -799,7 +793,7 @@ public static class OnlinePlayerActions
     // the Player binds to wire argument 0 and the id shifts by one.
     private static void OnMessageAcknowledged([FromSource] Player source, string messageId)
     {
-        if (!int.TryParse(messageId, NumberStyles.Integer, CultureInfo.InvariantCulture, out var id)
+        if (!ActionArgs.TryInt(messageId, out var id)
             || !Unacknowledged.TryGetValue(id, out var pending))
         {
             // Either it already timed out, or somebody is making them up. Neither is worth a log line.
@@ -823,14 +817,14 @@ public static class OnlinePlayerActions
     {
         Log.Warning($"[OnlinePlayers][VehicleDebug] DeleteVehicle requested by {source.Name} with args [{string.Join(", ", args)}].");
 
-        if (!TryResolveTarget(args, out var target))
+        if (!Targets.TryResolve(args, out var target))
         {
             Log.Warning("[OnlinePlayers][VehicleDebug] Target did not resolve to a connected player.");
 
             return ActionResponse.NotFound();
         }
 
-        if (PedOf(target) is not { } ped)
+        if (Targets.PedOf(target) is not { } ped)
         {
             Log.Warning($"[OnlinePlayers][VehicleDebug] Target {target} has no ped (GetPlayerPed={API.GetPlayerPed(target.ToString(CultureInfo.InvariantCulture))}).");
 
@@ -841,7 +835,7 @@ public static class OnlinePlayerActions
 
         LogVehicleLookup(target, ped, vehicle);
 
-        if (vehicle == 0 || !API.DoesEntityExist(vehicle) || API.GetEntityType(vehicle) != VehicleEntityType)
+        if (!Targets.IsVehicle(vehicle))
         {
             return ActionResponse.Ok(OnFoot);
         }
@@ -862,14 +856,14 @@ public static class OnlinePlayerActions
     {
         Log.Warning($"[OnlinePlayers][VehicleDebug] ExplodeVehicle requested by {source.Name} with args [{string.Join(", ", args)}].");
 
-        if (!TryResolveTarget(args, out var target))
+        if (!Targets.TryResolve(args, out var target))
         {
             Log.Warning("[OnlinePlayers][VehicleDebug] Target did not resolve to a connected player.");
 
             return ActionResponse.NotFound();
         }
 
-        if (PedOf(target) is not { } ped)
+        if (Targets.PedOf(target) is not { } ped)
         {
             Log.Warning($"[OnlinePlayers][VehicleDebug] Target {target} has no ped (GetPlayerPed={API.GetPlayerPed(target.ToString(CultureInfo.InvariantCulture))}).");
 
@@ -880,7 +874,7 @@ public static class OnlinePlayerActions
 
         LogVehicleLookup(target, ped, vehicle);
 
-        if (vehicle == 0 || !API.DoesEntityExist(vehicle) || API.GetEntityType(vehicle) != VehicleEntityType)
+        if (!Targets.IsVehicle(vehicle))
         {
             return ActionResponse.Ok(OnFoot);
         }
@@ -927,12 +921,12 @@ public static class OnlinePlayerActions
 
     private static async Task<ActionResponse> GetStatus(Player source, string[] args)
     {
-        if (!TryResolveTarget(args, out var target))
+        if (!Targets.TryResolve(args, out var target))
         {
             return ActionResponse.NotFound();
         }
 
-        if (PedOf(target) is null)
+        if (Targets.PedOf(target) is null)
         {
             return ActionResponse.NotReady();
         }
@@ -987,7 +981,7 @@ public static class OnlinePlayerActions
 
     private static void OnGodModeAcknowledged([FromSource] Player source, string requestId, bool playerGod, bool vehicleGod)
     {
-        if (!int.TryParse(requestId, NumberStyles.Integer, CultureInfo.InvariantCulture, out var id)
+        if (!ActionArgs.TryInt(requestId, out var id)
             || !UnansweredStatus.TryGetValue(id, out var pending))
         {
             return;
@@ -1005,7 +999,7 @@ public static class OnlinePlayerActions
 
     private static ActionResponse RefreshPermissions(Player source, string[] args)
     {
-        if (!TryResolveTarget(args, out var target))
+        if (!Targets.TryResolve(args, out var target))
         {
             return ActionResponse.NotFound();
         }
@@ -1016,15 +1010,6 @@ public static class OnlinePlayerActions
         }
 
         return ActionResponse.Ok();
-    }
-
-    // Somebody still connecting already holds a server id, so they answer DoesPlayerExist while having
-    // nothing in the world. This is what tells them apart from a player who has left.
-    private static int? PedOf(int serverId)
-    {
-        var ped = API.GetPlayerPed(serverId.ToString(CultureInfo.InvariantCulture));
-
-        return ped != 0 && API.DoesEntityExist(ped) ? ped : null;
     }
 
     private sealed class PendingMessage(int target, TaskCompletionSource<bool> delivered)
@@ -1046,18 +1031,6 @@ public static class OnlinePlayerActions
         public int Target { get; } = target;
 
         public TaskCompletionSource<(bool Player, bool Vehicle)> Answered { get; } = answered;
-    }
-
-    private static bool TryResolveTarget(string[] args, out int serverId)
-    {
-        serverId = 0;
-
-        if (args.Length < 1 || !int.TryParse(args[0], NumberStyles.Integer, CultureInfo.InvariantCulture, out serverId))
-        {
-            return false;
-        }
-
-        return API.DoesPlayerExist(serverId.ToString(CultureInfo.InvariantCulture));
     }
 
     // Compared as a set rather than counted, so one player leaving as another joins still registers.

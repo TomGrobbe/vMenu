@@ -16,8 +16,6 @@ namespace vMenu.Enhanced.Actions.Server;
 
 public static class VehicleOrphanMode
 {
-    private const int VehicleEntityType = 2;
-
     private const long DrainIntervalMs = 250;
 
     private const long GiveUpAfterMs = 2000;
@@ -99,7 +97,7 @@ public static class VehicleOrphanMode
                 var waiting = pending[index];
                 var entity = API.NetworkGetEntityFromNetworkId(waiting.NetworkId);
 
-                if (entity != 0 && API.DoesEntityExist(entity) && API.GetEntityType(entity) == VehicleEntityType)
+                if (Targets.IsVehicle(entity))
                 {
                     NativeFixer.SetEntityOrphanMode(entity, mode);
 

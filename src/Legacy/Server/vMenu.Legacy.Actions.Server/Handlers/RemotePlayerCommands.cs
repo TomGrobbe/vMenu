@@ -55,8 +55,6 @@ public static class RemotePlayerCommands
 
     private const string Off = "0";
 
-    private const int VehicleEntityType = 2;
-
     public static bool IsAsync(string action) => action is "explodevehicle" or "status";
 
     // Must start on the tick thread.
@@ -67,7 +65,7 @@ public static class RemotePlayerCommands
             return new RemoteCommandResult(RemoteCommandOutcome.IdentityMismatch);
         }
 
-        if (PedOf(cmd.ServerId) is not { } ped)
+        if (Targets.PedOf(cmd.ServerId) is not { } ped)
         {
             return new RemoteCommandResult(RemoteCommandOutcome.NotReady);
         }
@@ -125,7 +123,7 @@ public static class RemotePlayerCommands
             return RemoteCommandOutcome.IdentityMismatch;
         }
 
-        if (PedOf(cmd.ServerId) is null)
+        if (Targets.PedOf(cmd.ServerId) is null)
         {
             return RemoteCommandOutcome.NotReady;
         }
@@ -195,7 +193,7 @@ public static class RemotePlayerCommands
                 break;
 
             case "deletevehicle":
-                if (PedOf(target) is not { } ped || VehicleOf(ped) is not { } vehicle)
+                if (Targets.PedOf(target) is not { } ped || VehicleOf(ped) is not { } vehicle)
                 {
                     return RemoteCommandOutcome.NoVehicle;
                 }
@@ -260,18 +258,11 @@ public static class RemotePlayerCommands
         return true;
     }
 
-    private static int? PedOf(int serverId)
-    {
-        var ped = API.GetPlayerPed(serverId.ToString(CultureInfo.InvariantCulture));
-
-        return ped != 0 && API.DoesEntityExist(ped) ? ped : null;
-    }
-
     private static int? VehicleOf(int ped)
     {
         var vehicle = API.GetVehiclePedIsIn(ped, false);
 
-        return vehicle != 0 && API.DoesEntityExist(vehicle) && API.GetEntityType(vehicle) == VehicleEntityType
+        return Targets.IsVehicle(vehicle)
             ? vehicle
             : null;
     }

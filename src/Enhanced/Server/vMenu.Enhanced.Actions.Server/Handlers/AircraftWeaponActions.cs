@@ -18,8 +18,6 @@ public static class AircraftWeaponActions
 {
     private const string ConfigFile = "config/aircraft-weapons.json";
 
-    private const int VehicleEntityType = 2;
-
     private const int Pilot = -1;
 
     private const int CoPilot = 0;
@@ -79,7 +77,7 @@ public static class AircraftWeaponActions
     private static ActionResponse Forward(Player source, string[] args)
     {
         if (args.Length < 2
-            || !int.TryParse(args[0], NumberStyles.Integer, CultureInfo.InvariantCulture, out var networkId)
+            || !ActionArgs.TryInt(args[0], out var networkId)
             || !AircraftWeaponEvents.IsKnown(args[1]))
         {
             return ActionResponse.InvalidRequest();
@@ -94,7 +92,7 @@ public static class AircraftWeaponActions
 
         var vehicle = networkId == 0 ? 0 : Native.NetworkGetEntityFromNetworkId(networkId);
 
-        if (vehicle == 0 || !Native.DoesEntityExist(vehicle) || Native.GetEntityType(vehicle) != VehicleEntityType)
+        if (!Targets.IsVehicle(vehicle))
         {
             OpenedBy.Remove(networkId);
             BlockedBy.Remove(networkId);

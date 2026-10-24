@@ -1,5 +1,3 @@
-using System.Globalization;
-
 using CitizenFX.FiveM.Server;
 using CitizenFX.FiveM.Server.Entities;
 
@@ -11,9 +9,6 @@ namespace vMenu.Enhanced.Actions.Server.Handlers;
 
 public static class VehicleActions
 {
-    // There is no IsEntityAVehicle server side, so the entity type is the check.
-    private const int VehicleEntityType = 2;
-
     private const int DriverSeat = -1;
 
     public static void Register() =>
@@ -24,7 +19,7 @@ public static class VehicleActions
 
     private static ActionResponse DeleteVehicle(Player source, string[] args)
     {
-        if (args.Length < 1 || !int.TryParse(args[0], NumberStyles.Integer, CultureInfo.InvariantCulture, out var networkId))
+        if (!ActionArgs.TryInt(args, 0, out var networkId))
         {
             return ActionResponse.InvalidRequest();
         }
@@ -36,7 +31,7 @@ public static class VehicleActions
             return ActionResponse.NotFound();
         }
 
-        if (Native.GetEntityType(entity) != VehicleEntityType)
+        if (!Targets.IsVehicle(entity))
         {
             return ActionResponse.InvalidRequest();
         }

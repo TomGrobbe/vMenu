@@ -182,8 +182,7 @@ public static class ActionRegistry
             return null;
         }
 
-        if (args.Length < 1
-            || !int.TryParse(args[0], NumberStyles.Integer, CultureInfo.InvariantCulture, out var serverId)
+        if (!ActionArgs.TryInt(args, 0, out var serverId)
             || serverId <= 0)
         {
             return null;

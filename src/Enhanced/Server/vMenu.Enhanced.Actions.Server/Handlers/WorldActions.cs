@@ -1,5 +1,3 @@
-using System.Globalization;
-
 using CitizenFX.FiveM.Server.Entities;
 
 using vMenu.Enhanced.Configuration.Server;
@@ -198,7 +196,7 @@ public static class WorldActions
             return ActionResponse.Ok();
         }
 
-        if (!int.TryParse(args[0], NumberStyles.Integer, CultureInfo.InvariantCulture, out var seconds))
+        if (!ActionArgs.TryInt(args[0], out var seconds))
         {
             return ActionResponse.InvalidRequest();
         }

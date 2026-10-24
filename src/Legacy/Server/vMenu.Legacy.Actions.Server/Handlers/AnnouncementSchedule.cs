@@ -1,4 +1,3 @@
-using System.Globalization;
 using System.Text;
 using Newtonsoft.Json;
 
@@ -126,7 +125,7 @@ public static class AnnouncementSchedule
         if (args.Length < 5
             || Trimmed(args[0]) is not { } name
             || Trimmed(args[1]) is not { } text
-            || !int.TryParse(args[2], NumberStyles.Integer, CultureInfo.InvariantCulture, out var everyMinutes))
+            || !ActionArgs.TryInt(args[2], out var everyMinutes))
         {
             return ActionResponse.InvalidRequest();
         }
@@ -171,7 +170,7 @@ public static class AnnouncementSchedule
     private static ActionResponse RemoveAnnouncement(Player source, string[] args)
     {
         if (args.Length < 2
-            || !int.TryParse(args[0], NumberStyles.Integer, CultureInfo.InvariantCulture, out var index)
+            || !ActionArgs.TryInt(args[0], out var index)
             || Trimmed(args[1]) is not { } name)
         {
             return ActionResponse.InvalidRequest();
@@ -494,8 +493,8 @@ public static class AnnouncementSchedule
             var parts = at.Trim().Split(':', 2);
 
             if (parts.Length != 2
-                || !int.TryParse(parts[0], NumberStyles.Integer, CultureInfo.InvariantCulture, out var hour)
-                || !int.TryParse(parts[1], NumberStyles.Integer, CultureInfo.InvariantCulture, out var minute)
+                || !ActionArgs.TryInt(parts[0], out var hour)
+                || !ActionArgs.TryInt(parts[1], out var minute)
                 || hour is < 0 or > 23
                 || minute is < 0 or > 59)
             {

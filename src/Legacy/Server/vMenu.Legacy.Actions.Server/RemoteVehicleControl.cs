@@ -175,7 +175,7 @@ public static class RemoteVehicleControl
 
     private static void OnPerformed([FromSource] Player source, string requestId, string outcome)
     {
-        if (!int.TryParse(requestId, NumberStyles.Integer, CultureInfo.InvariantCulture, out var id)
+        if (!ActionArgs.TryInt(requestId, out var id)
             || !Unanswered.TryGetValue(id, out var pending))
         {
             return;
