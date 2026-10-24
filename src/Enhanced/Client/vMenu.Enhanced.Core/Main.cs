@@ -143,10 +143,10 @@ public sealed class Main : IScript
         PlayerNoRagdoll.Toggle.Initialize();
         PlayerNoHelmet.Toggle.Initialize();
         PlayerInvisible.Toggle.Initialize();
-        PlayerStayInVehicle.Initialize();
-        PlayerFreeze.Initialize();
-        EveryoneIgnoresPlayer.Initialize();
-        PlayerNeverWanted.Initialize();
+        PlayerStayInVehicle.Toggle.Initialize();
+        PlayerFreeze.Toggle.Initialize();
+        EveryoneIgnoresPlayer.Toggle.Initialize();
+        PlayerNeverWanted.Toggle.Initialize();
         PlayerIntoxication.Initialize();
         PedIlluminatedClothing.Initialize();
         PedKeepProps.Initialize();
@@ -154,7 +154,7 @@ public sealed class Main : IScript
         VehicleKeepClean.Initialize();
         VehicleEngine.Initialize();
         VehiclePerformance.Initialize();
-        VehicleFreeze.Initialize();
+        VehicleFreeze.Toggle.Initialize();
         VehicleVisibility.Initialize();
         VehicleTurbulence.Initialize();
         VehicleAnchor.Toggle.Initialize();
@@ -175,8 +175,8 @@ public sealed class Main : IScript
             PlayerGodMode.Reapply();
             VehicleGodMode.Reapply();
             PlayerInvisible.Toggle.Apply();
-            EveryoneIgnoresPlayer.Reapply();
-            PlayerFreeze.Reapply();
+            EveryoneIgnoresPlayer.Toggle.Apply();
+            PlayerFreeze.Toggle.Apply();
         };
 
         TeleportKeyBinding.Initialize();

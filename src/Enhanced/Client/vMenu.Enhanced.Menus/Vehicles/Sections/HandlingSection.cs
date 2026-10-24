@@ -24,8 +24,8 @@ internal static class HandlingSection
         menu.Entries.Add(new CheckboxEntry(Loc.VehicleOptions.Freeze)
         {
             Gate = VehicleOptionsPermissions.Freeze,
-            ReadState = () => VehicleFreeze.Enabled,
-            OnChanged = changed => VehicleFreeze.SetEnabled(changed.Checked),
+            ReadState = () => VehicleFreeze.Toggle.Enabled,
+            OnChanged = changed => VehicleFreeze.Toggle.SetEnabled(changed.Checked),
         });
 
         menu.Entries.Add(new ButtonEntry(Loc.VehicleOptions.Flip)

@@ -2,7 +2,7 @@ using CitizenFX.Core;
 using CitizenFX.Core.Native;
 
 using vMenu.Enhanced.Data.Ticks;
-using vMenu.Enhanced.Permissions;
+using vMenu.Enhanced.Menus.Common;
 using vMenu.Enhanced.Storage;
 using vMenu.Enhanced.Ticks;
 
@@ -25,46 +25,30 @@ public static class PlayerGodMode
 
     private static TickHandle? _tick;
 
-    public static bool Enabled => UserDefaults.PlayerGodMode.Value && IsAllowed;
-
-    private static bool IsAllowed => ClientPermissions.IsAllowed(PlayerOptionsPermissions.Godmode);
+    public static readonly ToggleFeature Toggle = new(
+        UserDefaults.PlayerGodMode,
+        PlayerOptionsPermissions.Godmode,
+        Apply);
 
     // Call once at startup, before permissions have arrived.
     public static void Initialize()
     {
-        ClientPermissions.PermissionsChanged += Apply;
-
         _tick = TickRegistry.Register(
-            "Player.GodMode", Hold, TickRate.Every(RepairIntervalMs), () => Enabled);
+            "Player.GodMode", Hold, TickRate.Every(RepairIntervalMs), () => Toggle.Enabled);
 
-        Apply();
-    }
-
-    public static void SetEnabled(bool enabled)
-    {
-        // The checkbox follows the permission, but a revoke can land between the two.
-        if (enabled && !IsAllowed)
-        {
-            return;
-        }
-
-        UserDefaults.PlayerGodMode.Value = enabled;
-
-        Apply();
+        Toggle.Initialize();
     }
 
     // Writes the flag out again, for anything that has reset it behind vMenu's back.
     public static void Reapply()
     {
-        Apply();
+        Toggle.Apply();
 
         PedProtection.Reapply();
     }
 
-    private static void Apply()
+    private static void Apply(bool on)
     {
-        var on = Enabled;
-
         Protection.Set(on, Protections);
 
         Write(on);

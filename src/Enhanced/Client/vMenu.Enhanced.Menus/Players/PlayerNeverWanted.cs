@@ -1,6 +1,6 @@
 using CitizenFX.FiveM.Client;
 
-using vMenu.Enhanced.Permissions;
+using vMenu.Enhanced.Menus.Common;
 using vMenu.Enhanced.Storage;
 
 using PlayerOptionsPermissions = vMenu.Enhanced.Data.Permissions.Menus.PlayerOptions;
@@ -17,33 +17,13 @@ public static class PlayerNeverWanted
 
     private static bool _held;
 
-    public static bool Enabled => UserDefaults.PlayerNeverWanted.Value && IsAllowed;
+    public static readonly ToggleFeature Toggle = new(
+        UserDefaults.PlayerNeverWanted,
+        PlayerOptionsPermissions.NeverWanted,
+        Apply);
 
-    private static bool IsAllowed => ClientPermissions.IsAllowed(PlayerOptionsPermissions.NeverWanted);
-
-    public static void Initialize()
+    private static void Apply(bool on)
     {
-        ClientPermissions.PermissionsChanged += Apply;
-
-        Apply();
-    }
-
-    public static void SetEnabled(bool enabled)
-    {
-        if (enabled && !IsAllowed)
-        {
-            return;
-        }
-
-        UserDefaults.PlayerNeverWanted.Value = enabled;
-
-        Apply();
-    }
-
-    private static void Apply()
-    {
-        var on = Enabled;
-
         if (on == _held)
         {
             return;

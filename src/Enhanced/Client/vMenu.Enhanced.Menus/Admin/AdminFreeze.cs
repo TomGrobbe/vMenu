@@ -47,7 +47,7 @@ public static class AdminFreeze
 
         Native.FreezeEntityPosition(Native.PlayerPedId(), false);
 
-        PlayerFreeze.Reapply();
+        PlayerFreeze.Toggle.Apply();
     }
 
     private static void Release() => SetFrozen(false);

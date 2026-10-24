@@ -29,7 +29,7 @@ public static class PlayerStatusReport
         API.EmitServer(
             PlayerEvents.StatusReportAck,
             requestId,
-            PlayerGodMode.Enabled,
+            PlayerGodMode.Toggle.Enabled,
             VehicleGodMode.Enabled,
             vehicleName,
             vehicleModel,

@@ -23,8 +23,8 @@ public sealed class PlayerOptionsMenu : MenuDefinition
         menu.Entries.Add(new CheckboxEntry(Loc.PlayerOptions.GodMode)
         {
             Gate = PlayerOptionsPermissions.Godmode,
-            ReadState = () => PlayerGodMode.Enabled,
-            OnChanged = changed => PlayerGodMode.SetEnabled(changed.Checked),
+            ReadState = () => PlayerGodMode.Toggle.Enabled,
+            OnChanged = changed => PlayerGodMode.Toggle.SetEnabled(changed.Checked),
         });
 
         menu.Entries.Add(new CheckboxEntry(Loc.PlayerOptions.Invisible)
@@ -44,22 +44,22 @@ public sealed class PlayerOptionsMenu : MenuDefinition
         menu.Entries.Add(new CheckboxEntry(Loc.PlayerOptions.StayInVehicle)
         {
             Gate = PlayerOptionsPermissions.StayInVehicle,
-            ReadState = () => PlayerStayInVehicle.Enabled,
-            OnChanged = changed => PlayerStayInVehicle.SetEnabled(changed.Checked),
+            ReadState = () => PlayerStayInVehicle.Toggle.Enabled,
+            OnChanged = changed => PlayerStayInVehicle.Toggle.SetEnabled(changed.Checked),
         });
 
         menu.Entries.Add(new CheckboxEntry(Loc.PlayerOptions.Freeze)
         {
             Gate = PlayerOptionsPermissions.Freeze,
-            ReadState = () => PlayerFreeze.Enabled,
-            OnChanged = changed => PlayerFreeze.SetEnabled(changed.Checked),
+            ReadState = () => PlayerFreeze.Toggle.Enabled,
+            OnChanged = changed => PlayerFreeze.Toggle.SetEnabled(changed.Checked),
         });
 
         menu.Entries.Add(new CheckboxEntry(Loc.PlayerOptions.EveryoneIgnores)
         {
             Gate = PlayerOptionsPermissions.Ignored,
-            ReadState = () => EveryoneIgnoresPlayer.Enabled,
-            OnChanged = changed => EveryoneIgnoresPlayer.SetEnabled(changed.Checked),
+            ReadState = () => EveryoneIgnoresPlayer.Toggle.Enabled,
+            OnChanged = changed => EveryoneIgnoresPlayer.Toggle.SetEnabled(changed.Checked),
         });
 
         menu.Entries.Add(new SeparatorEntry(Loc.PlayerOptions.GroupMovement));
@@ -130,8 +130,8 @@ public sealed class PlayerOptionsMenu : MenuDefinition
         menu.Entries.Add(new CheckboxEntry(Loc.PlayerOptions.NeverWanted)
         {
             Gate = PlayerOptionsPermissions.NeverWanted,
-            ReadState = () => PlayerNeverWanted.Enabled,
-            OnChanged = changed => PlayerNeverWanted.SetEnabled(changed.Checked),
+            ReadState = () => PlayerNeverWanted.Toggle.Enabled,
+            OnChanged = changed => PlayerNeverWanted.Toggle.SetEnabled(changed.Checked),
         });
 
         menu.Entries.Add(new ListEntry(Loc.PlayerOptions.SetWanted, WantedLevels())

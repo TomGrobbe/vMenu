@@ -34,7 +34,7 @@ public static class PlayerStatusReport
         BaseScript.TriggerServerEvent(
             PlayerEvents.StatusReportAck,
             requestId,
-            PlayerGodMode.Enabled,
+            PlayerGodMode.Toggle.Enabled,
             VehicleGodMode.Enabled,
             vehicleName,
             vehicleModel,

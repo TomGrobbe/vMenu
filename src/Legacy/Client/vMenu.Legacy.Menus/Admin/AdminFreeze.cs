@@ -50,7 +50,7 @@ public static class AdminFreeze
 
         API.FreezeEntityPosition(API.PlayerPedId(), false);
 
-        PlayerFreeze.Reapply();
+        PlayerFreeze.Toggle.Apply();
     }
 
     private static void Release() => SetFrozen(false);

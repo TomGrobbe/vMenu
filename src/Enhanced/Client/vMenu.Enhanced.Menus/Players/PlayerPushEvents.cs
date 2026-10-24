@@ -183,7 +183,7 @@ public static class PlayerPushEvents
     }
 
     private static void OnGodModeRequested(string requestId) =>
-        API.EmitServer(PlayerEvents.GodModeAck, requestId, PlayerGodMode.Enabled, VehicleGodMode.Enabled);
+        API.EmitServer(PlayerEvents.GodModeAck, requestId, PlayerGodMode.Toggle.Enabled, VehicleGodMode.Enabled);
 
     private static async void OnWantedLevelRequested(string requestId, string stars)
     {
