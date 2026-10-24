@@ -31,14 +31,14 @@ public sealed class VehicleAutoPilotMenu : MenuDefinition
             MenuText.Key(Loc.AutoPilot.DriveToPointSubtitle),
             _ => { });
 
-        _pointPicker.Builder.OnOpened = _ => Refill(_pointPicker.Builder, PointRows());
+        _pointPicker.Builder.OnOpened = _ => _pointPicker.Builder.ReplaceEntries(PointRows());
 
         _pathPicker = menu.AddDetachedMenu(
             MenuText.Key(Loc.AutoPilot.ReplayPath),
             MenuText.Key(Loc.AutoPilot.ReplayPathSubtitle),
             _ => { });
 
-        _pathPicker.Builder.OnOpened = _ => Refill(_pathPicker.Builder, PathRows());
+        _pathPicker.Builder.OnOpened = _ => _pathPicker.Builder.ReplaceEntries(PathRows());
 
         VehicleAutoPilot.Changed += () => MenuRegistry.Refresh(menu.Menu);
 
@@ -351,16 +351,4 @@ public sealed class VehicleAutoPilotMenu : MenuDefinition
         ReadEnabled = () => false,
     };
 
-    private static void Refill(MenuBuilder builder, IReadOnlyList<MenuEntry> rows)
-    {
-        var was = builder.Menu.CurrentIndex;
-        var offset = builder.Menu.ViewIndexOffset;
-
-        builder.ClearEntries();
-        builder.AddRange(rows);
-
-        var keep = was < builder.Menu.GetMenuItems().Count;
-
-        builder.Menu.RefreshIndex(keep ? was : 0, keep ? offset : 0);
-    }
 }

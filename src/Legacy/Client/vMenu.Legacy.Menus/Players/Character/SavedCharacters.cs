@@ -121,30 +121,11 @@ internal sealed class SavedCharacters
 
     internal void Rebuild()
     {
-        if (_root is { } root)
-        {
-            Fill(root, RootRows());
-        }
-
-        if (_list is { } list)
-        {
-            Fill(list, ListRows());
-        }
-
-        if (_detail is { } detail)
-        {
-            Fill(detail, DetailRows());
-        }
-
-        if (_variants is { } variants)
-        {
-            Fill(variants, VariantRows());
-        }
-
-        if (_variantDetail is { } variantDetail)
-        {
-            Fill(variantDetail, VariantDetailRows());
-        }
+        _root?.ReplaceEntries(RootRows());
+        _list?.ReplaceEntries(ListRows());
+        _detail?.ReplaceEntries(DetailRows());
+        _variants?.ReplaceEntries(VariantRows());
+        _variantDetail?.ReplaceEntries(VariantDetailRows());
     }
 
     #region Root
@@ -155,10 +136,10 @@ internal sealed class SavedCharacters
 
         menu.AddRange(RootRows());
 
-        menu.OnOpened = _ => Fill(menu, RootRows());
+        menu.OnOpened = _ => menu.ReplaceEntries(RootRows());
     }
 
-    private IReadOnlyList<MenuEntry> RootRows()
+    private List<MenuEntry> RootRows()
     {
         var rows = new List<MenuEntry>
         {
@@ -269,10 +250,10 @@ internal sealed class SavedCharacters
 
         menu.AddRange(ListRows());
 
-        menu.OnOpened = _ => Fill(menu, ListRows());
+        menu.OnOpened = _ => menu.ReplaceEntries(ListRows());
     }
 
-    private IReadOnlyList<MenuEntry> ListRows()
+    private List<MenuEntry> ListRows()
     {
         var rows = new List<MenuEntry>();
         var defaultName = UserDefaults.DefaultCharacterName.Value;
@@ -343,10 +324,10 @@ internal sealed class SavedCharacters
 
         menu.AddRange(DetailRows());
 
-        menu.OnOpened = _ => Fill(menu, DetailRows());
+        menu.OnOpened = _ => menu.ReplaceEntries(DetailRows());
     }
 
-    private IReadOnlyList<MenuEntry> DetailRows()
+    private List<MenuEntry> DetailRows()
     {
         if (_selected is not { } entry)
         {
@@ -485,10 +466,10 @@ internal sealed class SavedCharacters
 
         menu.AddRange(VariantRows());
 
-        menu.OnOpened = _ => Fill(menu, VariantRows());
+        menu.OnOpened = _ => menu.ReplaceEntries(VariantRows());
     }
 
-    private IReadOnlyList<MenuEntry> VariantRows()
+    private List<MenuEntry> VariantRows()
     {
         if (_selected is not { } entry)
         {
@@ -554,10 +535,10 @@ internal sealed class SavedCharacters
 
         menu.AddRange(VariantDetailRows());
 
-        menu.OnOpened = _ => Fill(menu, VariantDetailRows());
+        menu.OnOpened = _ => menu.ReplaceEntries(VariantDetailRows());
     }
 
-    private IReadOnlyList<MenuEntry> VariantDetailRows()
+    private List<MenuEntry> VariantDetailRows()
     {
         if (_selected is not { } entry || Named() is not { } name)
         {
@@ -1249,16 +1230,4 @@ internal sealed class SavedCharacters
         page.Open();
     }
 
-    private static void Fill(MenuBuilder builder, IReadOnlyList<MenuEntry> rows)
-    {
-        var was = builder.Menu.CurrentIndex;
-        var offset = builder.Menu.ViewIndexOffset;
-
-        builder.ClearEntries();
-        builder.AddRange(rows);
-
-        var keep = was < builder.Menu.GetMenuItems().Count;
-
-        builder.Menu.RefreshIndex(keep ? was : 0, keep ? offset : 0);
-    }
 }

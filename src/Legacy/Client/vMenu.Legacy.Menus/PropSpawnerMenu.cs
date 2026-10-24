@@ -134,7 +134,7 @@ public sealed class PropSpawnerMenu : MenuDefinition
         };
     }
 
-    private static IReadOnlyList<MenuEntry> RecentRows()
+    private static List<MenuEntry> RecentRows()
     {
         var models = PropRecents.All;
 

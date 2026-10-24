@@ -80,7 +80,7 @@ internal static class OutfitPresetsMenu
 
         menu.AddRange(ServerRows());
 
-        menu.OnOpened = _ => Fill(menu, ServerRows());
+        menu.OnOpened = _ => menu.ReplaceEntries(ServerRows());
     }
 
     private static void OnPresetsChanged()
@@ -90,18 +90,11 @@ internal static class OutfitPresetsMenu
             _category = ClothingPresetSync.Find(open.Name);
         }
 
-        if (_server is { } server)
-        {
-            Fill(server, ServerRows());
-        }
-
-        if (_categoryList is { } categories)
-        {
-            Fill(categories, CategoryRows());
-        }
+        _server?.ReplaceEntries(ServerRows());
+        _categoryList?.ReplaceEntries(CategoryRows());
     }
 
-    private static IReadOnlyList<MenuEntry> ServerRows()
+    private static List<MenuEntry> ServerRows()
     {
         var rows = new List<MenuEntry>
         {
@@ -152,10 +145,10 @@ internal static class OutfitPresetsMenu
 
         menu.AddRange(CategoryRows());
 
-        menu.OnOpened = _ => Fill(menu, CategoryRows());
+        menu.OnOpened = _ => menu.ReplaceEntries(CategoryRows());
     }
 
-    private static IReadOnlyList<MenuEntry> CategoryRows()
+    private static List<MenuEntry> CategoryRows()
     {
         if (_category is not { } category)
         {
@@ -268,13 +261,13 @@ internal static class OutfitPresetsMenu
         {
             OnlineOutfitCatalogue.Begin(Male());
 
-            Fill(menu, OnlineRows());
+            menu.ReplaceEntries(OnlineRows());
         };
 
-        OnlineOutfitCatalogue.Changed += () => Fill(menu, OnlineRows());
+        OnlineOutfitCatalogue.Changed += () => menu.ReplaceEntries(OnlineRows());
     }
 
-    private static IReadOnlyList<MenuEntry> OnlineRows()
+    private static List<MenuEntry> OnlineRows()
     {
         var male = Male();
 
@@ -331,10 +324,10 @@ internal static class OutfitPresetsMenu
     {
         menu.AddRange(PackRows());
 
-        menu.OnOpened = _ => Fill(menu, PackRows());
+        menu.OnOpened = _ => menu.ReplaceEntries(PackRows());
     }
 
-    private static IReadOnlyList<MenuEntry> PackRows()
+    private static List<MenuEntry> PackRows()
     {
         if (_pack is not { } pack)
         {
@@ -502,16 +495,4 @@ internal static class OutfitPresetsMenu
 
     private static bool Male() => PedSpawning.IsFreemodeMale(NativeFixer.GetEntityModel(API.PlayerPedId()));
 
-    private static void Fill(MenuBuilder builder, IReadOnlyList<MenuEntry> rows)
-    {
-        var was = builder.Menu.CurrentIndex;
-        var offset = builder.Menu.ViewIndexOffset;
-
-        builder.ClearEntries();
-        builder.AddRange(rows);
-
-        var keep = was < builder.Menu.GetMenuItems().Count;
-
-        builder.Menu.RefreshIndex(keep ? was : 0, keep ? offset : 0);
-    }
 }

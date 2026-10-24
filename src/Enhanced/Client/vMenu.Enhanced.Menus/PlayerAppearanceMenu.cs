@@ -121,10 +121,10 @@ public sealed class PlayerAppearanceMenu : MenuDefinition
     {
         menu.AddRange(CollectionRows());
 
-        menu.OnOpened = _ => Refill(menu, CollectionRows());
+        menu.OnOpened = _ => menu.ReplaceEntries(CollectionRows());
     }
 
-    private IReadOnlyList<MenuEntry> CollectionRows()
+    private List<MenuEntry> CollectionRows()
     {
         var rows = new List<MenuEntry>();
 
@@ -267,18 +267,4 @@ public sealed class PlayerAppearanceMenu : MenuDefinition
         ? collection.Name
         : Localizer.Current.Get(Loc.PlayerAppearance.BaseCollection);
 
-    // Rebuilding drops every item and MenuAPI puts the highlight back on the first one, which moves the
-    // player's selection out from under them.
-    private static void Refill(MenuBuilder builder, IReadOnlyList<MenuEntry> rows)
-    {
-        var was = builder.Menu.CurrentIndex;
-        var offset = builder.Menu.ViewIndexOffset;
-
-        builder.ClearEntries();
-        builder.AddRange(rows);
-
-        var keep = was < builder.Menu.GetMenuItems().Count;
-
-        builder.Menu.RefreshIndex(keep ? was : 0, keep ? offset : 0);
-    }
 }

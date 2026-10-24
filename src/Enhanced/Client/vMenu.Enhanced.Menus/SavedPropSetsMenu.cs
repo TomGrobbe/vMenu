@@ -46,7 +46,7 @@ public sealed class SavedPropSetsMenu : MenuDefinition
 
         _detailMenu.Builder.OnOpened = _ =>
         {
-            Fill(_detailMenu, DetailRows());
+            _detailMenu?.Builder.ReplaceEntries(DetailRows());
 
             PreviewDetail(_detailMenu?.Builder.Menu.GetCurrentMenuItem());
         };
@@ -63,7 +63,7 @@ public sealed class SavedPropSetsMenu : MenuDefinition
 
         _removeMenu.Builder.OnOpened = _ =>
         {
-            Fill(_removeMenu, RemoveRows());
+            _removeMenu?.Builder.ReplaceEntries(RemoveRows());
 
             PreviewRow(_removeMenu?.Builder.Menu.GetCurrentMenuItem());
         };
@@ -74,10 +74,10 @@ public sealed class SavedPropSetsMenu : MenuDefinition
 
         menu.AddRange(RootRows());
 
-        menu.OnOpened = _ => Refill(menu, RootRows());
+        menu.OnOpened = _ => menu.ReplaceEntries(RootRows());
     }
 
-    private IReadOnlyList<MenuEntry> RootRows()
+    private List<MenuEntry> RootRows()
     {
         var rows = new List<MenuEntry>
         {
@@ -125,7 +125,7 @@ public sealed class SavedPropSetsMenu : MenuDefinition
         return rows;
     }
 
-    private IReadOnlyList<MenuEntry> DetailRows()
+    private List<MenuEntry> DetailRows()
     {
         if (_selected is not { } entry)
         {
@@ -185,7 +185,7 @@ public sealed class SavedPropSetsMenu : MenuDefinition
         ];
     }
 
-    private IReadOnlyList<MenuEntry> RemoveRows()
+    private List<MenuEntry> RemoveRows()
     {
         if (_selected is not { } entry)
         {
@@ -397,7 +397,7 @@ public sealed class SavedPropSetsMenu : MenuDefinition
 
         Notifications.Success(MenuText.Key(Loc.PropSpawner.SetsPropRemoved));
 
-        Fill(_removeMenu, RemoveRows());
+        _removeMenu?.Builder.ReplaceEntries(RemoveRows());
 
         PreviewRow(_removeMenu?.Builder.Menu.GetCurrentMenuItem());
 
@@ -455,33 +455,8 @@ public sealed class SavedPropSetsMenu : MenuDefinition
 
     private void Rebuild()
     {
-        if (_root is { } root)
-        {
-            Refill(root, RootRows());
-        }
-
-        Fill(_detailMenu, DetailRows());
-    }
-
-    private static void Fill(DetachedMenu? menu, IReadOnlyList<MenuEntry> rows)
-    {
-        if (menu is { } detached)
-        {
-            Refill(detached.Builder, rows);
-        }
-    }
-
-    private static void Refill(MenuBuilder builder, IReadOnlyList<MenuEntry> rows)
-    {
-        var was = builder.Menu.CurrentIndex;
-        var offset = builder.Menu.ViewIndexOffset;
-
-        builder.ClearEntries();
-        builder.AddRange(rows);
-
-        var keep = was < builder.Menu.GetMenuItems().Count;
-
-        builder.Menu.RefreshIndex(keep ? was : 0, keep ? offset : 0);
+        _root?.ReplaceEntries(RootRows());
+        _detailMenu?.Builder.ReplaceEntries(DetailRows());
     }
 
     private static string Where(SavedProp prop) => string.Format(

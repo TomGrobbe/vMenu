@@ -49,14 +49,14 @@ public sealed class SavedVehiclesMenu : MenuDefinition
             MenuText.From(CategoryTitle),
             _ => { });
 
-        _vehicleMenu.Builder.OnOpened = _ => Fill(_vehicleMenu, VehicleRows());
+        _vehicleMenu.Builder.OnOpened = _ => _vehicleMenu.Builder.ReplaceEntries(VehicleRows());
 
         _detailMenu = menu.AddDetachedMenu(
             MenuText.From(() => _selected?.Vehicle.Name ?? string.Empty),
             MenuText.Key(Loc.SavedVehicles.Title),
             _ => { });
 
-        _detailMenu.Builder.OnOpened = _ => Fill(_detailMenu, DetailRows());
+        _detailMenu.Builder.OnOpened = _ => _detailMenu.Builder.ReplaceEntries(DetailRows());
 
         VehicleSpawnShortcuts.Attach(menu);
         VehicleSpawnShortcuts.Attach(_vehicleMenu.Builder);
@@ -66,12 +66,12 @@ public sealed class SavedVehiclesMenu : MenuDefinition
 
         // The store changes from inside this menu, so the rows are rebuilt whenever the player comes back up
         // to this level.
-        menu.OnOpened = _ => Refill(menu, RootRows());
+        menu.OnOpened = _ => menu.ReplaceEntries(RootRows());
     }
 
     #region Rows
 
-    private IReadOnlyList<MenuEntry> RootRows()
+    private List<MenuEntry> RootRows()
     {
         var vehicles = SavedVehicleStore.All();
         var groups = GroupNames(vehicles);
@@ -212,7 +212,7 @@ public sealed class SavedVehiclesMenu : MenuDefinition
         };
     }
 
-    private IReadOnlyList<MenuEntry> VehicleRows()
+    private List<MenuEntry> VehicleRows()
     {
         var rows = new List<MenuEntry>();
 
@@ -284,7 +284,7 @@ public sealed class SavedVehiclesMenu : MenuDefinition
             : MenuText.Key(Loc.SavedVehicles.VehicleRowDescription, ("model", model));
     }
 
-    private IReadOnlyList<MenuEntry> DetailRows()
+    private List<MenuEntry> DetailRows()
     {
         if (_selected is not { } entry)
         {
@@ -735,38 +735,9 @@ public sealed class SavedVehiclesMenu : MenuDefinition
 
     private void RebuildEverything()
     {
-        if (_root is { } root)
-        {
-            Refill(root, RootRows());
-        }
-
-        Fill(_vehicleMenu, VehicleRows());
-        Fill(_detailMenu, DetailRows());
-    }
-
-    private static void Fill(DetachedMenu? menu, IReadOnlyList<MenuEntry> rows)
-    {
-        if (menu is not { } detached)
-        {
-            return;
-        }
-
-        Refill(detached.Builder, rows);
-    }
-
-    // Rebuilding drops every item and MenuAPI puts the highlight back on the first one, which moves the
-    // player's selection out from under them.
-    private static void Refill(MenuBuilder builder, IReadOnlyList<MenuEntry> rows)
-    {
-        var was = builder.Menu.CurrentIndex;
-        var offset = builder.Menu.ViewIndexOffset;
-
-        builder.ClearEntries();
-        builder.AddRange(rows);
-
-        var keep = was < builder.Menu.GetMenuItems().Count;
-
-        builder.Menu.RefreshIndex(keep ? was : 0, keep ? offset : 0);
+        _root?.ReplaceEntries(RootRows());
+        _vehicleMenu?.Builder.ReplaceEntries(VehicleRows());
+        _detailMenu?.Builder.ReplaceEntries(DetailRows());
     }
 
     private string CategoryTitle() =>

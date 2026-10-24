@@ -48,7 +48,7 @@ public sealed class AutoPilotProfilesMenu : MenuDefinition
             MenuText.Key(Loc.AutoPilot.ProfilesSubtitle),
             _ => { });
 
-        _listMenu.Builder.OnOpened = _ => Refill(_listMenu, ListRows());
+        _listMenu.Builder.OnOpened = _ => _listMenu.Builder.ReplaceEntries(ListRows());
 
         _editMenu = menu.AddDetachedMenu(
             MenuText.From(() => _profile?.Name ?? string.Empty),
@@ -56,11 +56,11 @@ public sealed class AutoPilotProfilesMenu : MenuDefinition
             _ => { },
             MenuGate.When(() => _profile is not null));
 
-        _editMenu.Builder.OnOpened = _ => Refill(_editMenu, EditRows());
+        _editMenu.Builder.OnOpened = _ => _editMenu.Builder.ReplaceEntries(EditRows());
 
         menu.AddRange(RootRows());
 
-        menu.OnOpened = _ => Refill(menu, RootRows());
+        menu.OnOpened = _ => menu.ReplaceEntries(RootRows());
     }
 
     private List<MenuEntry> RootRows()
@@ -567,15 +567,8 @@ public sealed class AutoPilotProfilesMenu : MenuDefinition
 
     private void Rebuild()
     {
-        if (_listMenu is { } list)
-        {
-            Refill(list, ListRows());
-        }
-
-        if (_editMenu is { } edit)
-        {
-            Refill(edit, EditRows());
-        }
+        _listMenu?.Builder.ReplaceEntries(ListRows());
+        _editMenu?.Builder.ReplaceEntries(EditRows());
     }
 
     private static bool Reserved(AutoPilotCategory category, string name)
@@ -617,18 +610,4 @@ public sealed class AutoPilotProfilesMenu : MenuDefinition
     private static MenuText Num(int value) =>
         MenuText.Literal(value.ToString(CultureInfo.InvariantCulture));
 
-    private static void Refill(DetachedMenu menu, IReadOnlyList<MenuEntry> rows) => Refill(menu.Builder, rows);
-
-    private static void Refill(MenuBuilder builder, IReadOnlyList<MenuEntry> rows)
-    {
-        var was = builder.Menu.CurrentIndex;
-        var offset = builder.Menu.ViewIndexOffset;
-
-        builder.ClearEntries();
-        builder.AddRange(rows);
-
-        var keep = was < builder.Menu.GetMenuItems().Count;
-
-        builder.Menu.RefreshIndex(keep ? was : 0, keep ? offset : 0);
-    }
 }

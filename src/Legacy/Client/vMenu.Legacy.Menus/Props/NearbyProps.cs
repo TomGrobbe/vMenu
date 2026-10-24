@@ -61,7 +61,7 @@ internal static class NearbyProps
         menu.AddRange(Rows());
     }
 
-    private static IReadOnlyList<MenuEntry> Rows()
+    private static List<MenuEntry> Rows()
     {
         var found = Find();
 

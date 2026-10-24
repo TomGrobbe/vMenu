@@ -55,10 +55,10 @@ public static class PedCustomizationRows
 
         menu.AddRange(Rows(scope(), show, components, fitTorso));
 
-        menu.OnOpened = _ => Refill(menu, Rows(scope(), show, components, fitTorso));
+        menu.OnOpened = _ => menu.ReplaceEntries(Rows(scope(), show, components, fitTorso));
     }
 
-    internal static IReadOnlyList<MenuEntry> Rows(
+    internal static List<MenuEntry> Rows(
         PedVariationScope scope,
         PedRows show = PedRows.Everything,
         IReadOnlyList<int>? components = null,
@@ -563,21 +563,6 @@ public static class PedCustomizationRows
         MenuText.Literal(value.ToString(CultureInfo.InvariantCulture));
 
     private static string Resolve(MenuText text) => text.Resolve(Localizer.Current);
-
-    // Rebuilding drops every item and MenuAPI puts the highlight back on the first one, which moves the
-    // player's selection out from under them.
-    private static void Refill(MenuBuilder builder, IReadOnlyList<MenuEntry> rows)
-    {
-        var was = builder.Menu.CurrentIndex;
-        var offset = builder.Menu.ViewIndexOffset;
-
-        builder.ClearEntries();
-        builder.AddRange(rows);
-
-        var keep = was < builder.Menu.GetMenuItems().Count;
-
-        builder.Menu.RefreshIndex(keep ? was : 0, keep ? offset : 0);
-    }
 
     #endregion
 }

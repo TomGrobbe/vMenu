@@ -184,7 +184,7 @@ public sealed class TeleportMenu : MenuDefinition
             rows.Add(DeleteCategoryRow());
         }
 
-        Fill(categoryMenu, rows, keepIndex: true);
+        categoryMenu.Builder.ReplaceEntries(rows);
     }
 
     private static ConfirmListEntry DeleteCategoryRow()
@@ -263,7 +263,7 @@ public sealed class TeleportMenu : MenuDefinition
             rows.Add(DeletePositionRow(category));
         }
 
-        Fill(locationMenu, rows, keepIndex);
+        locationMenu.Builder.ReplaceEntries(rows, keepIndex);
     }
 
     private static ConfirmListEntry DeletePositionRow(TeleportCategory category)
@@ -296,23 +296,6 @@ public sealed class TeleportMenu : MenuDefinition
 
     private static string NameAt(List<TeleportLocation> locations, int index) =>
         index >= 0 && index < locations.Count ? locations[index].Name : string.Empty;
-
-    // Rebuilding drops every item, and MenuAPI puts the highlight back on the first one, which moves the
-    // player's selection out from under them.
-    private static void Fill(DetachedMenu menu, IReadOnlyList<MenuEntry> rows, bool keepIndex)
-    {
-        var was = menu.Menu.CurrentIndex;
-        var offset = menu.Menu.ViewIndexOffset;
-
-        menu.Builder.ClearEntries();
-        menu.Builder.AddRange(rows);
-
-        var keep = keepIndex && was < menu.Menu.GetMenuItems().Count;
-
-        // The offset as well as the index, or a player partway down a long list keeps their row but has the
-        // list itself scrolled back to the top under them.
-        menu.Menu.RefreshIndex(keep ? was : 0, keep ? offset : 0);
-    }
 
     // Nothing is added locally. The server writes the file and sends the new list to everybody,
     // including this client, and the rows are rebuilt from that.

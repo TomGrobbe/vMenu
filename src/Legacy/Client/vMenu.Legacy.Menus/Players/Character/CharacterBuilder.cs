@@ -384,11 +384,11 @@ internal sealed class CharacterBuilder
         {
             CharacterCamera.Page = CameraFocus.FullBody;
 
-            Refill(menu, CollectionRows());
+            menu.ReplaceEntries(CollectionRows());
         };
     }
 
-    private IReadOnlyList<MenuEntry> CollectionRows()
+    private List<MenuEntry> CollectionRows()
     {
         var rows = new List<MenuEntry>();
 
@@ -561,16 +561,4 @@ internal sealed class CharacterBuilder
         MenuController.CloseAllMenus();
     }
 
-    private static void Refill(MenuBuilder builder, IReadOnlyList<MenuEntry> rows)
-    {
-        var was = builder.Menu.CurrentIndex;
-        var offset = builder.Menu.ViewIndexOffset;
-
-        builder.ClearEntries();
-        builder.AddRange(rows);
-
-        var keep = was < builder.Menu.GetMenuItems().Count;
-
-        builder.Menu.RefreshIndex(keep ? was : 0, keep ? offset : 0);
-    }
 }

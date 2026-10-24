@@ -53,7 +53,7 @@ public sealed class AutoPilotRoutesMenu : MenuDefinition
             _ => { },
             MenuGate.When(() => _point is not null));
 
-        _pointMenu.Builder.OnOpened = _ => Refill(_pointMenu, PointRows());
+        _pointMenu.Builder.OnOpened = _ => _pointMenu.Builder.ReplaceEntries(PointRows());
 
         _pathPointsMenu = menu.AddDetachedMenu(
             MenuText.Key(Loc.AutoPilot.PathPointsListSubtitle),
@@ -61,7 +61,7 @@ public sealed class AutoPilotRoutesMenu : MenuDefinition
             _ => { },
             MenuGate.When(() => _path is not null));
 
-        _pathPointsMenu.Builder.OnOpened = _ => Refill(_pathPointsMenu, PathPointRows());
+        _pathPointsMenu.Builder.OnOpened = _ => _pathPointsMenu.Builder.ReplaceEntries(PathPointRows());
 
         _pathMenu = menu.AddDetachedMenu(
             MenuText.From(() => _path?.Path.Name ?? string.Empty),
@@ -69,14 +69,14 @@ public sealed class AutoPilotRoutesMenu : MenuDefinition
             _ => { },
             MenuGate.When(() => _path is not null));
 
-        _pathMenu.Builder.OnOpened = _ => Refill(_pathMenu, PathRows());
+        _pathMenu.Builder.OnOpened = _ => _pathMenu.Builder.ReplaceEntries(PathRows());
 
         _recorderMenu = menu.AddDetachedMenu(
             MenuText.Key(Loc.AutoPilot.RecordPath),
             MenuText.Key(Loc.AutoPilot.RecordPathSubtitle),
             _ => { });
 
-        _recorderMenu.Builder.OnOpened = _ => Refill(_recorderMenu, RecorderRows());
+        _recorderMenu.Builder.OnOpened = _ => _recorderMenu.Builder.ReplaceEntries(RecorderRows());
 
         PathRecorder.Changed += () =>
         {
@@ -88,7 +88,7 @@ public sealed class AutoPilotRoutesMenu : MenuDefinition
 
         menu.AddRange(RootRows());
 
-        menu.OnOpened = _ => Refill(menu, RootRows());
+        menu.OnOpened = _ => menu.ReplaceEntries(RootRows());
     }
 
     private List<MenuEntry> RootRows()
@@ -666,20 +666,9 @@ public sealed class AutoPilotRoutesMenu : MenuDefinition
 
     private void Rebuild()
     {
-        if (_pointMenu is { } point)
-        {
-            Refill(point, PointRows());
-        }
-
-        if (_pathPointsMenu is { } pathPoints)
-        {
-            Refill(pathPoints, PathPointRows());
-        }
-
-        if (_pathMenu is { } path)
-        {
-            Refill(path, PathRows());
-        }
+        _pointMenu?.Builder.ReplaceEntries(PointRows());
+        _pathPointsMenu?.Builder.ReplaceEntries(PathPointRows());
+        _pathMenu?.Builder.ReplaceEntries(PathRows());
 
         if (_recorderMenu is { } recorder)
         {
@@ -737,31 +726,4 @@ public sealed class AutoPilotRoutesMenu : MenuDefinition
     private static MenuText Coord(float value) =>
         MenuText.Literal(value.ToString("0.#", CultureInfo.InvariantCulture));
 
-    private static void Refill(DetachedMenu menu, IReadOnlyList<MenuEntry> rows)
-    {
-        var builder = menu.Builder;
-
-        var was = builder.Menu.CurrentIndex;
-        var offset = builder.Menu.ViewIndexOffset;
-
-        builder.ClearEntries();
-        builder.AddRange(rows);
-
-        var keep = was < builder.Menu.GetMenuItems().Count;
-
-        builder.Menu.RefreshIndex(keep ? was : 0, keep ? offset : 0);
-    }
-
-    private static void Refill(MenuBuilder builder, IReadOnlyList<MenuEntry> rows)
-    {
-        var was = builder.Menu.CurrentIndex;
-        var offset = builder.Menu.ViewIndexOffset;
-
-        builder.ClearEntries();
-        builder.AddRange(rows);
-
-        var keep = was < builder.Menu.GetMenuItems().Count;
-
-        builder.Menu.RefreshIndex(keep ? was : 0, keep ? offset : 0);
-    }
 }
