@@ -32,7 +32,7 @@ public sealed class PersonalVehicleWindowsMenu : MenuDefinition
         PersonalVehicleRows.AutoFill(menu, Rows);
     }
 
-    private static IReadOnlyList<MenuEntry> Rows()
+    private static List<MenuEntry> Rows()
     {
         if (!PersonalVehicle.IsMarked)
         {

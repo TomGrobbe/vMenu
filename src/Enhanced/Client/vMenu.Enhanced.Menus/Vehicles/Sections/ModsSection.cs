@@ -44,7 +44,7 @@ internal static class ModsSection
         };
     }
 
-    private static IReadOnlyList<MenuEntry> Rows()
+    private static List<MenuEntry> Rows()
     {
         if (SectionRows.DrivenWithModKit() is not { } handle)
         {

@@ -23,7 +23,7 @@ internal static class NeonSection
         SectionRows.AutoFill(menu, Rows);
     }
 
-    private static IReadOnlyList<MenuEntry> Rows()
+    private static List<MenuEntry> Rows()
     {
         if (SectionRows.Driven() is null)
         {

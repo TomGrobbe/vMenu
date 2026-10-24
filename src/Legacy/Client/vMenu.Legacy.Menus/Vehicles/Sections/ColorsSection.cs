@@ -55,7 +55,7 @@ internal static class ColorsSection
         SectionRows.AutoFill(menu, Rows);
     }
 
-    private static IReadOnlyList<MenuEntry> Rows()
+    private static List<MenuEntry> Rows()
     {
         if (SectionRows.DrivenWithModKit() is not { } handle)
         {
@@ -139,7 +139,7 @@ internal static class ColorsSection
         SectionRows.AutoFill(menu, () => SlotRows(primary));
     }
 
-    private static IReadOnlyList<MenuEntry> SlotRows(bool primary)
+    private static List<MenuEntry> SlotRows(bool primary)
     {
         if (SectionRows.DrivenWithModKit() is not { } handle)
         {

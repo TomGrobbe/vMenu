@@ -33,7 +33,7 @@ internal static class DoorsSection
         SectionRows.AutoFill(menu, () => Rows(menu));
     }
 
-    private static IReadOnlyList<MenuEntry> Rows(MenuBuilder menu)
+    private static List<MenuEntry> Rows(MenuBuilder menu)
     {
         if (SectionRows.Driven() is not { } handle)
         {
@@ -206,6 +206,6 @@ internal static class DoorsSection
 
         // A tick box only re-reads its state when the menu is refreshed, so without this the rows above
         // would still show whatever they showed before the button was pressed.
-        SectionRows.Fill(menu, Rows(menu));
+        menu.ReplaceEntries(Rows(menu));
     }
 }

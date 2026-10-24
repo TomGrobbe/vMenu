@@ -22,7 +22,7 @@ internal static class LiveriesSection
         SectionRows.AutoFill(menu, Rows);
     }
 
-    private static IReadOnlyList<MenuEntry> Rows()
+    private static List<MenuEntry> Rows()
     {
         if (SectionRows.DrivenWithModKit() is not { } handle)
         {

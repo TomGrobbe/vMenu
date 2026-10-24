@@ -21,7 +21,7 @@ internal static class PlateSection
         SectionRows.AutoFill(menu, () => Rows(menu));
     }
 
-    private static IReadOnlyList<MenuEntry> Rows(MenuBuilder menu)
+    private static List<MenuEntry> Rows(MenuBuilder menu)
     {
         if (SectionRows.Driven() is null)
         {
@@ -88,6 +88,6 @@ internal static class PlateSection
         API.SetVehicleNumberPlateText(target, typed);
 
         // The row carries the plate text as its label, and a label is only rewritten on a refresh.
-        SectionRows.Fill(menu, Rows(menu));
+        menu.ReplaceEntries(Rows(menu));
     }
 }

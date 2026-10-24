@@ -100,6 +100,22 @@ public sealed class MenuBuilder
     /// opening it is gone. Declare the row again to get a fresh one.</summary>
     public void ClearEntries() => _host.ClearEntries();
 
+    /// <summary>Swaps every entry for <paramref name="rows"/>. Clearing alone sends the highlight back to the first row,
+    /// so the cursor and scroll position stay where they were when that index still exists, unless
+    /// <paramref name="keepSelection"/> is false.</summary>
+    public void ReplaceEntries(List<MenuEntry> rows, bool keepSelection = true)
+    {
+        var was = Menu.CurrentIndex;
+        var offset = Menu.ViewIndexOffset;
+
+        ClearEntries();
+        AddRange(rows);
+
+        var keep = keepSelection && was < Menu.GetMenuItems().Count;
+
+        Menu.RefreshIndex(keep ? was : 0, keep ? offset : 0);
+    }
+
     /// <summary>Worth reaching for over a SubmenuEntry when a long list of rows shares one detail menu: a submenu
     /// entry builds one child menu per row, which is the wrong shape when there could be thousands of
     /// them. Title and subtitle resolve on every refresh, so pass MenuText.From to follow the selection.</summary>

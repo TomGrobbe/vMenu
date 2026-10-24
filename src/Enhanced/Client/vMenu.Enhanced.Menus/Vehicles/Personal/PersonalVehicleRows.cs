@@ -6,9 +6,9 @@ namespace vMenu.Enhanced.Menus.Vehicles.Personal;
 
 internal static class PersonalVehicleRows
 {
-    internal static void AutoFill(MenuBuilder builder, Func<IReadOnlyList<MenuEntry>> rows)
+    internal static void AutoFill(MenuBuilder builder, Func<List<MenuEntry>> rows)
     {
-        void Refill() => SectionRows.Fill(builder, rows());
+        void Refill() => builder.ReplaceEntries(rows());
 
         builder.OnOpened = _ =>
         {

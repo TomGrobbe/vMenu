@@ -10,10 +10,10 @@ internal static class RadioSection
     {
         menu.AddRange(Rows());
 
-        menu.OnOpened = _ => SectionRows.Fill(menu, Rows());
+        menu.OnOpened = _ => menu.ReplaceEntries(Rows());
     }
 
-    private static IReadOnlyList<MenuEntry> Rows()
+    private static List<MenuEntry> Rows()
     {
         var stations = VehicleRadio.Selectable();
         var options = new List<MenuText>(stations.Count);

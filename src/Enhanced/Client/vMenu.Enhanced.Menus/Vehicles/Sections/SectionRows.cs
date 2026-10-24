@@ -31,25 +31,8 @@ internal static class SectionRows
         return handle;
     }
 
-    // Rebuilding drops every item and MenuAPI puts the highlight back on the first one, which moves the
-    // selection out from under a player who is looking at the menu while it happens.
-    internal static void Fill(MenuBuilder builder, IReadOnlyList<MenuEntry> rows)
-    {
-        var was = builder.Menu.CurrentIndex;
-        var offset = builder.Menu.ViewIndexOffset;
-
-        builder.ClearEntries();
-        builder.AddRange(rows);
-
-        var keep = was < builder.Menu.GetMenuItems().Count;
-
-        // The scroll offset as well as the index, or a player partway down a long list keeps their row but
-        // has the list scrolled back to the top under them.
-        builder.Menu.RefreshIndex(keep ? was : 0, keep ? offset : 0);
-    }
-
-    internal static void AutoFill(MenuBuilder builder, Func<IReadOnlyList<MenuEntry>> rows) =>
-        AutoRefresh(builder, () => Fill(builder, rows()));
+    internal static void AutoFill(MenuBuilder builder, Func<List<MenuEntry>> rows) =>
+        AutoRefresh(builder, () => builder.ReplaceEntries(rows()));
 
     internal static void AutoRefresh(MenuBuilder builder, Action refresh)
     {
@@ -77,7 +60,7 @@ internal static class SectionRows
         Description = MenuText.Key(descriptionKey),
     };
 
-    internal static IReadOnlyList<MenuEntry> BlockedOnly() => [Blocked()];
+    internal static List<MenuEntry> BlockedOnly() => [Blocked()];
 
     internal static MenuEntry Blocked()
     {

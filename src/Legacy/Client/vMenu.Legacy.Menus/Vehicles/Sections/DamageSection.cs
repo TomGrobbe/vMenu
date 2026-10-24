@@ -18,7 +18,7 @@ internal static class DamageSection
         SectionRows.AutoFill(menu, () => Rows(menu));
     }
 
-    private static IReadOnlyList<MenuEntry> Rows(MenuBuilder menu)
+    private static List<MenuEntry> Rows(MenuBuilder menu)
     {
         if (SectionRows.Driven() is not { } handle)
         {
@@ -47,7 +47,7 @@ internal static class DamageSection
                 {
                     VehicleEngine.Destroy();
 
-                    SectionRows.Fill(menu, Rows(menu));
+                    menu.ReplaceEntries(Rows(menu));
                 },
             },
             TyreRow(handle),
