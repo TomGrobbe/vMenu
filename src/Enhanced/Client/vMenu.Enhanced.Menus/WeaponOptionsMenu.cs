@@ -128,15 +128,15 @@ public sealed class WeaponOptionsMenu : MenuDefinition
         menu.Entries.Add(new CheckboxEntry(Loc.WeaponOptions.UnlimitedAmmo)
         {
             Gate = WeaponOptionsPermissions.UnlimitedAmmo,
-            ReadState = () => WeaponUnlimitedAmmo.Enabled,
-            OnChanged = changed => WeaponUnlimitedAmmo.SetEnabled(changed.Checked),
+            ReadState = () => WeaponUnlimitedAmmo.Toggle.Enabled,
+            OnChanged = changed => WeaponUnlimitedAmmo.Toggle.SetEnabled(changed.Checked),
         });
 
         menu.Entries.Add(new CheckboxEntry(Loc.WeaponOptions.NoReload)
         {
             Gate = WeaponOptionsPermissions.NoReload,
-            ReadState = () => WeaponNoReload.Enabled,
-            OnChanged = changed => WeaponNoReload.SetEnabled(changed.Checked),
+            ReadState = () => WeaponNoReload.Toggle.Enabled,
+            OnChanged = changed => WeaponNoReload.Toggle.SetEnabled(changed.Checked),
         });
 
         menu.Entries.Add(new ButtonEntry(Loc.WeaponOptions.SetAllAmmo)

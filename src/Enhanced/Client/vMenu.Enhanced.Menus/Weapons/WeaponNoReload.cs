@@ -1,7 +1,7 @@
 using CitizenFX.FiveM.Client;
 
 using vMenu.Enhanced.Data.Ticks;
-using vMenu.Enhanced.Permissions;
+using vMenu.Enhanced.Menus.Common;
 using vMenu.Enhanced.Storage;
 using vMenu.Enhanced.Ticks;
 
@@ -17,33 +17,25 @@ public static class WeaponNoReload
 
     private static TickHandle? _tick;
 
-    public static bool Enabled => UserDefaults.WeaponsNoReload.Value && IsAllowed;
-
-    private static bool IsAllowed => ClientPermissions.IsAllowed(WeaponOptionsPermissions.NoReload);
+    public static readonly ToggleFeature Toggle = new(
+        UserDefaults.WeaponsNoReload,
+        WeaponOptionsPermissions.NoReload,
+        _ => _tick?.Reevaluate());
 
     // Call once at startup, before permissions have arrived.
-    public static void Initialize() =>
+    public static void Initialize()
+    {
         _tick = TickRegistry.Register(
             "Weapons.NoReload",
-            Apply,
+            Hold,
             TickRate.Every(KeepAliveMs),
-            () => Enabled,
+            () => Toggle.Enabled,
             onStopped: Clear);
 
-    public static void SetEnabled(bool enabled)
-    {
-        // The checkbox follows the permission, but a revoke can land between the two.
-        if (enabled && !IsAllowed)
-        {
-            return;
-        }
-
-        UserDefaults.WeaponsNoReload.Value = enabled;
-
-        _tick?.Reevaluate();
+        Toggle.Initialize();
     }
 
-    private static void Apply() => Native.SetPedInfiniteAmmoClip(Native.PlayerPedId(), true);
+    private static void Hold() => Native.SetPedInfiniteAmmoClip(Native.PlayerPedId(), true);
 
     // Cleared when the loop stops, otherwise switching the option off would leave the flag on until the
     // player changed ped.

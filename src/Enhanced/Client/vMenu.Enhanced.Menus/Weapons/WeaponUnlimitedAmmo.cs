@@ -1,7 +1,7 @@
 using CitizenFX.FiveM.Client;
 
 using vMenu.Enhanced.Data.Ticks;
-using vMenu.Enhanced.Permissions;
+using vMenu.Enhanced.Menus.Common;
 using vMenu.Enhanced.Storage;
 using vMenu.Enhanced.Ticks;
 
@@ -18,26 +18,22 @@ public static class WeaponUnlimitedAmmo
     // but leaves every weapon it already ran on firing forever.
     private static readonly HashSet<uint> Applied = [];
 
-    public static bool Enabled => UserDefaults.WeaponsUnlimitedAmmo.Value && IsAllowed;
+    public static readonly ToggleFeature Toggle = new(
+        UserDefaults.WeaponsUnlimitedAmmo,
+        WeaponOptionsPermissions.UnlimitedAmmo,
+        Apply);
 
-    private static bool IsAllowed => ClientPermissions.IsAllowed(WeaponOptionsPermissions.UnlimitedAmmo);
-
-    // Call once at startup, before permissions have arrived. A permission arriving or being revoked
-    // re-runs every tick condition through the registry, so this does not subscribe to that itself.
-    public static void Initialize() =>
-        _tick = TickRegistry.Register("Weapons.UnlimitedAmmo", Apply, TickRate.PerFrame, () => Enabled);
-
-    public static void SetEnabled(bool enabled)
+    // Call once at startup, before permissions have arrived.
+    public static void Initialize()
     {
-        // The checkbox follows the permission, but a revoke can land between the two.
-        if (enabled && !IsAllowed)
-        {
-            return;
-        }
+        _tick = TickRegistry.Register("Weapons.UnlimitedAmmo", Hold, TickRate.PerFrame, () => Toggle.Enabled);
 
-        UserDefaults.WeaponsUnlimitedAmmo.Value = enabled;
+        Toggle.Initialize();
+    }
 
-        if (!enabled)
+    private static void Apply(bool on)
+    {
+        if (!on)
         {
             Clear();
         }
@@ -45,7 +41,7 @@ public static class WeaponUnlimitedAmmo
         _tick?.Reevaluate();
     }
 
-    private static void Apply()
+    private static void Hold()
     {
         var ped = Native.PlayerPedId();
 
