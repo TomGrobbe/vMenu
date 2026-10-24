@@ -1,10 +1,10 @@
 using System.Globalization;
-using System.Text;
 
 using CitizenFX.FiveM.Server;
 using CitizenFX.FiveM.Server.Entities;
 using CitizenFX.FiveM.Shared.Serialization;
 
+using vMenu.Enhanced.Configuration.Server;
 using vMenu.Enhanced.Data.Actions;
 using vMenu.Enhanced.Data.Misc;
 using vMenu.Enhanced.Logging;
@@ -139,7 +139,7 @@ public static class LocationBlipActions
 
     private static ActionResponse Commit(Player source, string what, Action undo)
     {
-        if (!Write(ServerJson.SerializeIndented(Blips)))
+        if (!ResourceFile.TryWrite(ConfigFile, "Blips", Blips, "nothing was changed"))
         {
             undo();
 
@@ -156,25 +156,6 @@ public static class LocationBlipActions
         Log.Debug($"[Blips] {source} {what}.");
 
         return ActionResponse.Ok();
-    }
-
-    private static bool Write(string json)
-    {
-        try
-        {
-            if (Native.SaveResourceFile(Native.GetCurrentResourceName(), ConfigFile, Encoding.UTF8.GetBytes(json)))
-            {
-                return true;
-            }
-
-            Log.Error($"[Blips] {ConfigFile} could not be written, so nothing was changed.");
-        }
-        catch (Exception exception)
-        {
-            Log.Error($"[Blips] Writing {ConfigFile} threw, so nothing was changed: {exception}");
-        }
-
-        return false;
     }
 
     // Ungated on purpose: the always-on list is not optional, so everybody needs it.
@@ -229,23 +210,13 @@ public static class LocationBlipActions
 
     private static void Load()
     {
-        var contents = Native.LoadResourceFile(Native.GetCurrentResourceName(), ConfigFile);
-
-        if (string.IsNullOrWhiteSpace(contents))
+        if (!ResourceFile.TryLoad<BlipFile>(
+            ConfigFile,
+            "Blips",
+            "no map blips are added",
+            "an object with an alwaysOn and a toggleable list",
+            out var read))
         {
-            Log.Info($"[Blips] No {ConfigFile} found, so no map blips are added.");
-            return;
-        }
-
-        if (!ServerJson.TryDeserialize<BlipFile>(contents, out var read, out var error))
-        {
-            Log.Error($"[Blips] {ConfigFile} could not be parsed, so no map blips are added: {error}");
-            return;
-        }
-
-        if (read is null)
-        {
-            Log.Error($"[Blips] {ConfigFile} has to hold an object with an alwaysOn and a toggleable list, so no map blips are added.");
             return;
         }
 

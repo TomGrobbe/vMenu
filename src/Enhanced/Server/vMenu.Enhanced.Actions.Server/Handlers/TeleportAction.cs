@@ -1,5 +1,4 @@
 using System.Globalization;
-using System.Text;
 
 using System.Text.Json.Serialization;
 
@@ -7,6 +6,7 @@ using CitizenFX.FiveM.Server;
 using CitizenFX.FiveM.Server.Entities;
 using CitizenFX.FiveM.Shared.Serialization;
 
+using vMenu.Enhanced.Configuration.Server;
 using vMenu.Enhanced.Data.Actions;
 using vMenu.Enhanced.Data.Teleport;
 using vMenu.Enhanced.Logging;
@@ -187,7 +187,7 @@ public static class TeleportActions
     // clients hold always matches what is on disk.
     private static ActionResponse Commit(Player source, string what, Action undo)
     {
-        if (!Write(ServerJson.SerializeIndented(Categories)))
+        if (!ResourceFile.TryWrite(ConfigFile, "Teleport", Categories, "nothing was added"))
         {
             undo();
 
@@ -201,29 +201,6 @@ public static class TeleportActions
         Log.Debug($"[Teleport] {source} {what}.");
 
         return ActionResponse.Ok();
-    }
-
-    private static bool Write(string json)
-    {
-        try
-        {
-            var bytes = Encoding.UTF8.GetBytes(json);
-
-            if (Native.SaveResourceFile(Native.GetCurrentResourceName(), ConfigFile, bytes))
-            {
-                return true;
-            }
-
-            Log.Error($"[Teleport] {ConfigFile} could not be written, so nothing was added.");
-        }
-        catch (Exception exception)
-        {
-            // Answered as a failed write rather than left to the dispatcher, so the caller still undoes what it
-            // added. A throw that escaped here would leave the list holding something that is not on disk.
-            Log.Error($"[Teleport] Writing {ConfigFile} threw, so nothing was added: {exception}");
-        }
-
-        return false;
     }
 
     private static void Broadcast()
@@ -289,23 +266,13 @@ public static class TeleportActions
     // starts empty.
     private static void Load()
     {
-        var contents = Native.LoadResourceFile(Native.GetCurrentResourceName(), ConfigFile);
-
-        if (string.IsNullOrWhiteSpace(contents))
+        if (!ResourceFile.TryLoad<List<Category>>(
+            ConfigFile,
+            "Teleport",
+            "the category menu starts empty",
+            "a list of categories",
+            out var read))
         {
-            Log.Info($"[Teleport] No {ConfigFile} found, so the category menu starts empty.");
-            return;
-        }
-
-        if (!ServerJson.TryDeserialize<List<Category>>(contents, out var read, out var error))
-        {
-            Log.Error($"[Teleport] {ConfigFile} could not be parsed, so the category menu starts empty: {error}");
-            return;
-        }
-
-        if (read is null)
-        {
-            Log.Error($"[Teleport] {ConfigFile} has to hold a list of categories, so the category menu starts empty.");
             return;
         }
 

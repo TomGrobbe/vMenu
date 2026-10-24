@@ -1,9 +1,9 @@
-using System.Text;
 
 using CitizenFX.FiveM.Server;
 using CitizenFX.FiveM.Server.Entities;
 using CitizenFX.FiveM.Shared.Serialization;
 
+using vMenu.Enhanced.Configuration.Server;
 using vMenu.Enhanced.Data.Actions;
 using vMenu.Enhanced.Data.Clothing;
 using vMenu.Enhanced.Logging;
@@ -163,7 +163,7 @@ public static class ClothingPresetActions
 
     private static ActionResponse Commit(Player source, string what, Action undo)
     {
-        if (!Write(ServerJson.SerializeIndented(Categories)))
+        if (!ResourceFile.TryWrite(ConfigFile, "Presets", Categories, "nothing was added"))
         {
             undo();
 
@@ -177,27 +177,6 @@ public static class ClothingPresetActions
         Log.Debug($"[Presets] {source} {what}.");
 
         return ActionResponse.Ok();
-    }
-
-    private static bool Write(string json)
-    {
-        try
-        {
-            var bytes = Encoding.UTF8.GetBytes(json);
-
-            if (Native.SaveResourceFile(Native.GetCurrentResourceName(), ConfigFile, bytes))
-            {
-                return true;
-            }
-
-            Log.Error($"[Presets] {ConfigFile} could not be written, so nothing was added.");
-        }
-        catch (Exception exception)
-        {
-            Log.Error($"[Presets] Writing {ConfigFile} threw, so nothing was added: {exception}");
-        }
-
-        return false;
     }
 
     private static void Broadcast()
@@ -259,26 +238,13 @@ public static class ClothingPresetActions
 
     private static void Load()
     {
-        var contents = Native.LoadResourceFile(Native.GetCurrentResourceName(), ConfigFile);
-
-        if (string.IsNullOrWhiteSpace(contents))
+        if (!ResourceFile.TryLoad<List<ClothingPresetCategory>>(
+            ConfigFile,
+            "Presets",
+            "the preset menu starts empty",
+            "a list of categories",
+            out var read))
         {
-            Log.Info($"[Presets] No {ConfigFile} found, so the preset menu starts empty.");
-
-            return;
-        }
-
-        if (!ServerJson.TryDeserialize<List<ClothingPresetCategory>>(contents, out var read, out var error))
-        {
-            Log.Error($"[Presets] {ConfigFile} could not be parsed, so the preset menu starts empty: {error}");
-
-            return;
-        }
-
-        if (read is null)
-        {
-            Log.Error($"[Presets] {ConfigFile} has to hold a list of categories, so the preset menu starts empty.");
-
             return;
         }
 

@@ -1,4 +1,3 @@
-using System.Text;
 using System.Text.Json.Serialization;
 
 using CitizenFX.FiveM.Server;
@@ -10,7 +9,6 @@ using vMenu.Enhanced.Data.Admin;
 using vMenu.Enhanced.Data.Ticks;
 using vMenu.Enhanced.Data.World;
 using vMenu.Enhanced.Logging;
-using vMenu.Enhanced.Serialization.Server;
 using vMenu.Enhanced.Ticks.Server;
 
 using AdminPermissions = vMenu.Enhanced.Data.Permissions.Menus.Admin;
@@ -197,26 +195,13 @@ public static class AnnouncementSchedule
 
     private static void Load()
     {
-        var contents = Native.LoadResourceFile(Native.GetCurrentResourceName(), ConfigFile);
-
-        if (string.IsNullOrWhiteSpace(contents))
+        if (!ResourceFile.TryLoad<ScheduleFile>(
+            ConfigFile,
+            "Admin",
+            "no announcements send themselves",
+            "an object with an announcements list",
+            out var read))
         {
-            Log.Info($"[Admin] No {ConfigFile} found, so no announcements send themselves.");
-
-            return;
-        }
-
-        if (!ServerJson.TryDeserialize<ScheduleFile>(contents, out var read, out var error))
-        {
-            Log.Error($"[Admin] {ConfigFile} could not be parsed, so no announcements send themselves: {error}");
-
-            return;
-        }
-
-        if (read is null)
-        {
-            Log.Error($"[Admin] {ConfigFile} has to hold an object with an announcements list, so none send themselves.");
-
             return;
         }
 
@@ -265,26 +250,12 @@ public static class AnnouncementSchedule
         }
     }
 
-    private static bool Save()
-    {
-        try
-        {
-            var json = ServerJson.SerializeIndented(new ScheduleFile { Announcements = Entries });
-
-            if (Native.SaveResourceFile(Native.GetCurrentResourceName(), ConfigFile, Encoding.UTF8.GetBytes(json)))
-            {
-                return true;
-            }
-
-            Log.Error($"[Admin] {ConfigFile} could not be written, so nothing was changed.");
-        }
-        catch (Exception exception)
-        {
-            Log.Error($"[Admin] Writing {ConfigFile} threw, so nothing was changed: {exception}");
-        }
-
-        return false;
-    }
+    private static bool Save() =>
+        ResourceFile.TryWrite(
+            ConfigFile,
+            "Admin",
+            new ScheduleFile { Announcements = Entries },
+            "nothing was changed");
 
     private static string? Trimmed(string? value) =>
         string.IsNullOrWhiteSpace(value) ? null : value.Trim();

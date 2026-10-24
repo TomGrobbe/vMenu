@@ -5,6 +5,7 @@ using CitizenFX.FiveM.Server;
 using CitizenFX.FiveM.Server.Entities;
 using CitizenFX.FiveM.Shared.Serialization;
 
+using vMenu.Enhanced.Configuration.Server;
 using vMenu.Enhanced.Data.Actions;
 using vMenu.Enhanced.Data.VehicleData;
 using vMenu.Enhanced.Logging;
@@ -259,11 +260,9 @@ public static class AircraftWeaponActions
         Aircraft.Clear();
         _payload = "{}";
 
-        var contents = Native.LoadResourceFile(Native.GetCurrentResourceName(), ConfigFile);
-
-        if (string.IsNullOrWhiteSpace(contents))
+        if (ResourceFile.Read(ConfigFile, "Config", "aircraft bombs and countermeasures use the built in positions")
+            is not { } contents)
         {
-            Log.Info($"[Config] No {ConfigFile} found, so aircraft bombs and countermeasures use the built in positions.");
             return;
         }
 
