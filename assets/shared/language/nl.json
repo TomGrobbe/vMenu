@@ -968,6 +968,8 @@
     "miscsettings.link.desc": "Pas verschillende instellingen van het menu aan.",
     "miscsettings.pointing": "Vingerwijzen",
     "miscsettings.pointing.desc": "Wijs met je vinger naar waar je naar kijkt, net als in GTA Online. Druk op ~b~B~s~ om te beginnen en druk nog een keer om te stoppen, of klik de rechterstick in op een controller. De toetsenbinding kun je aanpassen in het pauzemenu onder ~y~Instellingen~s~, ~y~Toetsenbindingen~s~, ~y~FiveM~s~.",
+    "miscsettings.pedpreview": "3D-pedvoorbeeld",
+    "miscsettings.pedpreview.desc": "Toont je opgeslagen peds en opgeslagen personages naast het menu terwijl je erdoorheen bladert. Houd ~b~Q~s~ of ~b~E~s~ ingedrukt om het voorbeeld te draaien.",
     "miscsettings.subtitle": "Overige instellingen",
     "miscsettings.title": "Overige instellingen",
     "noclip.toggle.denied": "Je mag noclip niet aan- of uitzetten.",

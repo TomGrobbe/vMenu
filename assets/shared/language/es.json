@@ -968,6 +968,8 @@
     "miscsettings.link.desc": "Cambia varios ajustes del menú.",
     "miscsettings.pointing": "Señalar con el dedo",
     "miscsettings.pointing.desc": "Señala con el dedo aquello que estés mirando, igual que en GTA Online. Pulsa ~b~B~s~ para empezar y púlsala otra vez para parar, o haz clic con el stick derecho en un mando. Puedes cambiar la asignación en el menú de pausa, en ~y~Ajustes~s~, ~y~Asignación de teclas~s~, ~y~FiveM~s~.",
+    "miscsettings.pedpreview": "Vista previa 3D del ped",
+    "miscsettings.pedpreview.desc": "Muestra tus peds guardados y tus personajes guardados junto al menú mientras los recorres. Mantén pulsada ~b~Q~s~ o ~b~E~s~ para girar la vista previa.",
     "miscsettings.subtitle": "Ajustes varios",
     "miscsettings.title": "Ajustes varios",
     "noclip.toggle.denied": "No tienes permiso para activar el noclip.",

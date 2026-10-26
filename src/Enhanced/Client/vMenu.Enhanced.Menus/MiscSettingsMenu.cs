@@ -1,6 +1,7 @@
 using vMenu.Enhanced.MenuFramework;
 using vMenu.Enhanced.Localization;
 using vMenu.Enhanced.Menus.Misc;
+using vMenu.Enhanced.Menus.Players.Appearance;
 
 using StaffAlertSettings = vMenu.Enhanced.Data.Configuration.Settings.StaffAlerts;
 
@@ -45,6 +46,14 @@ public sealed class MiscSettingsMenu : MenuDefinition
             Description = MenuText.Key(Loc.MiscSettings.FingerPointingDescription),
             ReadState = () => FingerPointing.Enabled,
             OnChanged = changed => FingerPointing.SetEnabled(changed.Checked),
+        });
+
+        menu.Entries.Add(new CheckboxEntry
+        {
+            Text = MenuText.Key(Loc.MiscSettings.PedPreview),
+            Description = MenuText.Key(Loc.MiscSettings.PedPreviewDescription),
+            ReadState = () => PedPreview.Enabled,
+            OnChanged = changed => PedPreview.SetEnabled(changed.Checked),
         });
 
         menu.Entries.Add(new ButtonEntry

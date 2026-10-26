@@ -7,6 +7,7 @@ using MenuAPI;
 
 using vMenu.Enhanced.MenuFramework;
 using vMenu.Enhanced.Localization;
+using vMenu.Enhanced.Menus.Players.Appearance;
 using vMenu.Enhanced.Menus.Saved;
 using vMenu.Enhanced.Storage;
 
@@ -270,7 +271,23 @@ internal sealed class SavedCharacters
         menu.AddRange(ListRows());
 
         menu.OnOpened = _ => Fill(menu, ListRows());
+
+        PedPreview.Register(
+            menu.Menu,
+            current => Previewable(current.GetCurrentMenuItem()?.ItemData as MpCharacterEntry),
+            PreviewModel,
+            PreviewDress);
     }
+
+    // A save from a newer build may hold pieces this one cannot put on, so it is not shown.
+    private static MpCharacterEntry? Previewable(MpCharacterEntry? entry) =>
+        entry is { IsFromNewerBuild: false } ? entry : null;
+
+    private static uint PreviewModel(MpCharacterEntry entry) => PedSpawning.FreemodeModel(entry.Character.Core.IsMale);
+
+    // What spawning puts on, so the preview is the character the player would get.
+    private static Task PreviewDress(int ped, MpCharacterEntry entry) =>
+        FreemodeWriter.ApplyAsync(ped, entry.Character, entry.Character.CurrentStyle, entry.Character.CurrentOutfit);
 
     private IReadOnlyList<MenuEntry> ListRows()
     {
@@ -295,6 +312,7 @@ internal sealed class SavedCharacters
                 ReadRightIcon = () => IsDefault(character) ? MenuItem.Icon.TICK : MenuItem.Icon.NONE,
                 Description = Describe(character, defaultName),
                 Gate = CharacterCreatorPermissions.Spawn,
+                Configure = item => item.ItemData = character,
                 OnSelected = _ =>
                 {
                     _selected = character;
@@ -344,6 +362,8 @@ internal sealed class SavedCharacters
         menu.AddRange(DetailRows());
 
         menu.OnOpened = _ => Fill(menu, DetailRows());
+
+        PedPreview.Register(menu.Menu, _ => Previewable(_selected), PreviewModel, PreviewDress);
     }
 
     private IReadOnlyList<MenuEntry> DetailRows()

@@ -55,6 +55,14 @@ public sealed class SavedPedsMenu : MenuDefinition
 
         _detailMenu.Builder.OnOpened = _ => Fill(_detailMenu, DetailRows());
 
+        PedPreview.Register(
+            _pedMenu.Menu,
+            current => Previewable(current.GetCurrentMenuItem()?.ItemData as SavedPedEntry),
+            PreviewModel,
+            PreviewDress);
+
+        PedPreview.Register(_detailMenu.Menu, _ => Previewable(_selected), PreviewModel, PreviewDress);
+
         menu.AddRange(RootRows());
 
         // The store changes from inside this menu, so the rows are rebuilt whenever the player comes back up
@@ -241,6 +249,7 @@ public sealed class SavedPedsMenu : MenuDefinition
                 ? MenuText.Key(Loc.SavedPeds.NewerBuildLabel)
                 : ModelName(appearance),
             Description = Describe(entry, available),
+            Configure = item => item.ItemData = entry,
             OnSelected = _ =>
             {
                 _selected = entry;
@@ -249,6 +258,13 @@ public sealed class SavedPedsMenu : MenuDefinition
             },
         };
     }
+
+    // A save from a newer build may hold pieces this one cannot put on, so it is not shown.
+    private static SavedPedEntry? Previewable(SavedPedEntry? entry) => entry is { IsFromNewerBuild: false } ? entry : null;
+
+    private static uint PreviewModel(SavedPedEntry entry) => entry.Ped.Appearance.ModelHash;
+
+    private static Task PreviewDress(int ped, SavedPedEntry entry) => PedAppearanceWriter.ApplyAsync(ped, entry.Ped.Appearance);
 
     // Their own words win over ours: a description is only there because somebody typed it.
     private static MenuText Describe(SavedPedEntry entry, bool available)
