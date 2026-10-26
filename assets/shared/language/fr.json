@@ -968,6 +968,8 @@
     "miscsettings.link.desc": "Modifier différents paramètres du menu.",
     "miscsettings.pointing": "Pointer du doigt",
     "miscsettings.pointing.desc": "Pointez du doigt ce que vous êtes en train de regarder, comme dans GTA Online. Appuyez sur ~b~B~s~ pour commencer et appuyez à nouveau pour arrêter, ou cliquez le stick droit sur une manette. Vous pouvez changer le raccourci dans le menu pause, sous ~y~Paramètres~s~, ~y~Raccourcis clavier~s~, ~y~FiveM~s~.",
+    "miscsettings.pedpreview": "Aperçu 3D du ped",
+    "miscsettings.pedpreview.desc": "Affiche vos peds enregistrés et vos personnages enregistrés à côté du menu pendant que vous les parcourez. Maintenez ~b~Q~s~ ou ~b~E~s~ pour faire pivoter l'aperçu.",
     "miscsettings.subtitle": "Paramètres divers",
     "miscsettings.title": "Paramètres divers",
     "noclip.toggle.denied": "Vous n'avez pas la permission d'activer le noclip.",

@@ -74,6 +74,12 @@ Every character also keeps whatever it is wearing right now, separately from tho
 
 **Set As Default Character** means you turn into that character whenever you respawn, and when you first join. Pick it again to turn it off.
 
+### Seeing one before you spawn it
+
+While you scroll through **Saved Characters**, the character you are on stands beside the menu wearing what it would spawn in, so you can tell your saves apart without trying each one on. It stays there when you open that character. Hold **Q** or **E** to turn it around. Saved peds get the same preview in the **Saved Peds** menu.
+
+It is on by default. Turn off **3D Ped Preview** under **Miscellaneous Settings** if you would rather not see it.
+
 ### Your saves travel with you
 
 Characters are saved on your own computer, like saved vehicles and peds, and they are included in the backup code on the [Backing Up Your Data](/vmenu/enhanced/backing-up-your-data/) page. Make a backup before you rely on them.

@@ -26,6 +26,9 @@ public static class UserDefaults
     public static BoolDefault MiscFingerPointing { get; } =
         new("miscFingerPointing") { Default = true };
 
+    public static BoolDefault MiscPedPreview { get; } =
+        new("miscPedPreview") { Default = true };
+
     public static BoolDefault MiscHideStaffAlerts { get; } =
         new("miscHideStaffAlerts") { Default = false };
 
@@ -387,6 +390,7 @@ public static class UserDefaults
         DisplayMinimapZoom,
         DisplayMinimapAlwaysOn,
         MiscFingerPointing,
+        MiscPedPreview,
         DisplayShowPlayerBlips,
         DisplayShowOverheadNames,
         DisplaySeeNoClipPlayers,

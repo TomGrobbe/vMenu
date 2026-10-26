@@ -968,6 +968,8 @@
     "miscsettings.link.desc": "Ändere verschiedene Einstellungen des Menüs.",
     "miscsettings.pointing": "Fingerzeigen",
     "miscsettings.pointing.desc": "Zeig mit dem Finger auf das, was du gerade ansiehst, genau wie in GTA Online. Drücke ~b~B~s~ zum Starten und noch einmal zum Beenden, oder klicke auf einem Controller den rechten Stick. Die Tastenbelegung kannst du im Pausenmenü unter ~y~Einstellungen~s~, ~y~Tastenbelegung~s~, ~y~FiveM~s~ ändern.",
+    "miscsettings.pedpreview": "3D-Ped-Vorschau",
+    "miscsettings.pedpreview.desc": "Zeigt deine gespeicherten Peds und gespeicherten Charaktere neben dem Menü, während du sie durchsiehst. Halte ~b~Q~s~ oder ~b~E~s~ gedrückt, um die Vorschau zu drehen.",
     "miscsettings.subtitle": "Sonstige Einstellungen",
     "miscsettings.title": "Sonstige Einstellungen",
     "noclip.toggle.denied": "Du darfst Noclip nicht ein- oder ausschalten.",

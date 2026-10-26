@@ -28,6 +28,10 @@ public static partial class Loc
 
         public const string FingerPointingDescription = "miscsettings.pointing.desc";
 
+        public const string PedPreview = "miscsettings.pedpreview";
+
+        public const string PedPreviewDescription = "miscsettings.pedpreview.desc";
+
         public const string AlertStaff = "miscsettings.alertstaff";
 
         public const string AlertStaffDescription = "miscsettings.alertstaff.desc";

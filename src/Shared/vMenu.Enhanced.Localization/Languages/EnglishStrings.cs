@@ -1269,6 +1269,8 @@ internal static class EnglishStrings
             [Loc.DisplaySettings.MinimapAlwaysOn] = "Always Keep It That Way",
             [Loc.DisplaySettings.MinimapAlwaysOnDescription] = "Keeps the radar expanded or zoomed out all the time, so you do not have to press anything. The key does nothing while this is ticked, there being nothing left for it to turn on.",
             [Loc.DisplaySettings.MinimapAlwaysOnLocked] = "Pick what the minimap key does first, then this can keep it that way.",
+            [Loc.MiscSettings.PedPreview] = "3D Ped Preview",
+            [Loc.MiscSettings.PedPreviewDescription] = "Shows your saved peds and saved characters beside the menu while you browse them. Hold ~b~Q~s~ or ~b~E~s~ to turn the preview.",
             [Loc.MiscSettings.FingerPointing] = "Finger Pointing",
             [Loc.MiscSettings.FingerPointingDescription] = "Point your finger at whatever you are looking at, just like in GTA Online. Press ~b~B~s~ to start and press it again to stop, or click the right stick on a controller. It only works with your hands empty, a drawn weapon breaks the aiming animation. You can change the keybind in the pause menu under ~y~Settings~s~, ~y~Key Bindings~s~, ~y~FiveM~s~.",
             [Loc.DisplaySettings.PlayerBlips] = "Show Player Blips",

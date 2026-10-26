@@ -190,6 +190,7 @@ public sealed class Main : IScript
         SpawnedProps.Initialize();
         PropPlacement.Initialize();
         PropPreview.Initialize();
+        PedPreview.Initialize();
         FingerPointing.Initialize();
         Speedometer.Initialize();
         LocationDisplay.Initialize();
