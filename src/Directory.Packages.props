@@ -7,12 +7,12 @@
     <PackageVersion Include="CitizenFX.FiveM.Client" Version="0.0.4-alpha" />
     <PackageVersion Include="CitizenFX.FiveM.Server" Version="0.0.4-alpha" />
     <!-- Menu rendering for the client-side menus. -->
-    <PackageVersion Include="MenuAPI.FiveM.Enhanced" Version="4.1.0" />
+    <PackageVersion Include="MenuAPI.FiveM.Enhanced" Version="4.1.1" />
   </ItemGroup>
   <ItemGroup>
     <PackageVersion Include="CitizenFX.Core.Client" Version="1.0.26803" />
     <PackageVersion Include="CitizenFX.Core.Server" Version="1.0.26803" />
-    <PackageVersion Include="MenuAPI.FiveM" Version="4.1.0" />
+    <PackageVersion Include="MenuAPI.FiveM" Version="4.1.1" />
     <PackageVersion Include="PolySharp" Version="1.15.0" />
     <PackageVersion Include="System.ValueTuple" Version="4.5.0" />
   </ItemGroup>
