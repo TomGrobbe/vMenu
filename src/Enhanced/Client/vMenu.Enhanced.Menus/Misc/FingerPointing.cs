@@ -6,6 +6,7 @@ using MenuAPI;
 using vMenu.Enhanced.Data.Ticks;
 using vMenu.Enhanced.Logging;
 using vMenu.Enhanced.MenuFramework;
+using vMenu.Enhanced.Permissions;
 using vMenu.Enhanced.Storage;
 using vMenu.Enhanced.Ticks;
 
@@ -136,7 +137,7 @@ public static class FingerPointing
         Outro,
     }
 
-    public static bool Enabled => UserDefaults.MiscFingerPointing.Value;
+    public static bool Enabled => !StaffOnlyMode.Active && UserDefaults.MiscFingerPointing.Value;
 
     public static bool DebugVisible => _debug;
 
@@ -153,6 +154,8 @@ public static class FingerPointing
 
         FingerPointingKeyBinding.Register(OnPressed);
 
+        StaffOnlyMode.Changed += StopIfDisabled;
+
         SharedAPI.Commands.RegisterCommand("vmenu_pointing_debug", false, new Action(ToggleDebug));
 
         _tick = TickRegistry.Register("Misc.Pointing", Frame, TickRate.PerFrame, () => _state != State.Off);
@@ -163,6 +166,14 @@ public static class FingerPointing
         UserDefaults.MiscFingerPointing.Value = enabled;
 
         if (!enabled && _state != State.Off)
+        {
+            Cleanup(Native.PlayerPedId());
+        }
+    }
+
+    private static void StopIfDisabled()
+    {
+        if (!Enabled && _state != State.Off)
         {
             Cleanup(Native.PlayerPedId());
         }

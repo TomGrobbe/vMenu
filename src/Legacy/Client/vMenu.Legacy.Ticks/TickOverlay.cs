@@ -36,6 +36,9 @@ public static class TickOverlay
     // The live state, not the stored preference.
     public static bool Visible => _visible;
 
+    // Set from outside, because this module cannot reference the permissions one.
+    public static Func<bool> IsBlocked { get; set; } = static () => false;
+
     internal static void Initialize()
     {
         // Ungated on purpose, unlike every other command in here. This one is the way back out of an overlay
@@ -59,7 +62,15 @@ public static class TickOverlay
 
     public static void Toggle() => Script.RunOnMainThread(() => Set(!_visible));
 
-    public static void Set(bool visible) => Apply(visible, persist: true);
+    public static void Set(bool visible)
+    {
+        if (IsBlocked())
+        {
+            return;
+        }
+
+        Apply(visible, persist: true);
+    }
 
     private static void Apply(bool visible, bool persist)
     {
@@ -67,6 +78,8 @@ public static class TickOverlay
         {
             UserDefaults.TicksOverlay.Value = visible;
         }
+
+        visible &= !IsBlocked();
 
         if (_visible == visible)
         {

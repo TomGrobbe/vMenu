@@ -70,7 +70,13 @@ public static class PedIlluminatedClothing
 
     public static void Publish()
     {
-        var style = (int)Style;
+        // Until they arrive every permission reads as denied, which would publish a glow of nothing first.
+        if (!ClientPermissions.HasReceivedPermissions)
+        {
+            return;
+        }
+
+        var style = IsAllowed ? (int)Style : (int)ClothingGlow.Off;
 
         if (_published == style)
         {

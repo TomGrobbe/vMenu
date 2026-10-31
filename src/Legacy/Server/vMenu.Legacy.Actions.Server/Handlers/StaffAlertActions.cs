@@ -56,7 +56,7 @@ public static class StaffAlertActions
 
     private static ActionResponse Raise(Player source, string[] args)
     {
-        if (!ServerConfig.Value(StaffAlertSettings.Enabled))
+        if (!ServerConfig.Value(StaffAlertSettings.Enabled) || ServerPermissions.IsStaffOnlyFor(source))
         {
             return ActionResponse.Refused();
         }

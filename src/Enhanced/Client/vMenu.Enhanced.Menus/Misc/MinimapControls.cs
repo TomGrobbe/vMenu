@@ -4,6 +4,7 @@ using CitizenFX.FiveM.Shared;
 using MenuAPI;
 
 using vMenu.Enhanced.Data.Ticks;
+using vMenu.Enhanced.Permissions;
 using vMenu.Enhanced.Storage;
 using vMenu.Enhanced.Ticks;
 
@@ -82,7 +83,7 @@ public static class MinimapControls
 
     public static int Action
     {
-        get => UserDefaults.DisplayMinimapAction.Value;
+        get => StaffOnlyMode.Active ? Off : UserDefaults.DisplayMinimapAction.Value;
 
         set
         {
@@ -138,6 +139,8 @@ public static class MinimapControls
         _registered = true;
 
         MinimapKeyBinding.Register(OnPressed);
+
+        StaffOnlyMode.Changed += Apply;
 
         _zoom = TickRegistry.Register(
             "Minimap.Zoom",

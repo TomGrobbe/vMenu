@@ -88,7 +88,7 @@ public static class Speedometer
 
     public static int Mode
     {
-        get => UserDefaults.DisplaySpeedometer.Value;
+        get => StaffOnlyMode.Active ? Off : UserDefaults.DisplaySpeedometer.Value;
 
         set
         {
@@ -140,6 +140,7 @@ public static class Speedometer
         LocalVehicleTicks.VehicleChanged += OnVehicleChanged;
 
         ClientPermissions.PermissionsChanged += Reevaluate;
+        StaffOnlyMode.Changed += Reevaluate;
 
         _tick = TickRegistry.Register(
             "Misc.Speedometer",

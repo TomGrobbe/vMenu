@@ -14,7 +14,16 @@ public static class ServerPermissions
 {
     private static readonly Dictionary<int, int> SyncedAt = [];
 
+    private static Func<bool> _staffOnly = static () => false;
+
     public static bool IsReady { get; private set; }
+
+    // Handed in rather than read here, because the configuration module cannot be referenced from this one.
+    public static void SourceStaffOnly(Func<bool> staffOnly) => _staffOnly = staffOnly;
+
+    public static bool IsStaffOnlyFor(string source) => _staffOnly() && !HasAce(source, Global.Staff);
+
+    public static bool IsStaffOnlyFor(Player player) => IsStaffOnlyFor(ToSource(player));
 
     public static bool SyncedWithin(int serverId, int milliseconds) =>
         !SyncedAt.TryGetValue(serverId, out var at) || Native.GetGameTimer() - at < milliseconds;
@@ -39,6 +48,19 @@ public static class ServerPermissions
     // is cached, so an add_ace takes effect on the next call.
     public static bool IsPlayerAllowed(string source, string permission)
     {
+        if (string.IsNullOrEmpty(source) || IsStaffOnlyFor(source))
+        {
+            return false;
+        }
+
+        return HasAce(source, permission);
+    }
+
+    public static bool IsPlayerAllowed(Player player, string permission) =>
+        IsPlayerAllowed(ToSource(player), permission);
+
+    private static bool HasAce(string source, string permission)
+    {
         if (string.IsNullOrEmpty(source) || !Native.DoesPlayerExist(source))
         {
             return false;
@@ -54,9 +76,6 @@ public static class ServerPermissions
 
         return false;
     }
-
-    public static bool IsPlayerAllowed(Player player, string permission) =>
-        IsPlayerAllowed(ToSource(player), permission);
 
     public static bool IsConnectingPlayerAllowed(string source, string permission)
     {
@@ -82,6 +101,11 @@ public static class ServerPermissions
     public static string[] GetGrantedPermissions(string source)
     {
         if (string.IsNullOrEmpty(source) || !Native.DoesPlayerExist(source))
+        {
+            return [];
+        }
+
+        if (IsStaffOnlyFor(source))
         {
             return [];
         }
@@ -159,7 +183,7 @@ public static class ServerPermissions
     }
 
     private static void PublishStaffFlag(int handle, string source) =>
-        ServerStateBags.SetPlayer(handle, PlayerStateKeys.Staff, IsPlayerAllowed(source, Global.Staff));
+        ServerStateBags.SetPlayer(handle, PlayerStateKeys.Staff, HasAce(source, Global.Staff));
 
     private static void Collect(string source, PermissionNode node, List<string> granted, Dictionary<string, bool> probed)
     {

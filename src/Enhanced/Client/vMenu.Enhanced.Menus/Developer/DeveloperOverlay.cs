@@ -7,6 +7,7 @@ using vMenu.Enhanced.BrokenNatives;
 using vMenu.Enhanced.Configuration;
 using vMenu.Enhanced.Data.Ticks;
 using vMenu.Enhanced.MenuFramework;
+using vMenu.Enhanced.Permissions;
 using vMenu.Enhanced.Ticks;
 
 using DeveloperFeaturesSetting = vMenu.Enhanced.Data.Configuration.Settings.DeveloperFeatures;
@@ -63,7 +64,9 @@ public static class DeveloperOverlay
 
     private static readonly MenuGate Condition =
         MenuGate.Setting(DeveloperFeaturesSetting.Enabled)
-        & MenuGate.When(() => DeveloperFeaturesState.AnyOutlineEnabled && DeveloperFeaturesState.DrawRadius > 0);
+        & MenuGate.When(() => !StaffOnlyMode.Active
+            && DeveloperFeaturesState.AnyOutlineEnabled
+            && DeveloperFeaturesState.DrawRadius > 0);
 
     private static TickHandle? _scan;
 

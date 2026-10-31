@@ -10,6 +10,15 @@ public static class Admin
 
     public const int MaxGrabRange = 15;
 
+    public static readonly BoolSetting StaffOnly =
+        new("vMenu.Enhanced.Admin.StaffOnly")
+        {
+            Description =
+                "Makes vMenu staff only. Players without vMenu.Enhanced.Staff cannot open the menu and get none of its features, "
+                + "but staff can still use admin and bully options on them.",
+            Default = false,
+        };
+
     public static readonly IntSetting ClearAreaRadius =
         new("vMenu.Enhanced.Admin.ClearAreaRadius")
         {

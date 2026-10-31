@@ -1,6 +1,7 @@
 using CitizenFX.FiveM.Client;
 
 using vMenu.Enhanced.Events;
+using vMenu.Enhanced.Permissions;
 
 namespace vMenu.Enhanced.Menus.Players;
 
@@ -14,6 +15,7 @@ public static class PedKeepProps
     {
         LocalPlayerTicks.PlayerPedIdChanged += changed => Apply(changed.NewPed);
         LocalPlayerTicks.PlayerPedRevived += revived => Apply(revived.Ped);
+        StaffOnlyMode.Changed += () => Apply(Native.PlayerPedId());
 
         Apply(Native.PlayerPedId());
     }
@@ -25,7 +27,9 @@ public static class PedKeepProps
             return;
         }
 
-        Native.SetPedCanLosePropsOnDamage(ped, false, OnDamage);
-        Native.SetPedCanLosePropsOnDamage(ped, false, HelmetOnHeadshot);
+        var canLose = StaffOnlyMode.Active;
+
+        Native.SetPedCanLosePropsOnDamage(ped, canLose, OnDamage);
+        Native.SetPedCanLosePropsOnDamage(ped, canLose, HelmetOnHeadshot);
     }
 }

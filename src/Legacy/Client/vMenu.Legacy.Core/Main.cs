@@ -37,6 +37,7 @@ using vMenu.Enhanced.Serialization;
 using vMenu.Enhanced.Storage;
 using vMenu.Enhanced.Ticks;
 
+using AdminSettings = vMenu.Enhanced.Data.Configuration.Settings.Admin;
 using PersonalVehicleFeature = vMenu.Enhanced.Menus.Vehicles.Personal.PersonalVehicle;
 using StaffAlertsFeature = vMenu.Enhanced.Menus.Misc.StaffAlerts;
 
@@ -144,6 +145,13 @@ public sealed class Main : BaseScript
 
         ClientPermissions.PermissionsChanged += TickRegistry.Reevaluate;
 
+        StaffOnlyMode.Source(() => ClientConfig.Value(AdminSettings.StaffOnly));
+        ClientConfig.AddEventListenerFor([AdminSettings.StaffOnly], StaffOnlyMode.Refresh);
+        StaffOnlyMode.Changed += TickRegistry.Reevaluate;
+        StaffOnlyLock.Initialize();
+        TickOverlay.IsBlocked = () => StaffOnlyMode.Active;
+        StaffOnlyMode.Changed += TickOverlay.Restore;
+
         VehicleCommands.Initialize();
         VehicleDumpCommands.Initialize();
         PedDumpCommands.Initialize();
@@ -175,6 +183,7 @@ public sealed class Main : BaseScript
         PlayerIntoxication.Initialize();
         PedIlluminatedClothing.Initialize();
         PedKeepProps.Initialize();
+        PedWalkingStyle.Initialize();
         VehicleGodMode.Initialize();
         VehicleKeepClean.Initialize();
         VehicleEngine.Initialize();

@@ -8,6 +8,7 @@ using vMenu.Enhanced.MenuFramework;
 using vMenu.Enhanced.Localization;
 using vMenu.Enhanced.Menus.Misc;
 using vMenu.Enhanced.Menus.World;
+using vMenu.Enhanced.Permissions;
 using vMenu.Enhanced.Storage;
 using vMenu.Enhanced.Ticks;
 
@@ -28,8 +29,11 @@ public static class UserPreferences
 
         ApplyRightAligned(UserDefaults.DisplayRightAlignMenu.Value, persist: false);
 
-        SetIdleCameraDisabled(UserDefaults.MiscDisableIdleCamera.Value);
-        SetVehicleIdleCameraDisabled(UserDefaults.MiscDisableVehicleIdleCamera.Value);
+        ApplyIdleCameras();
+
+        // Removed first, because a data import calls Restore again.
+        StaffOnlyMode.Changed -= ApplyIdleCameras;
+        StaffOnlyMode.Changed += ApplyIdleCameras;
 
         MinimapControls.Apply();
 
@@ -55,12 +59,16 @@ public static class UserPreferences
 
     public static bool IsVehicleIdleCameraDisabled => UserDefaults.MiscDisableVehicleIdleCamera.Value;
 
-    public static bool AreDeathNotificationsEnabled => UserDefaults.DisplayDeathNotifications.Value;
+    public static bool AreDeathNotificationsEnabled => StaffOnlyMode.Active
+        ? UserDefaults.DisplayDeathNotifications.Default
+        : UserDefaults.DisplayDeathNotifications.Value;
 
     public static void SetDeathNotificationsEnabled(bool enabled) =>
         UserDefaults.DisplayDeathNotifications.Value = enabled;
 
-    public static bool AreJoinLeaveNotificationsEnabled => UserDefaults.DisplayJoinLeaveNotifications.Value;
+    public static bool AreJoinLeaveNotificationsEnabled => StaffOnlyMode.Active
+        ? UserDefaults.DisplayJoinLeaveNotifications.Default
+        : UserDefaults.DisplayJoinLeaveNotifications.Value;
 
     public static void SetJoinLeaveNotificationsEnabled(bool enabled) =>
         UserDefaults.DisplayJoinLeaveNotifications.Value = enabled;
@@ -79,6 +87,14 @@ public static class UserPreferences
         API.DisableVehiclePassengerIdleCamera(disabled);
 
         UserDefaults.MiscDisableVehicleIdleCamera.Value = disabled;
+    }
+
+    private static void ApplyIdleCameras()
+    {
+        var allowed = !StaffOnlyMode.Active;
+
+        API.DisableIdleCamera(allowed && UserDefaults.MiscDisableIdleCamera.Value);
+        API.DisableVehiclePassengerIdleCamera(allowed && UserDefaults.MiscDisableVehicleIdleCamera.Value);
     }
 
     private static void RestoreLanguage()

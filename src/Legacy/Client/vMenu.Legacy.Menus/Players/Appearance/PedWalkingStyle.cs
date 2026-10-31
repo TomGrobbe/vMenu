@@ -1,6 +1,7 @@
 using CitizenFX.Core;
 using CitizenFX.Core.Native;
 
+using vMenu.Enhanced.Permissions;
 using vMenu.Enhanced.Storage;
 
 using vMenu.Legacy.Hosting;
@@ -22,6 +23,23 @@ public static class PedWalkingStyle
 
     // The clip set in use, or empty for the walk the ped came with.
     public static string Current => UserDefaults.PlayerWalkingStyle.Value;
+
+    public static void Initialize() => StaffOnlyMode.Changed += OnStaffOnlyChanged;
+
+    private static void OnStaffOnlyChanged()
+    {
+        if (!StaffOnlyMode.Active)
+        {
+            _ = ReapplyAsync();
+
+            return;
+        }
+
+        if (!PlayerIntoxication.HoldsWalk && Current.Length > 0)
+        {
+            API.ResetPedMovementClipset(API.PlayerPedId(), 0f);
+        }
+    }
 
     // False when the game has no animations under that name for this ped.
     public static async Task<bool> ApplyAsync(string clipset)
@@ -59,7 +77,7 @@ public static class PedWalkingStyle
     // only when the player picks one.
     public static async Task ReapplyAsync()
     {
-        if (PlayerIntoxication.HoldsWalk || Current is not { Length: > 0 } clipset)
+        if (StaffOnlyMode.Active || PlayerIntoxication.HoldsWalk || Current is not { Length: > 0 } clipset)
         {
             return;
         }

@@ -54,7 +54,7 @@ public static class WeatherForecast
         && ClientConfig.Value(WeatherOptionsSettings.Enabled)
         && ClientPermissions.IsAllowed(DisplaySettingsPermissions.Forecast);
 
-    public static bool ClockEnabled => UserDefaults.DisplayShowTime.Value;
+    public static bool ClockEnabled => !StaffOnlyMode.Active && UserDefaults.DisplayShowTime.Value;
 
     public static bool ClockOnlyShown => ClockEnabled && !Enabled;
 
@@ -72,6 +72,7 @@ public static class WeatherForecast
         WeatherForecastKeyBinding.Register(() => Script.RunOnMainThread(Cycle));
 
         ClientPermissions.PermissionsChanged += Reevaluate;
+        StaffOnlyMode.Changed += Reevaluate;
 
         ClientConfig.AddEventListenerFor([WeatherOptionsSettings.Enabled], Reevaluate);
     }

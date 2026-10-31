@@ -53,6 +53,8 @@ public class CoreServer : IScript
         ServerPermissions.Initialize();
         ServerConfig.Initialize();
 
+        ServerPermissions.SourceStaffOnly(() => ServerConfig.Value(Admin.StaffOnly));
+
         // Linux TLS bridge
         NetBridge.Initialize();
 
@@ -88,6 +90,7 @@ public class CoreServer : IScript
         WeaponComponentCatalog.Load();
 
         PermissionsSync.RegisterEventHandlers();
+        ServerConfig.AddEventListenerFor([Admin.StaffOnly], () => PermissionsSync.RefreshAll());
         PedCategories.RegisterEventHandlers();
         WeaponCatalog.RegisterEventHandlers();
         WalkingStyles.RegisterEventHandlers();

@@ -41,6 +41,7 @@ public static class ConfigCatalog
         new("Gameplay", [Gameplay.PvpMode, Gameplay.NoClipSmoke]),
         new("Admin",
         [
+            AdminSettings.StaffOnly,
             AdminSettings.ClearAreaRadius,
             AdminSettings.ClosestPlayerRange,
             AdminSettings.ScheduledAnnouncements,

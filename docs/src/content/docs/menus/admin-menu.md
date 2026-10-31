@@ -105,6 +105,23 @@ If an [integration](/vmenu/enhanced/integrations/) with role sync changes a play
 
 None of this is needed for the server to enforce a permission. The server checks the real thing every single time, so a permission you take away stops working immediately whether or not anybody refreshes. Refreshing is about the menu the player is looking at catching up.
 
+## Staff only mode
+
+Set `vMenu.Enhanced.Admin.StaffOnly` to `true` to make vMenu staff only. A player counts as staff when they have `vMenu.Enhanced.Staff` (or `vMenu.Enhanced.Everything`). You can turn it on and off while the server runs, everybody's menu follows straight away.
+
+For everybody else:
+
+| Turns off | Stays on |
+| --- | --- |
+| Opening the menu, including plugin menus | Weather, time, snow and blackout |
+| Every feature that needs a permission, also through key bindings and commands | Bully effects staff put on them |
+| Speedometer, clock, minimap zoom key, finger pointing | Freeze, hold, teleport, kill and messages from staff |
+| `vmenu_ticks_overlay` and the developer outlines | Noclip that staff forced on or lent them |
+| Their own illuminated clothing, walking style, idle camera choice and keeping props on | Seeing other players' illuminated clothing |
+| Raising staff alerts | Death and join/leave messages, at their default |
+
+The server enforces it, a player cannot get around it by changing their own game files.
+
 ## announcements.json
 
 Scheduled announcements, their format and how to edit them from the menu are on the [announcements.json](/vmenu/enhanced/configuration/announcements-json/) page.
@@ -115,6 +132,7 @@ These go in your `configuration.cfg`. They are all listed in the `configuration.
 
 | Setting | What it does |
 | --- | --- |
+| `vMenu.Enhanced.Admin.StaffOnly` | Makes vMenu staff only, see [Staff only mode](#staff-only-mode). Default false. |
 | `vMenu.Enhanced.Admin.ClearAreaRadius` | How far around a player Clear Area reaches, in metres. Default 100. |
 | `vMenu.Enhanced.Admin.ClosestPlayerRange` | How far away freeze and grab will still find somebody, in metres. Default 5, maximum 15. |
 | `vMenu.Enhanced.Admin.ScheduledAnnouncements` | Whether the announcement schedule runs at all. Default true. |

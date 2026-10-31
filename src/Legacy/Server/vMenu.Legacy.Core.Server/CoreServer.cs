@@ -77,6 +77,8 @@ public class CoreServer : BaseScript
         ServerPermissions.Initialize();
         ServerConfig.Initialize();
 
+        ServerPermissions.SourceStaffOnly(() => ServerConfig.Value(Admin.StaffOnly));
+
         NetBridge.Initialize();
 
         WebhookLog.Initialize();
@@ -111,6 +113,7 @@ public class CoreServer : BaseScript
         WeaponComponentCatalog.Load();
 
         PermissionsSync.RegisterEventHandlers();
+        ServerConfig.AddEventListenerFor([Admin.StaffOnly], () => PermissionsSync.RefreshAll());
         PedCategories.RegisterEventHandlers();
         WeaponCatalog.RegisterEventHandlers();
         WalkingStyles.RegisterEventHandlers();

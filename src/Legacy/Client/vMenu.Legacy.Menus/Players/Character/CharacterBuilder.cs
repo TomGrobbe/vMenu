@@ -7,6 +7,7 @@ using vMenu.Enhanced.MenuFramework;
 using vMenu.Enhanced.Localization;
 using vMenu.Enhanced.Menus.Players.Appearance;
 using vMenu.Enhanced.Menus.Saved;
+using vMenu.Enhanced.Permissions;
 
 using CharacterCreatorPermissions = vMenu.Enhanced.Data.Permissions.Menus.CharacterCreator;
 
@@ -55,6 +56,20 @@ internal sealed class CharacterBuilder
                     : Loc.CharacterCreator.EditSubtitle))),
             Build,
             CharacterCreatorPermissions.Create);
+
+        // Removed first, because a menu rebuild attaches again.
+        StaffOnlyMode.Changed -= LeaveIfLocked;
+        StaffOnlyMode.Changed += LeaveIfLocked;
+    }
+
+    // The menu lock closes the creator without running its own exit, which would leave the camera and the
+    // draft ped behind with no menu to get out of them.
+    private void LeaveIfLocked()
+    {
+        if (StaffOnlyMode.Active && MpCharacterState.IsEditing)
+        {
+            _ = LeaveAsync();
+        }
     }
 
     internal async Task OpenAsync(MpCharacter character, MpCharacterEntry? from, bool restore)
