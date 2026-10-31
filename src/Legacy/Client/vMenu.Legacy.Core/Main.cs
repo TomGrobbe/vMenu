@@ -148,6 +148,7 @@ public sealed class Main : BaseScript
         VehicleDumpCommands.Initialize();
         PedDumpCommands.Initialize();
         CharacterDumpCommands.Initialize();
+        PropDiagnosticsCommand.Initialize();
         CharacterCamera.Initialize();
         PedHeadFit.Initialize();
         DeveloperOverlay.Initialize();
