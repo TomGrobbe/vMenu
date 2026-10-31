@@ -92,17 +92,17 @@
     --menuapi-subtitle-text: rgb(254 243 217);
     --menuapi-freemode: rgb(127 224 200);
 
-    --menuapi-rows-bg: rgb(254 243 217 / 97%);
-    --menuapi-row-text: rgb(26 21 35);
-    --menuapi-row-selected-bg: rgb(26 21 35 / 97%);
-    --menuapi-row-selected-text: rgb(254 243 217);
-    --menuapi-row-disabled-text: rgb(26 21 35 / 38%);
-    --menuapi-row-selected-disabled-text: rgb(254 243 217 / 45%);
+    --menuapi-rows-bg: rgb(26 21 35 / 97%);
+    --menuapi-row-text: rgb(254 243 217);
+    --menuapi-row-selected-bg: rgb(183 155 255 / 97%);
+    --menuapi-row-selected-text: rgb(26 21 35);
+    --menuapi-row-disabled-text: rgb(254 243 217 / 38%);
+    --menuapi-row-selected-disabled-text: rgb(26 21 35 / 45%);
 
     --menuapi-header-text: rgb(254 243 217);
     --menuapi-slider-divider: rgb(254 243 217);
 
-    --menuapi-overflow-bg: rgb(251 233 199 / 97%);
+    --menuapi-overflow-bg: rgb(36 29 48 / 97%);
 
     --menuapi-desc-bg: rgb(26 21 35 / 97%);
     --menuapi-desc-rule: rgb(107 70 224 / 90%);
@@ -113,10 +113,10 @@
     --menuapi-stat-upgrade: rgb(127 224 200);
     --menuapi-stat-upgrade-reduced: rgb(255 143 143);
 
-    --menuapi-panel-bg: rgb(254 243 217 / 97%);
-    --menuapi-panel-accent: 74, 47, 176;
-    --menuapi-panel-text: rgb(26 21 35);
-    --menuapi-panel-swatch-selected: rgb(26 21 35);
+    --menuapi-panel-bg: rgb(26 21 35 / 97%);
+    --menuapi-panel-accent: 183, 155, 255;
+    --menuapi-panel-text: rgb(254 243 217);
+    --menuapi-panel-swatch-selected: rgb(254 243 217);
     --menuapi-panel-opacity-bar: rgb(183 155 255);
 }
 
@@ -134,10 +134,6 @@
 
 #menuapi .menuapi-row:last-child {
     border-radius: 0 0 var(--menuapi-radius) var(--menuapi-radius);
-}
-
-#menuapi .menuapi-icon {
-    filter: invert(1);
 }
 
 #menuapi-buttons {
