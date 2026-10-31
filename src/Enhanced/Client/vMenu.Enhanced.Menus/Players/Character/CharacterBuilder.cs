@@ -38,7 +38,7 @@ internal sealed class CharacterBuilder
                     components: PedComponentSlots.Clothing,
                     fitTorso: true);
 
-                child.OnOpened = _ => CharacterCamera.Page = CameraFocus.FullBody;
+                child.OnOpened += _ => CharacterCamera.Page = CameraFocus.FullBody;
             },
             CharacterCreatorPermissions.Create);
 
@@ -209,7 +209,7 @@ internal sealed class CharacterBuilder
             PedComponentSlots.Clothing,
             fitTorso: rows == PedCustomizationRows.PedRows.Components);
 
-        menu.OnOpened = _ =>
+        menu.OnOpened += _ =>
         {
             CharacterCamera.Page = rows == PedCustomizationRows.PedRows.Props
                 ? CameraFocus.Head
