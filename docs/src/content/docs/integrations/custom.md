@@ -68,6 +68,7 @@ vMenu sends you:
 - `blips`, the configured blips, sent once.
 - `buckets`, the named routing bucket worlds from the optional Routing Buckets plugin. Sent once when the stream starts and again when the list changes. Empty without that plugin.
 - `teleports`, the saved teleport locations from `config/teleport-categories.json`. Sent once when the stream starts and again whenever someone adds or removes a location in game.
+- `heatmap`, once a minute, counts of where players were during that minute. Sent whether or not the stream is on. Up to the last 10 minutes are held back while the socket is down and sent once it is back, so the same minute can arrive twice.
 - `command-ack`, the result of a command you sent.
 
 You send vMenu:
@@ -133,6 +134,21 @@ A `teleports` payload lists the saved teleport locations, grouped by category. `
 ```json
 { "categories": [ { "name": "City", "description": "City locations", "locations": [ { "name": "Airport", "description": "", "position": { "x": -1034.65, "y": -2733.21, "z": 20.17 }, "heading": 141.93 } ] } ] }
 ```
+
+A `heatmap` payload holds one minute of player positions, snapped to a grid. vMenu checks every player's position every 10 seconds and counts how many times someone stood in each cell. No player names or ids are included.
+
+```json
+{ "minute": 1793462400, "cell": 50, "samples": 6, "cells": [ 12, -40, 3, 13, -40, 1 ] }
+```
+
+| Field | Meaning |
+| --- | --- |
+| `minute` | Start of the minute, in unix seconds (UTC). |
+| `cell` | Size of one grid cell, in game units. |
+| `samples` | How many times positions were checked during that minute. |
+| `cells` | Groups of three numbers: cell x, cell y, count. Multiply x and y by `cell` to get the game position of the cell's corner. |
+
+Minutes in which nobody was online are not sent.
 
 ## Join gates: allowlist and queue
 

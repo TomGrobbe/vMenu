@@ -13,6 +13,7 @@ vMenu Enhanced can be linked to outside tools that watch and manage the resource
 
 - Show your server's online status and player count in Discord and on the dashboard
 - Live player map
+- Heatmap of where players spent their time over the last 72 hours, as an overlay on the live map
 - Control players (kick, set health, armor, toggle noclip, send messages, teleportation, etc.)
 - Spawn vehicles
 - Manage weather and time
