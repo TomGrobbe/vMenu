@@ -46,6 +46,7 @@ public static class IntegrationSocket
     private const string TypeWorld = "world";
     private const string TypeBuckets = "buckets";
     private const string TypeTeleports = "teleports";
+    private const string TypeHeatmap = "heatmap";
     private const string TypeCommandAck = "command-ack";
     private const string TypeGate = "gate";
     private const string TypeRoleSync = "role-sync";
@@ -125,6 +126,7 @@ public static class IntegrationSocket
             "integration:snapshots", IntegrationSnapshots.Update, TickRate.Every(500), condition: () => IntegrationAuth.IsConfigured);
         ServerTickRegistry.Register(
             "integration:commands", IntegrationCommands.Drain, TickRate.Every(50), condition: () => IntegrationAuth.IsConfigured);
+        IntegrationHeatmap.Initialize();
         ServerTickRegistry.Register("integration:socketlogs", DrainLogs, TickRate.Every(500));
 
         API.OnEvent(StopEvent, new Action<string>(OnResourceStop), false);
@@ -323,6 +325,16 @@ public static class IntegrationSocket
                 {
                     await SendAsync(ws, Frame(TypeTeleports, teleports));
                     lastTeleports = teleports;
+                }
+
+                while (IntegrationHeatmap.TryPeek(out var heatmap))
+                {
+                    if (!await SendAsync(ws, Frame(TypeHeatmap, heatmap)))
+                    {
+                        break;
+                    }
+
+                    IntegrationHeatmap.Acknowledge(heatmap);
                 }
 
                 await Task.Delay(StreamInterval);
@@ -539,7 +551,7 @@ public static class IntegrationSocket
     private static string AckFrame(string id, int status, string resultJson) =>
         "{\"type\":\"" + TypeCommandAck + "\",\"id\":\"" + id + "\",\"payload\":{\"status\":" + status + ",\"result\":" + resultJson + "}}";
 
-    private static async Task SendAsync(WebSocket ws, string frame)
+    private static async Task<bool> SendAsync(WebSocket ws, string frame)
     {
         var bytes = Encoding.UTF8.GetBytes(frame);
 
@@ -548,14 +560,18 @@ public static class IntegrationSocket
         {
             if (ws.State != WebSocketState.Open)
             {
-                return;
+                return false;
             }
 
             await ws.SendAsync(new ArraySegment<byte>(bytes), WebSocketMessageType.Text, endOfMessage: true, CancellationToken.None);
+
+            return true;
         }
         catch (Exception exception)
         {
             Emit(LogLevel.Debug, $"[Integration] Socket send failed: {exception.Message}");
+
+            return false;
         }
         finally
         {
