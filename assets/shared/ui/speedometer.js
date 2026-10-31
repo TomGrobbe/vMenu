@@ -5,6 +5,11 @@
 
     const RAIL_CEILING_KMH = 300;
 
+    const BUTTONS_CLEARANCE_REM = 1.15;
+
+    let placed = null;
+    let watching = null;
+
     const HEALTH_BARS = [
         { key: "engine", label: "ENG" },
         { key: "body", label: "BDY" },
@@ -123,17 +128,69 @@
         return speed || health;
     }
 
+    // The client only knows whether hints are up, not how many rows other resources stacked on top.
+    // Measured on the outer bar because its rows slide into place, and a leaving row is already out of it.
+    function buttonsArea() {
+        const bar = document.getElementById("menuapi-buttons");
+
+        if (!bar || bar.hidden) {
+            return null;
+        }
+
+        const rect = bar.getBoundingClientRect();
+
+        return rect.height > 0 ? rect : null;
+    }
+
+    function watchButtons() {
+        if (watching) {
+            return;
+        }
+
+        const bar = document.getElementById("menuapi-buttons");
+
+        if (!bar) {
+            return;
+        }
+
+        watching = new ResizeObserver(() => apply());
+        watching.observe(bar);
+    }
+
+    function apply() {
+        if (!placed) {
+            return;
+        }
+
+        const centered = placed.side === "center";
+
+        boxEl.classList.toggle("center", centered);
+        boxEl.style.right = centered ? "" : `${(placed.right * 100).toFixed(3)}%`;
+
+        let bottom = placed.bottom * window.innerHeight;
+        const area = boxEl.classList.contains("shown") ? buttonsArea() : null;
+
+        if (area) {
+            const box = boxEl.getBoundingClientRect();
+
+            if (box.left < area.right && box.right > area.left) {
+                const rem = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+
+                bottom = Math.max(bottom, window.innerHeight - area.top + rem * BUTTONS_CLEARANCE_REM);
+            }
+        }
+
+        boxEl.style.bottom = `${((bottom / window.innerHeight) * 100).toFixed(3)}%`;
+    }
+
     function place(side, right, bottom) {
         if (typeof right !== "number" || typeof bottom !== "number") {
             return;
         }
 
-        const centered = side === "center";
+        placed = { side, right, bottom };
 
-        boxEl.classList.toggle("center", centered);
-
-        boxEl.style.bottom = `${(bottom * 100).toFixed(3)}%`;
-        boxEl.style.right = centered ? "" : `${(right * 100).toFixed(3)}%`;
+        watchButtons();
     }
 
     window.addEventListener("message", event => {
@@ -161,5 +218,7 @@
         place(data.side, data.right, data.bottom);
 
         boxEl.classList.toggle("shown", render(data));
+
+        apply();
     });
 })();
