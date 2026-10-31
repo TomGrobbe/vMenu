@@ -1,9 +1,3 @@
-:root {
-    --location-dim: rgba(242, 242, 242, 0.6);
-    --location-accent: rgba(138, 190, 255, 0.9);
-}
-
-
 #location {
     width: 100%;
     display: none;
@@ -31,7 +25,7 @@
     font-weight: 700;
     letter-spacing: 0.12em;
     text-transform: uppercase;
-    color: var(--location-accent);
+    color: var(--vmenu-location-accent);
 }
 
 #location .street .name {
@@ -45,7 +39,7 @@
 
 #location .crossing {
     font-size: 0.72rem;
-    color: var(--location-dim);
+    color: var(--vmenu-hud-muted);
     padding-inline: 0.55rem;
     margin-inline: -0.55rem;
     overflow: hidden;
@@ -68,7 +62,7 @@
     font-size: 0.68rem;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: var(--location-dim);
+    color: var(--vmenu-hud-muted);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -79,12 +73,12 @@
     min-width: 1.35rem;
     padding: 0.05rem 0.3rem;
     border-radius: 0.25rem;
-    background: rgba(255, 255, 255, 0.07);
+    background: var(--vmenu-hud-chip);
     text-align: center;
     font-size: 0.68rem;
     font-weight: 700;
     letter-spacing: 0.06em;
-    color: var(--location-accent);
+    color: var(--vmenu-location-accent);
 }
 
 #coordinates {
@@ -96,13 +90,14 @@
     column-gap: 0.7rem;
     row-gap: 0.05rem;
     padding: 0.45rem 0.7rem 0.5rem;
-    border-radius: var(--hud-panel-radius);
-    border: 1px solid var(--hud-panel-edge);
-    background: var(--hud-panel-bg);
-    box-shadow: var(--hud-panel-shadow);
+    border-radius: var(--vmenu-coordinates-radius);
+    border: 1px solid var(--vmenu-coordinates-edge);
+    background: var(--vmenu-coordinates-bg);
+    box-shadow: var(--vmenu-hud-shadow);
     pointer-events: none;
+    color: var(--vmenu-hud-text);
     font-variant-numeric: tabular-nums;
-    text-shadow: var(--hud-panel-text-shadow);
+    text-shadow: var(--vmenu-hud-text-shadow);
 }
 
 #coordinates.shown {
@@ -114,7 +109,7 @@
     font-weight: 700;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: var(--location-accent);
+    color: var(--vmenu-coordinates-accent);
     align-self: center;
 }
 

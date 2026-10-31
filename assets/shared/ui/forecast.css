@@ -1,24 +1,17 @@
-:root {
-    --forecast-glass: rgba(11, 13, 18, 0.88);
-    --forecast-glass-soft: rgba(0, 0, 0, 0.32);
-    --forecast-edge: rgba(255, 255, 255, 0.14);
-    --forecast-accent: rgba(138, 190, 255, 0.92);
-    --forecast-muted: rgba(242, 242, 242, 0.72);
-}
-
 #forecast {
     width: 100%;
     display: none;
     flex-direction: column;
     gap: 0.55rem;
     padding: 0.85rem 1rem 0.9rem;
-    border-radius: 0.85rem;
-    border: 1px solid var(--forecast-edge);
-    background: var(--forecast-glass);
-    box-shadow: 0 0.6rem 1.8rem rgba(0, 0, 0, 0.6);
+    border-radius: var(--vmenu-forecast-radius);
+    border: 1px solid var(--vmenu-forecast-edge);
+    background: var(--vmenu-forecast-bg);
+    box-shadow: var(--vmenu-forecast-shadow);
     pointer-events: none;
+    color: var(--vmenu-hud-text);
     font-variant-numeric: tabular-nums;
-    text-shadow: 0 0.08rem 0.35rem rgba(0, 0, 0, 0.8);
+    text-shadow: var(--vmenu-hud-text-shadow);
     animation: forecast-in 220ms ease-out;
 }
 
@@ -38,7 +31,7 @@
     font-weight: 700;
     letter-spacing: 0.16em;
     text-transform: uppercase;
-    color: var(--forecast-accent);
+    color: var(--vmenu-forecast-accent);
 }
 
 #forecast .head .clock {
@@ -52,7 +45,7 @@
     align-items: center;
     gap: 0.4rem;
     font-size: 0.7rem;
-    color: var(--forecast-muted);
+    color: var(--vmenu-forecast-muted);
 }
 
 #forecast .moon svg {
@@ -75,7 +68,7 @@
     width: 2.6rem;
     height: 2.6rem;
     flex: none;
-    color: var(--forecast-accent);
+    color: var(--vmenu-forecast-accent);
 }
 
 #forecast .now .text {
@@ -107,7 +100,7 @@
     font-weight: 700;
     letter-spacing: 0.16em;
     text-transform: uppercase;
-    color: var(--forecast-muted);
+    color: var(--vmenu-forecast-muted);
 }
 
 #forecast .now .label {
@@ -115,7 +108,7 @@
     font-weight: 700;
     letter-spacing: 0.16em;
     text-transform: uppercase;
-    color: var(--forecast-muted);
+    color: var(--vmenu-forecast-muted);
 }
 
 #forecast .now .value {
@@ -132,16 +125,16 @@
 
 #forecast .now .remaining {
     font-size: 0.72rem;
-    color: var(--forecast-muted);
+    color: var(--vmenu-forecast-muted);
 }
 
 #forecast .note {
     padding: 0.45rem 0.6rem;
     border-radius: 0.4rem;
-    background: var(--forecast-glass-soft);
+    background: var(--vmenu-forecast-soft);
     font-size: 0.74rem;
     line-height: 1.35;
-    color: var(--forecast-muted);
+    color: var(--vmenu-forecast-muted);
 }
 
 #forecast .upcoming {
@@ -155,7 +148,7 @@
     font-weight: 700;
     letter-spacing: 0.16em;
     text-transform: uppercase;
-    color: var(--forecast-muted);
+    color: var(--vmenu-forecast-muted);
     margin-bottom: 0.05rem;
 }
 
@@ -165,14 +158,14 @@
     gap: 0.6rem;
     padding: 0.35rem 0.5rem;
     border-radius: 0.4rem;
-    background: var(--forecast-glass-soft);
+    background: var(--vmenu-forecast-soft);
 }
 
 #forecast .row svg {
     width: 1.35rem;
     height: 1.35rem;
     flex: none;
-    color: var(--forecast-accent);
+    color: var(--vmenu-forecast-accent);
     opacity: 0.85;
 }
 
@@ -180,7 +173,7 @@
     flex: none;
     min-width: 4.2em;
     font-size: 0.72rem;
-    color: var(--forecast-accent);
+    color: var(--vmenu-forecast-accent);
     opacity: 0.9;
 }
 
@@ -198,7 +191,7 @@
 #forecast .row .lasts {
     flex: none;
     font-size: 0.68rem;
-    color: var(--forecast-muted);
+    color: var(--vmenu-forecast-muted);
 }
 
 #forecast .outlook {
@@ -212,7 +205,7 @@
     font-weight: 700;
     letter-spacing: 0.16em;
     text-transform: uppercase;
-    color: var(--forecast-muted);
+    color: var(--vmenu-forecast-muted);
     margin-bottom: 0.05rem;
 }
 
@@ -229,7 +222,7 @@
     gap: 0.2rem;
     padding: 0.35rem 0.1rem;
     border-radius: 0.4rem;
-    background: var(--forecast-glass-soft);
+    background: var(--vmenu-forecast-soft);
     min-width: 0;
 }
 
@@ -237,13 +230,13 @@
     width: 1.2rem;
     height: 1.2rem;
     flex: none;
-    color: var(--forecast-accent);
+    color: var(--vmenu-forecast-accent);
     opacity: 0.85;
 }
 
 #forecast .outlook .cell .at {
     font-size: 0.62rem;
-    color: var(--forecast-muted);
+    color: var(--vmenu-forecast-muted);
 }
 
 #forecast .outlook .cell .degrees {
@@ -284,7 +277,7 @@
     width: 1.15rem;
     height: 1.15rem;
     flex: none;
-    color: var(--forecast-accent);
+    color: var(--vmenu-forecast-accent);
 }
 
 #forecast-compact .line .what {
@@ -301,7 +294,7 @@
     flex: none;
     font-size: 0.85rem;
     font-weight: 400;
-    color: var(--forecast-muted);
+    color: var(--vmenu-forecast-muted);
     font-variant-numeric: tabular-nums;
 }
 
@@ -338,11 +331,11 @@
 #forecast-compact .next .what {
     font-size: 0.72rem;
     font-weight: 400;
-    color: var(--forecast-muted);
+    color: var(--vmenu-forecast-muted);
 }
 
 #forecast-compact .next .when {
     flex: none;
     font-size: 0.72rem;
-    color: var(--forecast-accent);
+    color: var(--vmenu-forecast-accent);
 }

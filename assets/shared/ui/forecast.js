@@ -60,11 +60,11 @@
 
         const element = svg(
             '<defs><clipPath id="moon-disc"><circle cx="12" cy="12" r="9"/></clipPath></defs>' +
-                '<circle cx="12" cy="12" r="9" fill="rgba(242, 242, 242, 0.85)" stroke="none"/>' +
+                '<circle cx="12" cy="12" r="9" style="fill: var(--vmenu-moon-lit)" stroke="none"/>' +
                 '<circle cx="' +
                 (12 + shift).toFixed(2) +
-                '" cy="12" r="9" fill="rgba(12, 14, 19, 0.94)" stroke="none" clip-path="url(#moon-disc)"/>' +
-                '<circle cx="12" cy="12" r="9" fill="none" stroke="rgba(255, 255, 255, 0.24)"/>'
+                '" cy="12" r="9" style="fill: var(--vmenu-moon-dark)" stroke="none" clip-path="url(#moon-disc)"/>' +
+                '<circle cx="12" cy="12" r="9" fill="none" style="stroke: var(--vmenu-moon-edge)"/>'
         );
 
         element.setAttribute("stroke-width", "1");

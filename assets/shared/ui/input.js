@@ -155,7 +155,7 @@
                 const empty = document.createElement("li");
                 empty.textContent = noMatchesText;
                 empty.style.cursor = "default";
-                empty.style.color = "var(--muted)";
+                empty.style.color = "var(--vmenu-text-muted)";
                 listEl.appendChild(empty);
             }
 

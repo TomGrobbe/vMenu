@@ -6,6 +6,57 @@
     unicode-range: U+2190-2193;
 }
 
+/* vMenu's own screens: notifications, alerts, prompts, the speedometer and everything above the minimap. */
+:root {
+    --vmenu-text: rgb(242 242 242);
+    --vmenu-text-muted: rgb(242 242 242 / 55%);
+
+    --vmenu-accent: rgb(138 190 255);
+    --vmenu-accent-hover: rgb(164 205 255);
+    --vmenu-accent-text: rgb(8 12 20);
+    --vmenu-accent-text-muted: rgb(8 12 20 / 70%);
+    --vmenu-accent-soft: rgb(138 190 255 / 16%);
+    --vmenu-accent-edge: rgb(138 190 255 / 35%);
+
+    --vmenu-info: rgb(138 190 255);
+    --vmenu-info-soft: rgb(138 190 255 / 16%);
+    --vmenu-info-edge: rgb(138 190 255 / 35%);
+    --vmenu-success: rgb(126 217 137);
+    --vmenu-success-soft: rgb(126 217 137 / 16%);
+    --vmenu-success-edge: rgb(126 217 137 / 35%);
+    --vmenu-warning: rgb(237 180 75);
+    --vmenu-warning-soft: rgb(237 180 75 / 16%);
+    --vmenu-warning-edge: rgb(237 180 75 / 35%);
+    --vmenu-error: rgb(230 118 118);
+    --vmenu-error-soft: rgb(230 118 118 / 16%);
+    --vmenu-error-edge: rgb(230 118 118 / 35%);
+
+    --vmenu-panel-bg: rgb(12 14 19 / 94%);
+    --vmenu-panel-edge: rgb(242 242 242 / 10%);
+    --vmenu-panel-radius: 12px;
+    --vmenu-dialog-radius: 12px;
+    --vmenu-row-alt: rgb(242 242 242 / 5%);
+    --vmenu-divider: rgb(242 242 242 / 8%);
+
+    --vmenu-hud-bg: rgb(12 14 19 / 52%);
+    --vmenu-hud-edge: rgb(138 190 255 / 22%);
+    --vmenu-hud-radius: 12px;
+    --vmenu-hud-muted: rgb(242 242 242 / 60%);
+    --vmenu-hud-accent: rgb(138 190 255);
+
+    --vmenu-good: rgb(126 217 137);
+    --vmenu-bad: rgb(230 118 118);
+
+    --vmenu-forecast-bg: rgb(12 14 19 / 94%);
+    --vmenu-forecast-edge: rgb(138 190 255 / 22%);
+    --vmenu-forecast-radius: 12px;
+    --vmenu-forecast-muted: rgb(242 242 242 / 72%);
+    --vmenu-moon-lit: rgb(242 242 242 / 85%);
+    --vmenu-moon-dark: rgb(12 14 19);
+
+    --vmenu-speedometer-rail-end: rgb(242 242 242);
+}
+
 #menuapi {
     --menuapi-font: "GTA Chalet Arrows", "Segoe UI", Tahoma, sans-serif;
 

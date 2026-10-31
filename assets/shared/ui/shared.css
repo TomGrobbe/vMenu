@@ -1,16 +1,151 @@
+/*
+   Every colour, font and corner of vMenu's own screens. A theme overrides these in a :root block of
+   its own. The palette at the top is all a theme needs, the hooks further down default to it and only
+   exist to restyle one screen without touching the rest.
+*/
 :root {
-    --accent: #3b8bf5;
-    --panel: rgba(18, 18, 20, 0.94);
-    --row: rgba(255, 255, 255, 0.05);
-    --text: #f2f2f2;
-    --muted: rgba(242, 242, 242, 0.55);
-    --edge: rgba(255, 255, 255, 0.08);
+    --vmenu-font: "Segoe UI", Tahoma, sans-serif;
+    --vmenu-mono-font: Consolas, monospace;
 
-    --hud-panel-bg: rgba(12, 14, 19, 0.34);
-    --hud-panel-edge: rgba(255, 255, 255, 0.09);
-    --hud-panel-radius: 0.7rem;
-    --hud-panel-shadow: 0 0.1rem 0.7rem rgba(0, 0, 0, 0.25);
-    --hud-panel-text-shadow: 0 0.08rem 0.35rem rgba(0, 0, 0, 0.85);
+    --vmenu-text: #f2f2f2;
+    --vmenu-text-muted: rgba(242, 242, 242, 0.55);
+
+    --vmenu-accent: #3b8bf5;
+    --vmenu-accent-hover: #4d94f7;
+    --vmenu-accent-text: #ffffff;
+    --vmenu-accent-text-muted: rgba(255, 255, 255, 0.78);
+    --vmenu-accent-soft: rgba(59, 139, 245, 0.16);
+    --vmenu-accent-edge: rgba(59, 139, 245, 0.35);
+
+    --vmenu-info: #4d94f7;
+    --vmenu-info-soft: rgba(59, 139, 245, 0.16);
+    --vmenu-info-edge: rgba(59, 139, 245, 0.35);
+    --vmenu-success: #58cf90;
+    --vmenu-success-soft: rgba(71, 193, 127, 0.16);
+    --vmenu-success-edge: rgba(71, 193, 127, 0.35);
+    --vmenu-warning: #edb44b;
+    --vmenu-warning-soft: rgba(224, 163, 56, 0.16);
+    --vmenu-warning-edge: rgba(224, 163, 56, 0.35);
+    --vmenu-error: #ef6a60;
+    --vmenu-error-soft: rgba(226, 85, 76, 0.16);
+    --vmenu-error-edge: rgba(226, 85, 76, 0.35);
+
+    --vmenu-panel-bg: rgba(18, 18, 20, 0.94);
+    --vmenu-panel-edge: rgba(255, 255, 255, 0.08);
+    --vmenu-panel-radius: 0.2rem;
+    --vmenu-panel-shadow: 0 0.6rem 1.6rem rgba(0, 0, 0, 0.55);
+    --vmenu-row-alt: rgba(255, 255, 255, 0.05);
+    --vmenu-divider: rgba(255, 255, 255, 0.07);
+    --vmenu-track: rgba(255, 255, 255, 0.06);
+    --vmenu-scrollbar: rgba(255, 255, 255, 0.18);
+    --vmenu-scrollbar-hover: rgba(255, 255, 255, 0.3);
+
+    --vmenu-dialog-radius: 0.5rem;
+    --vmenu-dialog-shadow: 0 1.5rem 4rem rgba(0, 0, 0, 0.6);
+    --vmenu-dialog-scrim: rgba(0, 0, 0, 0.4);
+    --vmenu-field-bg: rgba(0, 0, 0, 0.45);
+    --vmenu-field-edge: rgba(255, 255, 255, 0.12);
+    --vmenu-button-bg: rgba(255, 255, 255, 0.05);
+    --vmenu-button-hover: rgba(255, 255, 255, 0.1);
+
+    --vmenu-hud-bg: rgba(12, 14, 19, 0.34);
+    --vmenu-hud-edge: rgba(255, 255, 255, 0.09);
+    --vmenu-hud-radius: 0.7rem;
+    --vmenu-hud-shadow: 0 0.1rem 0.7rem rgba(0, 0, 0, 0.25);
+    --vmenu-hud-text: var(--vmenu-text);
+    --vmenu-hud-text-shadow: 0 0.08rem 0.35rem rgba(0, 0, 0, 0.85);
+    --vmenu-hud-muted: rgba(242, 242, 242, 0.6);
+    --vmenu-hud-accent: rgba(138, 190, 255, 0.9);
+    --vmenu-hud-track: rgba(255, 255, 255, 0.1);
+    --vmenu-hud-chip: rgba(255, 255, 255, 0.07);
+
+    --vmenu-good: rgba(126, 217, 137, 0.9);
+    --vmenu-fair: rgba(233, 213, 118, 0.9);
+    --vmenu-poor: rgba(233, 163, 98, 0.9);
+    --vmenu-bad: rgba(230, 118, 118, 0.9);
+    --vmenu-idle: #6f6f6f;
+
+    /* The ~r~ style colour codes inside notification text. */
+    --vmenu-code-r: #ef6a60;
+    --vmenu-code-g: #58cf90;
+    --vmenu-code-b: #4d94f7;
+    --vmenu-code-y: #edb44b;
+    --vmenu-code-o: #e8894a;
+    --vmenu-code-p: #b57ae8;
+    --vmenu-code-c: #9b9b9b;
+    --vmenu-code-m: #6f6f6f;
+    --vmenu-code-u: #101010;
+    --vmenu-code-w: #ffffff;
+
+    --vmenu-notification-bg: var(--vmenu-panel-bg);
+    --vmenu-notification-edge: var(--vmenu-panel-edge);
+    --vmenu-notification-radius: var(--vmenu-panel-radius);
+    --vmenu-notification-shadow: var(--vmenu-panel-shadow);
+
+    --vmenu-alert-bg: var(--vmenu-panel-bg);
+    --vmenu-alert-radius: var(--vmenu-panel-radius);
+    --vmenu-alert-shadow: var(--vmenu-panel-shadow);
+    --vmenu-alert-tone: var(--vmenu-warning);
+    --vmenu-alert-tone-soft: var(--vmenu-warning-soft);
+    --vmenu-alert-tone-edge: var(--vmenu-warning-edge);
+    --vmenu-announcement-tone: var(--vmenu-info);
+    --vmenu-announcement-tone-soft: var(--vmenu-info-soft);
+    --vmenu-announcement-tone-edge: var(--vmenu-info-edge);
+
+    --vmenu-menu-lock-bg: var(--vmenu-panel-bg);
+    --vmenu-menu-lock-edge: var(--vmenu-panel-edge);
+    --vmenu-menu-lock-shadow: var(--vmenu-panel-shadow);
+    --vmenu-menu-lock-tone: var(--vmenu-warning);
+    --vmenu-menu-lock-tone-soft: var(--vmenu-warning-soft);
+    --vmenu-menu-lock-tone-edge: var(--vmenu-warning-edge);
+    --vmenu-menu-lock-confirm-tone: var(--vmenu-error);
+    --vmenu-menu-lock-confirm-tone-soft: var(--vmenu-error-soft);
+    --vmenu-menu-lock-confirm-tone-edge: var(--vmenu-error-edge);
+
+    --vmenu-input-bg: var(--vmenu-panel-bg);
+    --vmenu-input-edge: var(--vmenu-panel-edge);
+    --vmenu-input-radius: var(--vmenu-dialog-radius);
+    --vmenu-input-shadow: var(--vmenu-dialog-shadow);
+    --vmenu-input-scrim: var(--vmenu-dialog-scrim);
+
+    --vmenu-transfer-bg: var(--vmenu-panel-bg);
+    --vmenu-transfer-edge: var(--vmenu-panel-edge);
+    --vmenu-transfer-radius: var(--vmenu-dialog-radius);
+    --vmenu-transfer-shadow: var(--vmenu-dialog-shadow);
+    --vmenu-transfer-scrim: var(--vmenu-dialog-scrim);
+
+    --vmenu-ticks-bg: var(--vmenu-panel-bg);
+    --vmenu-ticks-edge: var(--vmenu-panel-edge);
+    --vmenu-ticks-radius: var(--vmenu-panel-radius);
+    --vmenu-ticks-shadow: var(--vmenu-panel-shadow);
+
+    --vmenu-location-bg: var(--vmenu-hud-bg);
+    --vmenu-location-edge: var(--vmenu-hud-edge);
+    --vmenu-location-radius: var(--vmenu-hud-radius);
+    --vmenu-location-accent: var(--vmenu-hud-accent);
+
+    --vmenu-coordinates-bg: var(--vmenu-hud-bg);
+    --vmenu-coordinates-edge: var(--vmenu-hud-edge);
+    --vmenu-coordinates-radius: var(--vmenu-hud-radius);
+    --vmenu-coordinates-accent: var(--vmenu-hud-accent);
+
+    --vmenu-speedometer-bg: var(--vmenu-hud-bg);
+    --vmenu-speedometer-edge: var(--vmenu-hud-edge);
+    --vmenu-speedometer-radius: var(--vmenu-hud-radius);
+    --vmenu-speedometer-accent: var(--vmenu-hud-accent);
+    --vmenu-speedometer-value: var(--vmenu-hud-text);
+    --vmenu-speedometer-rail-end: #ffffff;
+
+    --vmenu-forecast-bg: rgba(11, 13, 18, 0.88);
+    --vmenu-forecast-soft: rgba(0, 0, 0, 0.32);
+    --vmenu-forecast-edge: rgba(255, 255, 255, 0.14);
+    --vmenu-forecast-radius: 0.85rem;
+    --vmenu-forecast-shadow: 0 0.6rem 1.8rem rgba(0, 0, 0, 0.6);
+    --vmenu-forecast-accent: var(--vmenu-hud-accent);
+    --vmenu-forecast-muted: rgba(242, 242, 242, 0.72);
+    --vmenu-moon-lit: rgba(242, 242, 242, 0.85);
+    --vmenu-moon-dark: rgba(12, 14, 19, 0.94);
+    --vmenu-moon-edge: rgba(255, 255, 255, 0.24);
 }
 
 * {
@@ -25,8 +160,8 @@ body {
     height: 100%;
     overflow: hidden;
     background: transparent;
-    font-family: "Segoe UI", Tahoma, sans-serif;
-    color: var(--text);
+    font-family: var(--vmenu-font);
+    color: var(--vmenu-text);
 }
 
 /* The page is rendered at the game's own resolution, so a rem fixed at 16px shrinks to nothing on a
@@ -56,13 +191,14 @@ html {
     flex-direction: column;
     gap: 0.3rem;
     padding: 0.45rem 0.7rem 0.5rem;
-    border-radius: var(--hud-panel-radius);
-    border: 1px solid var(--hud-panel-edge);
-    background: var(--hud-panel-bg);
-    box-shadow: var(--hud-panel-shadow);
+    border-radius: var(--vmenu-location-radius);
+    border: 1px solid var(--vmenu-location-edge);
+    background: var(--vmenu-location-bg);
+    box-shadow: var(--vmenu-hud-shadow);
     pointer-events: none;
+    color: var(--vmenu-hud-text);
     font-variant-numeric: tabular-nums;
-    text-shadow: var(--hud-panel-text-shadow);
+    text-shadow: var(--vmenu-hud-text-shadow);
 }
 
 #hud-info.shown {

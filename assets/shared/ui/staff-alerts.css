@@ -19,15 +19,14 @@
 }
 
 .staff-alert {
-    --tone: #edb44b;
-    --tone-soft: rgba(224, 163, 56, 0.16);
-    --tone-edge: rgba(224, 163, 56, 0.35);
+    --tone: var(--vmenu-alert-tone);
+    --tone-soft: var(--vmenu-alert-tone-soft);
+    --tone-edge: var(--vmenu-alert-tone-edge);
     position: relative;
-    background: var(--panel);
-    border: 1px solid var(--edge);
+    background: var(--vmenu-alert-bg);
     border-top: 0.2rem solid var(--tone);
-    border-radius: 0.2rem;
-    box-shadow: 0 0.6rem 1.6rem rgba(0, 0, 0, 0.55);
+    border-radius: var(--vmenu-alert-radius);
+    box-shadow: var(--vmenu-alert-shadow);
     overflow: hidden;
     animation: staff-alert-in 200ms ease-out;
 }
@@ -37,9 +36,9 @@
    talking rather than a player asking for help and the two must not be mistaken for each other.
 */
 .staff-alert.announcement {
-    --tone: #4d94f7;
-    --tone-soft: rgba(61, 128, 224, 0.16);
-    --tone-edge: rgba(61, 128, 224, 0.35);
+    --tone: var(--vmenu-announcement-tone);
+    --tone-soft: var(--vmenu-announcement-tone-soft);
+    --tone-edge: var(--vmenu-announcement-tone-edge);
 }
 
 /* The uppercase strip over a tinted bar is the menu's own subtitle row, shrunk to fit. */

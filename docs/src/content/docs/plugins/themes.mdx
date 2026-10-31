@@ -103,6 +103,58 @@ emit(
 
 The stylesheet styles the button hints in the bottom right of the screen as well. Those go in a `#menuapi-buttons` block next to the `#menuapi` one, and every setting is listed in the [instructional buttons section](https://docs.vespura.com/menuapi/fivem/reference/theming/#instructional-buttons) of the MenuAPI docs. A theme without that block keeps the hints in the look of the game itself.
 
+### vMenu's own screens
+
+Everything else vMenu draws follows the theme too: notifications, staff alerts and announcements, the bar under a menu that asks you to hold back, text prompts, the copy and paste window for sharing saves, the speedometer, the coordinates, the weather forecast and the box above the minimap. These are styled with variables in a `:root` block, next to the `#menuapi` one:
+
+```css
+:root {
+    --vmenu-font: "Barlow Semi Condensed", Arial, sans-serif;
+    --vmenu-accent: rgb(196 32 28);
+    --vmenu-panel-bg: rgb(10 8 8 / 92%);
+    --vmenu-hud-bg: rgb(10 8 8 / 80%);
+}
+```
+
+A variable you leave out keeps vMenu's own look, so a theme can set as few or as many as it likes. The palette is shared by every screen:
+
+| Variable | What it colours |
+| --- | --- |
+| `--vmenu-font`, `--vmenu-mono-font` | All text, and the text that shows codes and model names. |
+| `--vmenu-text`, `--vmenu-text-muted` | Normal text, and the quieter text under it. |
+| `--vmenu-accent` | Headings, the selected suggestion, the focused text box and the main button. |
+| `--vmenu-accent-hover`, `--vmenu-accent-text`, `--vmenu-accent-text-muted` | The main button under the mouse, and text drawn on top of the accent. |
+| `--vmenu-accent-soft`, `--vmenu-accent-edge` | The tinted strip behind a heading, and the line under it. |
+| `--vmenu-info`, `--vmenu-success`, `--vmenu-warning`, `--vmenu-error` | The four kinds of notification. Each also has a `-soft` and an `-edge` version for its strip. |
+| `--vmenu-panel-bg`, `--vmenu-panel-edge`, `--vmenu-panel-radius`, `--vmenu-panel-shadow` | The background, border, corners and shadow of every panel. |
+| `--vmenu-row-alt`, `--vmenu-divider`, `--vmenu-track` | Every other row in a list, the lines between parts of a panel, and the empty part of a progress bar. |
+| `--vmenu-scrollbar`, `--vmenu-scrollbar-hover` | Scroll bars. |
+| `--vmenu-dialog-radius`, `--vmenu-dialog-shadow`, `--vmenu-dialog-scrim` | The windows you type in, and the dark layer over the game behind them. |
+| `--vmenu-field-bg`, `--vmenu-field-edge`, `--vmenu-button-bg`, `--vmenu-button-hover` | Text boxes and buttons. |
+| `--vmenu-hud-bg`, `--vmenu-hud-edge`, `--vmenu-hud-radius`, `--vmenu-hud-shadow` | The see through boxes that stay on screen while you play: the speedometer, the coordinates and the box above the minimap. |
+| `--vmenu-hud-text`, `--vmenu-hud-text-shadow`, `--vmenu-hud-muted`, `--vmenu-hud-accent` | The text in those boxes. |
+| `--vmenu-hud-track`, `--vmenu-hud-chip` | The empty part of the speedometer bars, and the compass letter. |
+| `--vmenu-good`, `--vmenu-fair`, `--vmenu-poor`, `--vmenu-bad` | The vehicle health bars, from healthy to almost broken. |
+| `--vmenu-idle` | A loop in the tick overlay that is not running. |
+| `--vmenu-code-r` up to `--vmenu-code-w` | The colours a notification gets from codes like `~r~` and `~b~`. One per letter: `r`, `g`, `b`, `y`, `o`, `p`, `c`, `m`, `u` and `w`. |
+
+To restyle one screen and leave the rest alone, set its own variables instead. These start out as the palette values above:
+
+| Screen | Variables |
+| --- | --- |
+| Notifications | `--vmenu-notification-bg`, `-edge`, `-radius`, `-shadow` |
+| Staff alerts and announcements | `--vmenu-alert-bg`, `-radius`, `-shadow`, `--vmenu-alert-tone` and `--vmenu-announcement-tone`, each tone with `-soft` and `-edge` |
+| The bar under a menu that asks you to hold back | `--vmenu-menu-lock-bg`, `-edge`, `-shadow`, `--vmenu-menu-lock-tone` and `--vmenu-menu-lock-confirm-tone`, each tone with `-soft` and `-edge`. Its corners always match the menu. |
+| Text prompts | `--vmenu-input-bg`, `-edge`, `-radius`, `-shadow`, `-scrim` |
+| Sharing saves | `--vmenu-transfer-bg`, `-edge`, `-radius`, `-shadow`, `-scrim` |
+| Tick overlay | `--vmenu-ticks-bg`, `-edge`, `-radius`, `-shadow` |
+| Box above the minimap | `--vmenu-location-bg`, `-edge`, `-radius`, `-accent` |
+| Coordinates | `--vmenu-coordinates-bg`, `-edge`, `-radius`, `-accent` |
+| Speedometer | `--vmenu-speedometer-bg`, `-edge`, `-radius`, `-accent`, `-value`, `-rail-end` |
+| Weather forecast | `--vmenu-forecast-bg`, `-soft`, `-edge`, `-radius`, `-shadow`, `-accent`, `-muted`, and the moon with `--vmenu-moon-lit`, `--vmenu-moon-dark` and `--vmenu-moon-edge` |
+
+The bottom of the Red Dead theme in the [Custom Themes plugin](https://github.com/TomGrobbe/vMenu.CustomThemesPlugin) sets the whole palette, which makes it a good starting point.
+
 Every file the stylesheet uses has to be listed in your `fxmanifest.lua` under `files`, or the game has no copy of it to serve. Fonts and images inside the stylesheet are resolved relative to the stylesheet itself.
 
 Send the whole set in one go: a second registration replaces everything that resource registered before, and its themes are dropped the moment it stops. vMenu answers on `vMenu.Enhanced:Plugins:<your resource>:ThemesRegistered` with `accepted`, `errors` and `warnings`, which is where a refused theme tells you why. Send it once when your resource starts, and again whenever vMenu says `vMenu.Enhanced:Plugins:Ready`, which is what it says when it restarts.

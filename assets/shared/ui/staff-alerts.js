@@ -20,16 +20,16 @@
 
     /* GTA's own single-letter text colours, matched to this panel rather than to the game's HUD. */
     const COLOURS = {
-        r: "#ef6a60",
-        g: "#58cf90",
-        b: "#4d94f7",
-        y: "#edb44b",
-        o: "#e8894a",
-        p: "#b57ae8",
-        c: "#9b9b9b",
-        m: "#6f6f6f",
-        u: "#101010",
-        w: "#ffffff",
+        r: "var(--vmenu-code-r)",
+        g: "var(--vmenu-code-g)",
+        b: "var(--vmenu-code-b)",
+        y: "var(--vmenu-code-y)",
+        o: "var(--vmenu-code-o)",
+        p: "var(--vmenu-code-p)",
+        c: "var(--vmenu-code-c)",
+        m: "var(--vmenu-code-m)",
+        u: "var(--vmenu-code-u)",
+        w: "var(--vmenu-code-w)",
     };
 
     const listEl = document.getElementById("staff-alerts");

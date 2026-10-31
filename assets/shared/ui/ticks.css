@@ -30,10 +30,12 @@
     width: 20rem;
     max-height: 96vh;
     overflow-y: auto;
-    background: var(--panel);
-    border: 1px solid var(--edge);
-    border-radius: 0.3rem;
-    box-shadow: 0 0.6rem 1.6rem rgba(0, 0, 0, 0.55);
+    background: var(--vmenu-ticks-bg);
+    border: 1px solid var(--vmenu-ticks-edge);
+    /* A border painted over the panel's own background reads as a dark ring around the tinted header. */
+    background-clip: padding-box;
+    border-radius: var(--vmenu-ticks-radius);
+    box-shadow: var(--vmenu-ticks-shadow);
 }
 
 #ticks.paused {
@@ -52,13 +54,13 @@
     top: 0;
     padding: 0.35rem 0.6rem;
     /* Layered over the panel colour rather than tinting it, so the rows scrolling under stay hidden. */
-    background: linear-gradient(rgba(59, 139, 245, 0.16), rgba(59, 139, 245, 0.16)), var(--panel);
-    border-bottom: 1px solid rgba(59, 139, 245, 0.35);
+    background: linear-gradient(var(--vmenu-accent-soft), var(--vmenu-accent-soft)), var(--vmenu-ticks-bg);
+    border-bottom: 1px solid var(--vmenu-accent-edge);
     font-size: 0.62rem;
     font-weight: 700;
     letter-spacing: 0.09em;
     text-transform: uppercase;
-    color: var(--accent);
+    color: var(--vmenu-accent);
 }
 
 #ticks .row {
@@ -70,7 +72,7 @@
 }
 
 #ticks .row:nth-child(even) {
-    background: var(--row);
+    background: var(--vmenu-row-alt);
 }
 
 #ticks .dot {
@@ -78,37 +80,37 @@
     width: 0.4rem;
     height: 0.4rem;
     border-radius: 50%;
-    background: #6f6f6f;
+    background: var(--vmenu-idle);
 }
 
 #ticks .row.running .dot {
-    background: #58cf90;
-    box-shadow: 0 0 0.35rem rgba(88, 207, 144, 0.8);
+    background: var(--vmenu-success);
+    box-shadow: 0 0 0.35rem var(--vmenu-success);
 }
 
 #ticks .row.failed .dot {
-    background: #f05d5d;
-    box-shadow: 0 0 0.35rem rgba(240, 93, 93, 0.8);
+    background: var(--vmenu-error);
+    box-shadow: 0 0 0.35rem var(--vmenu-error);
 }
 
 #ticks .row.failed .name {
-    color: var(--text);
+    color: var(--vmenu-text);
 }
 
 #ticks .name {
     flex: 1;
     min-width: 0;
-    font-family: Consolas, monospace;
+    font-family: var(--vmenu-mono-font);
     overflow-wrap: anywhere;
-    color: var(--muted);
+    color: var(--vmenu-text-muted);
 }
 
 #ticks .row.running .name {
-    color: var(--text);
+    color: var(--vmenu-text);
 }
 
 #ticks .rate {
     flex: none;
     font-size: 0.66rem;
-    color: var(--muted);
+    color: var(--vmenu-text-muted);
 }

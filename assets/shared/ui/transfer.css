@@ -8,7 +8,7 @@
     position: fixed;
     inset: 0;
     padding-top: 18vh;
-    background: rgba(0, 0, 0, 0.45);
+    background: var(--vmenu-transfer-scrim);
     align-items: flex-start;
     justify-content: center;
 }
@@ -19,23 +19,25 @@
 
 #transfer .panel {
     width: min(56rem, 70vw);
-    background: var(--panel);
-    border: 1px solid var(--edge);
-    border-radius: 0.5rem;
-    box-shadow: 0 1.5rem 4rem rgba(0, 0, 0, 0.6);
+    background: var(--vmenu-transfer-bg);
+    border: 1px solid var(--vmenu-transfer-edge);
+    border-radius: var(--vmenu-transfer-radius);
+    /* A border painted over the panel's own background reads as a dark ring around the tinted header. */
+    background-clip: padding-box;
+    box-shadow: var(--vmenu-transfer-shadow);
     overflow: hidden;
 }
 
 /* The menu's own subtitle row, shrunk to fit, the same way the tick overlay wears it. */
 #transfer .head {
     padding: 0.45rem 1.25rem;
-    background: linear-gradient(rgba(59, 139, 245, 0.16), rgba(59, 139, 245, 0.16)), var(--panel);
-    border-bottom: 1px solid rgba(59, 139, 245, 0.35);
+    background: linear-gradient(var(--vmenu-accent-soft), var(--vmenu-accent-soft)), var(--vmenu-transfer-bg);
+    border-bottom: 1px solid var(--vmenu-accent-edge);
     font-size: 0.68rem;
     font-weight: 700;
     letter-spacing: 0.09em;
     text-transform: uppercase;
-    color: var(--accent);
+    color: var(--vmenu-accent);
 }
 
 #transfer .body {
@@ -44,14 +46,14 @@
 
 #transfer .summary {
     font-size: 0.85rem;
-    color: var(--muted);
+    color: var(--vmenu-text-muted);
     margin-bottom: 0.75rem;
 }
 
 #transfer .warning {
     display: none;
     font-size: 0.85rem;
-    color: #ef6a60;
+    color: var(--vmenu-error);
     margin-bottom: 0.75rem;
 }
 
@@ -64,12 +66,12 @@
     width: 100%;
     height: 12rem;
     padding: 0.7rem 0.85rem;
-    font-family: Consolas, monospace;
+    font-family: var(--vmenu-mono-font);
     font-size: 0.75rem;
     line-height: 1.45;
-    color: var(--text);
-    background: rgba(0, 0, 0, 0.45);
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: var(--vmenu-text);
+    background: var(--vmenu-field-bg);
+    border: 1px solid var(--vmenu-field-edge);
     border-radius: 0.3rem;
     outline: none;
     resize: none;
@@ -78,7 +80,7 @@
 }
 
 #transfer .code:focus {
-    border-color: var(--accent);
+    border-color: var(--vmenu-accent);
 }
 
 /*
@@ -94,27 +96,27 @@
 }
 
 #transfer .code::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.18);
+    background: var(--vmenu-scrollbar);
     border-radius: 0.15rem;
 }
 
 #transfer .code::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.3);
+    background: var(--vmenu-scrollbar-hover);
 }
 
 #transfer .status {
     min-height: 1.2rem;
     margin-top: 0.6rem;
     font-size: 0.8rem;
-    color: var(--muted);
+    color: var(--vmenu-text-muted);
 }
 
 #transfer .status.bad {
-    color: #ef6a60;
+    color: var(--vmenu-error);
 }
 
 #transfer .status.good {
-    color: #58cf90;
+    color: var(--vmenu-success);
 }
 
 #transfer .foot {
@@ -123,12 +125,12 @@
     justify-content: space-between;
     gap: 0.8rem;
     padding: 0.6rem 1.25rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.07);
+    border-top: 1px solid var(--vmenu-divider);
 }
 
 #transfer .hint {
     font-size: 0.8rem;
-    color: var(--muted);
+    color: var(--vmenu-text-muted);
 }
 
 #transfer .buttons {
@@ -141,23 +143,24 @@
     padding: 0.4rem 0.9rem;
     font: inherit;
     font-size: 0.8rem;
-    color: var(--text);
-    background: var(--row);
-    border: 1px solid var(--edge);
+    color: var(--vmenu-text);
+    background: var(--vmenu-button-bg);
+    border: 1px solid var(--vmenu-transfer-edge);
     border-radius: 0.3rem;
     cursor: pointer;
 }
 
 #transfer button:hover {
-    background: rgba(255, 255, 255, 0.1);
+    background: var(--vmenu-button-hover);
 }
 
 #transfer button.primary {
-    background: var(--accent);
-    border-color: var(--accent);
-    color: #fff;
+    background: var(--vmenu-accent);
+    border-color: var(--vmenu-accent);
+    color: var(--vmenu-accent-text);
 }
 
 #transfer button.primary:hover {
-    background: #4d94f7;
+    background: var(--vmenu-accent-hover);
+    border-color: var(--vmenu-accent-hover);
 }

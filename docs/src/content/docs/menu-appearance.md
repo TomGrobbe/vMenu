@@ -36,6 +36,8 @@ The very first time is the exception. A brand new setting only starts listening 
 
 :::note[The button hints follow the skin too]
 The row of button prompts in the bottom right of the screen, the one that tells players which key does what, changes along with the skin. Pick `gta` and it looks exactly like the one the game draws itself.
+
+Everything else vMenu puts on screen changes with it as well, from notifications and text prompts to the speedometer and the box above the minimap.
 :::
 
 ## More skins than these seven

@@ -19,37 +19,36 @@
 
 .toast {
     position: relative;
-    background: var(--panel);
-    border: 1px solid var(--edge);
+    background: var(--vmenu-notification-bg);
     border-left: 0.2rem solid var(--tone);
-    border-radius: 0.2rem;
-    box-shadow: 0 0.6rem 1.6rem rgba(0, 0, 0, 0.55);
+    border-radius: var(--vmenu-notification-radius);
+    box-shadow: var(--vmenu-notification-shadow);
     overflow: hidden;
     animation: toast-in 200ms ease-out;
 }
 
 .toast.info {
-    --tone: #4d94f7;
-    --tone-soft: rgba(59, 139, 245, 0.16);
-    --tone-edge: rgba(59, 139, 245, 0.35);
+    --tone: var(--vmenu-info);
+    --tone-soft: var(--vmenu-info-soft);
+    --tone-edge: var(--vmenu-info-edge);
 }
 
 .toast.success {
-    --tone: #58cf90;
-    --tone-soft: rgba(71, 193, 127, 0.16);
-    --tone-edge: rgba(71, 193, 127, 0.35);
+    --tone: var(--vmenu-success);
+    --tone-soft: var(--vmenu-success-soft);
+    --tone-edge: var(--vmenu-success-edge);
 }
 
 .toast.warning {
-    --tone: #edb44b;
-    --tone-soft: rgba(224, 163, 56, 0.16);
-    --tone-edge: rgba(224, 163, 56, 0.35);
+    --tone: var(--vmenu-warning);
+    --tone-soft: var(--vmenu-warning-soft);
+    --tone-edge: var(--vmenu-warning-edge);
 }
 
 .toast.error {
-    --tone: #ef6a60;
-    --tone-soft: rgba(226, 85, 76, 0.16);
-    --tone-edge: rgba(226, 85, 76, 0.35);
+    --tone: var(--vmenu-error);
+    --tone-soft: var(--vmenu-error-soft);
+    --tone-edge: var(--vmenu-error-edge);
 }
 
 /* The uppercase strip over a tinted bar is the menu's own subtitle row, shrunk to fit. */
@@ -100,10 +99,10 @@
 /* Quieter than anything above it: it says where a message came from, which is only read on purpose. */
 .toast .footer {
     padding: 0.25rem 0.6rem 0.35rem;
-    border-top: 1px solid var(--edge);
+    border-top: 1px solid var(--vmenu-notification-edge);
     font-size: 0.62rem;
     font-weight: 600;
-    color: var(--muted);
+    color: var(--vmenu-text-muted);
     overflow-wrap: anywhere;
 }
 

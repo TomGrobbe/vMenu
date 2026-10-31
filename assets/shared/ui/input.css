@@ -12,7 +12,7 @@
     position: fixed;
     inset: 0;
     padding-top: 34vh;
-    background: rgba(0, 0, 0, 0.35);
+    background: var(--vmenu-input-scrim);
     align-items: flex-start;
     justify-content: center;
 }
@@ -23,10 +23,12 @@
 
 #panel {
     width: min(46rem, 60vw);
-    background: var(--panel);
-    border: 1px solid var(--edge);
-    border-radius: 0.5rem;
-    box-shadow: 0 1.5rem 4rem rgba(0, 0, 0, 0.6);
+    background: var(--vmenu-input-bg);
+    border: 1px solid var(--vmenu-input-edge);
+    border-radius: var(--vmenu-input-radius);
+    /* A border painted over the panel's own background reads as a dark ring around the tinted header. */
+    background-clip: padding-box;
+    box-shadow: var(--vmenu-input-shadow);
     overflow: hidden;
 }
 
@@ -42,7 +44,7 @@
     padding: 0 1.25rem 0.75rem;
     font-size: 0.92rem;
     line-height: 1.45;
-    color: var(--muted);
+    color: var(--vmenu-text-muted);
 }
 
 #prompt-description:empty {
@@ -51,12 +53,12 @@
 
 #prompt-description code {
     padding: 0.05rem 0.3rem;
-    border: 1px solid var(--edge);
+    border: 1px solid var(--vmenu-input-edge);
     border-radius: 0.2rem;
-    background: rgba(0, 0, 0, 0.45);
-    font-family: Consolas, monospace;
+    background: var(--vmenu-field-bg);
+    font-family: var(--vmenu-mono-font);
     font-size: 0.85em;
-    color: var(--text);
+    color: var(--vmenu-text);
     white-space: nowrap;
 }
 
@@ -74,22 +76,22 @@
     padding: 0.7rem 0.85rem;
     font: inherit;
     font-size: 1.05rem;
-    color: var(--text);
-    background: rgba(0, 0, 0, 0.45);
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: var(--vmenu-text);
+    background: var(--vmenu-field-bg);
+    border: 1px solid var(--vmenu-field-edge);
     border-radius: 0.3rem;
     outline: none;
 }
 
 #input:focus {
-    border-color: var(--accent);
+    border-color: var(--vmenu-accent);
 }
 
 #suggestions {
     list-style: none;
     max-height: 16rem;
     overflow-y: auto;
-    border-top: 1px solid rgba(255, 255, 255, 0.07);
+    border-top: 1px solid var(--vmenu-divider);
 }
 
 #suggestions:empty {
@@ -110,12 +112,12 @@
 }
 
 #suggestions::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.18);
+    background: var(--vmenu-scrollbar);
     border-radius: 0.15rem;
 }
 
 #suggestions::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.3);
+    background: var(--vmenu-scrollbar-hover);
 }
 
 #suggestions li {
@@ -143,38 +145,38 @@
 
 #suggestions .class {
     font-size: 0.7rem;
-    color: var(--muted);
+    color: var(--vmenu-text-muted);
 }
 
 #suggestions li.active .class {
-    color: rgba(255, 255, 255, 0.75);
+    color: var(--vmenu-accent-text-muted);
 }
 
 #suggestions li:nth-child(odd) {
-    background: var(--row);
+    background: var(--vmenu-row-alt);
 }
 
 #suggestions li.active {
-    background: var(--accent);
-    color: #fff;
+    background: var(--vmenu-accent);
+    color: var(--vmenu-accent-text);
 }
 
 #suggestions .model {
-    font-family: Consolas, monospace;
+    font-family: var(--vmenu-mono-font);
 }
 
 #suggestions .label {
     font-size: 0.85rem;
-    color: var(--muted);
+    color: var(--vmenu-text-muted);
 }
 
 #suggestions li.active .label {
-    color: rgba(255, 255, 255, 0.8);
+    color: var(--vmenu-accent-text-muted);
 }
 
 #footer {
     padding: 0.6rem 1.25rem;
     font-size: 0.8rem;
-    color: var(--muted);
-    border-top: 1px solid rgba(255, 255, 255, 0.07);
+    color: var(--vmenu-text-muted);
+    border-top: 1px solid var(--vmenu-divider);
 }

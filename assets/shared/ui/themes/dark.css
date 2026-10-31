@@ -6,6 +6,57 @@
     unicode-range: U+2190-2193;
 }
 
+/* vMenu's own screens: notifications, alerts, prompts, the speedometer and everything above the minimap. */
+:root {
+    --vmenu-text: rgb(242 242 242);
+    --vmenu-text-muted: rgb(242 242 242 / 55%);
+
+    --vmenu-accent: rgb(59 139 245);
+    --vmenu-accent-hover: rgb(77 148 247);
+    --vmenu-accent-text: rgb(255 255 255);
+    --vmenu-accent-text-muted: rgb(255 255 255 / 70%);
+    --vmenu-accent-soft: rgb(59 139 245 / 16%);
+    --vmenu-accent-edge: rgb(59 139 245 / 35%);
+
+    --vmenu-info: rgb(77 148 247);
+    --vmenu-info-soft: rgb(77 148 247 / 16%);
+    --vmenu-info-edge: rgb(77 148 247 / 35%);
+    --vmenu-success: rgb(88 207 144);
+    --vmenu-success-soft: rgb(88 207 144 / 16%);
+    --vmenu-success-edge: rgb(88 207 144 / 35%);
+    --vmenu-warning: rgb(237 180 75);
+    --vmenu-warning-soft: rgb(237 180 75 / 16%);
+    --vmenu-warning-edge: rgb(237 180 75 / 35%);
+    --vmenu-error: rgb(239 106 96);
+    --vmenu-error-soft: rgb(239 106 96 / 16%);
+    --vmenu-error-edge: rgb(239 106 96 / 35%);
+
+    --vmenu-panel-bg: rgb(18 18 20 / 96%);
+    --vmenu-panel-edge: rgb(255 255 255 / 8%);
+    --vmenu-panel-radius: 5px;
+    --vmenu-dialog-radius: 5px;
+    --vmenu-row-alt: rgb(242 242 242 / 5%);
+    --vmenu-divider: rgb(242 242 242 / 8%);
+
+    --vmenu-hud-bg: rgb(18 18 20 / 80%);
+    --vmenu-hud-edge: rgb(255 255 255 / 8%);
+    --vmenu-hud-radius: 5px;
+    --vmenu-hud-muted: rgb(242 242 242 / 60%);
+    --vmenu-hud-accent: rgb(77 148 247);
+
+    --vmenu-good: rgb(88 207 144);
+    --vmenu-bad: rgb(239 106 96);
+
+    --vmenu-forecast-bg: rgb(18 18 20 / 96%);
+    --vmenu-forecast-edge: rgb(255 255 255 / 8%);
+    --vmenu-forecast-radius: 5px;
+    --vmenu-forecast-muted: rgb(242 242 242 / 72%);
+    --vmenu-moon-lit: rgb(242 242 242 / 85%);
+    --vmenu-moon-dark: rgb(18 18 20);
+
+    --vmenu-speedometer-rail-end: rgb(242 242 242);
+}
+
 #menuapi {
     --menuapi-font: "GTA Chalet Arrows", "Segoe UI", Tahoma, sans-serif;
 

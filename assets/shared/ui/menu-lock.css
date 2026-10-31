@@ -3,16 +3,18 @@
    hangs off the menu itself, the same width, so it reads as part of that menu rather than as a toast.
 */
 #menu-lock {
-    --tone: #edb44b;
-    --tone-soft: rgba(224, 163, 56, 0.16);
-    --tone-edge: rgba(224, 163, 56, 0.35);
-    --radius: 0.2rem;
+    --tone: var(--vmenu-menu-lock-tone);
+    --tone-soft: var(--vmenu-menu-lock-tone-soft);
+    --tone-edge: var(--vmenu-menu-lock-tone-edge);
+    --radius: var(--vmenu-panel-radius);
     position: fixed;
     display: none;
-    background: var(--panel);
-    border: 1px solid var(--edge);
+    background: var(--vmenu-menu-lock-bg);
+    border: 1px solid var(--vmenu-menu-lock-edge);
     border-radius: var(--radius);
-    box-shadow: 0 0.6rem 1.6rem rgba(0, 0, 0, 0.55);
+    /* A border painted over the panel's own background reads as a dark ring around the tinted header. */
+    background-clip: padding-box;
+    box-shadow: var(--vmenu-menu-lock-shadow);
     overflow: hidden;
     pointer-events: none;
 }
@@ -23,9 +25,9 @@
 }
 
 #menu-lock.confirm {
-    --tone: #ef6a60;
-    --tone-soft: rgba(226, 85, 76, 0.16);
-    --tone-edge: rgba(226, 85, 76, 0.35);
+    --tone: var(--vmenu-menu-lock-confirm-tone);
+    --tone-soft: var(--vmenu-menu-lock-confirm-tone-soft);
+    --tone-edge: var(--vmenu-menu-lock-confirm-tone-edge);
 }
 
 /* The uppercase strip over a tinted bar is the menu's own subtitle row, shrunk to fit. */
@@ -62,9 +64,9 @@
     flex-direction: column;
     gap: 0.3rem;
     padding: 0.35rem 0.6rem 0.45rem;
-    border-top: 1px solid var(--edge);
+    border-top: 1px solid var(--vmenu-menu-lock-edge);
     font-size: 0.72rem;
-    color: var(--muted);
+    color: var(--vmenu-text-muted);
 }
 
 #menu-lock.confirm .actions {
@@ -80,14 +82,14 @@
 /* Named after the menu's own instructional buttons, which show the real key for the device in use. */
 #menu-lock .key {
     padding: 0.05rem 0.35rem;
-    border: 1px solid var(--edge);
+    border: 1px solid var(--vmenu-menu-lock-edge);
     border-radius: 0.2rem;
-    background: var(--row);
+    background: var(--vmenu-row-alt);
     font-size: 0.62rem;
     font-weight: 700;
     letter-spacing: 0.06em;
     text-transform: uppercase;
-    color: var(--text);
+    color: var(--vmenu-text);
 }
 
 #menu-lock .action.danger .key {
@@ -98,7 +100,7 @@
 
 #menu-lock .track {
     height: 0.2rem;
-    background: rgba(255, 255, 255, 0.06);
+    background: var(--vmenu-track);
 }
 
 #menu-lock .fill {
