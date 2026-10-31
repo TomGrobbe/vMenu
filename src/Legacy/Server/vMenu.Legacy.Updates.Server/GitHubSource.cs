@@ -24,8 +24,8 @@ internal static class GitHubSource
     private const string CombinedMarker = "-and-enhanced-v";
 
     // Unauthenticated GitHub allows 60 requests an hour from one address, and this makes four a day on
-    // the schedule. A shared host that does hit the limit gets a 403, which is a debug line and a fall
-    // through to nuget.org rather than a warning.
+    // the schedule at most, and only when nuget.org had no answer. A shared host that does hit the limit
+    // gets a 403, which is a debug line rather than a warning.
     public static async Task<SourceResult> LatestAsync(UpdateChannel channel, string userAgent, int timeoutMs)
     {
         var reply = await HttpSend.SendAsync(new HttpRequest(ReleasesUrl, Accept, userAgent, timeoutMs));

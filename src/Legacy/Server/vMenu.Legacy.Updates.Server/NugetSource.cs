@@ -14,8 +14,8 @@ internal static class NugetSource
 
     // Every published version of the server plugin API package. The flat container wants the id
     // lowercased. These packages are pushed on every enhanced build with exactly the resource's semver
-    // and none of them is ever drafted, which is what makes this worth having as a fallback. It carries
-    // no release link, so anything found here points at the releases page.
+    // and none of them is ever drafted, unlike a GitHub release, which is why this is asked first. It
+    // carries no release link, so anything found here points at the releases page.
     public const string IndexUrl = "https://api.nuget.org/v3-flatcontainer/vmenu.enhanced.serverapi/index.json";
 
     public static async Task<SourceResult> LatestAsync(UpdateChannel channel, string userAgent, int timeoutMs)

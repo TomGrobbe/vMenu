@@ -154,13 +154,12 @@ public static class UpdateChecker
 
             var userAgent = UserAgent();
 
-            var result = await GitHubSource.LatestAsync(channel, userAgent, TimeoutMs);
+            var result = await NugetSource.LatestAsync(channel, userAgent, TimeoutMs);
 
-            // nuget.org is asked both when github.com could not be read and when it read but had nothing,
-            // because every enhanced release starts life as a draft an unauthenticated caller cannot see.
+            // github.com is asked both when nuget.org could not be read and when it read but had nothing.
             if (!result.Reached || result.Update is null)
             {
-                var fallback = await NugetSource.LatestAsync(channel, userAgent, TimeoutMs);
+                var fallback = await GitHubSource.LatestAsync(channel, userAgent, TimeoutMs);
 
                 if (fallback.Reached)
                 {

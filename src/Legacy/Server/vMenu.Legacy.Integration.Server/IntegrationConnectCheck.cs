@@ -35,6 +35,13 @@ public static class IntegrationConnectCheck
 
         ServerConfig.AddEventListenerFor([IntegrationSettings.ApiKey, IntegrationSettings.Endpoint], tick.Reevaluate);
 
+        if (!IsConfigured)
+        {
+            Log.Info(
+                "[Integration] Want to get more out of vMenu? SnowstormBot links up with vMenu for a live "
+                + "player map, a Discord role allowlist, a join queue, role sync and more. Get started at https://snowstormbot.net");
+        }
+
         _ = RunAsync();
     }
 
