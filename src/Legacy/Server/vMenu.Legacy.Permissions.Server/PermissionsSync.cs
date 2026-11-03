@@ -34,7 +34,7 @@ public static class PermissionsSync
 
         Script.EventHandlers[DroppedEvent] += new Action<string, string?>(OnPlayerDropped);
 
-        Commands.Register(RefreshCommand, true, new Action<int, List<object>, string>(OnRefreshCommand));
+        Commands.Register(RefreshCommand, true, OnRefreshCommand);
     }
 
     public static int RefreshAll()
@@ -82,25 +82,23 @@ public static class PermissionsSync
         return true;
     }
 
-    private static void OnRefreshCommand(int source, List<object> args, string raw)
+    private static void OnRefreshCommand(string? argument)
     {
-        var parts = (raw ?? string.Empty).Split(' ', StringSplitOptions.RemoveEmptyEntries);
-
-        if (parts.Length < 2)
+        if (string.IsNullOrWhiteSpace(argument))
         {
             RefreshAll();
 
             return;
         }
 
-        if (!int.TryParse(parts[1], NumberStyles.Integer, CultureInfo.InvariantCulture, out var serverId))
+        if (!int.TryParse(argument, NumberStyles.Integer, CultureInfo.InvariantCulture, out var serverId))
         {
-            Log.Error($"[Permissions] '{parts[1]}' is not a server id. Use {RefreshCommand} on its own to refresh everybody.");
+            Log.Error($"[Permissions] '{argument}' is not a server id. Use {RefreshCommand} on its own to refresh everybody.");
 
             return;
         }
 
-        if (!RefreshOne(serverId))
+        if (ServerPermissions.IsReady && !RefreshOne(serverId))
         {
             Log.Error($"[Permissions] Nobody on this server has id {serverId}.");
         }

@@ -64,7 +64,7 @@ public class CoreServer : IScript
         DebugCommands.Source(
             () => ServerConfig.Value(Debugging.Server),
             Debugging.Server.Name,
-            message => Log.Info($"[vMenu] {message}"));
+            message => Log.Warning($"[vMenu] {message}"));
 
         ServerTickRegistry.Initialize();
 
@@ -148,6 +148,11 @@ public class CoreServer : IScript
             default:
                 SharedAPI.Log.Error(message);
                 break;
+        }
+
+        if (ServerCommands.Caller > 0)
+        {
+            API.EmitClient(ServerCommands.Caller, CommandEvents.Reply, (int)level, message);
         }
     }
 }

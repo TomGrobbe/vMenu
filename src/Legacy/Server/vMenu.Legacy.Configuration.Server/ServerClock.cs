@@ -42,7 +42,7 @@ public static class ServerClock
 
         // Not behind the debug gate: this one changes the world rather than reporting on it, and an owner
         // who has just raised the speed needs it whether or not they are debugging.
-        API.RegisterCommand(ResetCommand, new Action<int, List<object>, string>((_, _, _) => ResetToRealTime()), true);
+        Commands.Register(ResetCommand, true, ResetToRealTime);
     }
 
     // The offset that lands the clock back on the time it would be showing at normal speed, which is

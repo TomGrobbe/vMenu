@@ -217,6 +217,7 @@ public sealed class Main : IScript
         JoinLeaveNotifications.Initialize();
 
         UpdateNotice.Initialize();
+        CommandReplies.Initialize();
 
         WorldSync.Initialize();
 

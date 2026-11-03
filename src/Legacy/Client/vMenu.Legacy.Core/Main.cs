@@ -241,6 +241,7 @@ public sealed class Main : BaseScript
         JoinLeaveNotifications.Initialize();
 
         UpdateNotice.Initialize();
+        CommandReplies.Initialize();
 
         WorldSync.Initialize();
 

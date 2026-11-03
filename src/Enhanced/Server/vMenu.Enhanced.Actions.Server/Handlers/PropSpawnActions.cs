@@ -6,6 +6,7 @@ using CitizenFX.FiveM.Shared.Serialization;
 using vMenu.Enhanced.Data.Diagnostics;
 using vMenu.Enhanced.Data.Props;
 using vMenu.Enhanced.Logging;
+using vMenu.Enhanced.Ticks.Server;
 
 namespace vMenu.Enhanced.Actions.Server.Handlers;
 
@@ -31,7 +32,7 @@ public static class PropSpawnActions
 
         API.OnEvent(DroppedEvent, new Action<int, string?>(OnPlayerDropped), false);
 
-        SharedAPI.Commands.RegisterCommand(DumpCommand, true, DebugCommands.Gate(Dump));
+        ServerCommands.Register(DumpCommand, DebugCommands.Gate(Dump));
     }
 
     private static void Dump()

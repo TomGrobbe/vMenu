@@ -64,7 +64,7 @@ public static class UpdateChecker
 
         // Not behind the debug gate. It does something rather than report on state, and an owner who has
         // just been told an update exists needs it whether or not they are debugging.
-        API.RegisterCommand(CheckCommand, new Action<int, List<object>, string>((_, _, _) => CheckNow()), true);
+        Commands.Register(CheckCommand, true, CheckNow);
     }
 
     // "dev" rather than the stand-in version, so a request from an unreleased build is recognisable as

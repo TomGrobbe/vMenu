@@ -6,6 +6,7 @@ using vMenu.Enhanced.Data.Configuration;
 using vMenu.Enhanced.Data.Configuration.Settings;
 using vMenu.Enhanced.Data.Diagnostics;
 using vMenu.Enhanced.Logging;
+using vMenu.Enhanced.Ticks.Server;
 
 namespace vMenu.Enhanced.Configuration.Server;
 
@@ -31,7 +32,7 @@ public static class ServerConfig
             NativeFixer.AddConvarChangeListener(convar, OnConvarChanged);
         }
 
-        SharedAPI.Commands.RegisterCommand(DumpCommand, true, DebugCommands.Gate(Dump));
+        ServerCommands.Register(DumpCommand, DebugCommands.Gate(Dump));
     }
 
     // Calls the handler whenever any of these settings changes, and nothing else.

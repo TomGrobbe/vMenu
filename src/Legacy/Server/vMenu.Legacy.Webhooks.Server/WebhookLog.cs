@@ -85,7 +85,7 @@ public static class WebhookLog
                 }
             });
 
-        API.RegisterCommand(TestCommand, new Action<int, List<object>, string>((_, _, _) => SendTest()), true);
+        Commands.Register(TestCommand, true, SendTest);
 
         Publish();
 

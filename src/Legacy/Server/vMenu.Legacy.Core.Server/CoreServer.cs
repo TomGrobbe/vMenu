@@ -87,7 +87,7 @@ public class CoreServer : BaseScript
         DebugCommands.Source(
             () => ServerConfig.Value(Debugging.Server),
             Debugging.Server.Name,
-            message => Log.Info($"[vMenu] {message}"));
+            message => Log.Warning($"[vMenu] {message}"));
 
         ServerTickRegistry.Initialize();
 
@@ -155,11 +155,19 @@ public class CoreServer : BaseScript
         Log.Debug("vMenu Server side started");
     }
 
-    private static void WriteLog(LogLevel level, string message) => Debug.WriteLine(level switch
+    private static void WriteLog(LogLevel level, string message)
     {
-        LogLevel.Debug => $"^5[DEBUG]^7 {message}",
-        LogLevel.Warning => $"^3[WARN] {message}^7",
-        LogLevel.Error => $"^1[ERROR] {message}^7",
-        _ => message,
-    });
+        Debug.WriteLine(level switch
+        {
+            LogLevel.Debug => $"^5[DEBUG]^7 {message}",
+            LogLevel.Warning => $"^3[WARN] {message}^7",
+            LogLevel.Error => $"^1[ERROR] {message}^7",
+            _ => message,
+        });
+
+        if (Commands.Caller > 0)
+        {
+            Script.TriggerClientEvent(Commands.Caller, CommandEvents.Reply, (int)level, message);
+        }
+    }
 }

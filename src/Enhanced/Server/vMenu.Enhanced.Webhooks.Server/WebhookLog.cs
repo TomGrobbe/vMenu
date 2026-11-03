@@ -78,7 +78,7 @@ public static class WebhookLog
 
         API.OnEvent(StopEvent, new Action<string>(OnResourceStop), false);
 
-        SharedAPI.Commands.RegisterCommand(TestCommand, true, new Action(SendTest));
+        ServerCommands.Register(TestCommand, SendTest);
 
         Publish();
 

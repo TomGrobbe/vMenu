@@ -30,7 +30,7 @@ public static class ServerTickRegistry
     }
 
     public static void Initialize() =>
-        SharedAPI.Commands.RegisterCommand(DumpCommand, true, DebugCommands.Gate(Dump));
+        ServerCommands.Register(DumpCommand, DebugCommands.Gate(Dump));
 
     public static TickHandle Register(
         string name,

@@ -36,11 +36,11 @@ public static class ServerClock
             [WeatherOptionsSettings.Enabled, TimeOptionsSettings.Enabled],
             tick.Reevaluate);
 
-        SharedAPI.Commands.RegisterCommand(DumpCommand, true, DebugCommands.Gate(Dump));
+        ServerCommands.Register(DumpCommand, DebugCommands.Gate(Dump));
 
         // Not behind the debug gate: this one changes the world rather than reporting on it, and an owner
         // who has just raised the speed needs it whether or not they are debugging.
-        SharedAPI.Commands.RegisterCommand(ResetCommand, true, new Action(ResetToRealTime));
+        ServerCommands.Register(ResetCommand, ResetToRealTime);
     }
 
     // The offset that lands the clock back on the time it would be showing at normal speed, which is

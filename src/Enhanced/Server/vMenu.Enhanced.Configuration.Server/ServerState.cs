@@ -4,6 +4,7 @@ using CitizenFX.FiveM.Shared;
 using vMenu.Enhanced.Data.Diagnostics;
 using vMenu.Enhanced.Data.World;
 using vMenu.Enhanced.Logging;
+using vMenu.Enhanced.Ticks.Server;
 
 namespace vMenu.Enhanced.Configuration.Server;
 
@@ -53,7 +54,7 @@ public static class ServerState
         PublishBlackout();
         PublishSnow();
 
-        SharedAPI.Commands.RegisterCommand(DumpCommand, true, DebugCommands.Gate(Dump));
+        ServerCommands.Register(DumpCommand, DebugCommands.Gate(Dump));
     }
 
     public static void SetWeather(WeatherType? type)
