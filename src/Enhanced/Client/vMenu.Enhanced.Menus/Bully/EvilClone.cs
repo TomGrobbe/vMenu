@@ -3,6 +3,8 @@ using System.Numerics;
 using CitizenFX.FiveM.Client;
 
 using vMenu.Enhanced.Data.Bullying;
+using vMenu.Enhanced.Data.Ticks;
+using vMenu.Enhanced.Ticks;
 
 namespace vMenu.Enhanced.Menus.Bully;
 
@@ -26,6 +28,14 @@ internal static class EvilClone
 
     private const int CloneHealth = 2000;
 
+    private const int ArmedWithGun = 4;
+
+    private const int MeleeLight = 140;
+
+    private const int MeleeHeavy = 141;
+
+    private const int MeleeAlternate = 142;
+
     private static readonly string[] Weapons =
     [
         "WEAPON_HATCHET",
@@ -35,6 +45,8 @@ internal static class EvilClone
     ];
 
     private static bool _active;
+
+    private static TickHandle? _noPistolWhip;
 
     public static async Task Start(BullyRun run)
     {
@@ -55,6 +67,9 @@ internal static class EvilClone
         }
 
         _active = true;
+
+        _noPistolWhip ??= TickRegistry.Register("Bully.EvilCloneNoPistolWhip", BlockPistolWhip, TickRate.PerFrame, () => _active);
+        _noPistolWhip.Reevaluate();
 
         var clone = 0;
         var bank = false;
@@ -147,7 +162,21 @@ internal static class EvilClone
             }
 
             _active = false;
+
+            _noPistolWhip?.Reevaluate();
         }
+    }
+
+    private static void BlockPistolWhip()
+    {
+        if (!Native.IsPedArmed(Native.PlayerPedId(), ArmedWithGun))
+        {
+            return;
+        }
+
+        Native.DisableControlAction(0, MeleeLight, true);
+        Native.DisableControlAction(0, MeleeHeavy, true);
+        Native.DisableControlAction(0, MeleeAlternate, true);
     }
 
     private static async Task FadeOutAsync(int clone)
