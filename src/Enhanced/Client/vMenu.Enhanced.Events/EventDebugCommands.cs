@@ -68,7 +68,7 @@ public static class EventDebugCommands
     ];
 
     internal static void Initialize() =>
-        SharedAPI.Commands.RegisterCommand(Command, false, DebugCommands.Gate<string?>(Toggle));
+        SharedAPI.Commands.RegisterCommand(Command, false, DebugCommands.Gate(Toggle));
 
     private static void Toggle(string? argument)
     {

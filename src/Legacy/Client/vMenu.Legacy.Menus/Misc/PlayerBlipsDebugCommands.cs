@@ -68,7 +68,7 @@ public static class PlayerBlipsDebugCommands
 
     public static void Initialize()
     {
-        Commands.Register(Command, false, DebugCommands.Gate<string?>(Run));
+        Commands.Register(Command, false, DebugCommands.Gate(Run));
 
         _tick = TickRegistry.Register(
             "Player.Presence.Fakes",

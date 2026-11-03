@@ -30,7 +30,7 @@ public static class CharacterDumpCommands
         Commands.Register(DumpCommand, false, DebugCommands.Gate(() => _ = DumpAsync()));
         Commands.Register(TattooCommand, false, DebugCommands.Gate(Tattoos));
         Commands.Register(OutfitCommand, false, DebugCommands.Gate(() => _ = OutfitsAsync(null)));
-        Commands.Register(OneOutfitCommand, false, DebugCommands.Gate<string?>(name => _ = OutfitsAsync(name)));
+        Commands.Register(OneOutfitCommand, false, DebugCommands.Gate(name => _ = OutfitsAsync(name)));
         Commands.Register(StoreCommand, false, DebugCommands.Gate(Store));
     }
 

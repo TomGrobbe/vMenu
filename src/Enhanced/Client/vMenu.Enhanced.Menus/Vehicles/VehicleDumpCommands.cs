@@ -23,7 +23,7 @@ public static class VehicleDumpCommands
     public static void Initialize()
     {
         SharedAPI.Commands.RegisterCommand(DumpCommand, false, DebugCommands.Gate(Dump));
-        SharedAPI.Commands.RegisterCommand(DiffCommand, false, DebugCommands.Gate<string?>(Diff));
+        SharedAPI.Commands.RegisterCommand(DiffCommand, false, DebugCommands.Gate(Diff));
         SharedAPI.Commands.RegisterCommand(LabelsCommand, false, DebugCommands.Gate(Labels));
     }
 

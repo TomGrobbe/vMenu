@@ -33,15 +33,26 @@ public static class DebugCommands
         dump();
     };
 
-    public static Action<T> Gate<T>(Action<T> dump) => argument =>
+    // A method with a default value rather than a lambda, because the Enhanced runtime only lets an argument
+    // be left out when the parameter it binds to is optional, and a lambda's parameter never is.
+    public static Action<string?> Gate(Action<string?> dump) => new Gated(dump).Run;
+
+    private sealed class Gated
     {
-        if (!_enabled())
+        private readonly Action<string?> _dump;
+
+        public Gated(Action<string?> dump) => _dump = dump;
+
+        public void Run(string? argument = null)
         {
-            _write($"This command only reports while {_convar} is set to true.");
+            if (!_enabled())
+            {
+                _write($"This command only reports while {_convar} is set to true.");
 
-            return;
+                return;
+            }
+
+            _dump(argument);
         }
-
-        dump(argument);
-    };
+    }
 }

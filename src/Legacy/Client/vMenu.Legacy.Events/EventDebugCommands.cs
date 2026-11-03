@@ -70,7 +70,7 @@ public static class EventDebugCommands
     ];
 
     internal static void Initialize() =>
-        Commands.Register(Command, false, DebugCommands.Gate<string?>(Toggle));
+        Commands.Register(Command, false, DebugCommands.Gate(Toggle));
 
     private static void Toggle(string? argument)
     {

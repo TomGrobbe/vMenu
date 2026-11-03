@@ -26,7 +26,7 @@ public static class CharacterDumpCommands
         SharedAPI.Commands.RegisterCommand(DumpCommand, false, DebugCommands.Gate(() => _ = DumpAsync()));
         SharedAPI.Commands.RegisterCommand(TattooCommand, false, DebugCommands.Gate(Tattoos));
         SharedAPI.Commands.RegisterCommand(OutfitCommand, false, DebugCommands.Gate(() => _ = OutfitsAsync(null)));
-        SharedAPI.Commands.RegisterCommand(OneOutfitCommand, false, DebugCommands.Gate<string?>(name => _ = OutfitsAsync(name)));
+        SharedAPI.Commands.RegisterCommand(OneOutfitCommand, false, DebugCommands.Gate(name => _ = OutfitsAsync(name)));
         SharedAPI.Commands.RegisterCommand(StoreCommand, false, DebugCommands.Gate(Store));
     }
 

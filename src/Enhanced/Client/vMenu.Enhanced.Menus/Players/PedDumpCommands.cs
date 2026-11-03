@@ -21,7 +21,7 @@ public static class PedDumpCommands
     public static void Initialize()
     {
         SharedAPI.Commands.RegisterCommand(DumpCommand, false, DebugCommands.Gate(Dump));
-        SharedAPI.Commands.RegisterCommand(DiffCommand, false, DebugCommands.Gate<string?>(Diff));
+        SharedAPI.Commands.RegisterCommand(DiffCommand, false, DebugCommands.Gate(Diff));
     }
 
     private static void Dump()

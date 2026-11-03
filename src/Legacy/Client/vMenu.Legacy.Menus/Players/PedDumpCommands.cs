@@ -23,7 +23,7 @@ public static class PedDumpCommands
     public static void Initialize()
     {
         Commands.Register(DumpCommand, false, DebugCommands.Gate(Dump));
-        Commands.Register(DiffCommand, false, DebugCommands.Gate<string?>(Diff));
+        Commands.Register(DiffCommand, false, DebugCommands.Gate(Diff));
     }
 
     private static void Dump()

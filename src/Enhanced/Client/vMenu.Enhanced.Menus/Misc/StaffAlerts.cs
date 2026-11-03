@@ -457,14 +457,14 @@ public static class StaffAlerts
 
             if (wanted && !_registered)
             {
-                SharedAPI.Commands.RegisterCommand(name, false, new Action<int, MessagePackBuffer, string>(Handle));
+                SharedAPI.Commands.RegisterCommand(name, false, new Action<string>(Handle));
                 _registered = true;
 
                 Log.Debug($"[StaffAlerts] Registered /{name}.");
             }
         }
 
-        private void Handle(int source, MessagePackBuffer args, string raw)
+        private void Handle([FromRawCommand] string raw)
         {
             if (_enabled)
             {
