@@ -116,7 +116,7 @@ public static partial class Loc
         [English("The server owner turned this one off.")]
         public const string TurnedOff = "bully.turnedoff";
 
-        [English("~b~{player}~s~ already has this one going.")]
+        [English("~b~{player}~s~ already has an effect going, wait for it to end first.")]
         public const string Busy = "bully.busy";
 
         [English("~b~{player}~s~ is already drunk or drugged by their own choice.")]

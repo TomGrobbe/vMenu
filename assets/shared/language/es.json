@@ -230,7 +230,7 @@
     "bully.needsonfoot": "~b~{player}~s~ tiene que ir a pie para esta.",
     "bully.needsdriving": "~b~{player}~s~ tiene que ir conduciendo un vehículo para esta.",
     "bully.turnedoff": "El dueño del servidor ha desactivado esto.",
-    "bully.busy": "~b~{player}~s~ ya tiene esto en marcha.",
+    "bully.busy": "~b~{player}~s~ ya tiene un efecto en marcha, espera a que termine.",
     "bully.alreadyintoxicated": "~b~{player}~s~ ya está borracho o drogado por decisión propia.",
     "bully.novehicle": "~b~{player}~s~ no tiene vehículo para esta.",
     "bully.didnotwork": "Esto no ha funcionado con ~b~{player}~s~.",

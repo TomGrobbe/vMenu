@@ -230,7 +230,7 @@
     "bully.needsonfoot": "~b~{player}~s~ moet hiervoor te voet zijn.",
     "bully.needsdriving": "~b~{player}~s~ moet hiervoor in een voertuig rijden.",
     "bully.turnedoff": "De servereigenaar heeft dit uitgezet.",
-    "bully.busy": "~b~{player}~s~ heeft deze al lopen.",
+    "bully.busy": "Er loopt al een effect bij ~b~{player}~s~, wacht tot dat voorbij is.",
     "bully.alreadyintoxicated": "~b~{player}~s~ is al uit eigen keuze dronken of onder invloed.",
     "bully.novehicle": "~b~{player}~s~ heeft hier geen voertuig voor.",
     "bully.didnotwork": "Dat werkte niet bij ~b~{player}~s~.",
