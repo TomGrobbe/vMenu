@@ -7,22 +7,25 @@ Everything vMenu Enhanced puts on a key is a real FiveM key binding. Players can
 
 ## The defaults
 
-| What it does | Keyboard | Controller | Convar |
-| --- | --- | --- | --- |
-| Open and close the menu | `M` | not bound | `vMenu.Enhanced.KeyBindings.MenuToggleKey` |
-| Turn noclip on and off | `F2` | not bound | `vMenu.Enhanced.KeyBindings.NoClipToggleKey` |
-| Run the teleport the player picked | `F10` | not bound | `vMenu.Enhanced.KeyBindings.TeleportKey` |
-| Flip a helmet visor, held | `F11` | D-pad right | none |
-| Expand or zoom the minimap | `Z` | D-pad down | none |
-| Point your finger | `B` | right stick click | none |
-| Character creator auto camera | `N` | right bumper | none |
-| Pick up a snowball | `G` | D-pad right | none |
-| Switch the weather forecast between off, compact and full | `=` | not bound | none |
-| Toggle the engine of the vehicle you are in | `Right Ctrl` | not bound | none |
-| Spawn vehicles inside or outside | `Delete` | not bound | none |
-| Keep or replace the previous vehicle | `End` | not bound | none |
+| What it does                                              | Keyboard     | Controller             | Convar                                                                                              |
+| --------------------------------------------------------- | ------------ | ---------------------- | --------------------------------------------------------------------------------------------------- |
+| Open and close the menu                                   | `M`          | `Change camera button` | `vMenu.Enhanced.KeyBindings.MenuToggleKey` (for keyboard only, controller default can't be changed) |
+| Turn noclip on and off                                    | `F2`         | not bound              | `vMenu.Enhanced.KeyBindings.NoClipToggleKey`                                                        |
+| Turn the freecam on and off                               | `F3`         | not bound              | `vMenu.Enhanced.KeyBindings.FreecamToggleKey`                                                       |
+| Run the teleport the player picked                        | `F10`        | not bound              | `vMenu.Enhanced.KeyBindings.TeleportKey`                                                            |
+| Flip a helmet visor, held                                 | `F11`        | D-pad right            | none                                                                                                |
+| Expand or zoom the minimap                                | `Z`          | D-pad down             | none                                                                                                |
+| Point your finger                                         | `B`          | right stick click      | none                                                                                                |
+| Character creator auto camera                             | `N`          | right bumper           | none                                                                                                |
+| Pick up a snowball                                        | `G`          | D-pad right            | none                                                                                                |
+| Switch the weather forecast between off, compact and full | `=`          | not bound              | none                                                                                                |
+| Toggle the engine of the vehicle you are in               | `Right Ctrl` | not bound              | none                                                                                                |
+| Spawn vehicles inside or outside                          | `Delete`     | not bound              | none                                                                                                |
+| Keep or replace the previous vehicle                      | `End`        | not bound              | none                                                                                                |
 
 Noclip also uses `W`, `S`, `A`, `D`, `Q`, `Z`, `Left Shift`, `Left Ctrl` and `H` while it is switched on. Those are ordinary bindings too, so they show up in the same settings list.
+
+The freecam has its own set of keys while it is on, listed on the [Filmmaker menu](/vmenu/enhanced/menus/filmmaker-menu/#keys) page.
 
 ## Changing a default
 
@@ -30,7 +33,7 @@ Put the convar in your `server.cfg` **before** the line that starts vMenu Enhanc
 
 ```ini
 setr vMenu.Enhanced.KeyBindings.TeleportKey "F7"
-setr vMenu.Enhanced.KeyBindings.NoClipToggleKey "F3"
+setr vMenu.Enhanced.KeyBindings.NoClipToggleKey "F4"
 ensure vMenu.Enhanced
 ```
 
