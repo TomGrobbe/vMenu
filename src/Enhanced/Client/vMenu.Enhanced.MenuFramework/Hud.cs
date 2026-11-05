@@ -20,10 +20,15 @@ public static class Hud
 
     private const float DefaultSize = 0.48f;
 
+    /// <summary>Set by a vMenu feature that hides the HUD one frame at a time, which the game's own HUD flag
+    /// never reflects.</summary>
+    public static bool Hidden { get; set; }
+
     /// <summary>Whether the game is in a state where drawing anything would be wrong: mid player switch, in the
     /// pause menu, faded out, or with the HUD turned off by the player or by a script.</summary>
     public static bool CanDraw =>
-        !SceneLock.IsActive
+        !Hidden
+        && !SceneLock.IsActive
         && Native.IsHudPreferenceSwitchedOn()
         && !Native.IsHudHidden()
         && !Native.IsPlayerSwitchInProgress()
