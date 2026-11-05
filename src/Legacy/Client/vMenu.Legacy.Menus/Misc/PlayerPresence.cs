@@ -288,7 +288,8 @@ public static class PlayerPresence
                 streamed.Position,
                 (int)API.GetEntityHeading(streamed.Ped),
                 vehicle != 0 ? NativeFixer.GetEntityModel(vehicle) : 0,
-                StateBags.GetPlayer<bool>(serverId, PlayerStateKeys.NoClip),
+                StateBags.GetPlayer<bool>(serverId, PlayerStateKeys.NoClip)
+                    || StateBags.GetPlayer<bool>(serverId, PlayerStateKeys.Freecam),
                 API.IsPlayerDead(streamed.Slot),
                 StateBags.GetPlayer<bool>(serverId, PlayerStateKeys.Staff),
 
