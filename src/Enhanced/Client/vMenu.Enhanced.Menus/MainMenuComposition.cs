@@ -1,4 +1,5 @@
 using vMenu.Enhanced.MenuFramework;
+using vMenu.Enhanced.Menus.Filmmaking;
 using vMenu.Enhanced.Plugins;
 
 namespace vMenu.Enhanced.Menus;
@@ -16,6 +17,7 @@ public static class MainMenuComposition
         new WorldMenu(),
         new TeleportMenu(),
         new PropSpawnerMenu(),
+        new FilmmakerMenu(),
         new RecordingMenu(),
         new DisplaySettingsMenu(),
         new MiscSettingsMenu(),
