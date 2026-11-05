@@ -20,6 +20,7 @@
     <ProjectReference Include="..\..\..\Shared\vMenu.Enhanced.Logging\vMenu.Enhanced.Logging.csproj" />
     <ProjectReference Include="..\vMenu.Legacy.Events\vMenu.Legacy.Events.csproj" />
     <ProjectReference Include="..\vMenu.Legacy.Menus\vMenu.Legacy.Menus.csproj" />
+    <ProjectReference Include="..\vMenu.Legacy.Freecam\vMenu.Legacy.Freecam.csproj" />
     <ProjectReference Include="..\vMenu.Legacy.NoClip\vMenu.Legacy.NoClip.csproj" />
     <ProjectReference Include="..\vMenu.Legacy.Permissions\vMenu.Legacy.Permissions.csproj" />
     <ProjectReference Include="..\vMenu.Legacy.Plugins\vMenu.Legacy.Plugins.csproj" />

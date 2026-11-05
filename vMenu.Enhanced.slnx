@@ -82,6 +82,7 @@
     <Project Path="src/Legacy/Client/vMenu.Legacy.Configuration/vMenu.Legacy.Configuration.csproj" />
     <Project Path="src/Legacy/Client/vMenu.Legacy.Core/vMenu.Legacy.Core.csproj" />
     <Project Path="src/Legacy/Client/vMenu.Legacy.Events/vMenu.Legacy.Events.csproj" />
+    <Project Path="src/Legacy/Client/vMenu.Legacy.Freecam/vMenu.Legacy.Freecam.csproj" />
     <Project Path="src/Legacy/Client/vMenu.Legacy.Hosting/vMenu.Legacy.Hosting.csproj" />
     <Project Path="src/Legacy/Client/vMenu.Legacy.MenuFramework/vMenu.Legacy.MenuFramework.csproj" />
     <Project Path="src/Legacy/Client/vMenu.Legacy.Menus/vMenu.Legacy.Menus.csproj" />

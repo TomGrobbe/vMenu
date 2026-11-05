@@ -142,6 +142,7 @@ public class CoreServer : BaseScript
 
         PedDeathBroadcast.Register();
         PlayerNoClipState.Register();
+        PlayerFreecamState.Register();
         PlayerPresenceBroadcast.Register();
         PersonalVehicleBroadcast.Register();
         JoinLeaveBroadcast.Register();

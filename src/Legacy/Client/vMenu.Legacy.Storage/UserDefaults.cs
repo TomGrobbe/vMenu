@@ -361,6 +361,50 @@ public static class UserDefaults
 
     #endregion
 
+    #region Freecam
+
+    public static FloatDefault FreecamSpeed { get; } = new("freecamSpeed") { Default = 10f };
+
+    public static IntDefault FreecamLookSensitivity { get; } = new("freecamLookSensitivity") { Default = 8 };
+
+    public static IntDefault FreecamSmoothing { get; } = new("freecamSmoothing") { Default = 3 };
+
+    public static BoolDefault FreecamInvertLook { get; } = new("freecamInvertLook") { Default = false };
+
+    public static BoolDefault FreecamHideHints { get; } = new("freecamHideHints") { Default = false };
+
+    public static BoolDefault FreecamStayOnLastFrame { get; } = new("freecamStayOnLastFrame") { Default = true };
+
+    public static IntDefault FreecamLoop { get; } = new("freecamLoop") { Default = 0 };
+
+    public static FloatDefault FreecamPlaybackSpeed { get; } = new("freecamPlaybackSpeed") { Default = 1f };
+
+    public static FloatDefault FreecamStartDelay { get; } = new("freecamStartDelay") { Default = 0f };
+
+    public static BoolDefault FreecamPlaybackHideHud { get; } = new("freecamPlaybackHideHud") { Default = true };
+
+    public static BoolDefault FreecamPlaybackLetterbox { get; } = new("freecamPlaybackLetterbox") { Default = false };
+
+    public static BoolDefault FreecamHideHud { get; } = new("freecamHideHud") { Default = false };
+
+    public static BoolDefault FreecamLetterbox { get; } = new("freecamLetterbox") { Default = false };
+
+    public static IntDefault FreecamMotionBlur { get; } = new("freecamMotionBlur") { Default = 0 };
+
+    public static IntDefault FreecamShake { get; } = new("freecamShake") { Default = 0 };
+
+    public static IntDefault FreecamShakeIntensity { get; } = new("freecamShakeIntensity") { Default = 5 };
+
+    public static BoolDefault FreecamDof { get; } = new("freecamDof") { Default = false };
+
+    public static IntDefault FreecamFocusMode { get; } = new("freecamFocusMode") { Default = 0 };
+
+    public static FloatDefault FreecamFocusDistance { get; } = new("freecamFocusDistance") { Default = 10f };
+
+    public static IntDefault FreecamDofAperture { get; } = new("freecamDofAperture") { Default = 50 };
+
+    #endregion
+
     #region Character Creator
 
     public static StringDefault DefaultCharacterName { get; } =
@@ -500,6 +544,27 @@ public static class UserDefaults
         AutoPilotStopAction,
         AutoPilotCruiseSpeed,
         AutoPilotPathSpacing,
+
+        FreecamSpeed,
+        FreecamLookSensitivity,
+        FreecamSmoothing,
+        FreecamInvertLook,
+        FreecamHideHints,
+        FreecamStayOnLastFrame,
+        FreecamLoop,
+        FreecamPlaybackSpeed,
+        FreecamStartDelay,
+        FreecamPlaybackHideHud,
+        FreecamPlaybackLetterbox,
+        FreecamHideHud,
+        FreecamLetterbox,
+        FreecamMotionBlur,
+        FreecamShake,
+        FreecamShakeIntensity,
+        FreecamDof,
+        FreecamFocusMode,
+        FreecamFocusDistance,
+        FreecamDofAperture,
         AutoPilotAutoRecord,
     ];
 

@@ -161,6 +161,7 @@ public sealed class Main : BaseScript
         PedHeadFit.Initialize();
         DeveloperOverlay.Initialize();
         NoClip.NoClip.Initialize();
+        Freecam.Freecam.Initialize();
 
         PvpMode.Initialize();
         NoClipSmoke.Initialize();
@@ -204,14 +205,8 @@ public sealed class Main : BaseScript
         CharacterRespawn.Initialize();
         WeaponLoadoutRespawn.Initialize();
 
-        NoClip.NoClip.EntityReleased += _ =>
-        {
-            PlayerGodMode.Reapply();
-            VehicleGodMode.Reapply();
-            PlayerInvisible.Toggle.Apply();
-            EveryoneIgnoresPlayer.Toggle.Apply();
-            PlayerFreeze.Toggle.Apply();
-        };
+        NoClip.NoClip.EntityReleased += _ => ReapplyPlayerToggles();
+        Freecam.Freecam.EntityReleased += _ => ReapplyPlayerToggles();
 
         TeleportKeyBinding.Initialize();
         VisorKeyBinding.Initialize();
@@ -274,6 +269,15 @@ public sealed class Main : BaseScript
 
         await CharacterRespawn.ApplyOnJoinAsync();
         await WeaponLoadoutRespawn.RestoreOnJoinAsync();
+    }
+
+    private static void ReapplyPlayerToggles()
+    {
+        PlayerGodMode.Reapply();
+        VehicleGodMode.Reapply();
+        PlayerInvisible.Toggle.Apply();
+        EveryoneIgnoresPlayer.Toggle.Apply();
+        PlayerFreeze.Toggle.Apply();
     }
 
     private static void WriteLog(LogLevel level, string message) => Debug.WriteLine(level switch
