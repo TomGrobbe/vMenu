@@ -12,6 +12,7 @@ using vMenu.Enhanced.MenuFramework;
 using vMenu.Enhanced.Localization;
 using vMenu.Enhanced.Menus.Vehicles.Personal;
 
+using FreecamCamera = vMenu.Enhanced.Freecam.Freecam;
 using VehicleSpawnerSettings = vMenu.Enhanced.Data.Configuration.Settings.VehicleSpawner;
 
 namespace vMenu.Enhanced.Menus.Vehicles;
@@ -25,10 +26,27 @@ public static class VehicleSpawning
 
     private static int _previousVehicle;
 
+    public static bool CanSpawnOrWarn()
+    {
+        if (!FreecamCamera.IsActive)
+        {
+            return true;
+        }
+
+        Notifications.Warning(MenuText.Key(Loc.Freecam.NoVehicleSpawning));
+
+        return false;
+    }
+
     public static Task<Vehicle?> SpawnAsync(string modelName) => SpawnAsync(API.Hash(modelName));
 
     public static async Task<Vehicle?> SpawnAsync(uint hash)
     {
+        if (FreecamCamera.IsActive)
+        {
+            return null;
+        }
+
         // Validated by hand: API.Vehicles.RequestAndCreate uses DateTime, currently broken and crashes.
         // https://github.com/citizenfx/rfc/discussions/328
         if (!Native.IsModelValid(hash))
