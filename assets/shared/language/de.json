@@ -784,7 +784,6 @@
     "displaysettings.playerblips.desc": "Setzt für jeden anderen Spieler einen Blip auf die Karte, dessen Form sich danach richtet, was derjenige gerade fährt. Spieler weit weg von dir bleiben von der Minimap fern, damit sie nicht zu voll wird, und tauchen auf, sobald du sie vergrößerst.",
     "displaysettings.rightaligned": "Menü rechts ausrichten",
     "displaysettings.rightaligned.desc": "Drücke Enter, um das Menü links oder rechts auszurichten.",
-    "displaysettings.rightaligned.unsupported": "Eine rechtsbündige Ausrichtung wird hier nicht unterstützt, daher wurde das Menü links ausgerichtet.",
     "displaysettings.seenoclipplayers": "Spieler im Noclip anzeigen",
     "displaysettings.seenoclipplayers.desc": "Zeigt dir weiterhin den Blip und den Namen von allen, die gerade im Noclip herumfliegen, obwohl sie für alle anderen versteckt sind. Ihr Blip wird ~g~grün~s~, damit du sie auseinanderhalten kannst. Sie werden dadurch nicht in der Welt sichtbar, du siehst also einen Punkt und einen Namen über jemandem, den du gar nicht anschauen kannst.",
     "displaysettings.showtime": "Uhrzeit anzeigen",

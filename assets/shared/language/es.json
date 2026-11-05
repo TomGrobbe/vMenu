@@ -784,7 +784,6 @@
     "displaysettings.playerblips.desc": "Pone un blip en el mapa por cada otro jugador, que cambia de forma según lo que esté conduciendo. Los jugadores que están lejos de ti se mantienen fuera del minimapa para que no se llene demasiado, y aparecen cuando lo amplías.",
     "displaysettings.rightaligned": "Alinear el menú a la derecha",
     "displaysettings.rightaligned.desc": "Pulsa intro para alinear el menú a la izquierda o a la derecha.",
-    "displaysettings.rightaligned.unsupported": "La alineación a la derecha no es compatible aquí, por lo que el menú se ha alineado a la izquierda.",
     "displaysettings.seenoclipplayers": "Mostrar jugadores en noclip",
     "displaysettings.seenoclipplayers.desc": "Sigue mostrando el blip y el nombre de cualquiera que esté volando en noclip, aunque esté oculto para todos los demás. Su blip se vuelve ~g~verde~s~ para que puedas distinguirlo. Esto no lo hace visible en el mundo, así que verás un punto y un nombre sobre alguien al que en realidad no puedes ver.",
     "displaysettings.showtime": "Mostrar la hora en pantalla",

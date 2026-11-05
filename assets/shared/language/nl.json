@@ -784,7 +784,6 @@
     "displaysettings.playerblips.desc": "Zet voor elke andere speler een blip op de kaart, waarvan de vorm verandert op basis van wat diegene rijdt. Spelers ver bij jou vandaan blijven van de minimap af zodat die niet te vol wordt, en verschijnen zodra je hem vergroot.",
     "displaysettings.rightaligned": "Menu rechts uitlijnen",
     "displaysettings.rightaligned.desc": "Druk op enter om het menu links of rechts uit te lijnen.",
-    "displaysettings.rightaligned.unsupported": "Een rechts uitgelijnd menu wordt hier niet ondersteund, dus het menu is links uitgelijnd.",
     "displaysettings.seenoclipplayers": "Spelers in noclip tonen",
     "displaysettings.seenoclipplayers.desc": "Blijf de blip en de naam tonen van iedereen die in noclip rondvliegt, terwijl die voor alle anderen verborgen zijn. Hun blip wordt ~g~groen~s~ zodat je ze uit elkaar kunt houden. Ze worden hierdoor niet zichtbaar in de wereld, dus je ziet een stip en een naam boven iemand naar wie je niet echt kunt kijken.",
     "displaysettings.showtime": "Tijd op het scherm tonen",

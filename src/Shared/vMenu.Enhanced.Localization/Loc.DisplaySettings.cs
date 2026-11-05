@@ -16,9 +16,6 @@ public static partial class Loc
         [English("Right Align Menu", "Press Enter to toggle left or right aligned menu.")]
         public const string MenuRightAlignment = "displaysettings.rightaligned";
 
-        [English("A right aligned menu is not supported here, so the menu has been left aligned.")]
-        public const string MenuRightAlignmentUnsupported = "displaysettings.rightaligned.unsupported";
-
         [English("Death Notifications", "Show a message whenever a player on this server dies, and who killed them.")]
         public const string DeathNotifications = "displaysettings.deathnotifications";
 

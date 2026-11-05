@@ -784,7 +784,6 @@
     "displaysettings.playerblips.desc": "Place un blip sur la carte pour chaque autre joueur, dont la forme change selon ce qu'il conduit. Les joueurs loin de vous sont gardés hors de la minicarte pour qu'elle ne soit pas surchargée, et apparaissent quand vous l'agrandissez.",
     "displaysettings.rightaligned": "Aligner le menu à droite",
     "displaysettings.rightaligned.desc": "Appuyez sur Entrée pour aligner le menu à gauche ou à droite.",
-    "displaysettings.rightaligned.unsupported": "L'alignement à droite n'est pas pris en charge ici, le menu a donc été aligné à gauche.",
     "displaysettings.seenoclipplayers": "Afficher les joueurs en noclip",
     "displaysettings.seenoclipplayers.desc": "Continue d'afficher le blip et le nom de toute personne qui vole en noclip, alors qu'elle est cachée pour tous les autres. Son blip devient ~g~vert~s~ pour que vous puissiez la reconnaître. Cela ne la rend pas visible dans le monde, vous voyez donc un point et un nom au-dessus de quelqu'un que vous ne pouvez pas réellement regarder.",
     "displaysettings.showtime": "Afficher l'heure à l'écran",

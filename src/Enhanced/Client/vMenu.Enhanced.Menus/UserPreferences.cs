@@ -121,27 +121,11 @@ public static class UserPreferences
             MenuText.Key(Loc.MiscSettings.LanguageUnavailable, ("language", MenuText.Literal(stored))));
     }
 
-    // MenuAPI declines a right alignment on some aspect ratios, so this checks that it took. A rejection
-    // is written back even when persist is false, so the player does not meet the same message on every
-    // restart.
     private static void ApplyRightAligned(bool rightAligned, bool persist)
     {
         MenuController.MenuAlignment = rightAligned
             ? MenuController.MenuAlignmentOption.Right
             : MenuController.MenuAlignmentOption.Left;
-
-        if (rightAligned && !IsRightAligned)
-        {
-            // Deferred, because this also runs from Restore before the player has spawned. At runtime the wait
-            // is skipped and it shows straight away.
-            _ = Notifications.ShowWhenVisibleAsync(
-                NotificationStyle.Error,
-                MenuText.Key(Loc.DisplaySettings.MenuRightAlignmentUnsupported));
-
-            UserDefaults.DisplayRightAlignMenu.Value = false;
-
-            return;
-        }
 
         if (persist)
         {
