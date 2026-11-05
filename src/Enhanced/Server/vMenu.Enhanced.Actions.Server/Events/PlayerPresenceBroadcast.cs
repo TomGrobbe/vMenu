@@ -90,7 +90,7 @@ public static class PlayerPresenceBroadcast
 
         // Nothing subscribed and nobody noclipping means there is nothing to send and nothing to forget,
         // which is the state a server with this feature switched off sits in permanently.
-        if (Subscribers.Count == 0 && !PlayerNoClipState.HasAny)
+        if (Subscribers.Count == 0 && !PlayerNoClipState.HasAny && !PlayerFreecamState.HasAny)
         {
             return;
         }
@@ -136,6 +136,7 @@ public static class PlayerPresenceBroadcast
         Subscribers.RemoveWhere(serverId => !connected.Contains(serverId));
 
         PlayerNoClipState.Prune(connected);
+        PlayerFreecamState.Prune(connected);
     }
 
     // Reads every connected player once, so the per viewer pass costs no natives at all.
@@ -159,7 +160,7 @@ public static class PlayerPresenceBroadcast
 
             var flags = 0;
 
-            if (PlayerNoClipState.IsActive(player.ServerId))
+            if (PlayerNoClipState.IsActive(player.ServerId) || PlayerFreecamState.IsActive(player.ServerId))
             {
                 flags |= PresenceRow.FlagNoClip;
             }
