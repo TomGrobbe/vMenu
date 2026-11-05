@@ -51,6 +51,8 @@ public static class Freecam
 
     private const int FadeMs = 500;
 
+    private const int ExitHereHoldMs = 500;
+
     private const int ControlGroup = 0;
 
     private const int LookLeftRight = 1;
@@ -120,6 +122,8 @@ public static class Freecam
 
     private static bool _buttonsBuilt;
 
+    private static int _toggleHeldSince;
+
     private static TickHandle? _tick;
 
     public static bool IsActive => _phase == Phase.Flying;
@@ -167,7 +171,7 @@ public static class Freecam
         FreecamKeyBindings.Play.Pressed = PlayPressed;
         FreecamKeyBindings.HideHud.Pressed = () => _hudHidden = !_hudHidden;
         FreecamKeyBindings.Hints.Pressed = () => UserDefaults.FreecamHideHints.Value = !UserDefaults.FreecamHideHints.Value;
-        FreecamKeyBindings.Register(() => IsActive && !Native.IsPauseMenuActive(), ToggleRequested);
+        FreecamKeyBindings.Register(() => IsActive && !Native.IsPauseMenuActive(), TogglePressed, ToggleReleased);
 
         _tick = TickRegistry.Register(
             "Freecam.Camera",
@@ -250,7 +254,7 @@ public static class Freecam
         }
     }
 
-    private static void ToggleRequested()
+    private static void TogglePressed()
     {
         API.RunOnMainThread(() =>
         {
@@ -259,14 +263,36 @@ public static class Freecam
                 return;
             }
 
-            if (_phase == Phase.Off && !IsAllowed)
+            if (_phase == Phase.Flying)
+            {
+                _toggleHeldSince = Native.GetGameTimer();
+
+                return;
+            }
+
+            if (!IsAllowed)
             {
                 Notifications.Warning(MenuText.Key(Loc.Freecam.ToggleDenied));
 
                 return;
             }
 
-            SetActive(_phase == Phase.Off);
+            SetActive(true);
+        });
+    }
+
+    private static void ToggleReleased()
+    {
+        API.RunOnMainThread(() =>
+        {
+            if (_toggleHeldSince == 0)
+            {
+                return;
+            }
+
+            _toggleHeldSince = 0;
+
+            SetActive(false);
         });
     }
 
@@ -347,6 +373,7 @@ public static class Freecam
         _worldFov = _fov;
         _worldFocus = CameraEffects.FocusDistance;
         _hudHidden = false;
+        _toggleHeldSince = 0;
 
         _camera = Native.CreateCamWithParams(CameraName, position.X, position.Y, position.Z, _pitch, 0f, _yaw, _fov, true, Orientation.RotationOrder);
 
@@ -372,6 +399,35 @@ public static class Freecam
 
         FreecamActor.Finish(ped);
 
+        Complete(ped);
+    }
+
+    // The car is left behind on purpose: it can be far away with nobody near it, so it can't be brought along.
+    private static void ExitHere()
+    {
+        var ped = Native.PlayerPedId();
+        var position = _worldPosition;
+
+        _toggleHeldSince = 0;
+
+        PathPlayer.Stop();
+        DestroyCamera();
+        Buttons.Hide();
+
+        if (Native.GetGroundZFor_3dCoord(position.X, position.Y, position.Z, out var ground, false, false))
+        {
+            position = new Vector3(position.X, position.Y, ground);
+        }
+
+        FreecamActor.FinishAt(ped, position, _worldRotation.Z);
+
+        API.EmitServer(PlayerStateEvents.ReportFreecam, false);
+
+        Complete(ped);
+    }
+
+    private static void Complete(int ped)
+    {
         _phase = Phase.Off;
 
         FadeBackIn();
@@ -473,6 +529,13 @@ public static class Freecam
         if (!Native.DoesCamExist(_camera) || SceneLock.IsActive || Native.IsEntityDead(ped, false))
         {
             SetActive(false);
+
+            return;
+        }
+
+        if (_toggleHeldSince != 0 && Native.GetGameTimer() - _toggleHeldSince >= ExitHereHoldMs)
+        {
+            ExitHere();
 
             return;
         }
@@ -752,6 +815,7 @@ public static class Freecam
         }
 
         Buttons
+            .Add(Text(Loc.Freecam.ButtonExit), FreecamKeyBindings.Toggle.KeyboardControl)
             .Add(
                 () => MenuText.Key(Loc.Freecam.ButtonSpeed, ("speed", MenuText.Literal(Speed.ToString("0.##", CultureInfo.InvariantCulture)))).Resolve(Localizer.Current),
                 FreecamKeyBindings.SpeedUp.KeyboardControl,

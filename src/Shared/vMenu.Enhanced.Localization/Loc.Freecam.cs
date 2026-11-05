@@ -10,6 +10,12 @@ public static partial class Loc
         [English("Start the freecam first.")]
         public const string NotActive = "freecam.notactive";
 
+        [English("You can't spawn vehicles while the freecam is on.")]
+        public const string NoVehicleSpawning = "freecam.novehiclespawning";
+
+        [English("Exit (hold to stay here)")]
+        public const string ButtonExit = "freecam.button.exit";
+
         [English("Move")]
         public const string ButtonMove = "freecam.button.move";
 

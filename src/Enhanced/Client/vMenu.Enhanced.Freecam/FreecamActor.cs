@@ -153,7 +153,11 @@ internal static class FreecamActor
         return Native.IsNewLoadSceneLoaded() && (_vehicleNetworkId == 0 || Vehicle() != 0);
     }
 
-    internal static void Finish(int ped)
+    internal static void Finish(int ped) => Release(ped, _origin, _heading, backInVehicle: true);
+
+    internal static void FinishAt(int ped, Vector3 position, float heading) => Release(ped, position, heading, backInVehicle: false);
+
+    private static void Release(int ped, Vector3 position, float heading, bool backInVehicle)
     {
         if (!_away)
         {
@@ -170,8 +174,8 @@ internal static class FreecamActor
             API.EmitServer(PlayerStateEvents.FreecamDone);
         }
 
-        Native.SetEntityCoordsNoOffset(ped, _origin.X, _origin.Y, _origin.Z, false, false, false);
-        Native.SetEntityHeading(ped, _heading);
+        Native.SetEntityCoordsNoOffset(ped, position.X, position.Y, position.Z, false, false, false);
+        Native.SetEntityHeading(ped, heading);
 
         Native.FreezeEntityPosition(ped, false);
         Native.SetEntityInvincible(ped, false, false);
@@ -181,7 +185,7 @@ internal static class FreecamActor
         Native.SetPoliceIgnorePlayer(Native.PlayerId(), false);
         Native.ActivatePhysics(ped);
 
-        var vehicle = Vehicle();
+        var vehicle = backInVehicle ? Vehicle() : 0;
 
         if (vehicle != 0)
         {

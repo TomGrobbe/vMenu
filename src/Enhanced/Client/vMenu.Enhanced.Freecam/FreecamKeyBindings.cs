@@ -84,7 +84,7 @@ internal static class FreecamKeyBindings
 
     internal static HeldKey Slow { get; } = new(Prefix + "slow", PadDefaults.FrontendX);
 
-    internal static TapKey Toggle { get; } = new(Prefix + "toggle");
+    internal static HeldKey Toggle { get; } = new(Prefix + "toggle");
 
     internal static TapKey Reset { get; } = new(Prefix + "reset", PadDefaults.ScriptLeftStick);
 
@@ -104,7 +104,7 @@ internal static class FreecamKeyBindings
 
     private static bool _registered;
 
-    internal static void Register(Func<bool> isActive, Action onToggle)
+    internal static void Register(Func<bool> isActive, Action onTogglePressed, Action onToggleReleased)
     {
         if (_registered)
         {
@@ -120,8 +120,9 @@ internal static class FreecamKeyBindings
             toggleKey = "F3";
         }
 
-        SharedAPI.Commands.RegisterCommand(Toggle.Command, false, onToggle);
-        Native.RegisterKeyMapping(Toggle.Command, "vMenu Freecam: Toggle on/off", Keyboard, toggleKey);
+        SharedAPI.Commands.RegisterCommand($"+{Toggle.Command}", false, onTogglePressed);
+        SharedAPI.Commands.RegisterCommand($"-{Toggle.Command}", false, onToggleReleased);
+        Native.RegisterKeyMapping($"+{Toggle.Command}", "vMenu Freecam: Toggle on/off, hold to stay where the camera is", Keyboard, toggleKey);
 
         RegisterHold(Forward, "Move forward", "W", null);
         RegisterHold(Backward, "Move backward", "S", null);
