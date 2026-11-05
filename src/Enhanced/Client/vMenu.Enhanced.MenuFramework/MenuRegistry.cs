@@ -30,6 +30,7 @@ public static class MenuRegistry
         // Keybinds get registered with the game at startup, so changing one takes a restart either way.
         KeyBindingSettings.MenuToggleKey,
         KeyBindingSettings.NoClipToggleKey,
+        KeyBindingSettings.FreecamToggleKey,
         KeyBindingSettings.TeleportKey,
     ];
 

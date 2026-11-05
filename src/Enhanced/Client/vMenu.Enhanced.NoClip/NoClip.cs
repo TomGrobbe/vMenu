@@ -56,6 +56,8 @@ public static class NoClip
 
     public static bool IsActive => NoclipActive;
 
+    public static Func<bool> IsBlocked { get; set; } = static () => false;
+
     private static bool _lentByStaff;
 
     private static bool _putThereByStaff;
@@ -201,7 +203,7 @@ public static class NoClip
     internal static void SetNoclipActive(bool active, bool byStaff = false)
     {
         // The key tick follows the permission, but a revoke can land between the two.
-        if (active && ((!byStaff && !IsAllowed) || SceneLock.IsActive))
+        if (active && ((!byStaff && !IsAllowed) || SceneLock.IsActive || IsBlocked()))
         {
             return;
         }

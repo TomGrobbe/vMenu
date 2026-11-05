@@ -14,4 +14,6 @@ public static class Global
     public const string Staff = "vMenu.Enhanced.Staff";
 
     public const string NoClip = "vMenu.Enhanced.NoClip";
+
+    public const string Freecam = "vMenu.Enhanced.Freecam";
 }

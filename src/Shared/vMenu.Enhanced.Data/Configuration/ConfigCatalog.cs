@@ -30,6 +30,7 @@ public static class ConfigCatalog
         [
             KeyBindings.MenuToggleKey,
             KeyBindings.NoClipToggleKey,
+            KeyBindings.FreecamToggleKey,
             KeyBindings.TeleportKey,
         ]),
         new("Menu Appearance",

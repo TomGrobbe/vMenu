@@ -37,6 +37,7 @@
     <Project Path="src/Enhanced/Client/vMenu.Enhanced.Configuration/vMenu.Enhanced.Configuration.csproj" />
     <Project Path="src/Enhanced/Client/vMenu.Enhanced.Core/vMenu.Enhanced.Core.csproj" />
     <Project Path="src/Enhanced/Client/vMenu.Enhanced.Events/vMenu.Enhanced.Events.csproj" />
+    <Project Path="src/Enhanced/Client/vMenu.Enhanced.Freecam/vMenu.Enhanced.Freecam.csproj" />
     <Project Path="src/Enhanced/Client/vMenu.Enhanced.MenuFramework/vMenu.Enhanced.MenuFramework.csproj" />
     <Project Path="src/Enhanced/Client/vMenu.Enhanced.Menus/vMenu.Enhanced.Menus.csproj" />
     <Project Path="src/Enhanced/Client/vMenu.Enhanced.NativeHooks/vMenu.Enhanced.NativeHooks.csproj" />

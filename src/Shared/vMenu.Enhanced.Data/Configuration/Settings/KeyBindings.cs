@@ -18,6 +18,12 @@ public static class KeyBindings
         Default = "F2",
     };
 
+    public static readonly StringSetting FreecamToggleKey = new("vMenu.Enhanced.KeyBindings.FreecamToggleKey")
+    {
+        Description = "The default key that turns the freecam on and off. " + KeyNote,
+        Default = "F3",
+    };
+
     public static readonly StringSetting TeleportKey = new("vMenu.Enhanced.KeyBindings.TeleportKey")
     {
         Description =

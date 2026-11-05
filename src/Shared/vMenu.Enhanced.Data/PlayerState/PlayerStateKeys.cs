@@ -6,6 +6,9 @@ public static class PlayerStateKeys
     // is in noclip, unless the person looking may see them anyway.
     public const string NoClip = "vMenu:noclip";
 
+    // Written by the server. The ped travels with the camera, so blips and overhead names hide it like noclip.
+    public const string Freecam = "vMenu:freecam";
+
     // Written by the server. Read by player blips and overhead names, which mark a staff member out in
     // orange for everybody else.
     public const string Staff = "vMenu:staff";
