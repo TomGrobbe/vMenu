@@ -27,6 +27,8 @@ internal static class FreecamActor
 
     private const int Locked = 2;
 
+    private const int DriverSeat = -1;
+
     private static Vector3 _origin;
 
     private static float _heading;
@@ -36,6 +38,8 @@ internal static class FreecamActor
     private static int _vehicleNetworkId;
 
     private static int _seat;
+
+    private static bool _driver;
 
     private static int _lockStatus;
 
@@ -56,6 +60,7 @@ internal static class FreecamActor
         _vehicle = Native.IsPedInAnyVehicle(ped, false) ? Native.GetVehiclePedIsIn(ped, false) : 0;
         _vehicleNetworkId = NetworkIdOf(_vehicle);
         _seat = _vehicle != 0 ? SeatOf(_vehicle, ped) : 0;
+        _driver = _vehicle != 0 && _seat == DriverSeat;
         _away = true;
         _leaving = _vehicle != 0;
 
@@ -69,8 +74,15 @@ internal static class FreecamActor
         Native.SetEntityVisible(ped, false, false);
         Native.ClearPedTasksImmediately(ped);
 
-        _lockStatus = Native.GetVehicleDoorLockStatus(_vehicle);
         _outSince = 0;
+
+        // Somebody else's car stays theirs: asking for control of it makes it stutter for its driver.
+        if (!_driver)
+        {
+            return;
+        }
+
+        _lockStatus = Native.GetVehicleDoorLockStatus(_vehicle);
 
         Native.SetVehicleDoorsLocked(_vehicle, Locked);
 
@@ -169,7 +181,7 @@ internal static class FreecamActor
 
         Native.NewLoadSceneStop();
 
-        if (_vehicleNetworkId != 0)
+        if (_driver && _vehicleNetworkId != 0)
         {
             API.EmitServer(PlayerStateEvents.FreecamDone);
         }
@@ -189,12 +201,19 @@ internal static class FreecamActor
 
         if (vehicle != 0)
         {
-            Native.SetVehicleDoorsLocked(vehicle, _lockStatus > 0 ? _lockStatus : Unlocked);
+            if (_driver)
+            {
+                Native.SetVehicleDoorsLocked(vehicle, _lockStatus > 0 ? _lockStatus : Unlocked);
+            }
 
             if (!Native.IsEntityDead(vehicle, false) && Native.IsVehicleSeatFree(vehicle, _seat, false))
             {
                 Native.SetPedIntoVehicle(ped, vehicle, _seat);
-                Native.NetworkRequestControlOfEntity(vehicle);
+
+                if (_driver)
+                {
+                    Native.NetworkRequestControlOfEntity(vehicle);
+                }
             }
             else
             {
@@ -206,6 +225,7 @@ internal static class FreecamActor
 
         _vehicle = 0;
         _vehicleNetworkId = 0;
+        _driver = false;
 
         Native.SetGameplayCamRelativeHeading(0f);
         Native.SetGameplayCamRelativePitch(0f, 1f);
@@ -217,7 +237,7 @@ internal static class FreecamActor
     {
         var now = Native.GetGameTimer();
 
-        if (now < _nextControlRequest)
+        if (!_driver || now < _nextControlRequest)
         {
             return;
         }
