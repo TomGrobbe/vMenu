@@ -11,7 +11,7 @@ Everything vMenu Enhanced puts on a key is a real FiveM key binding. Players can
 | --------------------------------------------------------- | ------------ | ---------------------- | --------------------------------------------------------------------------------------------------- |
 | Open and close the menu                                   | `M`          | `Change camera button` | `vMenu.Enhanced.KeyBindings.MenuToggleKey` (for keyboard only, controller default can't be changed) |
 | Turn noclip on and off                                    | `F2`         | not bound              | `vMenu.Enhanced.KeyBindings.NoClipToggleKey`                                                        |
-| Turn the freecam on and off                               | `F3`         | not bound              | `vMenu.Enhanced.KeyBindings.FreecamToggleKey`                                                       |
+| Turn the freecam on and off, hold to stay at the camera   | `F3`         | not bound              | `vMenu.Enhanced.KeyBindings.FreecamToggleKey`                                                       |
 | Run the teleport the player picked                        | `F10`        | not bound              | `vMenu.Enhanced.KeyBindings.TeleportKey`                                                            |
 | Flip a helmet visor, held                                 | `F11`        | D-pad right            | none                                                                                                |
 | Expand or zoom the minimap                                | `Z`          | D-pad down             | none                                                                                                |

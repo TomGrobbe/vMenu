@@ -9,6 +9,10 @@ The freecam detaches the camera from your character so you can fly it anywhere o
 
 Press `F3` to start or stop the freecam, or use the **Freecam** checkbox at the top of the Filmmaker menu. There is no distance limit and the map loads around the camera.
 
+Hold `F3` for half a second to stop the freecam and stay where the camera is. Your character is put on the ground below the camera instead of going back. A vehicle you left behind is not brought along.
+
+Vehicles cannot be spawned while the freecam is on.
+
 While the freecam is on, your character is invisible and travels with the camera, because OneSync only shows players the world around their own character. Other players do not see you. When you stop, your character is put back where you left it, back in its vehicle seat if it was in one. The doors of that vehicle are locked until you are back.
 
 Coming back from more than 300 m away fades the screen out and in while the area loads. Player blips and overhead names hide somebody in the freecam the same way they hide somebody in noclip.
@@ -22,6 +26,7 @@ The default keys follow the Rockstar Editor. Every one of them is a normal FiveM
 | What it does                  | Keyboard                     | Controller         |
 | ----------------------------- | ---------------------------- | ------------------ |
 | Start or stop the freecam     | `F3`                         | not bound          |
+| Stop and stay at the camera   | hold `F3`                    | not bound          |
 | Move                          | `W` `A` `S` `D`              | left stick         |
 | Look around                   | mouse                        | right stick        |
 | Move up / down                | `Page Up` / `Page Down`      | `RB` / `LB`        |
