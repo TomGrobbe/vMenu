@@ -298,7 +298,7 @@ public sealed class VehicleSpawnerMenu : MenuDefinition
             return;
         }
 
-        if (!VehicleSpawnLimit.TryTakeOrWarn())
+        if (!VehicleSpawning.CanSpawnOrWarn() || !VehicleSpawnLimit.TryTakeOrWarn())
         {
             return;
         }

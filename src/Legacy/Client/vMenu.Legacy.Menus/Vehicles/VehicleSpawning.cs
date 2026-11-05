@@ -10,6 +10,7 @@ using vMenu.Enhanced.MenuFramework;
 using vMenu.Enhanced.Localization;
 using vMenu.Enhanced.Menus.Vehicles.Personal;
 
+using FreecamCamera = vMenu.Enhanced.Freecam.Freecam;
 using VehicleSpawnerSettings = vMenu.Enhanced.Data.Configuration.Settings.VehicleSpawner;
 
 using vMenu.Legacy.Hosting;
@@ -27,10 +28,26 @@ public static class VehicleSpawning
 
     private static int _previousVehicle;
 
+    public static bool CanSpawnOrWarn()
+    {
+        if (!FreecamCamera.IsActive)
+        {
+            return true;
+        }
+
+        Notifications.Warning(MenuText.Key(Loc.Freecam.NoVehicleSpawning));
+
+        return false;
+    }
+
     public static Task<Vehicle?> SpawnAsync(string modelName) => SpawnAsync(Hashing.Joaat(modelName));
 
     public static async Task<Vehicle?> SpawnAsync(uint hash)
     {
+        if (FreecamCamera.IsActive)
+        {
+            return null;
+        }
 
         if (!API.IsModelValid(hash))
         {
