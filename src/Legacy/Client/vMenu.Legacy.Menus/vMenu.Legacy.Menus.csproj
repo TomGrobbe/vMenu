@@ -17,6 +17,7 @@
     <ProjectReference Include="..\vMenu.Legacy.Configuration\vMenu.Legacy.Configuration.csproj" />
     <ProjectReference Include="..\vMenu.Legacy.Events\vMenu.Legacy.Events.csproj" />
     <ProjectReference Include="..\vMenu.Legacy.MenuFramework\vMenu.Legacy.MenuFramework.csproj" />
+    <ProjectReference Include="..\vMenu.Legacy.Freecam\vMenu.Legacy.Freecam.csproj" />
     <ProjectReference Include="..\vMenu.Legacy.NoClip\vMenu.Legacy.NoClip.csproj" />
     <ProjectReference Include="..\vMenu.Legacy.Permissions\vMenu.Legacy.Permissions.csproj" />
     <ProjectReference Include="..\vMenu.Legacy.Plugins\vMenu.Legacy.Plugins.csproj" />
