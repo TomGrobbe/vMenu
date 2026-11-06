@@ -79,7 +79,8 @@ public static class CharacterRespawn
         var style = character.CurrentStyle;
         var outfit = character.CurrentOutfit;
 
-        await FreemodeWriter.ApplyAsync(API.PlayerPedId(), character, style, outfit);
+        // Said once when the character was picked, every death would repeat it.
+        await FreemodeWriter.ApplyAsync(API.PlayerPedId(), character, style, outfit, warnLeftOut: false);
 
         MpCharacterState.Wearing(character, style, outfit, entry);
 

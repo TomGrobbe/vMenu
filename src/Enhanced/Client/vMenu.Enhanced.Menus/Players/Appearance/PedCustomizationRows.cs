@@ -20,14 +20,6 @@ namespace vMenu.Enhanced.Menus.Players.Appearance;
 // rows' counting, so a player types back the number they are looking at.
 public static class PedCustomizationRows
 {
-    private const int RefusedNotificationMs = 3000;
-
-    private const int ConfirmPollMs = 100;
-
-    private const int SlowAfterMs = 1000;
-
-    private const int RefusedAfterMs = 4000;
-
     [Flags]
     internal enum PedRows
     {
@@ -203,7 +195,6 @@ public static class PedCustomizationRows
                     changing.Left,
                     component: true,
                     memory,
-                    () => Redraw(changing.Item, ComponentValue(scope, slot, memory), ComponentDescription(scope, slot, memory)),
                     fits,
                     redrawTorso);
 
@@ -224,7 +215,7 @@ public static class PedCustomizationRows
 
         if (memory.Pending(Worn(scope, ped, slot, component: true)) is int asked)
         {
-            return PendingValue(asked, scope.DrawableCount(ped, slot), memory.Confirmed);
+            return PendingValue(asked, scope.DrawableCount(ped, slot));
         }
 
         if (scope.CurrentDrawable(ped, slot) is not int drawable)
@@ -250,14 +241,13 @@ public static class PedCustomizationRows
 
         if (memory.Pending(worn) is int asked)
         {
-            return PendingDescription(
+            return Describe(
                 PedComponentSlots.NameKey(slot),
                 scope,
                 asked,
-                worn,
                 scope.DrawableCount(ped, slot),
-                scope.TextureCount(ped, slot, asked),
-                memory);
+                0,
+                scope.TextureCount(ped, slot, asked));
         }
 
         if (scope.CurrentDrawable(ped, slot) is not int drawable)
@@ -286,8 +276,6 @@ public static class PedCustomizationRows
 
         if (memory.Pending(Worn(scope, ped, slot, component: true)) is not null)
         {
-            WarnIfRefused(memory);
-
             return;
         }
 
@@ -334,8 +322,7 @@ public static class PedCustomizationRows
                     slot,
                     changing.Left,
                     component: false,
-                    memory,
-                    () => Redraw(changing.Item, PropValue(scope, slot, memory), PropDescription(scope, slot, memory)));
+                    memory);
 
                 changing.Item.Description = PropDescription(scope, slot, memory);
 
@@ -355,7 +342,7 @@ public static class PedCustomizationRows
 
         if (memory.Pending(Worn(scope, ped, slot, component: false)) is int asked)
         {
-            return PendingValue(asked, scope.PropCount(ped, slot), memory.Confirmed);
+            return PendingValue(asked, scope.PropCount(ped, slot));
         }
 
         if (scope.CurrentProp(ped, slot) is not int drawable)
@@ -378,14 +365,13 @@ public static class PedCustomizationRows
 
         if (memory.Pending(worn) is int asked)
         {
-            return PendingDescription(
+            return Describe(
                 name,
                 scope,
                 asked,
-                worn,
                 scope.PropCount(ped, slot),
-                scope.PropTextureCount(ped, slot, asked),
-                memory);
+                0,
+                scope.PropTextureCount(ped, slot, asked));
         }
 
         if (scope.CurrentProp(ped, slot) is not int drawable)
@@ -418,8 +404,6 @@ public static class PedCustomizationRows
 
         if (memory.Pending(Worn(scope, ped, slot, component: false)) is not null)
         {
-            WarnIfRefused(memory);
-
             return;
         }
 
@@ -490,7 +474,6 @@ public static class PedCustomizationRows
         bool left,
         bool component,
         ShiftMemory memory,
-        Action redraw,
         bool fitTorso = false,
         Action? redrawTorso = null)
     {
@@ -540,7 +523,7 @@ public static class PedCustomizationRows
             scope.SetProp(ped, slot, next, 0);
         }
 
-        Remember(scope, ped, slot, component, memory, worn, next, redraw);
+        Remember(scope, ped, slot, component, memory, worn, next);
 
         ClothingDiagnostics.Pressed(scope, slot, component, left, count, worn, current, next);
     }
@@ -556,11 +539,8 @@ public static class PedCustomizationRows
         bool component,
         ShiftMemory memory,
         int worn,
-        int asked,
-        Action redraw)
+        int asked)
     {
-        memory.Attempt++;
-
         if (Worn(scope, ped, slot, component) == asked)
         {
             memory.Worn = null;
@@ -570,110 +550,14 @@ public static class PedCustomizationRows
 
         memory.Worn = worn;
         memory.Asked = asked;
-        memory.Confirmed = false;
-        memory.Slow = false;
-
-        _ = ConfirmAsync(scope, slot, component, memory, memory.Attempt, redraw);
     }
 
-    // Streamed pieces can take a moment to go on, so a piece only counts as refused once it had time to load.
-    private static async Task ConfirmAsync(
-        PedVariationScope scope,
-        int slot,
-        bool component,
-        ShiftMemory memory,
-        int attempt,
-        Action redraw)
-    {
-        try
-        {
-            var started = Native.GetGameTimer();
-
-            while (true)
-            {
-                await API.Delay(ConfirmPollMs);
-
-                if (memory.Attempt != attempt)
-                {
-                    return;
-                }
-
-                if (memory.Pending(Worn(scope, Native.PlayerPedId(), slot, component)) is not int)
-                {
-                    memory.Worn = null;
-
-                    redraw();
-
-                    return;
-                }
-
-                var elapsed = Native.GetGameTimer() - started;
-
-                if (elapsed >= RefusedAfterMs)
-                {
-                    memory.Confirmed = true;
-
-                    WarnIfRefused(memory);
-
-                    redraw();
-
-                    return;
-                }
-
-                if (elapsed >= SlowAfterMs && !memory.Slow)
-                {
-                    memory.Slow = true;
-
-                    redraw();
-                }
-            }
-        }
-        catch (Exception exception)
-        {
-            Log.Error("[Appearance] Checking a clothing change failed: " + exception);
-        }
-    }
-
-    private static void WarnIfRefused(ShiftMemory memory)
-    {
-        if (memory.Confirmed)
-        {
-            Notifications.Warning(MenuText.Key(Loc.PlayerAppearance.NotAppliedNotification), RefusedNotificationMs);
-        }
-    }
-
-    private static string PendingValue(int asked, int drawables, bool refused) =>
+    private static string PendingValue(int asked, int drawables) =>
         Resolve(MenuText.Key(
-            refused ? Loc.PlayerAppearance.ValueNotApplied : Loc.PlayerAppearance.Value,
+            Loc.PlayerAppearance.Value,
             ("position", Position(asked)),
             ("drawables", Number(drawables)),
             ("texturePosition", Position(0))));
-
-    private static string PendingDescription(
-        string nameKey,
-        PedVariationScope scope,
-        int asked,
-        int worn,
-        int drawables,
-        int textures,
-        ShiftMemory memory)
-    {
-        var description = Describe(nameKey, scope, asked, drawables, 0, textures);
-
-        if (!memory.Confirmed)
-        {
-            return memory.Slow
-                ? description + "\n" + Resolve(MenuText.Key(Loc.PlayerAppearance.LoadingSlowly, ("id", Position(asked))))
-                : description;
-        }
-
-        return description
-            + "\n"
-            + Resolve(MenuText.Key(
-                Loc.PlayerAppearance.NotApplied,
-                ("id", Position(asked)),
-                ("worn", worn < 0 ? MenuText.Key(Loc.PlayerAppearance.ValueNone) : Position(worn))));
-    }
 
     // Asked for as a position counting from one, matching what the row shows. Legacy asked for a position
     // in its own menu list, which for a prop had a "none" row at the front, so every prop number a player
@@ -740,8 +624,7 @@ public static class PedCustomizationRows
                 component,
                 memory,
                 worn,
-                drawable,
-                () => Redraw(item, ComponentValue(scope, slot, memory), ComponentDescription(scope, slot, memory)));
+                drawable);
 
             Redraw(item, ComponentValue(scope, slot, memory), ComponentDescription(scope, slot, memory));
 
@@ -757,8 +640,7 @@ public static class PedCustomizationRows
             component,
             memory,
             worn,
-            drawable,
-            () => Redraw(item, PropValue(scope, slot, memory), PropDescription(scope, slot, memory)));
+            drawable);
 
         Redraw(item, PropValue(scope, slot, memory), PropDescription(scope, slot, memory));
 
@@ -771,13 +653,16 @@ public static class PedCustomizationRows
 
         internal int Asked { get; set; }
 
-        internal bool Confirmed { get; set; }
+        internal int? Pending(int worn)
+        {
+            // A piece that loaded late is no longer pending, even if the old one comes back later.
+            if (worn == Asked)
+            {
+                Worn = null;
+            }
 
-        internal bool Slow { get; set; }
-
-        internal int Attempt { get; set; }
-
-        internal int? Pending(int worn) => Worn == worn && Asked != worn ? Asked : null;
+            return Worn == worn && Asked != worn ? Asked : null;
+        }
     }
 
     private static void Redraw(MenuDynamicListItem item, string value, string description)

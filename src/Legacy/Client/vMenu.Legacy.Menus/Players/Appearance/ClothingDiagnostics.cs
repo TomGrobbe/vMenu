@@ -55,7 +55,8 @@ internal static class ClothingDiagnostics
         int count,
         int worn,
         int from,
-        int next)
+        int next,
+        int skipped)
     {
         if (!Log.IsEnabled(LogLevel.Debug))
         {
@@ -64,7 +65,7 @@ internal static class ClothingDiagnostics
 
         try
         {
-            Check(scope, slot, component, left, count, worn, from, next);
+            Check(scope, slot, component, left, count, worn, from, next, skipped);
         }
         catch (Exception exception)
         {
@@ -176,12 +177,18 @@ internal static class ClothingDiagnostics
         }
 
         var invalid = new List<int>();
+        var gen9 = new List<int>();
 
         for (var drawable = 0; drawable < count; drawable++)
         {
             if (!API.IsPedComponentVariationValid(ped, slot, drawable, 0))
             {
                 invalid.Add(drawable);
+            }
+
+            if (PedVariationScope.Global.IsGen9Exclusive(ped, slot, drawable))
+            {
+                gen9.Add(drawable);
             }
         }
 
@@ -206,6 +213,11 @@ internal static class ClothingDiagnostics
         if (invalid.Count > 0)
         {
             Log.Debug(Prefix + $"  component {slot} invalid with texture 0: {Ranges(invalid)}");
+        }
+
+        if (gen9.Count > 0)
+        {
+            Log.Debug(Prefix + $"  component {slot} newer game only: {Ranges(gen9)}");
         }
     }
 
@@ -243,7 +255,8 @@ internal static class ClothingDiagnostics
         int count,
         int current,
         int from,
-        int next)
+        int next,
+        int skipped)
     {
         var ped = API.PlayerPedId();
         var key = component ? slot : 100 + slot;
@@ -274,6 +287,11 @@ internal static class ClothingDiagnostics
         if (from != current)
         {
             Log.Debug(Prefix + $"SKIPPING {what}: ped still wears {current}, stepping on from the refused {from} to {next}");
+        }
+
+        if (skipped > 0)
+        {
+            Log.Debug(Prefix + $"SKIPPED GEN9 {what}: stepped past {skipped} newer game only pieces to {next}");
         }
 
         var wrapped = left ? next > current : next < current;

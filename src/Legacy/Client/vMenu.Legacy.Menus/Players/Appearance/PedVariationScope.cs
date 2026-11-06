@@ -64,6 +64,9 @@ internal sealed class PedVariationScope
         ? API.IsPedCollectionComponentVariationValid(ped, slot, collection, drawable, texture)
         : API.IsPedComponentVariationValid(ped, slot, drawable, texture);
 
+    internal bool IsGen9Exclusive(int ped, int slot, int drawable) =>
+        Gen9Exclusive.Component(ped, slot, _collection, drawable);
+
     internal void SetComponent(int ped, int slot, int drawable, int texture, int palette)
     {
         if (_collection is { } collection)

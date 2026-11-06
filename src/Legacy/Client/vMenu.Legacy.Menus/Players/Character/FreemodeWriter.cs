@@ -12,7 +12,12 @@ public static class FreemodeWriter
 {
     private const int BlendTimeout = 1000;
 
-    public static async Task ApplyAsync(int ped, MpCharacter character, MpCharacterStyle? style, MpCharacterOutfit? outfit)
+    public static async Task ApplyAsync(
+        int ped,
+        MpCharacter character,
+        MpCharacterStyle? style,
+        MpCharacterOutfit? outfit,
+        bool warnLeftOut = true)
     {
         await ApplyCoreAsync(ped, character.Core);
 
@@ -23,7 +28,7 @@ public static class FreemodeWriter
 
         if (outfit is not null)
         {
-            PedAppearanceWriter.Apply(ped, outfit.Outfit);
+            PedAppearanceWriter.Apply(ped, outfit.Outfit, warnLeftOut);
         }
 
         if (style is not null)
