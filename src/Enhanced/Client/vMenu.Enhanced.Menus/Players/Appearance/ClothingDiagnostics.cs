@@ -4,8 +4,6 @@ using vMenu.Enhanced.Logging;
 
 namespace vMenu.Enhanced.Menus.Players.Appearance;
 
-// Temporary, for the add-on clothing reports where scrolling right stops at a certain number. Logged as
-// warnings so it shows without debug mode. Remove once that report is settled.
 internal static class ClothingDiagnostics
 {
     private const string Prefix = "[ClothingDebug] ";
@@ -29,6 +27,11 @@ internal static class ClothingDiagnostics
 
     internal static void Opened(PedVariationScope scope, string menu)
     {
+        if (!Log.IsEnabled(LogLevel.Debug))
+        {
+            return;
+        }
+
         try
         {
             Report(scope, menu);
@@ -39,11 +42,24 @@ internal static class ClothingDiagnostics
         }
     }
 
-    internal static void Pressed(PedVariationScope scope, int slot, bool component, bool left, int count, int current, int next)
+    internal static void Pressed(
+        PedVariationScope scope,
+        int slot,
+        bool component,
+        bool left,
+        int count,
+        int worn,
+        int from,
+        int next)
     {
+        if (!Log.IsEnabled(LogLevel.Debug))
+        {
+            return;
+        }
+
         try
         {
-            Check(scope, slot, component, left, count, current, next);
+            Check(scope, slot, component, left, count, worn, from, next);
         }
         catch (Exception exception)
         {
@@ -59,16 +75,16 @@ internal static class ClothingDiagnostics
 
         LastPress.Clear();
 
-        Log.Warning(Prefix + $"=== opened '{menu}', scope {ScopeName(scope)}");
-        Log.Warning(Prefix + $"flavor Enhanced, vMenu {Native.GetResourceMetadata(resource, "version", 0)}, build {Native.GetGameBuildNumber()}, ped {ped}");
-        Log.Warning(Prefix + $"model {model}, freemode male {model == PedSpawning.FreemodeModel(true)}, freemode female {model == PedSpawning.FreemodeModel(false)}");
+        Log.Debug(Prefix + $"=== opened '{menu}', scope {ScopeName(scope)}");
+        Log.Debug(Prefix + $"flavor Enhanced, vMenu {Native.GetResourceMetadata(resource, "version", 0)}, build {Native.GetGameBuildNumber()}, ped {ped}");
+        Log.Debug(Prefix + $"model {model}, freemode male {model == PedSpawning.FreemodeModel(true)}, freemode female {model == PedSpawning.FreemodeModel(false)}");
 
         foreach (var slot in PedComponentSlots.All)
         {
             var drawable = Native.GetPedDrawableVariation(ped, slot);
             var texture = Native.GetPedTextureVariation(ped, slot);
 
-            Log.Warning(Prefix + $"component {slot}: global count {Native.GetNumberOfPedDrawableVariations(ped, slot)}, scope count {scope.DrawableCount(ped, slot)}, scope current {Show(scope.CurrentDrawable(ped, slot))}, "
+            Log.Debug(Prefix + $"component {slot}: global count {Native.GetNumberOfPedDrawableVariations(ped, slot)}, scope count {scope.DrawableCount(ped, slot)}, scope current {Show(scope.CurrentDrawable(ped, slot))}, "
                 + $"worn {drawable} texture {texture}/{Native.GetNumberOfPedTextureVariations(ped, slot, drawable)} palette {Native.GetPedPaletteVariation(ped, slot)}, "
                 + $"valid {Native.IsPedComponentVariationValid(ped, slot, drawable, texture)}, collection '{Native.GetPedDrawableVariationCollectionName(ped, slot)}' local {Native.GetPedDrawableVariationCollectionLocalIndex(ped, slot)}");
         }
@@ -83,14 +99,14 @@ internal static class ClothingDiagnostics
                 line += $" texture {Native.GetPedPropTextureIndex(ped, slot)}/{Native.GetNumberOfPedPropTextureVariations(ped, slot, worn)}, collection '{Native.GetPedPropCollectionName(ped, slot)}' local {Native.GetPedPropCollectionLocalIndex(ped, slot)}";
             }
 
-            Log.Warning(Prefix + line);
+            Log.Debug(Prefix + line);
         }
 
         var collections = Native.GetPedCollectionsCount(ped);
         var componentTotals = new int[PedComponentSlots.All.Length];
         var propTotals = new int[PropSlots.Length];
 
-        Log.Warning(Prefix + $"collections: {collections}");
+        Log.Debug(Prefix + $"collections: {collections}");
 
         for (var index = 0; index < collections; index++)
         {
@@ -115,7 +131,7 @@ internal static class ClothingDiagnostics
                 line += $" {PropSlots[at]}={count}";
             }
 
-            Log.Warning(Prefix + line);
+            Log.Debug(Prefix + line);
         }
 
         for (var at = 0; at < PedComponentSlots.All.Length; at++)
@@ -125,7 +141,7 @@ internal static class ClothingDiagnostics
 
             if (global != componentTotals[at])
             {
-                Log.Warning(Prefix + $"MISMATCH component {slot}: global count {global}, collections add up to {componentTotals[at]}");
+                Log.Debug(Prefix + $"MISMATCH component {slot}: global count {global}, collections add up to {componentTotals[at]}");
             }
 
             ComponentRanges(ped, slot, global);
@@ -138,13 +154,13 @@ internal static class ClothingDiagnostics
 
             if (global != propTotals[at])
             {
-                Log.Warning(Prefix + $"MISMATCH prop {slot}: global count {global}, collections add up to {propTotals[at]}");
+                Log.Debug(Prefix + $"MISMATCH prop {slot}: global count {global}, collections add up to {propTotals[at]}");
             }
 
             PropRanges(ped, slot, global);
         }
 
-        Log.Warning(Prefix + "=== end of open report");
+        Log.Debug(Prefix + "=== end of open report");
     }
 
     private static void ComponentRanges(int ped, int slot, int count)
@@ -176,7 +192,7 @@ internal static class ClothingDiagnostics
                 continue;
             }
 
-            Log.Warning(Prefix + $"  component {slot} global {start}-{drawable - 1} '{name}' local {Native.GetPedCollectionLocalIndexFromDrawable(ped, slot, start)}-{Native.GetPedCollectionLocalIndexFromDrawable(ped, slot, drawable - 1)}, textures of first {Native.GetNumberOfPedTextureVariations(ped, slot, start)}");
+            Log.Debug(Prefix + $"  component {slot} global {start}-{drawable - 1} '{name}' local {Native.GetPedCollectionLocalIndexFromDrawable(ped, slot, start)}-{Native.GetPedCollectionLocalIndexFromDrawable(ped, slot, drawable - 1)}, textures of first {Native.GetNumberOfPedTextureVariations(ped, slot, start)}");
 
             start = drawable;
             name = next ?? string.Empty;
@@ -184,7 +200,7 @@ internal static class ClothingDiagnostics
 
         if (invalid.Count > 0)
         {
-            Log.Warning(Prefix + $"  component {slot} invalid with texture 0: {Ranges(invalid)}");
+            Log.Debug(Prefix + $"  component {slot} invalid with texture 0: {Ranges(invalid)}");
         }
     }
 
@@ -207,14 +223,22 @@ internal static class ClothingDiagnostics
                 continue;
             }
 
-            Log.Warning(Prefix + $"  prop {slot} global {start}-{drawable - 1} '{name}' local {Native.GetPedCollectionLocalIndexFromProp(ped, slot, start)}-{Native.GetPedCollectionLocalIndexFromProp(ped, slot, drawable - 1)}, textures of first {Native.GetNumberOfPedPropTextureVariations(ped, slot, start)}");
+            Log.Debug(Prefix + $"  prop {slot} global {start}-{drawable - 1} '{name}' local {Native.GetPedCollectionLocalIndexFromProp(ped, slot, start)}-{Native.GetPedCollectionLocalIndexFromProp(ped, slot, drawable - 1)}, textures of first {Native.GetNumberOfPedPropTextureVariations(ped, slot, start)}");
 
             start = drawable;
             name = next ?? string.Empty;
         }
     }
 
-    private static void Check(PedVariationScope scope, int slot, bool component, bool left, int count, int current, int next)
+    private static void Check(
+        PedVariationScope scope,
+        int slot,
+        bool component,
+        bool left,
+        int count,
+        int current,
+        int from,
+        int next)
     {
         var ped = Native.PlayerPedId();
         var key = component ? slot : 100 + slot;
@@ -226,27 +250,32 @@ internal static class ClothingDiagnostics
         {
             if (previous.Count != count)
             {
-                Log.Warning(Prefix + $"COUNT CHANGED {what}: was {previous.Count}, now {count}");
+                Log.Debug(Prefix + $"COUNT CHANGED {what}: was {previous.Count}, now {count}");
             }
 
             if (previous.Next != current)
             {
-                Log.Warning(Prefix + $"READ BACK DIFFERS {what}: previous press asked {previous.Next}, this press read {current}");
+                Log.Debug(Prefix + $"READ BACK DIFFERS {what}: previous press asked {previous.Next}, this press read {current}");
             }
 
             if (previous.Left == left && previous.Current == current)
             {
-                Log.Warning(Prefix + $"STUCK {what}: pressed {direction} twice and both presses read {current}");
+                Log.Debug(Prefix + $"STUCK {what}: pressed {direction} twice and both presses read {current}");
             }
         }
 
         LastPress[key] = new Press(left, count, current, next);
 
+        if (from != current)
+        {
+            Log.Debug(Prefix + $"SKIPPING {what}: ped still wears {current}, stepping on from the refused {from} to {next}");
+        }
+
         var wrapped = left ? next > current : next < current;
 
         if (wrapped)
         {
-            Log.Warning(Prefix + $"WRAPPED {what}: pressed {direction} on {current} of count {count}, went to {next}");
+            Log.Debug(Prefix + $"WRAPPED {what}: pressed {direction} on {current} of count {count}, went to {next}");
         }
 
         if (landed == next)
@@ -254,7 +283,7 @@ internal static class ClothingDiagnostics
             return;
         }
 
-        Log.Warning(Prefix + $"DID NOT CHANGE {what}: pressed {direction}, read {current}, asked {next} of count {count}, immediately reads {Show(landed)}, {Detail(scope, ped, slot, component, next)}");
+        Log.Debug(Prefix + $"DID NOT CHANGE {what}: pressed {direction}, worn {current}, asked {next} of count {count}, immediately reads {Show(landed)}, {Detail(scope, ped, slot, component, next)}");
 
         _ = FollowUpAsync(scope, slot, component, next, what);
     }
@@ -274,7 +303,7 @@ internal static class ClothingDiagnostics
                 var ped = Native.PlayerPedId();
                 var value = Read(scope, ped, slot, component);
 
-                Log.Warning(Prefix + $"  follow up {what} after {delay} ms: asked {asked}, reads {Show(value)}, {Detail(scope, ped, slot, component, asked)}");
+                Log.Debug(Prefix + $"  follow up {what} after {delay} ms: asked {asked}, reads {Show(value)}, {Detail(scope, ped, slot, component, asked)}");
 
                 if (value == asked)
                 {
@@ -350,5 +379,5 @@ internal static class ClothingDiagnostics
     private static string ScopeName(PedVariationScope scope) =>
         scope.IsCollection ? $"collection '{scope.CollectionName}'" : "global";
 
-    private static string Show(int? value) => value is { } number ? $"{number}" : "none";
+    private static string Show(int? value) => value is int number ? $"{number}" : "none";
 }

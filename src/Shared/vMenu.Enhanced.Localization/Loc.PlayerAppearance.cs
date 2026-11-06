@@ -139,6 +139,18 @@ public static partial class Loc
         [English("~h~{slot}~h~\nNothing worn, ~y~{drawables}~s~ to choose from\nScroll to pick one.")]
         public const string PropRowDescriptionEmpty = "playerappearance.prop.desc.none";
 
+        [English("[{position}/{drawables}] not applied")]
+        public const string ValueNotApplied = "playerappearance.value.notapplied";
+
+        [English("~r~ID {id} could not be applied, still wearing {worn}. Check the FAQ in the vMenu docs for more info.~s~")]
+        public const string NotApplied = "playerappearance.notapplied";
+
+        [English("~o~ID {id} is taking a while to load.~s~")]
+        public const string LoadingSlowly = "playerappearance.loadingslowly";
+
+        [English("A clothing item could not be applied. Check the FAQ in the vMenu docs for more info.")]
+        public const string NotAppliedNotification = "playerappearance.notapplied.notification";
+
         #endregion
 
         #region Typing an exact id
