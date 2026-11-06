@@ -55,7 +55,12 @@ public static class PedCustomizationRows
 
         menu.AddRange(Rows(scope(), show, components, fitTorso));
 
-        menu.OnOpened = _ => menu.ReplaceEntries(Rows(scope(), show, components, fitTorso));
+        menu.OnOpened = _ =>
+        {
+            ClothingDiagnostics.Opened(scope(), menu.Menu.MenuTitle + " / " + menu.Menu.MenuSubtitle);
+
+            menu.ReplaceEntries(Rows(scope(), show, components, fitTorso));
+        };
     }
 
     internal static List<MenuEntry> Rows(
@@ -438,6 +443,8 @@ public static class PedCustomizationRows
 
             TorsoFit.Apply(before, slot, redrawTorso);
 
+            ClothingDiagnostics.Pressed(scope, slot, component, left, count, current, next);
+
             return;
         }
 
@@ -445,10 +452,14 @@ public static class PedCustomizationRows
         {
             PedVariationScope.ClearProp(ped, slot);
 
+            ClothingDiagnostics.Pressed(scope, slot, component, left, count, current, next);
+
             return;
         }
 
         scope.SetProp(ped, slot, next, 0);
+
+        ClothingDiagnostics.Pressed(scope, slot, component, left, count, current, next);
     }
 
     // Asked for as a position counting from one, matching what the row shows. Legacy asked for a position
