@@ -99,9 +99,17 @@ internal static class ModsSection
             VehicleModLabels.StockName(handle, slot, count),
         };
 
+        var values = new List<int>(count + 1) { -1 };
+
         for (var index = 0; index < count; index++)
         {
+            if (Gen9Exclusive.VehicleMod(handle, (int)slot, index))
+            {
+                continue;
+            }
+
             options.Add(VehicleModLabels.ModName(handle, slot, index, count));
+            values.Add(index);
         }
 
         var description = VehicleModLabels.SlotDescription(
@@ -116,16 +124,18 @@ internal static class ModsSection
             Description = description,
             Options = options,
 
-            // Stock is -1 to the game and the first row here, so everything is shifted by one.
-            ReadSelectedIndex = () => SectionRows.Driven() is { } current
-                ? API.GetVehicleMod(current, (int)slot) + 1
+            ReadSelectedIndex = () => SectionRows.Driven() is int current
+                ? Math.Max(0, values.IndexOf(API.GetVehicleMod(current, (int)slot)))
                 : 0,
 
             // On scroll rather than on enter, so the part appears on the vehicle as it is picked, which is the
             // only way to see what you are choosing.
             OnIndexChanged = changed =>
             {
-                Fit(slot, changed.NewIndex - 1);
+                if (changed.NewIndex >= 0 && changed.NewIndex < values.Count)
+                {
+                    Fit(slot, values[changed.NewIndex]);
+                }
 
                 // The description carries which option is showing, and a description is only rewritten on a refresh,
                 // so scrolling would leave it a step behind.

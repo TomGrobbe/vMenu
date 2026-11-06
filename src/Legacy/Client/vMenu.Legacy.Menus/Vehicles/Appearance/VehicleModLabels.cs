@@ -72,16 +72,32 @@ public static class VehicleModLabels
             ("number", SlotNumber(slot)),
             ("position", MenuText.From(position)));
 
-    // Counted with the stock part as the first option, because that is how the lists present them.
+    // Counted with the stock part as the first option and the newer game's parts left out, because that
+    // is how the lists present them.
     public static string Position(int handle, VehicleModSlot slot)
     {
         var count = API.GetNumVehicleMods(handle, (int)slot);
         var fitted = API.GetVehicleMod(handle, (int)slot);
 
-        var current = (fitted + 2).ToString(CultureInfo.InvariantCulture);
-        var total = (count + 1).ToString(CultureInfo.InvariantCulture);
+        var current = 1;
+        var total = 1;
 
-        return current + "/" + total;
+        for (var index = 0; index < count; index++)
+        {
+            if (Gen9Exclusive.VehicleMod(handle, (int)slot, index))
+            {
+                continue;
+            }
+
+            total++;
+
+            if (index <= fitted)
+            {
+                current++;
+            }
+        }
+
+        return current.ToString(CultureInfo.InvariantCulture) + "/" + total.ToString(CultureInfo.InvariantCulture);
     }
 
     public static MenuText ModName(int handle, VehicleModSlot slot, int index, int count) =>

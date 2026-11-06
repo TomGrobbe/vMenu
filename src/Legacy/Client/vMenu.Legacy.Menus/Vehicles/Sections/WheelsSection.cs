@@ -196,7 +196,14 @@ internal static class WheelsSection
         var positions = count + 1;
         var position = API.GetVehicleMod(handle, (int)slot) + 1;
 
-        position = (position + (left ? -1 : 1) + positions) % positions;
+        var step = left ? -1 : 1;
+        var skipped = 0;
+
+        do
+        {
+            position = (position + step + positions) % positions;
+        }
+        while (Gen9Exclusive.VehicleMod(handle, (int)slot, position - 1) && skipped++ < count);
 
         API.SetVehicleMod(handle, (int)slot, position - 1, ReadCustomTyres());
 

@@ -96,14 +96,14 @@ public static class VehicleAppearanceWriter
     {
         API.SetVehicleWheelType(handle, appearance.WheelType);
 
-        var rims = appearance.ModAt(VehicleModSlot.Wheels);
+        var rims = Fittable(handle, VehicleModSlot.Wheels, appearance.ModAt(VehicleModSlot.Wheels));
 
         API.SetVehicleMod(handle, (int)VehicleModSlot.Wheels, rims, appearance.CustomTyres);
 
         // A bike carries its rear wheel in its own slot, and the game expects both to be set.
         if (API.IsThisModelABike(appearance.ModelHash))
         {
-            var rear = appearance.ModAt(VehicleModSlot.RearWheels);
+            var rear = Fittable(handle, VehicleModSlot.RearWheels, appearance.ModAt(VehicleModSlot.RearWheels));
 
             API.SetVehicleMod(handle, (int)VehicleModSlot.RearWheels, rear, appearance.CustomTyres);
         }
@@ -246,9 +246,18 @@ public static class VehicleAppearanceWriter
                 continue;
             }
 
+            if (Gen9Exclusive.VehicleMod(handle, mod.Slot, mod.Value))
+            {
+                continue;
+            }
+
             API.SetVehicleMod(handle, mod.Slot, mod.Value, appearance.CustomTyres);
         }
     }
+
+    // Stock rims rather than skipping the slot, because the wheel type just changed and the old rims belong to it.
+    private static int Fittable(int handle, VehicleModSlot slot, int value) =>
+        Gen9Exclusive.VehicleMod(handle, (int)slot, value) ? -1 : value;
 
     private static async Task WaitForModsAsync(int handle)
     {
