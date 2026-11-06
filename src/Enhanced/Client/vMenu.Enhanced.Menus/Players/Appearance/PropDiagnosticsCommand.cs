@@ -5,8 +5,6 @@ using vMenu.Enhanced.Logging;
 
 namespace vMenu.Enhanced.Menus.Players.Appearance;
 
-// Temporary, to diagnose add-on hats that cannot be scrolled past. Not gated, so a reporter can run it
-// without changing their config. Remove once that report is settled.
 public static class PropDiagnosticsCommand
 {
     private const string Command = "vmenu_debug_props";
@@ -28,9 +26,16 @@ public static class PropDiagnosticsCommand
 
     private static async Task RunAsync()
     {
+        if (!Log.IsEnabled(LogLevel.Debug))
+        {
+            Log.Info(Prefix + "Turn on vMenu.Enhanced.Debugging.Client to see this report.");
+
+            return;
+        }
+
         if (_running)
         {
-            Log.Info(Prefix + "Already running, wait for it to finish.");
+            Log.Debug(Prefix + "Already running, wait for it to finish.");
 
             return;
         }
@@ -59,9 +64,9 @@ public static class PropDiagnosticsCommand
         var model = (uint)Native.GetEntityModel(ped);
         var resource = Native.GetCurrentResourceName();
 
-        Log.Info(Prefix + "Start. This changes your hat for up to a minute, stand still until it says Done.");
-        Log.Info(Prefix + $"flavor Enhanced, vMenu {Native.GetResourceMetadata(resource, "version", 0)}, build {Native.GetGameBuildNumber()}");
-        Log.Info(Prefix + $"model {model}, freemode male {model == PedSpawning.FreemodeModel(true)}, freemode female {model == PedSpawning.FreemodeModel(false)}");
+        Log.Debug(Prefix + "Start. This changes your hat for up to a minute, stand still until it says Done.");
+        Log.Debug(Prefix + $"flavor Enhanced, vMenu {Native.GetResourceMetadata(resource, "version", 0)}, build {Native.GetGameBuildNumber()}");
+        Log.Debug(Prefix + $"model {model}, freemode male {model == PedSpawning.FreemodeModel(true)}, freemode female {model == PedSpawning.FreemodeModel(false)}");
 
         int[] slots = [0, 1, 2, 6, 7];
 
@@ -75,12 +80,12 @@ public static class PropDiagnosticsCommand
                 line += $", collection '{Native.GetPedPropCollectionName(ped, slot)}' local {Native.GetPedPropCollectionLocalIndex(ped, slot)}";
             }
 
-            Log.Info(Prefix + line);
+            Log.Debug(Prefix + line);
         }
 
         var collections = Native.GetPedCollectionsCount(ped);
 
-        Log.Info(Prefix + $"collections: {collections}");
+        Log.Debug(Prefix + $"collections: {collections}");
 
         for (var index = 0; index < collections; index++)
         {
@@ -92,14 +97,14 @@ public static class PropDiagnosticsCommand
                 line += $" {slot}={Native.GetNumberOfPedCollectionPropDrawableVariations(ped, slot, name)}";
             }
 
-            Log.Info(Prefix + line);
+            Log.Debug(Prefix + line);
         }
 
         var count = Native.GetNumberOfPedPropDrawableVariations(ped, Hats);
 
         if (count <= 0)
         {
-            Log.Info(Prefix + "This ped has no hats, nothing more to test. Done.");
+            Log.Debug(Prefix + "This ped has no hats, nothing more to test. Done.");
 
             return;
         }
@@ -127,12 +132,12 @@ public static class PropDiagnosticsCommand
             }
         }
 
-        Log.Info(Prefix + "Done.");
+        Log.Debug(Prefix + "Done.");
     }
 
     private static int HatRanges(int ped, int count)
     {
-        Log.Info(Prefix + $"hat ranges ({count} hats):");
+        Log.Debug(Prefix + $"hat ranges ({count} hats):");
 
         var start = 0;
         var name = Native.GetPedCollectionNameFromProp(ped, Hats, 0) ?? string.Empty;
@@ -150,7 +155,7 @@ public static class PropDiagnosticsCommand
 
             var localEnd = Native.GetPedCollectionLocalIndexFromProp(ped, Hats, drawable - 1);
 
-            Log.Info(Prefix + $"  global {start}-{drawable - 1} '{name}' local {localStart}-{localEnd}, textures of first {Native.GetNumberOfPedPropTextureVariations(ped, Hats, start)}");
+            Log.Debug(Prefix + $"  global {start}-{drawable - 1} '{name}' local {localStart}-{localEnd}, textures of first {Native.GetNumberOfPedPropTextureVariations(ped, Hats, start)}");
 
             if (next is null)
             {
@@ -212,7 +217,7 @@ public static class PropDiagnosticsCommand
 
     private static async Task TimingAsync(int ped, List<int> indices)
     {
-        Log.Info(Prefix + "timing (set a hat, then read it back every frame):");
+        Log.Debug(Prefix + "timing (set a hat, then read it back every frame):");
 
         foreach (var index in indices)
         {
@@ -221,7 +226,7 @@ public static class PropDiagnosticsCommand
             var immediate = Native.GetPedPropIndex(ped, Hats, false);
             var result = await WaitForAsync(ped, index);
 
-            Log.Info(Prefix + $"  set {index}: immediate {immediate}, {result}");
+            Log.Debug(Prefix + $"  set {index}: immediate {immediate}, {result}");
         }
     }
 
@@ -274,7 +279,7 @@ public static class PropDiagnosticsCommand
 
         Native.SetPedPropIndex(ped, Hats, start, 0, true, false);
 
-        Log.Info(Prefix + $"replay right, menu logic, starting on {start}: {await WaitForAsync(ped, start)}");
+        Log.Debug(Prefix + $"replay right, menu logic, starting on {start}: {await WaitForAsync(ped, start)}");
 
         for (var press = 1; press <= 5; press++)
         {
@@ -285,7 +290,7 @@ public static class PropDiagnosticsCommand
 
         await API.Delay(PressGapMs);
 
-        Log.Info(Prefix + $"replay left, menu logic, starting on none (read {Native.GetPedPropIndex(ped, Hats, false)}):");
+        Log.Debug(Prefix + $"replay left, menu logic, starting on none (read {Native.GetPedPropIndex(ped, Hats, false)}):");
 
         for (var press = 1; press <= 3; press++)
         {
@@ -322,6 +327,6 @@ public static class PropDiagnosticsCommand
 
         await API.Delay(PressGapMs);
 
-        Log.Info(Prefix + $"  press {press}: read {current}, asked {next}, immediately {immediate}, after {PressGapMs} ms {Native.GetPedPropIndex(ped, Hats, false)}");
+        Log.Debug(Prefix + $"  press {press}: read {current}, asked {next}, immediately {immediate}, after {PressGapMs} ms {Native.GetPedPropIndex(ped, Hats, false)}");
     }
 }

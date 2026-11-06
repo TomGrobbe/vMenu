@@ -83,6 +83,7 @@ export default defineConfig({
             { label: 'Installing on FiveM Legacy', link: '/installing/fivem-legacy/' },
             { label: 'Running on Linux', link: '/running-on-linux/' },
             { label: 'Key Bindings', link: '/key-bindings/' },
+            { label: 'FAQ', link: '/faq/' },
           ],
         },
         {
