@@ -23,50 +23,28 @@ internal static class GitHubSource
 
     private const string CombinedMarker = "-and-enhanced-v";
 
-    // Unauthenticated GitHub allows 60 requests an hour from one address, and this makes four a day on
-    // the schedule at most, and only when nuget.org had no answer. A shared host that does hit the limit
-    // gets a 403, which is a debug line rather than a warning.
+    // Unauthenticated GitHub allows 60 requests an hour from one address. This is asked four times a day
+    // on the schedule at most when nuget.org had no answer, plus once per newly found update for its link.
+    // A shared host that does hit the limit gets a 403, which is a debug line rather than a warning.
     public static async Task<SourceResult> LatestAsync(UpdateChannel channel, string userAgent, int timeoutMs)
     {
-        var reply = await HttpSend.SendAsync(new HttpRequest(ReleasesUrl, Accept, userAgent, timeoutMs));
+        var releases = await ReleasesAsync(userAgent, timeoutMs);
 
-        if (!reply.IsOk)
+        if (releases is null)
         {
-            Log.Debug(
-                "[Updates] github.com did not answer usefully: " +
-                (reply.Status > 0 ? reply.Status.ToString(CultureInfo.InvariantCulture) : reply.Reason));
-
             return SourceResult.Unreachable;
         }
-
-        if (!ServerJson.TryDeserialize<GitHubRelease[]>(reply.Body, out var releases, out var error) || releases is null)
-        {
-            Log.Debug($"[Updates] The release list from github.com did not read: {error}");
-
-            return SourceResult.Unreachable;
-        }
-
-        Log.Debug($"[Updates] github.com listed {releases.Length} release(s).");
 
         KnownUpdate? best = null;
 
         foreach (var release in releases)
         {
-            // Anonymous callers never see drafts anyway. Checked because a server that ever runs this with a
-            // token in the environment would start seeing them.
-            if (release.Draft || release.TagName is not { } tag)
-            {
-                continue;
-            }
-
             if (channel == UpdateChannel.Stable && release.Prerelease)
             {
                 continue;
             }
 
-            if (VersionIn(tag) is not { } text
-                || !SemanticVersion.TryParse(text, out var version)
-                || version is null)
+            if (Versioned(release) is not SemanticVersion version)
             {
                 continue;
             }
@@ -87,6 +65,58 @@ internal static class GitHubSource
 
         return best is null ? SourceResult.Nothing() : SourceResult.Found(best);
     }
+
+    public static async Task<string> ReleaseUrlAsync(SemanticVersion version, string userAgent, int timeoutMs)
+    {
+        foreach (var release in await ReleasesAsync(userAgent, timeoutMs) ?? [])
+        {
+            if (Versioned(release) is SemanticVersion tagged
+                && SemanticVersion.Compare(tagged, version) == 0
+                && release.HtmlUrl is string url)
+            {
+                return url;
+            }
+        }
+
+        Log.Debug($"[Updates] github.com has no release page for v{version}, linking the release list instead.");
+
+        return ReleasesPage;
+    }
+
+    private static async Task<GitHubRelease[]?> ReleasesAsync(string userAgent, int timeoutMs)
+    {
+        var reply = await HttpSend.SendAsync(new HttpRequest(ReleasesUrl, Accept, userAgent, timeoutMs));
+
+        if (!reply.IsOk)
+        {
+            Log.Debug(
+                "[Updates] github.com did not answer usefully: " +
+                (reply.Status > 0 ? reply.Status.ToString(CultureInfo.InvariantCulture) : reply.Reason));
+
+            return null;
+        }
+
+        if (!ServerJson.TryDeserialize<GitHubRelease[]>(reply.Body, out var releases, out var error) || releases is null)
+        {
+            Log.Debug($"[Updates] The release list from github.com did not read: {error}");
+
+            return null;
+        }
+
+        Log.Debug($"[Updates] github.com listed {releases.Length} release(s).");
+
+        return releases;
+    }
+
+    // Anonymous callers never see drafts anyway. Checked because a server that ever runs this with a token
+    // in the environment would start seeing them.
+    private static SemanticVersion? Versioned(GitHubRelease release) =>
+        !release.Draft
+        && release.TagName is string tag
+        && VersionIn(tag) is string text
+        && SemanticVersion.TryParse(text, out var version)
+            ? version
+            : null;
 
     // StartsWith and not Contains: combined-v3.9.0-and-enhanced-v0.0.2 contains enhanced-v in the middle,
     // so a Contains check would take the wrong substring. Legacy v3.x.y tags fall through to null.

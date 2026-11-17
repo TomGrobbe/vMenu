@@ -34,6 +34,9 @@ public static class UpdateChecker
     // Stands in for a build with no version, so it loses to every real release.
     private const string DevelopmentVersion = "0.0.0";
 
+    // The dev-enhanced.yml artifact holding this flavor's zip.
+    private const string BuildArtifact = "enhanced-zip";
+
     private static readonly HashSet<int> Told = [];
 
     private static SemanticVersion? _current;
@@ -107,13 +110,12 @@ public static class UpdateChecker
 
         await CheckAsync();
 
-        if (_available is { } found && !ReferenceEquals(found, before))
+        if (_available is KnownUpdate known)
         {
-            Log.Info($"[Updates] v{found.Version} is available. {found.Url}");
-        }
-        else if (_available is { } known)
-        {
-            Log.Info($"[Updates] v{known.Version} is still the newest, and you already knew.");
+            if (ReferenceEquals(known, before))
+            {
+                Log.Info(Outdated(known));
+            }
         }
         else if (_warned)
         {
@@ -126,9 +128,15 @@ public static class UpdateChecker
             Log.Info(
                 _unstamped
                     ? $"[Updates] Nothing on the {Describe(Channel())} channel to compare against yet."
-                    : $"[Updates] v{Current()} is the newest {Describe(Channel())}. Nothing to do.");
+                    : $"[Updates] You are running the latest version, {Blue("v" + Current())}.");
         }
     }
+
+    private static string Outdated(KnownUpdate update) =>
+        $"[Updates] {Blue("v" + update.Version)} is the latest version, you are currently running " +
+        $"{(_unstamped ? "a local build" : Blue("v" + Current()))}, download the new version here: {Blue(update.Url)}";
+
+    private static string Blue(string text) => $"^4{text}^0";
 
     private static async Task CheckAsync()
     {
@@ -197,20 +205,39 @@ public static class UpdateChecker
                 return;
             }
 
-            _available = found;
+            var update = await WithDownloadLinkAsync(found, userAgent);
 
-            Log.Info(
-                _unstamped
-                    ? $"[Updates] A newer vMenu Enhanced is out: v{found.Version}."
-                    : $"[Updates] A newer vMenu Enhanced is out: v{found.Version}. You are on v{current}.");
-            Log.Info($"[Updates] {found.Url}");
+            _available = update;
 
-            Announce(found);
+            Log.Info(Outdated(update));
+
+            Announce(update);
         }
         finally
         {
             _running = false;
         }
+    }
+
+    // Only looked up for an update about to be announced, so the schedule itself asks GitHub nothing extra.
+    private static async Task<KnownUpdate> WithDownloadLinkAsync(KnownUpdate found, string userAgent)
+    {
+        string url;
+
+        if (BuildSource.RunNumber(found.Version) is int run)
+        {
+            url = await BuildSource.DownloadUrlAsync(run, BuildArtifact, userAgent, TimeoutMs);
+        }
+        else if (string.Equals(found.Url, GitHubSource.ReleasesPage, StringComparison.Ordinal))
+        {
+            url = await GitHubSource.ReleaseUrlAsync(found.Version, userAgent, TimeoutMs);
+        }
+        else
+        {
+            return found;
+        }
+
+        return new KnownUpdate(found.Version, url, found.Source);
     }
 
     private static bool IsWanted() => Channel() != UpdateChannel.Off;
