@@ -141,6 +141,7 @@ public class CoreServer : BaseScript
         MenuAuditHandler.Register();
 
         PedDeathBroadcast.Register();
+        VehicleMineBroadcast.Register();
         PlayerNoClipState.Register();
         PlayerFreecamState.Register();
         PlayerPresenceBroadcast.Register();
