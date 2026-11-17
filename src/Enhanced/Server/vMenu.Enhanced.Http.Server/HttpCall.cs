@@ -40,7 +40,18 @@ public sealed class HttpCall
             response);
     }
 
-    public string Header(string name) => _headers.TryGetValue(name, out var value) ? value : string.Empty;
+    public string Header(string name)
+    {
+        foreach (var pair in _headers)
+        {
+            if (string.Equals(pair.Key, name, StringComparison.OrdinalIgnoreCase))
+            {
+                return pair.Value;
+            }
+        }
+
+        return string.Empty;
+    }
 
     public string QueryValue(string name)
     {
