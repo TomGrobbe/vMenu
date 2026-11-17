@@ -78,5 +78,7 @@ public static class VehicleOptions
     // Has no menu row, this permission is just to be able to fire bombs and countermeasures.
     public const string BombsAndFlares = "vMenu.Enhanced.Menus.VehicleOptions.BombsAndFlares";
 
+    public const string VehicleMines = "vMenu.Enhanced.Menus.VehicleOptions.VehicleMines";
+
     public const string Radio = "vMenu.Enhanced.Menus.VehicleOptions.Radio";
 }

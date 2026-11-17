@@ -28,6 +28,7 @@ using vMenu.Enhanced.Menus.Teleport;
 using vMenu.Enhanced.Menus.Vehicles;
 using vMenu.Enhanced.Menus.Vehicles.Aircraft;
 using vMenu.Enhanced.Menus.Vehicles.AutoPilot;
+using vMenu.Enhanced.Menus.Vehicles.Mines;
 using vMenu.Enhanced.Menus.Weapons;
 using vMenu.Enhanced.Menus.Weapons.Saved;
 using vMenu.Enhanced.Menus.World;
@@ -112,6 +113,7 @@ public sealed class Main : BaseScript
         VehicleExtraLabels.RegisterEventHandlers();
         AircraftWeaponConfig.RegisterEventHandlers();
         AircraftWeaponOwner.RegisterEventHandlers();
+        VehicleMines.RegisterEventHandlers();
         LocationBlipSync.RegisterEventHandlers();
 
         PedModelSync.RegisterEventHandlers();
@@ -194,6 +196,7 @@ public sealed class Main : BaseScript
         VehicleTurbulence.Initialize();
         VehicleAnchor.Toggle.Initialize();
         AircraftWeapons.Initialize();
+        VehicleMines.Initialize();
         VehicleRadio.Initialize();
         PersonalVehicleFeature.Initialize();
         VehicleAutoPilot.Initialize();
