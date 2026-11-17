@@ -1,41 +1,26 @@
 using CitizenFX.FiveM.Client;
-using CitizenFX.FiveM.Shared;
+using CitizenFX.FiveM.Client.Script;
+using CitizenFX.FiveM.Shared.Serialization;
 
-using vMenu.Enhanced.Logging;
+using MessagePack;
 
 namespace vMenu.Enhanced.MenuFramework;
 
-/// <summary>Raw NUI callbacks, because an ordinary one is dispatched as an event whose source is
-/// "nui:&lt;resource&gt;", which this runtime parses as a player id and throws on. Three things about raw
-/// ones are not negotiable: the reference must come from the core's own registry or the host answers
-/// "Invalid function", only the request may be declared because the second argument is a function
-/// reference that will not deserialize, and the page must post JSON because the body is parsed before
-/// anything is dispatched. Bug report: https://github.com/citizenfx/rfc/discussions/257</summary>
+/// <summary>NUI callbacks whose handlers read the request body as the JSON the page posted.</summary>
 public static class NuiCallbacks
 {
-    /// <summary>The handler is handed the request body exactly as the page posted it.</summary>
-    public static void Register(string callback, Action<string> handler)
+    /// <summary>The handler is handed the request body as JSON text.</summary>
+    public static void Register(string callback, Action<string> handler) =>
+        API.OnNuiEvent(callback, new Action<MessagePackBuffer?, NuiCallback?>(new Receiver(handler).Receive));
+
+    private sealed class Receiver(Action<string> handler)
     {
-        // To be fixed when https://github.com/citizenfx/rfc/discussions/257 and
-        // https://github.com/citizenfx/rfc/discussions/350 are solved.
-#pragma warning disable FIVEM001 // The only registry the host invokes from.
-        var reference = SharedAPI.GetCore().FuncRefManager.Register(new Action<object>(request => handler(BodyOf(request))));
-#pragma warning restore FIVEM001
+        // Answered before the handler runs, so a throwing handler never leaves the page's request hanging.
+        public void Receive(MessagePackBuffer? data, NuiCallback? reply)
+        {
+            reply?.Invoke("ok");
 
-        Native.RegisterRawNuiCallback(callback, (int)reference);
-    }
-
-    private static string BodyOf(object? request) => request switch
-    {
-        IDictionary<object, object> map when map.TryGetValue("body", out var body) => body as string ?? string.Empty,
-        IDictionary<string, object> map when map.TryGetValue("body", out var body) => body as string ?? string.Empty,
-        _ => Unreadable(request),
-    };
-
-    private static string Unreadable(object? request)
-    {
-        Log.Error($"[Nui] A callback arrived as {request?.GetType().FullName ?? "null"}, which has no body this can read.");
-
-        return string.Empty;
+            handler(data is null ? string.Empty : MessagePackSerializer.ConvertToJson(data.Buffer));
+        }
     }
 }

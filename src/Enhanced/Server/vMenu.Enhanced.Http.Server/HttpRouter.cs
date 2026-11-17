@@ -1,6 +1,6 @@
-using CitizenFX.FiveM.Shared.Serialization;
+using CitizenFX.FiveM.Server;
+using CitizenFX.FiveM.Server.Http;
 
-using vMenu.Enhanced.BrokenNatives.Server;
 using vMenu.Enhanced.Logging;
 
 namespace vMenu.Enhanced.Http.Server;
@@ -21,12 +21,12 @@ public static class HttpRouter
 
         _installed = true;
 
-        NativeFixer.SetHttpHandler(Dispatch);
+        API.SetHttpHandler(new HttpHandler(Dispatch));
     }
 
     public static void Map(string path, Action<HttpCall> handler) => Routes.Add(new Route(path, handler));
 
-    private static void Dispatch(MessagePackBuffer? request, MessagePackBuffer? response)
+    private static void Dispatch(CitizenFX.FiveM.Server.Http.HttpRequest request, HttpResponse response)
     {
         var call = HttpCall.From(request, response);
 
