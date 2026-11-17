@@ -131,6 +131,7 @@ export default defineConfig({
             { label: 'Custom Character Creator', link: '/menus/character-creator/' },
             { label: 'Filmmaker Menu', link: '/menus/filmmaker-menu/' },
             { label: 'Vehicle Colours', link: '/menus/vehicle-colours/' },
+            { label: 'Vehicle Mines', link: '/menus/vehicle-mines/' },
           ],
         },
         {
