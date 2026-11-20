@@ -78,11 +78,18 @@ public static class IntegrationSocket
 
     private static int _consecutiveFailures;
 
+    private static bool _registered;
+
     private static bool _started;
+
+    // Set when the key or endpoint changed, so the dropped socket is not counted as a failure.
+    private static volatile bool _reconfigured;
+
+    private static TaskCompletionSource<bool> _wake = NewWake();
 
     private static WebSocket? _socket;
 
-    private static string _url = "";
+    private static volatile string _url = "";
 
     public static bool IsConnected => _connected;
 
@@ -99,24 +106,33 @@ public static class IntegrationSocket
 
     public static void Initialize()
     {
-        if (_started)
+        if (_registered)
         {
             return;
         }
 
-        var endpoint = ServerConfig.Value(IntegrationSettings.Endpoint);
-        var key = ServerConfig.Value(IntegrationSettings.ApiKey);
-        if (endpoint.Length == 0 || key.Length == 0)
+        _registered = true;
+
+        ServerConfig.AddEventListenerFor([IntegrationSettings.ApiKey, IntegrationSettings.Endpoint], OnSettingsChanged);
+
+        if (!TryStart())
         {
             Log.Debug(
                 $"[Integration] Socket stays idle until {IntegrationSettings.ApiKey.Name} and " +
                 $"{IntegrationSettings.Endpoint.Name} are set.");
+        }
+    }
 
-            return;
+    private static bool TryStart()
+    {
+        var url = ConfiguredUrl();
+        if (_started || url.Length == 0)
+        {
+            return false;
         }
 
         _started = true;
-        _url = ToSocketUrl(endpoint);
+        _url = url;
 
         // Proves the crypto loads in this runtime, up front.
         IntegrationSigning.Verify();
@@ -132,6 +148,53 @@ public static class IntegrationSocket
         API.OnEvent(StopEvent, new Action<string>(OnResourceStop), false);
 
         _ = Task.Run(RunAsync);
+
+        return true;
+    }
+
+    private static void OnSettingsChanged()
+    {
+        if (!_started)
+        {
+            TryStart();
+
+            return;
+        }
+
+        _url = ConfiguredUrl();
+        if (_url.Length > 0)
+        {
+            IntegrationSnapshots.Update();
+        }
+
+        _reconfigured = true;
+        _consecutiveFailures = 0;
+        AbortSocket();
+        _wake.TrySetResult(true);
+    }
+
+    private static string ConfiguredUrl()
+    {
+        var endpoint = ServerConfig.Value(IntegrationSettings.Endpoint);
+
+        return endpoint.Length > 0 && ServerConfig.Value(IntegrationSettings.ApiKey).Length > 0
+            ? ToSocketUrl(endpoint)
+            : "";
+    }
+
+    private static TaskCompletionSource<bool> NewWake() => new(TaskCreationOptions.RunContinuationsAsynchronously);
+
+    // Cut short by a settings change, so a fixed key or endpoint is tried right away instead of after the backoff.
+    private static async Task WaitAsync(int milliseconds)
+    {
+        var wake = _wake;
+        await Task.WhenAny(Task.Delay(milliseconds), wake.Task);
+
+        if (wake.Task.IsCompleted)
+        {
+            Interlocked.CompareExchange(ref _wake, NewWake(), wake);
+            _reconfigured = false;
+        }
     }
 
     private static string ToSocketUrl(string endpoint)
@@ -157,7 +220,12 @@ public static class IntegrationSocket
         }
 
         _stopping = true;
+        AbortSocket();
+        _wake.TrySetResult(true);
+    }
 
+    private static void AbortSocket()
+    {
         try
         {
             _socket?.Abort();
@@ -174,10 +242,11 @@ public static class IntegrationSocket
         {
             try
             {
+                var url = _url;
                 var key = IntegrationSnapshots.Key;
-                if (key.Length == 0)
+                if (url.Length == 0 || key.Length == 0)
                 {
-                    await Task.Delay(2000);
+                    await WaitAsync(2000);
                     continue;
                 }
 
@@ -189,7 +258,7 @@ public static class IntegrationSocket
                 _socket = ws;
                 _streaming = false;
 
-                if (await ConnectAsync(ws))
+                if (await ConnectAsync(ws, url))
                 {
                     Emit(LogLevel.Info, "[Integration] Socket connected.");
 
@@ -237,9 +306,16 @@ public static class IntegrationSocket
                 break;
             }
 
+            if (_reconfigured)
+            {
+                _reconfigured = false;
+                Emit(LogLevel.Debug, "[Integration] Integration settings changed, reconnecting socket.");
+                continue;
+            }
+
             var delay = ReconnectDelay();
             Emit(LogLevel.Debug, $"[Integration] Reconnecting socket in {delay / 1000.0:0.0}s.");
-            await Task.Delay(delay);
+            await WaitAsync(delay);
         }
 
         Emit(LogLevel.Debug, "[Integration] Socket stopped.");
@@ -258,9 +334,9 @@ public static class IntegrationSocket
         return ws;
     }
 
-    private static async Task<bool> ConnectAsync(WebSocket ws)
+    private static async Task<bool> ConnectAsync(WebSocket ws, string url)
     {
-        var uri = new Uri(_url);
+        var uri = new Uri(url);
 
         // Linux TLS bridge
         var connect = ws is BridgeWebSocket bridge
@@ -602,6 +678,11 @@ public static class IntegrationSocket
     // follow drop to Debug so a persistently refused connect never floods the console.
     private static void NoteFailure(string detail)
     {
+        if (_reconfigured)
+        {
+            return;
+        }
+
         var level = _consecutiveFailures == 0 ? LogLevel.Warning : LogLevel.Debug;
         _consecutiveFailures++;
 
